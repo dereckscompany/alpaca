@@ -11,13 +11,13 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = FALSE
 )
 ```
 
-This vignette will demonstrate how to use `alpaca` in **synchronous** mode.
-
-*Content will be added as API classes are implemented.*
+This vignette demonstrates how to use `alpaca` in **synchronous** mode to
+interact with the Alpaca Trading API.
 
 ## Setup
 
@@ -30,3 +30,158 @@ ALPACA_API_ENDPOINT = https://paper-api.alpaca.markets
 ```
 
 If you don't have a key, visit the [Alpaca dashboard](https://app.alpaca.markets/).
+
+> **Paper trading**: Always start with
+> `https://paper-api.alpaca.markets` to test without risking real money.
+
+## Market Data
+
+The `AlpacaMarketData` class provides access to historical and real-time
+stock market data.
+
+```{r market-data}
+library(alpaca)
+
+md <- AlpacaMarketData$new()
+
+# Historical daily bars for AAPL
+bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01",
+                    end = "2024-01-31")
+print(bars)
+
+# Latest trade
+latest <- md$get_latest_trade("AAPL")
+print(latest)
+
+# Market clock
+clock <- md$get_clock()
+print(clock)
+
+# Available assets
+assets <- md$get_assets(status = "active", asset_class = "us_equity")
+print(head(assets))
+```
+
+## Account Information
+
+The `AlpacaAccount` class gives you access to account details, positions,
+and portfolio history.
+
+```{r account}
+acct <- AlpacaAccount$new()
+
+# Account info
+info <- acct$get_account()
+print(info[, .(status, equity, buying_power, cash)])
+
+# Open positions
+positions <- acct$get_positions()
+print(positions)
+
+# Portfolio history
+history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
+print(history)
+```
+
+## Trading
+
+The `AlpacaTrading` class handles order management.
+
+```{r trading}
+trading <- AlpacaTrading$new()
+
+# Place a limit order (paper trading)
+order <- trading$add_order(
+  symbol = "AAPL",
+  side = "buy",
+  type = "limit",
+  time_in_force = "day",
+  qty = 1,
+  limit_price = 150
+)
+print(order[, .(id, symbol, side, type, status)])
+
+# Check open orders
+open_orders <- trading$get_orders(status = "open")
+print(open_orders)
+
+# Cancel a specific order
+trading$cancel_order(order$id)
+
+# Cancel all open orders
+trading$cancel_all_orders()
+```
+
+### Order Types
+
+`alpaca` supports all Alpaca order types:
+
+```{r order-types}
+# Market order by dollar amount
+trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", notional = 500
+)
+
+# Stop-limit order
+trading$add_order(
+  symbol = "AAPL", side = "sell", type = "stop_limit",
+  time_in_force = "gtc", qty = 10,
+  stop_price = 140, limit_price = 139
+)
+
+# Trailing stop order
+trading$add_order(
+  symbol = "AAPL", side = "sell", type = "trailing_stop",
+  time_in_force = "gtc", qty = 10,
+  trail_percent = 5
+)
+
+# Bracket order
+trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", qty = 10,
+  order_class = "bracket",
+  take_profit = list(limit_price = 200),
+  stop_loss = list(stop_price = 140, limit_price = 139)
+)
+```
+
+## Options
+
+The `AlpacaOptions` class provides access to options contracts and data.
+
+```{r options}
+opts <- AlpacaOptions$new()
+
+# Find AAPL call options expiring after 2024-06-01
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
+)
+print(contracts[, .(symbol, type, strike_price, expiration_date)])
+```
+
+## Position Management
+
+```{r positions}
+acct <- AlpacaAccount$new()
+
+# View a specific position
+pos <- acct$get_position("AAPL")
+print(pos[, .(symbol, qty, avg_entry_price, current_price, unrealized_pl)])
+
+# Close 50% of a position
+acct$close_position("AAPL", percentage = 50)
+
+# Close entire position
+acct$close_position("AAPL")
+```
+
+## Next Steps
+
+- See `vignette("async-usage")` for promise-based async workflows.
+- Explore the [Alpaca API documentation](https://docs.alpaca.markets/) for
+  full endpoint details.

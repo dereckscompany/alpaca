@@ -26,6 +26,44 @@ reference:
     contents:
       - get_api_keys
       - get_base_url
+      - get_data_base_url
+      - time_convert_from_alpaca
+      - time_convert_to_alpaca
+
+  - title: Base Class
+    desc: Abstract base class shared by all API clients
+    contents:
+      - AlpacaBase
+
+  - title: Market Data
+    desc: Stock market data (bars, trades, quotes, snapshots, assets, calendar, clock)
+    contents:
+      - AlpacaMarketData
+
+  - title: Trading
+    desc: Order management (place, cancel, query, modify)
+    contents:
+      - AlpacaTrading
+
+  - title: Account
+    desc: Account info, positions, portfolio history, and activities
+    contents:
+      - AlpacaAccount
+
+  - title: Options
+    desc: Options contracts, bars, trades, and snapshots
+    contents:
+      - AlpacaOptions
+
+  - title: Backfill and Data
+    desc: Bulk data download utilities
+    contents:
+      - alpaca_backfill_bars
+
+  - title: Request Infrastructure
+    desc: Low-level request building and execution
+    contents:
+      - alpaca_build_request
 
 articles:
   - title: Getting Started

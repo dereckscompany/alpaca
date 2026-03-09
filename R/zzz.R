@@ -3,5 +3,8 @@ utils::globalVariables(c(
   ".",
   ".N",
   ".SD",
-  ":="
+  ":=",
+  "symbol",
+  "timeframe",
+  "timestamp"
 ))
