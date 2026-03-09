@@ -1,0 +1,39 @@
+Package: alpaca
+Type: Package
+Title: API Wrapper to Alpaca Trading Platform
+Version: 0.1.0
+URL: https://dereckmezquita.github.io/alpaca/
+BugReports: https://github.com/dereckmezquita/alpaca/issues
+Authors@R:
+    person(given = "Dereck",
+           family = "Mezquita",
+           role = c("aut", "cre"),
+           email = "dereck@mezquita.io",
+           comment = c(ORCID = "0000-0002-9307-6762"))
+Description: R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Supports US equities, options, and crypto via Alpaca's REST API.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+VignetteBuilder: knitr
+RoxygenNote: 7.3.3
+Roxygen: list(markdown = TRUE)
+Depends: R (>= 4.1.0)
+Imports:
+    R6,
+    rlang,
+    jsonlite,
+    data.table,
+    httr2 (>= 1.0.0),
+    digest,
+    lubridate
+Suggests:
+    promises,
+    coro,
+    later,
+    box,
+    testthat (>= 3.0.0),
+    withr,
+    diffviewer,
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3

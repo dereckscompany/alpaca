@@ -1,0 +1,11 @@
+# .lintr
+linters: linters_with_defaults(
+    line_length_linter = line_length_linter(120),
+    indentation_linter = indentation_linter(2),
+    return_linter = return_linter(return_style = "explicit")
+  )
+exclusions: list(
+    "renv/activate.R",
+    "packages/*/renv/",  # Exclude ALL package renv folders
+    "scripts/"
+  )

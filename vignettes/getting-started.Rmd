@@ -1,0 +1,32 @@
+---
+title: "Getting Started with alpaca"
+author: "Dereck Mezquita"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with alpaca}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+This vignette will demonstrate how to use `alpaca` in **synchronous** mode.
+
+*Content will be added as API classes are implemented.*
+
+## Setup
+
+Set your API credentials as environment variables in `.Renviron`:
+
+```bash
+ALPACA_API_KEY = your-api-key
+ALPACA_API_SECRET = your-api-secret
+ALPACA_API_ENDPOINT = https://paper-api.alpaca.markets
+```
+
+If you don't have a key, visit the [Alpaca dashboard](https://app.alpaca.markets/).

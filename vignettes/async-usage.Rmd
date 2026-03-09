@@ -1,0 +1,38 @@
+---
+title: "Asynchronous Usage with alpaca"
+author: "Dereck Mezquita"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Asynchronous Usage with alpaca}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Every R6 class in `alpaca` accepts an `async = TRUE` flag at construction.
+When enabled, all methods return `promises::promise` objects instead of
+direct values. This vignette shows how to consume those promises with
+`coro::async`/`await` and `later::run_now`.
+
+*Content will be added as API classes are implemented.*
+
+## Why Async?
+
+Synchronous HTTP blocks the R session while waiting for a reply.
+Asynchronous mode lets you fire off multiple requests and process results
+as they arrive — useful for bots that poll several endpoints or place
+orders in parallel.
+
+## Event Loop
+
+> **Event loop**: R does not have a built-in event loop like Node.js or
+> Python's `asyncio`. Promises only resolve when the event loop ticks via
+> `later::run_now()`. In scripts and vignettes, drain the loop with
+> `while (!loop_empty()) run_now()`. In **Shiny** apps the event loop runs
+> automatically.
