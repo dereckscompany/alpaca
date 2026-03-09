@@ -410,3 +410,147 @@ mock_option_contract_response <- function() {
     close_price = "5.50"
   )
 }
+
+# ---- Watchlist Fixtures ----
+
+mock_watchlists_response <- function() {
+  list(
+    list(
+      id = "wl-uuid-1",
+      account_id = "acct-uuid-123",
+      name = "Tech Stocks",
+      created_at = "2024-01-10T10:00:00Z",
+      updated_at = "2024-01-15T14:30:00Z"
+    ),
+    list(
+      id = "wl-uuid-2",
+      account_id = "acct-uuid-123",
+      name = "Value Plays",
+      created_at = "2024-01-12T08:00:00Z",
+      updated_at = "2024-01-14T09:00:00Z"
+    )
+  )
+}
+
+mock_watchlist_response <- function() {
+  list(
+    id = "wl-uuid-1",
+    account_id = "acct-uuid-123",
+    name = "Tech Stocks",
+    created_at = "2024-01-10T10:00:00Z",
+    updated_at = "2024-01-15T14:30:00Z",
+    assets = list(
+      list(id = "uuid-1", symbol = "AAPL", name = "Apple Inc."),
+      list(id = "uuid-2", symbol = "MSFT", name = "Microsoft Corporation")
+    )
+  )
+}
+
+# ---- Corporate Actions Fixtures ----
+
+mock_corporate_actions_response <- function() {
+  list(
+    list(
+      id = "ca-uuid-1",
+      corporate_action_id = "CA123",
+      ca_type = "dividend",
+      ca_sub_type = "cash",
+      initiating_symbol = "AAPL",
+      target_symbol = "AAPL",
+      declaration_date = "2024-01-25",
+      ex_date = "2024-02-09",
+      record_date = "2024-02-12",
+      payable_date = "2024-02-15",
+      cash = "0.24",
+      old_rate = NULL,
+      new_rate = NULL
+    ),
+    list(
+      id = "ca-uuid-2",
+      corporate_action_id = "CA456",
+      ca_type = "split",
+      ca_sub_type = "forward",
+      initiating_symbol = "NVDA",
+      target_symbol = "NVDA",
+      declaration_date = "2024-05-22",
+      ex_date = "2024-06-10",
+      record_date = "2024-06-07",
+      payable_date = "2024-06-10",
+      cash = NULL,
+      old_rate = "1",
+      new_rate = "10"
+    )
+  )
+}
+
+# ---- News Fixtures ----
+
+mock_news_response <- function() {
+  list(
+    news = list(
+      list(
+        id = 12345L,
+        headline = "Apple Reports Record Q1 Earnings",
+        author = "Jane Doe",
+        source = "benzinga",
+        summary = "Apple Inc. reported record first quarter earnings...",
+        url = "https://example.com/article/12345",
+        symbols = list("AAPL"),
+        created_at = "2024-01-25T18:30:00Z",
+        updated_at = "2024-01-25T18:30:00Z"
+      ),
+      list(
+        id = 12346L,
+        headline = "Tech Sector Rallies on AI Optimism",
+        author = "John Smith",
+        source = "reuters",
+        summary = "Technology stocks rallied broadly...",
+        url = "https://example.com/article/12346",
+        symbols = list("AAPL", "MSFT", "NVDA"),
+        created_at = "2024-01-25T16:00:00Z",
+        updated_at = "2024-01-25T16:00:00Z"
+      )
+    ),
+    next_page_token = NULL
+  )
+}
+
+# ---- Pagination Fixtures ----
+
+mock_bars_page1_response <- function() {
+  list(
+    bars = list(
+      list(
+        t = "2024-01-02T05:00:00Z",
+        o = 187.15,
+        h = 188.44,
+        l = 183.89,
+        c = 185.64,
+        v = 82488700L,
+        n = 1036517L,
+        vw = 185.831
+      )
+    ),
+    symbol = "AAPL",
+    next_page_token = "token-page-2"
+  )
+}
+
+mock_bars_page2_response <- function() {
+  list(
+    bars = list(
+      list(
+        t = "2024-01-03T05:00:00Z",
+        o = 184.22,
+        h = 185.88,
+        l = 183.43,
+        c = 184.25,
+        v = 58414500L,
+        n = 729382L,
+        vw = 184.567
+      )
+    ),
+    symbol = "AAPL",
+    next_page_token = NULL
+  )
+}

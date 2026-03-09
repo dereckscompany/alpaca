@@ -2,22 +2,36 @@
 % Please edit documentation in R/AlpacaAccount.R
 \name{AlpacaAccount}
 \alias{AlpacaAccount}
-\title{AlpacaAccount: Account Management}
+\title{AlpacaAccount: Account, Positions, and Portfolio}
 \description{
-AlpacaAccount: Account Management
+AlpacaAccount: Account, Positions, and Portfolio
 
-AlpacaAccount: Account Management
+AlpacaAccount: Account, Positions, and Portfolio
 }
 \details{
-Provides methods for querying account information, positions, portfolio
-history, and account activities on Alpaca. Inherits from \link{AlpacaBase}.
+Provides methods for retrieving account information, managing positions,
+viewing portfolio history, and querying account activities on Alpaca's
+Trading API.
+
+Inherits from \link{AlpacaBase}. All methods support both synchronous and
+asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Purpose and Scope}{
 \itemize{
-\item \strong{Account Info}: Current account details (buying power, equity, etc.).
-\item \strong{Positions}: Open positions and individual position lookup.
-\item \strong{Position Closing}: Close individual or all positions.
-\item \strong{Portfolio History}: Historical portfolio value and P&L.
-\item \strong{Activities}: Account activity log (fills, dividends, etc.).
+\item \strong{Account}: Retrieve current account details (equity, buying power, etc.).
+\item \strong{Positions}: View all open positions or a specific position by symbol.
+\item \strong{Close Positions}: Close individual positions (fully or partially).
+\item \strong{Portfolio History}: View historical portfolio value snapshots.
+\item \strong{Activities}: Query account activity history (fills, dividends, etc.).
+\item \strong{Watchlists}: Create, update, and manage symbol watchlists.
+}
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/getaccount-1}{Account}
+\item \href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Positions}
+\item \href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
+\item \href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
 }
 }
 
@@ -25,29 +39,193 @@ history, and account activities on Alpaca. Inherits from \link{AlpacaBase}.
    Method \tab Endpoint \tab HTTP \cr
    get_account \tab GET /v2/account \tab GET \cr
    get_positions \tab GET /v2/positions \tab GET \cr
-   get_position \tab GET /v2/positions/{symbol} \tab GET \cr
-   close_position \tab DELETE /v2/positions/{symbol} \tab DELETE \cr
+   get_position \tab GET /v2/positions/{symbol_or_id} \tab GET \cr
+   close_position \tab DELETE /v2/positions/{symbol_or_id} \tab DELETE \cr
    close_all_positions \tab DELETE /v2/positions \tab DELETE \cr
    get_portfolio_history \tab GET /v2/account/portfolio/history \tab GET \cr
    get_activities \tab GET /v2/account/activities \tab GET \cr
    get_activities_by_type \tab GET /v2/account/activities/{type} \tab GET \cr
+   get_watchlists \tab GET /v2/watchlists \tab GET \cr
+   get_watchlist \tab GET /v2/watchlists/{id} \tab GET \cr
+   add_watchlist \tab POST /v2/watchlists \tab POST \cr
+   modify_watchlist \tab PUT /v2/watchlists/{id} \tab PUT \cr
+   add_watchlist_symbol \tab POST /v2/watchlists/{id} \tab POST \cr
+   cancel_watchlist_symbol \tab DELETE /v2/watchlists/{id}/{symbol} \tab DELETE \cr
+   cancel_watchlist \tab DELETE /v2/watchlists/{id} \tab DELETE \cr
 }
 
 }
 }
 \examples{
 \dontrun{
-account <- AlpacaAccount$new()
-info <- account$get_account()
-print(info)
+acct <- AlpacaAccount$new()
 
-positions <- account$get_positions()
+# Account details
+info <- acct$get_account()
+print(info[, .(status, equity, buying_power, cash)])
+
+# Open positions
+positions <- acct$get_positions()
 print(positions)
 }
 
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_account`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+info <- acct$get_account()
+cat("Equity:", info$equity, "\n")
+cat("Buying power:", info$buying_power, "\n")
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_positions`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+positions <- acct$get_positions()
+print(positions[, .(symbol, qty, unrealized_pl)])
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_position`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+pos <- acct$get_position("AAPL")
+print(pos[, .(symbol, qty, avg_entry_price, current_price, unrealized_pl)])
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$close_position`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+
+# Close entire position
+acct$close_position("AAPL")
+
+# Close 50\% of a position
+acct$close_position("AAPL", percentage = 50)
+
+# Close 5 shares
+acct$close_position("AAPL", qty = 5)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$close_all_positions`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$close_all_positions(cancel_orders = TRUE)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_portfolio_history`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
+print(history)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_activities`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+activities <- acct$get_activities(activity_types = "FILL")
+print(activities)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_activities_by_type`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+fills <- acct$get_activities_by_type("FILL")
+print(fills)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_watchlists`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+watchlists <- acct$get_watchlists()
+print(watchlists)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_watchlist`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+wl <- acct$get_watchlist("some-uuid")
+print(wl)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$add_watchlist`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+wl <- acct$add_watchlist("My Tech Stocks", symbols = c("AAPL", "MSFT", "GOOGL"))
+print(wl)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$modify_watchlist`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$modify_watchlist("some-uuid", name = "Updated Name",
+                      symbols = c("AAPL", "TSLA"))
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$add_watchlist_symbol`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$add_watchlist_symbol("some-uuid", "NVDA")
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$cancel_watchlist_symbol`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$cancel_watchlist_symbol("some-uuid", "AAPL")
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$cancel_watchlist`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$cancel_watchlist("some-uuid")
+}
 }
 \section{Super class}{
-\code{alpaca::AlpacaBase} -> \code{AlpacaAccount}
+\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaAccount}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -60,6 +238,13 @@ print(positions)
 \item \href{#method-AlpacaAccount-get_portfolio_history}{\code{AlpacaAccount$get_portfolio_history()}}
 \item \href{#method-AlpacaAccount-get_activities}{\code{AlpacaAccount$get_activities()}}
 \item \href{#method-AlpacaAccount-get_activities_by_type}{\code{AlpacaAccount$get_activities_by_type()}}
+\item \href{#method-AlpacaAccount-get_watchlists}{\code{AlpacaAccount$get_watchlists()}}
+\item \href{#method-AlpacaAccount-get_watchlist}{\code{AlpacaAccount$get_watchlist()}}
+\item \href{#method-AlpacaAccount-add_watchlist}{\code{AlpacaAccount$add_watchlist()}}
+\item \href{#method-AlpacaAccount-modify_watchlist}{\code{AlpacaAccount$modify_watchlist()}}
+\item \href{#method-AlpacaAccount-add_watchlist_symbol}{\code{AlpacaAccount$add_watchlist_symbol()}}
+\item \href{#method-AlpacaAccount-cancel_watchlist_symbol}{\code{AlpacaAccount$cancel_watchlist_symbol()}}
+\item \href{#method-AlpacaAccount-cancel_watchlist}{\code{AlpacaAccount$cancel_watchlist()}}
 \item \href{#method-AlpacaAccount-clone}{\code{AlpacaAccount$clone()}}
 }
 }
@@ -76,109 +261,219 @@ print(positions)
 \subsection{Method \code{get_account()}}{
 Get Account Information
 
-Retrieves the current account details including buying power, equity,
-and margin information.
+Retrieves the current account details including equity, buying power,
+cash, margin, and account status.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/account}
+\verb{GET https://paper-api.alpaca.markets/v2/account}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getaccount-1}{Get Account}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/account'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+  "account_number": "PA1234567",
+  "status": "ACTIVE",
+  "currency": "USD",
+  "cash": "100000",
+  "portfolio_value": "100000",
+  "equity": "100000",
+  "last_equity": "100000",
+  "buying_power": "400000",
+  "initial_margin": "0",
+  "maintenance_margin": "0",
+  "long_market_value": "0",
+  "short_market_value": "0",
+  "pattern_day_trader": false,
+  "trading_blocked": false,
+  "transfers_blocked": false,
+  "account_blocked": false,
+  "daytrade_count": 0,
+  "daytrading_buying_power": "0",
+  "regt_buying_power": "200000",
+  "multiplier": "4",
+  "sma": "0",
+  "created_at": "2024-01-01T00:00:00Z"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_account()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
 \item \code{id} (character): Account UUID.
-\item \code{account_number} (character): Alpaca account number.
+\item \code{account_number} (character): Account number.
 \item \code{status} (character): Account status (e.g., \code{"ACTIVE"}).
 \item \code{currency} (character): Account currency (e.g., \code{"USD"}).
 \item \code{cash} (character): Cash balance.
 \item \code{portfolio_value} (character): Total portfolio value.
+\item \code{equity} (character): Account equity.
 \item \code{buying_power} (character): Available buying power.
-\item \code{equity} (character): Total equity (cash + long market value - short
-market value).
-\item \code{last_equity} (character): Equity at previous market close.
-\item \code{long_market_value} (character): Total long position market value.
-\item \code{short_market_value} (character): Total short position market value.
 \item \code{initial_margin} (character): Initial margin requirement.
 \item \code{maintenance_margin} (character): Maintenance margin requirement.
-\item \code{daytrade_count} (integer): Number of day trades in the last 5
-business days.
-\item \code{daytrading_buying_power} (character): Day trading buying power.
-\item \code{regt_buying_power} (character): Regulation T buying power.
-\item \code{pattern_day_trader} (logical): Whether the account is flagged as PDT.
+\item \code{long_market_value} (character): Market value of long positions.
+\item \code{short_market_value} (character): Market value of short positions.
+\item \code{pattern_day_trader} (logical): Whether flagged as PDT.
 \item \code{trading_blocked} (logical): Whether trading is blocked.
-\item \code{transfers_blocked} (logical): Whether transfers are blocked.
-\item \code{account_blocked} (logical): Whether the account is blocked.
-\item \code{created_at} (POSIXct): Account creation time.
+\item \code{daytrade_count} (integer): Number of day trades in the last 5 days.
+\item \code{daytrading_buying_power} (character): Day trading buying power.
+\item \code{created_at} (character): Account creation timestamp.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+info <- acct$get_account()
+cat("Equity:", info$equity, "\n")
+cat("Buying power:", info$buying_power, "\n")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-get_positions"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaAccount-get_positions}{}}}
 \subsection{Method \code{get_positions()}}{
-Get All Positions
+Get All Open Positions
 
-Retrieves all open positions in the account.
+Retrieves all currently open positions in the account.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/positions}
+\verb{GET https://paper-api.alpaca.markets/v2/positions}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Get All Open Positions}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/positions'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "asset_id": "904837e3-3b76-47ec-b432-046db621571b",
+    "symbol": "AAPL",
+    "exchange": "NASDAQ",
+    "asset_class": "us_equity",
+    "avg_entry_price": "185.50",
+    "qty": "10",
+    "side": "long",
+    "market_value": "1870.00",
+    "cost_basis": "1855.00",
+    "unrealized_pl": "15.00",
+    "unrealized_plpc": "0.008",
+    "current_price": "187.00",
+    "lastday_price": "186.00",
+    "change_today": "0.005"
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_positions()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-\code{data.table} with one row per position and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
 \item \code{asset_id} (character): Asset UUID.
 \item \code{symbol} (character): Ticker symbol.
-\item \code{exchange} (character): Exchange the asset trades on.
+\item \code{exchange} (character): Exchange.
 \item \code{asset_class} (character): Asset class (e.g., \code{"us_equity"}).
 \item \code{avg_entry_price} (character): Average entry price.
-\item \code{qty} (character): Number of shares held.
-\item \code{side} (character): \code{"long"} or \code{"short"}.
+\item \code{qty} (character): Quantity held.
+\item \code{side} (character): Position side (\code{"long"} or \code{"short"}).
 \item \code{market_value} (character): Current market value.
 \item \code{cost_basis} (character): Total cost basis.
 \item \code{unrealized_pl} (character): Unrealised profit/loss.
-\item \code{unrealized_plpc} (character): Unrealised P&L as a percentage.
-\item \code{unrealized_intraday_pl} (character): Unrealised intraday P&L.
-\item \code{unrealized_intraday_plpc} (character): Unrealised intraday P&L
-percentage.
-\item \code{current_price} (character): Current market price.
+\item \code{unrealized_plpc} (character): Unrealised P/L percentage.
+\item \code{current_price} (character): Current asset price.
 \item \code{lastday_price} (character): Previous close price.
 \item \code{change_today} (character): Percentage change today.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+positions <- acct$get_positions()
+print(positions[, .(symbol, qty, unrealized_pl)])
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-get_position"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaAccount-get_position}{}}}
 \subsection{Method \code{get_position()}}{
-Get Position by Symbol
+Get Position by Symbol or Asset ID
 
-Retrieves the open position for a specific symbol.
+Retrieves a single open position by symbol or asset UUID.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/positions/\{symbol\}}
+\verb{GET https://paper-api.alpaca.markets/v2/positions/\{symbol_or_asset_id\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getopenposition-1}{Get Open Position}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_position(symbol)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_position(symbol_or_id)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol_or_id}}{Character; ticker symbol (e.g., \code{"AAPL"}) or asset UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the same columns as
-\code{\link[=get_positions]{get_positions()}}.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
+same columns as \code{\link[=get_positions]{get_positions()}}, single row.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+pos <- acct$get_position("AAPL")
+print(pos[, .(symbol, qty, avg_entry_price, current_price, unrealized_pl)])
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-close_position"></a>}}
@@ -186,32 +481,57 @@ Retrieves the open position for a specific symbol.
 \subsection{Method \code{close_position()}}{
 Close a Position
 
-Closes (liquidates) an open position for a specific symbol.
+Closes an open position by symbol or asset ID. Supports closing the
+full position or a partial amount by quantity or percentage.
 \subsection{API Endpoint}{
 
-\verb{DELETE https://api.alpaca.markets/v2/positions/\{symbol\}}
+\verb{DELETE https://paper-api.alpaca.markets/v2/positions/\{symbol_or_asset_id\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deleteposition}{Close Position}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_position(symbol, qty = NULL, percentage = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_position(symbol_or_id, qty = NULL, percentage = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol_or_id}}{Character; ticker symbol or asset UUID.}
 
-\item{\code{qty}}{Numeric or NULL; number of shares to close. If NULL, closes
-the entire position.}
+\item{\code{qty}}{Numeric or NULL; number of shares to close. Mutually exclusive
+with \code{percentage}.}
 
-\item{\code{percentage}}{Numeric or NULL; percentage of the position to close
-(0-100).}
+\item{\code{percentage}}{Numeric or NULL; percentage of position to close (0-100).
+Mutually exclusive with \code{qty}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row containing the closing order details,
-with the same columns as \link{AlpacaTrading}'s \code{add_order()}.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the closing order details.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+
+# Close entire position
+acct$close_position("AAPL")
+
+# Close 50\% of a position
+acct$close_position("AAPL", percentage = 50)
+
+# Close 5 shares
+acct$close_position("AAPL", qty = 5)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-close_all_positions"></a>}}
@@ -219,32 +539,43 @@ with the same columns as \link{AlpacaTrading}'s \code{add_order()}.
 \subsection{Method \code{close_all_positions()}}{
 Close All Positions
 
-Closes (liquidates) all open positions in the account.
+Closes all open positions. Optionally cancels all open orders first.
 \subsection{API Endpoint}{
 
-\verb{DELETE https://api.alpaca.markets/v2/positions}
+\verb{DELETE https://paper-api.alpaca.markets/v2/positions}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deleteallopenpositions}{Close All Positions}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_all_positions(cancel_orders = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_all_positions(cancel_orders = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cancel_orders}}{Logical or NULL; if \code{TRUE}, also cancels all open
-orders before closing positions.}
+\item{\code{cancel_orders}}{Logical; if \code{TRUE}, cancels all open orders before
+liquidating positions. Default \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per closed position and the following
-columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{status} (integer): HTTP status code of the close (200 on success).
-\item \code{body} (list): Response body of the closing order.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+closing order details for each position.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$close_all_positions(cancel_orders = TRUE)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-get_portfolio_history"></a>}}
@@ -252,45 +583,90 @@ columns:
 \subsection{Method \code{get_portfolio_history()}}{
 Get Portfolio History
 
-Retrieves historical portfolio value and P&L over time.
+Retrieves the portfolio value history as a time series.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/account/portfolio/history}
+\verb{GET https://paper-api.alpaca.markets/v2/account/portfolio/history}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/account/portfolio/history?period=1M&timeframe=1D'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "timestamp": [1704067200, 1704153600, 1704240000],
+  "equity": [100000.0, 100150.5, 99800.25],
+  "profit_loss": [0.0, 150.5, -200.25],
+  "profit_loss_pct": [0.0, 0.001505, -0.002],
+  "base_value": 100000.0,
+  "timeframe": "1D"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_portfolio_history(
   period = NULL,
   timeframe = NULL,
+  date_start = NULL,
   date_end = NULL,
-  extended_hours = NULL
+  intraday_reporting = NULL,
+  pnl_reset = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{period}}{Character or NULL; duration (e.g., \code{"1D"}, \code{"1W"},
-\code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}).}
+\item{\code{period}}{Character or NULL; time period for the history. Examples:
+\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Cannot be used with
+\code{date_start}/\code{date_end}.}
 
-\item{\code{timeframe}}{Character or NULL; resolution (e.g., \code{"1Min"},
-\code{"5Min"}, \code{"15Min"}, \code{"1H"}, \code{"1D"}).}
+\item{\code{timeframe}}{Character or NULL; resolution of the time series:
+\code{"1Min"}, \code{"5Min"}, \code{"15Min"}, \code{"1H"}, \code{"1D"}.}
+
+\item{\code{date_start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}). Use with
+\code{date_end} instead of \code{period}.}
 
 \item{\code{date_end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
 
-\item{\code{extended_hours}}{Logical or NULL; include extended-hours data.}
+\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default) or
+\code{"extended_hours"}.}
+
+\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per time point and the following
-columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{timestamp} (POSIXct): Time point.
-\item \code{equity} (numeric): Portfolio equity at this time point.
-\item \code{profit_loss} (numeric): Absolute P&L since the start of the period.
-\item \code{profit_loss_pct} (numeric): P&L as a decimal fraction.
+\item \code{timestamp} (POSIXct): Snapshot timestamp in UTC.
+\item \code{equity} (numeric): Portfolio equity value.
+\item \code{profit_loss} (numeric): Profit/loss.
+\item \code{profit_loss_pct} (numeric): Profit/loss percentage.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
+print(history)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-get_activities"></a>}}
@@ -298,10 +674,16 @@ columns:
 \subsection{Method \code{get_activities()}}{
 Get Account Activities
 
-Retrieves account activities (fills, dividends, transfers, etc.).
+Retrieves account activity history across all activity types. Activities
+include order fills, dividends, transfers, and other events.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/account/activities}
+\verb{GET https://paper-api.alpaca.markets/v2/account/activities}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities(
@@ -318,43 +700,39 @@ Retrieves account activities (fills, dividends, transfers, etc.).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{activity_types}}{Character or NULL; comma-separated list of
-activity types (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}).}
+\item{\code{activity_types}}{Character or NULL; comma-separated activity types to
+filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.}
 
-\item{\code{date}}{Character or NULL; filter by date (\code{"YYYY-MM-DD"}).}
+\item{\code{date}}{Character or NULL; filter to a specific date (\code{"YYYY-MM-DD"}).}
 
-\item{\code{until}}{Character or NULL; return activities until this timestamp.}
+\item{\code{until}}{Character or NULL; only activities before this timestamp.}
 
-\item{\code{after}}{Character or NULL; return activities after this timestamp.}
+\item{\code{after}}{Character or NULL; only activities after this timestamp.}
 
 \item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max activities per page (default 100,
-max 100).}
+\item{\code{page_size}}{Integer or NULL; max results per page (default 100, max 100).}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per activity and the following columns:
-\itemize{
-\item \code{id} (character): Activity UUID.
-\item \code{activity_type} (character): Activity type code (e.g., \code{"FILL"},
-\code{"DIV"}).
-\item \code{symbol} (character): Ticker symbol (for trade activities).
-\item \code{side} (character): \code{"buy"} or \code{"sell"} (for trade activities).
-\item \code{qty} (character): Quantity (for trade activities).
-\item \code{price} (character): Execution price (for trade activities).
-\item \code{cum_qty} (character): Cumulative filled quantity.
-\item \code{leaves_qty} (character): Remaining unfilled quantity.
-\item \code{order_id} (character): Related order UUID.
-\item \code{transaction_time} (POSIXct): Time of the activity.
-\item \code{type} (character): Sub-type of the activity.
-\item \code{net_amount} (character): Net dollar amount.
-\item \code{date} (character): Activity date.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+activity details. Columns vary by activity type.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+activities <- acct$get_activities(activity_types = "FILL")
+print(activities)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-get_activities_by_type"></a>}}
@@ -362,10 +740,10 @@ max 100).}
 \subsection{Method \code{get_activities_by_type()}}{
 Get Account Activities by Type
 
-Retrieves account activities filtered by a specific activity type.
+Retrieves account activities filtered to a specific type.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/account/activities/\{activity_type\}}
+\verb{GET https://paper-api.alpaca.markets/v2/account/activities/\{activity_type\}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities_by_type(
@@ -382,27 +760,328 @@ Retrieves account activities filtered by a specific activity type.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{activity_type}}{Character; activity type code (e.g., \code{"FILL"},
-\code{"DIV"}, \code{"TRANS"}, \code{"JNLC"}, \code{"CSD"}).}
+\item{\code{activity_type}}{Character; activity type (e.g., \code{"FILL"}, \code{"DIV"},
+\code{"TRANS"}, \code{"JNLC"}, \code{"JNLS"}, \code{"CSD"}, \code{"CSW"}).}
 
-\item{\code{date}}{Character or NULL; filter by date.}
+\item{\code{date}}{Character or NULL; filter to a specific date.}
 
-\item{\code{until}}{Character or NULL; return activities until this timestamp.}
+\item{\code{until}}{Character or NULL; only activities before this timestamp.}
 
-\item{\code{after}}{Character or NULL; return activities after this timestamp.}
+\item{\code{after}}{Character or NULL; only activities after this timestamp.}
 
 \item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max activities per page.}
+\item{\code{page_size}}{Integer or NULL; max results per page.}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per activity and the same columns as
-\code{\link[=get_activities]{get_activities()}}.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+activity details.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+fills <- acct$get_activities_by_type("FILL")
+print(fills)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-get_watchlists"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-get_watchlists}{}}}
+\subsection{Method \code{get_watchlists()}}{
+Get All Watchlists
+
+Retrieves all watchlists for the account.
+\subsection{API Endpoint}{
+
+\verb{GET https://paper-api.alpaca.markets/v2/watchlists}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getwatchlists}{Watchlists}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_watchlists()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{id} (character): Watchlist UUID.
+\item \code{account_id} (character): Account UUID.
+\item \code{name} (character): Watchlist name.
+\item \code{created_at} (character): Creation timestamp.
+\item \code{updated_at} (character): Last update timestamp.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+watchlists <- acct$get_watchlists()
+print(watchlists)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-get_watchlist"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-get_watchlist}{}}}
+\subsection{Method \code{get_watchlist()}}{
+Get a Watchlist by ID
+
+Retrieves a single watchlist including its asset entries.
+\subsection{API Endpoint}{
+
+\verb{GET https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_watchlist(watchlist_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{watchlist_id}}{Character; watchlist UUID.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+watchlist metadata and an \code{assets} list column containing the symbols.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+wl <- acct$get_watchlist("some-uuid")
+print(wl)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-add_watchlist"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-add_watchlist}{}}}
+\subsection{Method \code{add_watchlist()}}{
+Create a Watchlist
+
+Creates a new watchlist with an optional initial set of symbols.
+\subsection{API Endpoint}{
+
+\verb{POST https://paper-api.alpaca.markets/v2/watchlists}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/postwatchlist}{Create Watchlist}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$add_watchlist(name, symbols = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{name}}{Character; watchlist name.}
+
+\item{\code{symbols}}{Character vector or NULL; initial symbols (e.g.,
+\code{c("AAPL", "MSFT")}).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
+created watchlist details.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+wl <- acct$add_watchlist("My Tech Stocks", symbols = c("AAPL", "MSFT", "GOOGL"))
+print(wl)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-modify_watchlist"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-modify_watchlist}{}}}
+\subsection{Method \code{modify_watchlist()}}{
+Update a Watchlist
+
+Replaces the name and/or symbols of an existing watchlist.
+\subsection{API Endpoint}{
+
+\verb{PUT https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$modify_watchlist(watchlist_id, name, symbols)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{watchlist_id}}{Character; watchlist UUID.}
+
+\item{\code{name}}{Character; new watchlist name.}
+
+\item{\code{symbols}}{Character vector; new full list of symbols (replaces existing).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with updated
+watchlist details.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$modify_watchlist("some-uuid", name = "Updated Name",
+                      symbols = c("AAPL", "TSLA"))
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-add_watchlist_symbol"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-add_watchlist_symbol}{}}}
+\subsection{Method \code{add_watchlist_symbol()}}{
+Add Symbol to Watchlist
+
+Appends a single symbol to an existing watchlist.
+\subsection{API Endpoint}{
+
+\verb{POST https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$add_watchlist_symbol(watchlist_id, symbol)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{watchlist_id}}{Character; watchlist UUID.}
+
+\item{\code{symbol}}{Character; ticker symbol to add (e.g., \code{"AAPL"}).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the updated watchlist.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$add_watchlist_symbol("some-uuid", "NVDA")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-cancel_watchlist_symbol"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-cancel_watchlist_symbol}{}}}
+\subsection{Method \code{cancel_watchlist_symbol()}}{
+Remove Symbol from Watchlist
+
+Removes a single symbol from a watchlist.
+\subsection{API Endpoint}{
+
+\verb{DELETE https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}/\{symbol\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$cancel_watchlist_symbol(watchlist_id, symbol)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{watchlist_id}}{Character; watchlist UUID.}
+
+\item{\code{symbol}}{Character; ticker symbol to remove.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the updated watchlist, or empty data.table on 204.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$cancel_watchlist_symbol("some-uuid", "AAPL")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-cancel_watchlist"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-cancel_watchlist}{}}}
+\subsection{Method \code{cancel_watchlist()}}{
+Delete a Watchlist
+
+Permanently deletes a watchlist.
+\subsection{API Endpoint}{
+
+\verb{DELETE https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$cancel_watchlist(watchlist_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{watchlist_id}}{Character; watchlist UUID.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Empty \code{data.table} on success (HTTP 204).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$cancel_watchlist("some-uuid")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaAccount-clone"></a>}}

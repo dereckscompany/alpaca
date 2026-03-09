@@ -16,6 +16,7 @@
 #' - **Close Positions**: Close individual positions (fully or partially).
 #' - **Portfolio History**: View historical portfolio value snapshots.
 #' - **Activities**: Query account activity history (fills, dividends, etc.).
+#' - **Watchlists**: Create, update, and manage symbol watchlists.
 #'
 #' ### Official Documentation
 #' - [Account](https://docs.alpaca.markets/reference/getaccount-1)
@@ -34,6 +35,13 @@
 #' | get_portfolio_history | GET /v2/account/portfolio/history | GET |
 #' | get_activities | GET /v2/account/activities | GET |
 #' | get_activities_by_type | GET /v2/account/activities/{type} | GET |
+#' | get_watchlists | GET /v2/watchlists | GET |
+#' | get_watchlist | GET /v2/watchlists/{id} | GET |
+#' | add_watchlist | POST /v2/watchlists | POST |
+#' | modify_watchlist | PUT /v2/watchlists/{id} | PUT |
+#' | add_watchlist_symbol | POST /v2/watchlists/{id} | POST |
+#' | cancel_watchlist_symbol | DELETE /v2/watchlists/{id}/{symbol} | DELETE |
+#' | cancel_watchlist | DELETE /v2/watchlists/{id} | DELETE |
 #'
 #' @examples
 #' \dontrun{
@@ -511,6 +519,212 @@ AlpacaAccount <- R6::R6Class(
           page_token = page_token
         ),
         .parser = as_dt_list
+      ))
+    },
+
+    # ---- Watchlists ----
+
+    #' @description
+    #' Get All Watchlists
+    #'
+    #' Retrieves all watchlists for the account.
+    #'
+    #' ### API Endpoint
+    #' `GET https://paper-api.alpaca.markets/v2/watchlists`
+    #'
+    #' ### Official Documentation
+    #' [Watchlists](https://docs.alpaca.markets/reference/getwatchlists)
+    #'
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `id` (character): Watchlist UUID.
+    #'   - `account_id` (character): Account UUID.
+    #'   - `name` (character): Watchlist name.
+    #'   - `created_at` (character): Creation timestamp.
+    #'   - `updated_at` (character): Last update timestamp.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' watchlists <- acct$get_watchlists()
+    #' print(watchlists)
+    #' }
+    get_watchlists = function() {
+      return(private$.request(
+        endpoint = "/v2/watchlists",
+        .parser = as_dt_list
+      ))
+    },
+
+    #' @description
+    #' Get a Watchlist by ID
+    #'
+    #' Retrieves a single watchlist including its asset entries.
+    #'
+    #' ### API Endpoint
+    #' `GET https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' @param watchlist_id Character; watchlist UUID.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   watchlist metadata and an `assets` list column containing the symbols.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' wl <- acct$get_watchlist("some-uuid")
+    #' print(wl)
+    #' }
+    get_watchlist = function(watchlist_id) {
+      endpoint <- paste0("/v2/watchlists/", watchlist_id)
+      return(private$.request(
+        endpoint = endpoint,
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Create a Watchlist
+    #'
+    #' Creates a new watchlist with an optional initial set of symbols.
+    #'
+    #' ### API Endpoint
+    #' `POST https://paper-api.alpaca.markets/v2/watchlists`
+    #'
+    #' ### Official Documentation
+    #' [Create Watchlist](https://docs.alpaca.markets/reference/postwatchlist)
+    #'
+    #' @param name Character; watchlist name.
+    #' @param symbols Character vector or NULL; initial symbols (e.g.,
+    #'   `c("AAPL", "MSFT")`).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
+    #'   created watchlist details.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' wl <- acct$add_watchlist("My Tech Stocks", symbols = c("AAPL", "MSFT", "GOOGL"))
+    #' print(wl)
+    #' }
+    add_watchlist = function(name, symbols = NULL) {
+      return(private$.request(
+        endpoint = "/v2/watchlists",
+        method = "POST",
+        body = list(name = name, symbols = symbols),
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Update a Watchlist
+    #'
+    #' Replaces the name and/or symbols of an existing watchlist.
+    #'
+    #' ### API Endpoint
+    #' `PUT https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' @param watchlist_id Character; watchlist UUID.
+    #' @param name Character; new watchlist name.
+    #' @param symbols Character vector; new full list of symbols (replaces existing).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with updated
+    #'   watchlist details.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$modify_watchlist("some-uuid", name = "Updated Name",
+    #'                       symbols = c("AAPL", "TSLA"))
+    #' }
+    modify_watchlist = function(watchlist_id, name, symbols) {
+      endpoint <- paste0("/v2/watchlists/", watchlist_id)
+      return(private$.request(
+        endpoint = endpoint,
+        method = "PUT",
+        body = list(name = name, symbols = symbols),
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Add Symbol to Watchlist
+    #'
+    #' Appends a single symbol to an existing watchlist.
+    #'
+    #' ### API Endpoint
+    #' `POST https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' @param watchlist_id Character; watchlist UUID.
+    #' @param symbol Character; ticker symbol to add (e.g., `"AAPL"`).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   the updated watchlist.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$add_watchlist_symbol("some-uuid", "NVDA")
+    #' }
+    add_watchlist_symbol = function(watchlist_id, symbol) {
+      endpoint <- paste0("/v2/watchlists/", watchlist_id)
+      return(private$.request(
+        endpoint = endpoint,
+        method = "POST",
+        body = list(symbol = symbol),
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Remove Symbol from Watchlist
+    #'
+    #' Removes a single symbol from a watchlist.
+    #'
+    #' ### API Endpoint
+    #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}/{symbol}`
+    #'
+    #' @param watchlist_id Character; watchlist UUID.
+    #' @param symbol Character; ticker symbol to remove.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   the updated watchlist, or empty data.table on 204.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$cancel_watchlist_symbol("some-uuid", "AAPL")
+    #' }
+    cancel_watchlist_symbol = function(watchlist_id, symbol) {
+      endpoint <- paste0("/v2/watchlists/", watchlist_id, "/", symbol)
+      return(private$.request(
+        endpoint = endpoint,
+        method = "DELETE",
+        .parser = function(data) {
+          if (is.null(data) || length(data) == 0) {
+            return(data.table::data.table())
+          }
+          as_dt_row(data)
+        }
+      ))
+    },
+
+    #' @description
+    #' Delete a Watchlist
+    #'
+    #' Permanently deletes a watchlist.
+    #'
+    #' ### API Endpoint
+    #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' @param watchlist_id Character; watchlist UUID.
+    #' @return Empty `data.table` on success (HTTP 204).
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$cancel_watchlist("some-uuid")
+    #' }
+    cancel_watchlist = function(watchlist_id) {
+      endpoint <- paste0("/v2/watchlists/", watchlist_id)
+      return(private$.request(
+        endpoint = endpoint,
+        method = "DELETE",
+        .parser = function(data) data.table::data.table()
       ))
     }
   )

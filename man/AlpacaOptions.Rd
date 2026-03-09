@@ -2,56 +2,120 @@
 % Please edit documentation in R/AlpacaOptions.R
 \name{AlpacaOptions}
 \alias{AlpacaOptions}
-\title{AlpacaOptions: Options Data and Trading}
+\title{AlpacaOptions: Options Contracts and Data}
 \description{
-AlpacaOptions: Options Data and Trading
+AlpacaOptions: Options Contracts and Data
 
-AlpacaOptions: Options Data and Trading
+AlpacaOptions: Options Contracts and Data
 }
 \details{
-Provides methods for querying options market data and managing options
-positions via the Alpaca API. Inherits from \link{AlpacaBase}.
+Provides methods for querying options contracts, retrieving options
+market data (bars, trades, quotes, snapshots), and placing options orders
+on Alpaca's API.
+
+Inherits from \link{AlpacaBase}. All methods support both synchronous and
+asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Purpose and Scope}{
 \itemize{
-\item \strong{Options Contracts}: Query available options contracts.
-\item \strong{Options Bars}: Historical OHLCV bars for options.
-\item \strong{Options Trades}: Historical and latest options trades.
-\item \strong{Options Snapshots}: Current market snapshot for options.
+\item \strong{Contracts}: Search and filter available options contracts.
+\item \strong{Market Data}: Retrieve historical and latest options market data.
+\item \strong{Snapshots}: Get real-time snapshots of options contracts.
 }
 }
 
-\subsection{API Base URLs}{
+\subsection{Base URLs}{
 
-Options data endpoints use \verb{https://data.alpaca.markets/v1beta1/options}.
-Options contract endpoints use the trading API base URL.
+Options market data endpoints use \verb{https://data.alpaca.markets}.
+Contract metadata endpoints use the trading base URL.
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optioncontracts}{Options Contracts}
+\item \href{https://docs.alpaca.markets/docs/options-market-data}{Options Market Data}
+}
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
-   Method \tab Endpoint \tab HTTP \cr
-   get_contracts \tab GET /v2/options/contracts \tab GET \cr
-   get_contract \tab GET /v2/options/contracts/{id} \tab GET \cr
-   get_bars \tab GET /v1beta1/options/bars \tab GET \cr
-   get_trades \tab GET /v1beta1/options/trades \tab GET \cr
-   get_latest_trades \tab GET /v1beta1/options/trades/latest \tab GET \cr
-   get_snapshot \tab GET /v1beta1/options/snapshots/{symbol} \tab GET \cr
-   get_snapshots \tab GET /v1beta1/options/snapshots \tab GET \cr
+   Method \tab Endpoint \tab Base \cr
+   get_contracts \tab GET /v2/options/contracts \tab trading \cr
+   get_contract \tab GET /v2/options/contracts/{symbol_or_id} \tab trading \cr
+   get_option_bars \tab GET /v1beta1/options/bars \tab data \cr
+   get_option_trades \tab GET /v1beta1/options/trades \tab data \cr
+   get_option_latest_quotes \tab GET /v1beta1/options/quotes/latest \tab data \cr
+   get_option_snapshots \tab GET /v1beta1/options/snapshots \tab data \cr
+   get_option_snapshot \tab GET /v1beta1/options/snapshots/{symbol} \tab data \cr
 }
 
 }
 }
 \examples{
 \dontrun{
-options <- AlpacaOptions$new()
-contracts <- options$get_contracts(
+opts <- AlpacaOptions$new()
+
+# Search for AAPL call options
+contracts <- opts$get_contracts(
   underlying_symbols = "AAPL",
-  expiration_date_gte = "2024-06-01"
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
+)
+print(contracts[, .(symbol, type, strike_price, expiration_date)])
+}
+
+
+## ------------------------------------------------
+## Method `AlpacaOptions$get_contracts`
+## ------------------------------------------------
+
+\dontrun{
+opts <- AlpacaOptions$new()
+
+# Find AAPL calls expiring after June 2024
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
 )
 print(contracts)
 }
 
+## ------------------------------------------------
+## Method `AlpacaOptions$get_contract`
+## ------------------------------------------------
+
+\dontrun{
+opts <- AlpacaOptions$new()
+contract <- opts$get_contract("AAPL240621C00200000")
+print(contract)
+}
+
+## ------------------------------------------------
+## Method `AlpacaOptions$get_option_bars`
+## ------------------------------------------------
+
+\dontrun{
+opts <- AlpacaOptions$new()
+bars <- opts$get_option_bars(
+  "AAPL240621C00200000", timeframe = "1Day",
+  start = "2024-06-01"
+)
+print(bars)
+}
+
+## ------------------------------------------------
+## Method `AlpacaOptions$get_option_snapshot`
+## ------------------------------------------------
+
+\dontrun{
+opts <- AlpacaOptions$new()
+snap <- opts$get_option_snapshot("AAPL240621C00200000")
+print(snap)
+}
 }
 \section{Super class}{
-\code{alpaca::AlpacaBase} -> \code{AlpacaOptions}
+\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaOptions}
 }
 \section{Methods}{
 \subsection{Public methods}{
@@ -59,11 +123,11 @@ print(contracts)
 \item \href{#method-AlpacaOptions-new}{\code{AlpacaOptions$new()}}
 \item \href{#method-AlpacaOptions-get_contracts}{\code{AlpacaOptions$get_contracts()}}
 \item \href{#method-AlpacaOptions-get_contract}{\code{AlpacaOptions$get_contract()}}
-\item \href{#method-AlpacaOptions-get_bars}{\code{AlpacaOptions$get_bars()}}
-\item \href{#method-AlpacaOptions-get_trades}{\code{AlpacaOptions$get_trades()}}
-\item \href{#method-AlpacaOptions-get_latest_trades}{\code{AlpacaOptions$get_latest_trades()}}
-\item \href{#method-AlpacaOptions-get_snapshot}{\code{AlpacaOptions$get_snapshot()}}
-\item \href{#method-AlpacaOptions-get_snapshots}{\code{AlpacaOptions$get_snapshots()}}
+\item \href{#method-AlpacaOptions-get_option_bars}{\code{AlpacaOptions$get_option_bars()}}
+\item \href{#method-AlpacaOptions-get_option_trades}{\code{AlpacaOptions$get_option_trades()}}
+\item \href{#method-AlpacaOptions-get_option_latest_quotes}{\code{AlpacaOptions$get_option_latest_quotes()}}
+\item \href{#method-AlpacaOptions-get_option_snapshots}{\code{AlpacaOptions$get_option_snapshots()}}
+\item \href{#method-AlpacaOptions-get_option_snapshot}{\code{AlpacaOptions$get_option_snapshot()}}
 \item \href{#method-AlpacaOptions-clone}{\code{AlpacaOptions$clone()}}
 }
 }
@@ -76,7 +140,7 @@ Initialise an AlpacaOptions Object
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$new(
   keys = get_api_keys(),
   base_url = get_base_url(),
-  data_url = get_data_base_url(),
+  data_base_url = get_data_base_url(),
   async = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -86,11 +150,10 @@ Initialise an AlpacaOptions Object
 \describe{
 \item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
 
-\item{\code{base_url}}{Character; trading API base URL for contract endpoints.
-Defaults to \code{get_base_url()}.}
+\item{\code{base_url}}{Character; trading API base URL. Defaults to \code{get_base_url()}.}
 
-\item{\code{data_url}}{Character; market data API base URL for bars/trades/snapshots.
-Defaults to \code{get_data_base_url()}.}
+\item{\code{data_base_url}}{Character; market data API base URL. Defaults to
+\code{get_data_base_url()}.}
 
 \item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
 }
@@ -106,23 +169,63 @@ Invisible self.
 \subsection{Method \code{get_contracts()}}{
 Get Options Contracts
 
-Retrieves available options contracts with optional filtering.
+Searches for available options contracts with filtering by underlying
+symbol, type, expiration date, strike price, and more.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/options/contracts}
+\verb{GET https://paper-api.alpaca.markets/v2/options/contracts}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/optioncontracts}{Options Contracts}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/options/contracts?underlying_symbols=AAPL&type=call&limit=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "option_contracts": [
+    \{
+      "id": "uuid",
+      "symbol": "AAPL240621C00200000",
+      "name": "AAPL Jun 21 2024 200.00 Call",
+      "status": "active",
+      "tradable": true,
+      "type": "call",
+      "strike_price": "200.00",
+      "expiration_date": "2024-06-21",
+      "underlying_symbol": "AAPL",
+      "underlying_asset_id": "uuid",
+      "style": "american",
+      "root_symbol": "AAPL",
+      "size": "100",
+      "open_interest": "1234",
+      "close_price": "5.50"
+    \}
+  ],
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_contracts(
   underlying_symbols = NULL,
   status = NULL,
+  type = NULL,
   expiration_date = NULL,
   expiration_date_gte = NULL,
   expiration_date_lte = NULL,
-  root_symbol = NULL,
-  type = NULL,
-  style = NULL,
   strike_price_gte = NULL,
   strike_price_lte = NULL,
+  root_symbol = NULL,
+  style = NULL,
   limit = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
@@ -132,99 +235,128 @@ Retrieves available options contracts with optional filtering.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{underlying_symbols}}{Character or NULL; comma-separated underlying
-symbols (e.g., \code{"AAPL"} or \code{"AAPL,MSFT"}).}
+symbols to filter (e.g., \code{"AAPL"} or \code{"AAPL,MSFT"}).}
 
-\item{\code{status}}{Character or NULL; \code{"active"} or \code{"inactive"}.}
+\item{\code{status}}{Character or NULL; contract status (\code{"active"}, \code{"inactive"}).}
 
-\item{\code{expiration_date}}{Character or NULL; exact expiration date
-(\code{"YYYY-MM-DD"}).}
+\item{\code{type}}{Character or NULL; option type (\code{"call"}, \code{"put"}).}
 
-\item{\code{expiration_date_gte}}{Character or NULL; expiration date >= this
-date.}
+\item{\code{expiration_date}}{Character or NULL; exact expiration date (\code{"YYYY-MM-DD"}).}
 
-\item{\code{expiration_date_lte}}{Character or NULL; expiration date <= this
-date.}
+\item{\code{expiration_date_gte}}{Character or NULL; expiration on or after this date.}
+
+\item{\code{expiration_date_lte}}{Character or NULL; expiration on or before this date.}
+
+\item{\code{strike_price_gte}}{Numeric or NULL; minimum strike price.}
+
+\item{\code{strike_price_lte}}{Numeric or NULL; maximum strike price.}
 
 \item{\code{root_symbol}}{Character or NULL; options root symbol.}
 
-\item{\code{type}}{Character or NULL; \code{"call"} or \code{"put"}.}
+\item{\code{style}}{Character or NULL; option style (\code{"american"}, \code{"european"}).}
 
-\item{\code{style}}{Character or NULL; \code{"american"} or \code{"european"}.}
+\item{\code{limit}}{Integer or NULL; max contracts to return (default 100, max 10000).}
 
-\item{\code{strike_price_gte}}{Numeric or NULL; strike price >= this value.}
-
-\item{\code{strike_price_lte}}{Numeric or NULL; strike price <= this value.}
-
-\item{\code{limit}}{Integer or NULL; max results (default 100, max 10000).}
-
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per contract and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{id} (character): Unique contract UUID.
-\item \code{symbol} (character): Options contract symbol (OCC format).
-\item \code{name} (character): Contract display name.
-\item \code{status} (character): \code{"active"} or \code{"inactive"}.
+\item \code{id} (character): Contract UUID.
+\item \code{symbol} (character): OCC option symbol.
+\item \code{name} (character): Human-readable contract name.
+\item \code{status} (character): Contract status.
 \item \code{tradable} (logical): Whether the contract is tradable.
-\item \code{expiration_date} (character): Expiration date (\code{"YYYY-MM-DD"}).
-\item \code{root_symbol} (character): Options root symbol.
-\item \code{underlying_symbol} (character): Underlying asset symbol.
-\item \code{underlying_asset_id} (character): Underlying asset UUID.
 \item \code{type} (character): \code{"call"} or \code{"put"}.
-\item \code{style} (character): \code{"american"} or \code{"european"}.
 \item \code{strike_price} (character): Strike price.
-\item \code{size} (character): Contract multiplier (typically \code{"100"}).
+\item \code{expiration_date} (character): Expiration date.
+\item \code{underlying_symbol} (character): Underlying ticker symbol.
+\item \code{style} (character): Option style.
+\item \code{root_symbol} (character): Root symbol.
+\item \code{size} (character): Contract size (typically \code{"100"}).
 \item \code{open_interest} (character): Open interest.
-\item \code{open_interest_date} (character): Date of open interest data.
-\item \code{close_price} (character): Previous close price.
-\item \code{close_price_date} (character): Date of close price data.
+\item \code{close_price} (character): Last close price.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+opts <- AlpacaOptions$new()
+
+# Find AAPL calls expiring after June 2024
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
+)
+print(contracts)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaOptions-get_contract"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaOptions-get_contract}{}}}
 \subsection{Method \code{get_contract()}}{
-Get Options Contract by ID
+Get Option Contract by Symbol or ID
 
-Retrieves details for a specific options contract by its UUID or OCC
-symbol.
+Retrieves a single options contract by its OCC symbol or UUID.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/options/contracts/\{id_or_symbol\}}
+\verb{GET https://paper-api.alpaca.markets/v2/options/contracts/\{symbol_or_id\}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_contract(id_or_symbol)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_contract(symbol_or_id)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{id_or_symbol}}{Character; the contract UUID or OCC symbol.}
+\item{\code{symbol_or_id}}{Character; OCC option symbol or contract UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the same columns as
-\code{\link[=get_contracts]{get_contracts()}}.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the same columns as \code{\link[=get_contracts]{get_contracts()}}, single row.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+opts <- AlpacaOptions$new()
+contract <- opts$get_contract("AAPL240621C00200000")
+print(contract)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaOptions-get_bars"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_bars}{}}}
-\subsection{Method \code{get_bars()}}{
-Get Options Bars
+\if{html}{\out{<a id="method-AlpacaOptions-get_option_bars"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_option_bars}{}}}
+\subsection{Method \code{get_option_bars()}}{
+Get Options Bars (OHLCV)
 
-Retrieves historical OHLCV bars for options contracts.
+Retrieves historical bar data for options contracts.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/bars}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/docs/options-market-data}{Options Bars}
+}
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_bars(
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_bars(
   symbols,
   timeframe = "1Day",
   start = NULL,
@@ -241,45 +373,49 @@ Retrieves historical OHLCV bars for options contracts.
 
 \item{\code{timeframe}}{Character; bar timeframe (e.g., \code{"1Day"}, \code{"1Hour"}).}
 
-\item{\code{start}}{Character or NULL; start date/time in RFC 3339 format.}
+\item{\code{start}}{Character or NULL; start date/time (RFC-3339 or \code{"YYYY-MM-DD"}).}
 
-\item{\code{end}}{Character or NULL; end date/time in RFC 3339 format.}
+\item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars per symbol (default 1000, max
-10000).}
+\item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per bar and the following columns:
-\itemize{
-\item \code{symbol} (character): OCC options symbol.
-\item \code{t} (POSIXct): Bar timestamp.
-\item \code{o} (numeric): Opening price.
-\item \code{h} (numeric): Highest price.
-\item \code{l} (numeric): Lowest price.
-\item \code{c} (numeric): Closing price.
-\item \code{v} (integer): Volume.
-\item \code{n} (integer): Number of trades in the bar.
-\item \code{vw} (numeric): Volume-weighted average price.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and the same bar columns as stock bars.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+opts <- AlpacaOptions$new()
+bars <- opts$get_option_bars(
+  "AAPL240621C00200000", timeframe = "1Day",
+  start = "2024-06-01"
+)
+print(bars)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaOptions-get_trades"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_trades}{}}}
-\subsection{Method \code{get_trades()}}{
+\if{html}{\out{<a id="method-AlpacaOptions-get_option_trades"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_option_trades}{}}}
+\subsection{Method \code{get_option_trades()}}{
 Get Options Trades
 
-Retrieves historical trades for options contracts.
+Retrieves historical trade data for options contracts.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/trades}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_trades(
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_trades(
   symbols,
   start = NULL,
   end = NULL,
@@ -293,42 +429,34 @@ Retrieves historical trades for options contracts.
 \describe{
 \item{\code{symbols}}{Character; comma-separated OCC option symbols.}
 
-\item{\code{start}}{Character or NULL; start date/time in RFC 3339 format.}
+\item{\code{start}}{Character or NULL; start date/time.}
 
-\item{\code{end}}{Character or NULL; end date/time in RFC 3339 format.}
+\item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max trades per symbol (default 1000, max
-10000).}
+\item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per trade and the following columns:
-\itemize{
-\item \code{symbol} (character): OCC options symbol.
-\item \code{t} (POSIXct): Trade timestamp.
-\item \code{x} (character): Exchange code.
-\item \code{p} (numeric): Trade price.
-\item \code{s} (integer): Trade size (number of contracts).
-\item \code{c} (list): Condition flags.
-}
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+trade columns.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaOptions-get_latest_trades"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_latest_trades}{}}}
-\subsection{Method \code{get_latest_trades()}}{
-Get Latest Options Trades
+\if{html}{\out{<a id="method-AlpacaOptions-get_option_latest_quotes"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_option_latest_quotes}{}}}
+\subsection{Method \code{get_option_latest_quotes()}}{
+Get Latest Options Quotes
 
-Retrieves the most recent trade for one or more options contracts.
+Retrieves the latest NBBO quotes for one or more options contracts.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v1beta1/options/trades/latest}
+\verb{GET https://data.alpaca.markets/v1beta1/options/quotes/latest}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_latest_trades(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_latest_quotes(symbols, feed = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -341,30 +469,53 @@ Retrieves the most recent trade for one or more options contracts.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per symbol and the following columns:
-\itemize{
-\item \code{symbol} (character): OCC options symbol.
-\item \code{t} (POSIXct): Trade timestamp.
-\item \code{x} (character): Exchange code.
-\item \code{p} (numeric): Trade price.
-\item \code{s} (integer): Trade size (number of contracts).
-\item \code{c} (list): Condition flags.
-}
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+quote columns plus a \code{symbol} column.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaOptions-get_snapshot"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_snapshot}{}}}
-\subsection{Method \code{get_snapshot()}}{
-Get Options Snapshot
+\if{html}{\out{<a id="method-AlpacaOptions-get_option_snapshots"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_option_snapshots}{}}}
+\subsection{Method \code{get_option_snapshots()}}{
+Get Options Snapshots
 
-Retrieves the current snapshot for a single options contract.
+Retrieves real-time snapshots for multiple options contracts, including
+the latest trade, latest quote, and implied volatility.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta1/options/snapshots}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshots(symbols, feed = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+
+\item{\code{feed}}{Character or NULL; data feed.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+flattened snapshot fields plus a \code{symbol} column.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaOptions-get_option_snapshot"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_option_snapshot}{}}}
+\subsection{Method \code{get_option_snapshot()}}{
+Get Option Snapshot by Symbol
+
+Retrieves a real-time snapshot for a single options contract.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/snapshots/\{symbol\}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -377,50 +528,21 @@ Retrieves the current snapshot for a single options contract.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
-\itemize{
-\item \code{symbol} (character): OCC options symbol.
-\item \code{latest_trade} (list): Most recent trade object.
-\item \code{latest_quote} (list): Most recent quote object.
-\item \code{greeks} (list): Options greeks (delta, gamma, theta, vega, rho).
-\item \code{implied_volatility} (numeric): Implied volatility.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+flattened snapshot fields.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+opts <- AlpacaOptions$new()
+snap <- opts$get_option_snapshot("AAPL240621C00200000")
+print(snap)
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaOptions-get_snapshots"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaOptions-get_snapshots}{}}}
-\subsection{Method \code{get_snapshots()}}{
-Get Multiple Options Snapshots
-
-Retrieves current snapshots for multiple options contracts.
-\subsection{API Endpoint}{
-
-\verb{GET https://data.alpaca.markets/v1beta1/options/snapshots}
-}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_snapshots(symbols, feed = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
-
-\item{\code{feed}}{Character or NULL; data feed.}
 }
 \if{html}{\out{</div>}}
+
 }
-\subsection{Returns}{
-\code{data.table} with one row per contract and the following columns:
-\itemize{
-\item \code{symbol} (character): OCC options symbol.
-\item \code{latest_trade} (list): Most recent trade object.
-\item \code{latest_quote} (list): Most recent quote object.
-\item \code{greeks} (list): Options greeks.
-\item \code{implied_volatility} (numeric): Implied volatility.
-}
-}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaOptions-clone"></a>}}

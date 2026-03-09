@@ -106,6 +106,109 @@ alpaca_build_request <- function(
   ))
 }
 
+#' Auto-Paginate an Alpaca API Endpoint
+#'
+#' Follows Alpaca's cursor-based pagination (`page_token` / `next_page_token`)
+#' automatically, accumulating results across all pages. Works with any
+#' paginated endpoint (orders, activities, bars, trades, quotes, etc.).
+#'
+#' Alpaca endpoints return a `next_page_token` field when more results are
+#' available. This function loops through pages until no more tokens remain
+#' or `max_pages` is reached, then applies `.parser` to the combined result
+#' list.
+#'
+#' @param base_url Character; the API base URL.
+#' @param endpoint Character; the API path (e.g., `"/v2/orders"`).
+#' @param method Character; HTTP method. Default `"GET"`.
+#' @param query Named list; query parameters. Default `list()`.
+#' @param keys List or NULL; API credentials.
+#' @param .perform Function; the httr2 perform function.
+#' @param .parser Function; applied to the accumulated list of page items.
+#'   Receives a single flat list of all items across pages.
+#' @param is_async Logical; whether `.perform` returns promises.
+#' @param items_field Character or NULL; the JSON field containing the array
+#'   of items (e.g., `"bars"`, `"trades"`, `"quotes"`). If `NULL`, the
+#'   entire response list is accumulated (for endpoints returning top-level arrays).
+#' @param max_pages Integer; maximum number of pages to fetch. Default `Inf`.
+#' @param timeout Numeric; request timeout in seconds. Default `10`.
+#' @return Parsed and post-processed API response data, or a promise thereof.
+#'
+#' @examples
+#' \dontrun{
+#' # Fetch ALL historical bars across pages
+#' all_bars <- alpaca_paginate(
+#'   base_url = "https://data.alpaca.markets",
+#'   endpoint = "/v2/stocks/AAPL/bars",
+#'   query = list(timeframe = "1Day", start = "2020-01-01"),
+#'   keys = get_api_keys(),
+#'   items_field = "bars",
+#'   .parser = parse_bars
+#' )
+#' }
+#'
+#' @export
+alpaca_paginate <- function(
+  base_url,
+  endpoint,
+  method = "GET",
+  query = list(),
+  keys = NULL,
+  .perform = httr2::req_perform,
+  .parser = identity,
+  is_async = FALSE,
+  items_field = NULL,
+  max_pages = Inf,
+  timeout = 10
+) {
+  accumulator <- list()
+  page_count <- 0L
+
+  fetch_page <- function(page_token = NULL) {
+    q <- query
+    if (!is.null(page_token)) {
+      q$page_token <- page_token
+    }
+
+    result <- alpaca_build_request(
+      base_url = base_url,
+      endpoint = endpoint,
+      method = method,
+      query = q,
+      keys = keys,
+      .perform = .perform,
+      is_async = is_async,
+      timeout = timeout
+    )
+
+    return(then_or_now(
+      result,
+      function(data) {
+        page_count <<- page_count + 1L
+
+        if (!is.null(items_field)) {
+          page_items <- data[[items_field]]
+        } else {
+          page_items <- data
+        }
+
+        if (!is.null(page_items) && length(page_items) > 0) {
+          accumulator <<- c(accumulator, page_items)
+        }
+
+        next_token <- data$next_page_token
+        if (!is.null(next_token) && nzchar(next_token) && page_count < max_pages) {
+          return(fetch_page(next_token))
+        }
+
+        return(.parser(accumulator))
+      },
+      is_async = is_async
+    ))
+  }
+
+  return(fetch_page())
+}
+
 #' Parse and Validate an Alpaca API Response
 #'
 #' Extracts JSON from an [httr2::response], validates the HTTP status, and

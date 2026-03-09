@@ -26,20 +26,17 @@ alpaca_build_request(
 
 \item{query}{Named list; query parameters. Default \code{list()}.}
 
-\item{body}{Named list or NULL; request body (for POST/PATCH). Default
-\code{NULL}.}
+\item{body}{Named list or NULL; JSON request body (for POST/PATCH). Default \code{NULL}.}
 
 \item{keys}{List or NULL; API credentials with \code{api_key} and \code{api_secret}.
-Default \code{NULL}.}
+Default \code{NULL} (no auth).}
 
-\item{.perform}{Function; the httr2 perform function. Default
-\code{httr2::req_perform}.}
+\item{.perform}{Function; the httr2 perform function. Default \code{httr2::req_perform}.}
 
-\item{.parser}{Function; post-processing function applied to parsed
-response. Default \code{identity}.}
+\item{.parser}{Function; post-processing function applied to parsed response.
+Default \code{identity}.}
 
-\item{is_async}{Logical; whether \code{.perform} returns promises. Default
-\code{FALSE}.}
+\item{is_async}{Logical; whether \code{.perform} returns promises. Default \code{FALSE}.}
 
 \item{timeout}{Numeric; request timeout in seconds. Default \code{10}.}
 }
@@ -47,7 +44,17 @@ response. Default \code{identity}.}
 Parsed and post-processed API response data, or a promise thereof.
 }
 \description{
-Constructs an \link[httr2:request]{httr2::request}, adds authentication headers, performs it
-via the supplied \code{.perform} function, and parses the JSON response. This is
-the single point through which all Alpaca API calls flow.
+Constructs an \link[httr2:request]{httr2::request}, adds authentication headers, performs it via
+the supplied \code{.perform} function, and parses the JSON response. This is the
+single point through which all Alpaca API calls flow.
+}
+\details{
+\subsection{Authentication}{
+
+Alpaca uses header-based authentication with two headers:
+\itemize{
+\item \code{APCA-API-KEY-ID}: Your API key ID
+\item \code{APCA-API-SECRET-KEY}: Your API secret key
+}
+}
 }

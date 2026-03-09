@@ -2,87 +2,241 @@
 % Please edit documentation in R/AlpacaMarketData.R
 \name{AlpacaMarketData}
 \alias{AlpacaMarketData}
-\title{AlpacaMarketData: Stock Market Data}
+\title{AlpacaMarketData: Market Data, Assets, Calendar, and Clock}
 \description{
-AlpacaMarketData: Stock Market Data
+AlpacaMarketData: Market Data, Assets, Calendar, and Clock
 
-AlpacaMarketData: Stock Market Data
+AlpacaMarketData: Market Data, Assets, Calendar, and Clock
 }
 \details{
-Provides methods for querying stock market data from the Alpaca Data API.
-Inherits from \link{AlpacaBase}.
+Provides methods for retrieving market data from Alpaca's REST API,
+including historical bars (OHLCV), latest quotes/trades, snapshots,
+asset info, market calendar, and clock.
+
+Inherits from \link{AlpacaBase}. All methods support both synchronous and
+asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Purpose and Scope}{
 \itemize{
-\item \strong{Historical Data}: Bars (OHLCV), trades, and quotes.
-\item \strong{Latest Data}: Most recent bar, trade, and quote for a symbol.
-\item \strong{Snapshots}: Current market snapshot for one or many symbols.
-\item \strong{Assets}: Query available tradeable assets.
-\item \strong{Calendar & Clock}: Market calendar and trading hours.
+\item \strong{Bars}: Retrieve historical OHLCV candlestick data for stocks.
+\item \strong{Trades}: Access historical and latest trade data.
+\item \strong{Quotes}: Access historical and latest quote (NBBO) data.
+\item \strong{Snapshots}: Get real-time snapshot of a symbol's latest state.
+\item \strong{Assets}: Query available tradeable assets and their metadata.
+\item \strong{Calendar}: Get market open/close schedule.
+\item \strong{Clock}: Check current market status (open/closed).
+\item \strong{Corporate Actions}: Query dividends, splits, mergers, spinoffs.
+\item \strong{News}: Retrieve market news articles filtered by symbol/date.
 }
 }
 
-\subsection{API Base URLs}{
+\subsection{Base URLs}{
 
-Market data endpoints use \verb{https://data.alpaca.markets} while asset,
-calendar, and clock endpoints use the trading API base URL.
+Market data endpoints use \verb{https://data.alpaca.markets} by default.
+Trading-related endpoints (assets, calendar, clock) use the trading
+base URL. Both are configurable via constructor parameters.
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/docs/about-market-data-api}{Market Data API}
+\item \href{https://docs.alpaca.markets/docs/historical-stock-data-1}{Historical Stock Data}
+}
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
-   Method \tab Endpoint \tab HTTP \cr
-   get_bars \tab GET /v2/stocks/{symbol}/bars \tab GET \cr
-   get_trades \tab GET /v2/stocks/{symbol}/trades \tab GET \cr
-   get_quotes \tab GET /v2/stocks/{symbol}/quotes \tab GET \cr
-   get_latest_bar \tab GET /v2/stocks/{symbol}/bars/latest \tab GET \cr
-   get_latest_trade \tab GET /v2/stocks/{symbol}/trades/latest \tab GET \cr
-   get_latest_quote \tab GET /v2/stocks/{symbol}/quotes/latest \tab GET \cr
-   get_snapshot \tab GET /v2/stocks/{symbol}/snapshot \tab GET \cr
-   get_snapshots \tab GET /v2/stocks/snapshots \tab GET \cr
-   get_assets \tab GET /v2/assets \tab GET \cr
-   get_asset \tab GET /v2/assets/{symbol} \tab GET \cr
-   get_calendar \tab GET /v2/calendar \tab GET \cr
-   get_clock \tab GET /v2/clock \tab GET \cr
+   Method \tab Endpoint \tab Base \cr
+   get_bars \tab GET /v2/stocks/{symbol}/bars \tab data \cr
+   get_bars_multi \tab GET /v2/stocks/bars \tab data \cr
+   get_latest_bar \tab GET /v2/stocks/{symbol}/latest/bar \tab data \cr
+   get_latest_trade \tab GET /v2/stocks/{symbol}/latest/trade \tab data \cr
+   get_latest_quote \tab GET /v2/stocks/{symbol}/latest/quote \tab data \cr
+   get_snapshot \tab GET /v2/stocks/{symbol}/snapshot \tab data \cr
+   get_trades \tab GET /v2/stocks/{symbol}/trades \tab data \cr
+   get_quotes \tab GET /v2/stocks/{symbol}/quotes \tab data \cr
+   get_assets \tab GET /v2/assets \tab trading \cr
+   get_asset \tab GET /v2/assets/{symbol} \tab trading \cr
+   get_calendar \tab GET /v2/calendar \tab trading \cr
+   get_clock \tab GET /v2/clock \tab trading \cr
+   get_corporate_actions \tab GET /v2/corporate_actions/announcements \tab trading \cr
+   get_news \tab GET /v1beta1/news \tab data \cr
 }
 
 }
 }
 \examples{
 \dontrun{
-# Synchronous
-md <- AlpacaMarketData$new()
-bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01")
+# Synchronous usage
+market <- AlpacaMarketData$new()
+bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01")
 print(bars)
 
-# Asynchronous
-md_async <- AlpacaMarketData$new(async = TRUE)
+# Asynchronous usage
+market_async <- AlpacaMarketData$new(async = TRUE)
 main <- coro::async(function() {
-  bars <- await(md_async$get_bars("AAPL", timeframe = "1Day",
-                                   start = "2024-01-01"))
+  bars <- await(market_async$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01"))
   print(bars)
 })
 main()
 while (!later::loop_empty()) later::run_now()
 }
 
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_bars`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_bars("AAPL", "1Day", start = "2024-01-01", end = "2024-01-31")
+print(bars)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_bars_multi`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_bars_multi(c("AAPL", "MSFT"), "1Day", start = "2024-01-01")
+print(bars)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_latest_bar`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+bar <- market$get_latest_bar("AAPL")
+print(bar)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_latest_trade`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+trade <- market$get_latest_trade("AAPL")
+print(trade)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_latest_quote`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+quote <- market$get_latest_quote("AAPL")
+print(quote)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_snapshot`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+snap <- market$get_snapshot("AAPL")
+print(snap)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_assets`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+assets <- market$get_assets(status = "active", asset_class = "us_equity")
+print(assets[1:5, .(symbol, name, exchange, tradable)])
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_asset`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+aapl <- market$get_asset("AAPL")
+print(aapl)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_calendar`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+cal <- market$get_calendar(start = "2024-01-01", end = "2024-01-31")
+print(cal)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_clock`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+clock <- market$get_clock()
+cat("Market open:", clock$is_open, "\n")
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_corporate_actions`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+
+# Get all AAPL dividends in 2024
+divs <- market$get_corporate_actions(
+  ca_types = "dividend", since = "2024-01-01", until = "2024-12-31",
+  symbol = "AAPL"
+)
+print(divs)
+
+# Get all stock splits
+splits <- market$get_corporate_actions(
+  ca_types = "split", since = "2024-01-01", until = "2024-12-31"
+)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_news`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+
+# Latest AAPL news
+news <- market$get_news(symbols = "AAPL", limit = 5)
+print(news[, .(headline, source, created_at)])
+
+# News with full content
+news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+}
 }
 \section{Super class}{
-\code{alpaca::AlpacaBase} -> \code{AlpacaMarketData}
+\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaMarketData}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AlpacaMarketData-new}{\code{AlpacaMarketData$new()}}
 \item \href{#method-AlpacaMarketData-get_bars}{\code{AlpacaMarketData$get_bars()}}
-\item \href{#method-AlpacaMarketData-get_trades}{\code{AlpacaMarketData$get_trades()}}
-\item \href{#method-AlpacaMarketData-get_quotes}{\code{AlpacaMarketData$get_quotes()}}
+\item \href{#method-AlpacaMarketData-get_bars_multi}{\code{AlpacaMarketData$get_bars_multi()}}
 \item \href{#method-AlpacaMarketData-get_latest_bar}{\code{AlpacaMarketData$get_latest_bar()}}
 \item \href{#method-AlpacaMarketData-get_latest_trade}{\code{AlpacaMarketData$get_latest_trade()}}
 \item \href{#method-AlpacaMarketData-get_latest_quote}{\code{AlpacaMarketData$get_latest_quote()}}
 \item \href{#method-AlpacaMarketData-get_snapshot}{\code{AlpacaMarketData$get_snapshot()}}
-\item \href{#method-AlpacaMarketData-get_snapshots}{\code{AlpacaMarketData$get_snapshots()}}
+\item \href{#method-AlpacaMarketData-get_trades}{\code{AlpacaMarketData$get_trades()}}
+\item \href{#method-AlpacaMarketData-get_quotes}{\code{AlpacaMarketData$get_quotes()}}
 \item \href{#method-AlpacaMarketData-get_assets}{\code{AlpacaMarketData$get_assets()}}
 \item \href{#method-AlpacaMarketData-get_asset}{\code{AlpacaMarketData$get_asset()}}
 \item \href{#method-AlpacaMarketData-get_calendar}{\code{AlpacaMarketData$get_calendar()}}
 \item \href{#method-AlpacaMarketData-get_clock}{\code{AlpacaMarketData$get_clock()}}
+\item \href{#method-AlpacaMarketData-get_corporate_actions}{\code{AlpacaMarketData$get_corporate_actions()}}
+\item \href{#method-AlpacaMarketData-get_news}{\code{AlpacaMarketData$get_news()}}
 \item \href{#method-AlpacaMarketData-clone}{\code{AlpacaMarketData$clone()}}
 }
 }
@@ -95,7 +249,7 @@ Initialise an AlpacaMarketData Object
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$new(
   keys = get_api_keys(),
   base_url = get_base_url(),
-  data_url = get_data_base_url(),
+  data_base_url = get_data_base_url(),
   async = FALSE
 )}\if{html}{\out{</div>}}
 }
@@ -105,11 +259,10 @@ Initialise an AlpacaMarketData Object
 \describe{
 \item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
 
-\item{\code{base_url}}{Character; trading API base URL for asset/calendar/clock
-endpoints. Defaults to \code{get_base_url()}.}
+\item{\code{base_url}}{Character; trading API base URL. Defaults to \code{get_base_url()}.}
 
-\item{\code{data_url}}{Character; market data API base URL for bars/trades/quotes.
-Defaults to \code{get_data_base_url()}.}
+\item{\code{data_base_url}}{Character; market data API base URL. Defaults to
+\code{get_data_base_url()}.}
 
 \item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
 }
@@ -123,12 +276,37 @@ Invisible self.
 \if{html}{\out{<a id="method-AlpacaMarketData-get_bars"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_bars}{}}}
 \subsection{Method \code{get_bars()}}{
-Get Historical Bars
+Get Historical Bars (OHLCV)
 
-Retrieves historical OHLCV bars for a symbol.
+Retrieves historical candlestick/bar data for a single symbol. Bars
+include open, high, low, close, volume, trade count, and VWAP.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/bars}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/docs/historical-stock-data-1}{Historical Stock Bars}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/bars?timeframe=1Day&start=2024-01-01'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "bars": [
+    \{"t": "2024-01-02T05:00:00Z", "o": 187.15, "h": 188.44, "l": 183.89, "c": 185.64, "v": 82488700, "n": 1036517, "vw": 185.831\}
+  ],
+  "symbol": "AAPL",
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_bars(
@@ -139,6 +317,7 @@ Retrieves historical OHLCV bars for a symbol.
   limit = NULL,
   adjustment = NULL,
   feed = NULL,
+  sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -148,57 +327,75 @@ Retrieves historical OHLCV bars for a symbol.
 \describe{
 \item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
 
-\item{\code{timeframe}}{Character; bar timeframe (e.g., \code{"1Min"}, \code{"5Min"},
-\code{"15Min"}, \code{"1Hour"}, \code{"1Day"}, \code{"1Week"}, \code{"1Month"}).}
+\item{\code{timeframe}}{Character; bar timeframe. Valid values:
+\code{"1Min"} to \code{"59Min"}, \code{"1Hour"} to \code{"23Hour"}, \code{"1Day"}, \code{"1Week"},
+\code{"1Month"} to \code{"12Month"}.}
 
-\item{\code{start}}{Character or NULL; start date/time in RFC 3339 format.}
+\item{\code{start}}{Character or NULL; start date/time (RFC-3339 or \code{"YYYY-MM-DD"}).}
 
-\item{\code{end}}{Character or NULL; end date/time in RFC 3339 format.}
+\item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars to return (default 1000, max 10000).}
+\item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
 
-\item{\code{adjustment}}{Character or NULL; \code{"raw"}, \code{"split"}, \code{"dividend"}, or
-\code{"all"}. Default \code{"raw"}.}
+\item{\code{adjustment}}{Character or NULL; price adjustment type:
+\code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}. Default \code{"raw"}.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{feed}}{Character or NULL; data feed source:
+\code{"iex"} (free), \code{"sip"} (paid, all exchanges).}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per bar and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Bar timestamp.
-\item \code{o} (numeric): Opening price.
-\item \code{h} (numeric): Highest price.
-\item \code{l} (numeric): Lowest price.
-\item \code{c} (numeric): Closing price.
-\item \code{v} (integer): Volume.
-\item \code{n} (integer): Number of trades in the bar.
-\item \code{vw} (numeric): Volume-weighted average price.
+\item \code{timestamp} (POSIXct): Bar timestamp in UTC.
+\item \code{open} (numeric): Opening price.
+\item \code{high} (numeric): Highest price.
+\item \code{low} (numeric): Lowest price.
+\item \code{close} (numeric): Closing price.
+\item \code{volume} (integer): Volume traded.
+\item \code{trade_count} (integer): Number of trades.
+\item \code{vwap} (numeric): Volume-weighted average price.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_bars("AAPL", "1Day", start = "2024-01-01", end = "2024-01-31")
+print(bars)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaMarketData-get_trades"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_trades}{}}}
-\subsection{Method \code{get_trades()}}{
-Get Historical Trades
+\if{html}{\out{<a id="method-AlpacaMarketData-get_bars_multi"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_bars_multi}{}}}
+\subsection{Method \code{get_bars_multi()}}{
+Get Historical Bars for Multiple Symbols
 
-Retrieves historical trades for a symbol.
+Retrieves historical bar data for multiple symbols in a single request.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/trades}
+\verb{GET https://data.alpaca.markets/v2/stocks/bars}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_trades(
-  symbol,
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_bars_multi(
+  symbols,
+  timeframe = "1Day",
   start = NULL,
   end = NULL,
   limit = NULL,
+  adjustment = NULL,
   feed = NULL,
+  sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -206,88 +403,42 @@ Retrieves historical trades for a symbol.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbols}}{Character vector; ticker symbols (max 100).}
 
-\item{\code{start}}{Character or NULL; start date/time in RFC 3339 format.}
+\item{\code{timeframe}}{Character; bar timeframe (see \code{\link[=get_bars]{get_bars()}} for valid values).}
 
-\item{\code{end}}{Character or NULL; end date/time in RFC 3339 format.}
+\item{\code{start}}{Character or NULL; start date/time.}
 
-\item{\code{limit}}{Integer or NULL; max trades to return (default 1000, max 10000).}
+\item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{limit}}{Integer or NULL; max bars per symbol (1-10000, default 1000).}
 
-\item{\code{page_token}}{Character or NULL; pagination token.}
+\item{\code{adjustment}}{Character or NULL; \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}.}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+
+\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per trade and the following columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Trade timestamp.
-\item \code{x} (character): Exchange code.
-\item \code{p} (numeric): Trade price.
-\item \code{s} (integer): Trade size (number of shares).
-\item \code{i} (character): Trade ID.
-\item \code{c} (list): Condition flags.
-\item \code{z} (character): Tape.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column prepended plus the same columns as \code{\link[=get_bars]{get_bars()}}.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_bars_multi(c("AAPL", "MSFT"), "1Day", start = "2024-01-01")
+print(bars)
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaMarketData-get_quotes"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_quotes}{}}}
-\subsection{Method \code{get_quotes()}}{
-Get Historical Quotes
-
-Retrieves historical quotes (NBBO) for a symbol.
-\subsection{API Endpoint}{
-
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes}
-}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_quotes(
-  symbol,
-  start = NULL,
-  end = NULL,
-  limit = NULL,
-  feed = NULL,
-  page_token = NULL
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
-
-\item{\code{start}}{Character or NULL; start date/time in RFC 3339 format.}
-
-\item{\code{end}}{Character or NULL; end date/time in RFC 3339 format.}
-
-\item{\code{limit}}{Integer or NULL; max quotes to return (default 1000, max 10000).}
-
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
-
-\item{\code{page_token}}{Character or NULL; pagination token.}
 }
 \if{html}{\out{</div>}}
+
 }
-\subsection{Returns}{
-\code{data.table} with one row per quote and the following columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Quote timestamp.
-\item \code{ax} (character): Ask exchange code.
-\item \code{ap} (numeric): Ask price.
-\item \code{as} (integer): Ask size.
-\item \code{bx} (character): Bid exchange code.
-\item \code{bp} (numeric): Bid price.
-\item \code{bs} (integer): Bid size.
-\item \code{c} (list): Condition flags.
-\item \code{z} (character): Tape.
-}
-}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_latest_bar"></a>}}
@@ -295,10 +446,10 @@ Retrieves historical quotes (NBBO) for a symbol.
 \subsection{Method \code{get_latest_bar()}}{
 Get Latest Bar
 
-Retrieves the most recent bar for a symbol.
+Retrieves the most recent bar for a single symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/bars/latest}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/bar}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bar(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -307,26 +458,28 @@ Retrieves the most recent bar for a symbol.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Bar timestamp.
-\item \code{o} (numeric): Opening price.
-\item \code{h} (numeric): Highest price.
-\item \code{l} (numeric): Lowest price.
-\item \code{c} (numeric): Closing price.
-\item \code{v} (integer): Volume.
-\item \code{n} (integer): Number of trades in the bar.
-\item \code{vw} (numeric): Volume-weighted average price.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
+same columns as \code{\link[=get_bars]{get_bars()}}, single row.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+bar <- market$get_latest_bar("AAPL")
+print(bar)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_latest_trade"></a>}}
@@ -337,7 +490,12 @@ Get Latest Trade
 Retrieves the most recent trade for a symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/trades/latest}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/trade}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatesttrade}{Latest Trade}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -346,36 +504,47 @@ Retrieves the most recent trade for a symbol.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Trade timestamp.
-\item \code{x} (character): Exchange code.
-\item \code{p} (numeric): Trade price.
-\item \code{s} (integer): Trade size (number of shares).
-\item \code{i} (character): Trade ID.
-\item \code{c} (list): Condition flags.
-\item \code{z} (character): Tape.
+\item \code{timestamp} (POSIXct): Trade timestamp.
+\item \code{price} (numeric): Trade price.
+\item \code{size} (integer): Trade size.
+\item \code{exchange} (character): Exchange code.
+\item \code{conditions} (list): Trade conditions.
+\item \code{tape} (character): SIP tape.
+\item \code{id} (integer): Trade ID.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+trade <- market$get_latest_trade("AAPL")
+print(trade)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_latest_quote"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_latest_quote}{}}}
 \subsection{Method \code{get_latest_quote()}}{
-Get Latest Quote
+Get Latest Quote (NBBO)
 
-Retrieves the most recent quote (NBBO) for a symbol.
+Retrieves the most recent National Best Bid and Offer for a symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes/latest}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/quote}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -384,27 +553,36 @@ Retrieves the most recent quote (NBBO) for a symbol.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{t} (POSIXct): Quote timestamp.
-\item \code{ax} (character): Ask exchange code.
-\item \code{ap} (numeric): Ask price.
-\item \code{as} (integer): Ask size.
-\item \code{bx} (character): Bid exchange code.
-\item \code{bp} (numeric): Bid price.
-\item \code{bs} (integer): Bid size.
-\item \code{c} (list): Condition flags.
-\item \code{z} (character): Tape.
+\item \code{timestamp} (POSIXct): Quote timestamp.
+\item \code{ask_exchange} (character): Ask exchange code.
+\item \code{ask_price} (numeric): Ask price.
+\item \code{ask_size} (integer): Ask size.
+\item \code{bid_exchange} (character): Bid exchange code.
+\item \code{bid_price} (numeric): Bid price.
+\item \code{bid_size} (integer): Bid size.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+quote <- market$get_latest_quote("AAPL")
+print(quote)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_snapshot"></a>}}
@@ -412,8 +590,8 @@ Retrieves the most recent quote (NBBO) for a symbol.
 \subsection{Method \code{get_snapshot()}}{
 Get Snapshot
 
-Retrieves the current market snapshot for a symbol, including latest
-trade, quote, minute bar, daily bar, and previous daily bar.
+Retrieves the latest snapshot for a symbol including latest trade,
+latest quote, minute bar, daily bar, and previous daily bar.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/snapshot}
@@ -425,71 +603,138 @@ trade, quote, minute bar, daily bar, and previous daily bar.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{latest_trade} (list): Most recent trade object.
-\item \code{latest_quote} (list): Most recent NBBO quote object.
-\item \code{minute_bar} (list): Most recent minute bar object.
-\item \code{daily_bar} (list): Current daily bar object.
-\item \code{prev_daily_bar} (list): Previous trading day bar object.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+flattened snapshot fields (prefixed by section name).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+snap <- market$get_snapshot("AAPL")
+print(snap)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaMarketData-get_snapshots"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_snapshots}{}}}
-\subsection{Method \code{get_snapshots()}}{
-Get Multiple Snapshots
+\if{html}{\out{<a id="method-AlpacaMarketData-get_trades"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_trades}{}}}
+\subsection{Method \code{get_trades()}}{
+Get Historical Trades
 
-Retrieves current market snapshots for multiple symbols at once.
+Retrieves historical trade data for a symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/snapshots}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/trades}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_trades(
+  symbol,
+  start = NULL,
+  end = NULL,
+  limit = NULL,
+  feed = NULL,
+  sort = NULL,
+  page_token = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols (e.g.,
-\code{c("AAPL", "MSFT", "GOOGL")}).}
+\item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"}, \code{"sip"}, or \code{"otc"}.}
+\item{\code{start}}{Character or NULL; start date/time.}
+
+\item{\code{end}}{Character or NULL; end date/time.}
+
+\item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+
+\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per symbol and the following columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{latest_trade} (list): Most recent trade object.
-\item \code{latest_quote} (list): Most recent NBBO quote object.
-\item \code{minute_bar} (list): Most recent minute bar object.
-\item \code{daily_bar} (list): Current daily bar object.
-\item \code{prev_daily_bar} (list): Previous trading day bar object.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+trade columns (see \code{\link[=get_latest_trade]{get_latest_trade()}}).
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_quotes"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_quotes}{}}}
+\subsection{Method \code{get_quotes()}}{
+Get Historical Quotes
+
+Retrieves historical quote (NBBO) data for a symbol.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_quotes(
+  symbol,
+  start = NULL,
+  end = NULL,
+  limit = NULL,
+  feed = NULL,
+  sort = NULL,
+  page_token = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbol}}{Character; ticker symbol.}
+
+\item{\code{start}}{Character or NULL; start date/time.}
+
+\item{\code{end}}{Character or NULL; end date/time.}
+
+\item{\code{limit}}{Integer or NULL; max quotes (1-10000, default 1000).}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+
+\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+quote columns (see \code{\link[=get_latest_quote]{get_latest_quote()}}).
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_assets"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_assets}{}}}
 \subsection{Method \code{get_assets()}}{
-Get Assets
+Get All Assets
 
-Retrieves a list of available assets (equities, crypto, etc.).
+Retrieves a list of available assets (stocks, crypto, etc.).
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/assets}
+\verb{GET https://paper-api.alpaca.markets/v2/assets}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/get-v2-assets}{Assets}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(status = NULL, asset_class = NULL, exchange = NULL)}\if{html}{\out{</div>}}
@@ -498,43 +743,53 @@ Retrieves a list of available assets (equities, crypto, etc.).
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{status}}{Character or NULL; filter by status (\code{"active"} or
-\code{"inactive"}).}
+\item{\code{status}}{Character or NULL; filter by status (\code{"active"}, \code{"inactive"}).}
 
-\item{\code{asset_class}}{Character or NULL; filter by asset class
-(\code{"us_equity"}, \code{"crypto"}).}
+\item{\code{asset_class}}{Character or NULL; filter by class (\code{"us_equity"},
+\code{"us_option"}, \code{"crypto"}).}
 
 \item{\code{exchange}}{Character or NULL; filter by exchange.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per asset and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{id} (character): Unique asset UUID.
-\item \code{class} (character): Asset class (e.g., \code{"us_equity"}).
-\item \code{exchange} (character): Exchange the asset trades on.
+\item \code{id} (character): Asset UUID.
+\item \code{class} (character): Asset class.
+\item \code{exchange} (character): Exchange.
 \item \code{symbol} (character): Ticker symbol.
-\item \code{name} (character): Full company name.
-\item \code{status} (character): \code{"active"} or \code{"inactive"}.
+\item \code{name} (character): Company name.
+\item \code{status} (character): Active/inactive.
 \item \code{tradable} (logical): Whether the asset is tradable.
-\item \code{marginable} (logical): Whether the asset is marginable.
-\item \code{shortable} (logical): Whether the asset is shortable.
-\item \code{easy_to_borrow} (logical): Whether the asset is easy to borrow.
-\item \code{fractionable} (logical): Whether fractional shares are supported.
+\item \code{marginable} (logical): Whether margin is available.
+\item \code{shortable} (logical): Whether short selling is available.
+\item \code{fractionable} (logical): Whether fractional shares are available.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+assets <- market$get_assets(status = "active", asset_class = "us_equity")
+print(assets[1:5, .(symbol, name, exchange, tradable)])
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_asset"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_asset}{}}}
 \subsection{Method \code{get_asset()}}{
-Get Asset by Symbol
+Get Asset by Symbol or ID
 
-Retrieves details for a single asset by symbol or asset ID.
+Retrieves metadata for a single asset.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/assets/\{symbol_or_id\}}
+\verb{GET https://paper-api.alpaca.markets/v2/assets/\{symbol_or_id\}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_asset(symbol_or_id)}\if{html}{\out{</div>}}
@@ -548,21 +803,21 @@ Retrieves details for a single asset by symbol or asset ID.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
-\itemize{
-\item \code{id} (character): Unique asset UUID.
-\item \code{class} (character): Asset class (e.g., \code{"us_equity"}).
-\item \code{exchange} (character): Exchange the asset trades on.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{name} (character): Full company name.
-\item \code{status} (character): \code{"active"} or \code{"inactive"}.
-\item \code{tradable} (logical): Whether the asset is tradable.
-\item \code{marginable} (logical): Whether the asset is marginable.
-\item \code{shortable} (logical): Whether the asset is shortable.
-\item \code{easy_to_borrow} (logical): Whether the asset is easy to borrow.
-\item \code{fractionable} (logical): Whether fractional shares are supported.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the same columns as \code{\link[=get_assets]{get_assets()}}, single row.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+aapl <- market$get_asset("AAPL")
+print(aapl)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_calendar"></a>}}
@@ -570,10 +825,16 @@ Retrieves details for a single asset by symbol or asset ID.
 \subsection{Method \code{get_calendar()}}{
 Get Market Calendar
 
-Retrieves the market calendar showing trading and settlement dates.
+Retrieves the market calendar showing trading days and hours.
+Includes early closure information.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/calendar}
+\verb{GET https://paper-api.alpaca.markets/v2/calendar}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/get-v2-calendar}{Calendar}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL)}\if{html}{\out{</div>}}
@@ -589,16 +850,25 @@ Retrieves the market calendar showing trading and settlement dates.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per trading day and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{date} (character): Trading date (\code{"YYYY-MM-DD"}).
-\item \code{open} (character): Market open time (\code{"HH:MM"}).
-\item \code{close} (character): Market close time (\code{"HH:MM"}).
-\item \code{session_open} (character): Extended session open time.
-\item \code{session_close} (character): Extended session close time.
-\item \code{settlement_date} (character): Settlement date.
+\item \code{date} (character): Trading date.
+\item \code{open} (character): Market open time (ET).
+\item \code{close} (character): Market close time (ET).
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+cal <- market$get_calendar(start = "2024-01-01", end = "2024-01-31")
+print(cal)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-get_clock"></a>}}
@@ -606,25 +876,248 @@ Retrieves the market calendar showing trading and settlement dates.
 \subsection{Method \code{get_clock()}}{
 Get Market Clock
 
-Retrieves the current market clock, indicating whether the market is
-open and when the next open/close occurs.
+Retrieves the current market clock including whether the market is
+open and the next open/close times.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/clock}
+\verb{GET https://paper-api.alpaca.markets/v2/clock}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/get-v2-clock}{Clock}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/clock'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "timestamp": "2024-01-15T14:30:00.000-05:00",
+  "is_open": true,
+  "next_open": "2024-01-16T09:30:00-05:00",
+  "next_close": "2024-01-15T16:00:00-05:00"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_clock()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{timestamp} (POSIXct): Current market timestamp.
+\item \code{timestamp} (character): Current server timestamp.
 \item \code{is_open} (logical): Whether the market is currently open.
-\item \code{next_open} (POSIXct): Next market open time.
-\item \code{next_close} (POSIXct): Next market close time.
+\item \code{next_open} (character): Next market open time.
+\item \code{next_close} (character): Next market close time.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+clock <- market$get_clock()
+cat("Market open:", clock$is_open, "\n")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_corporate_actions"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_corporate_actions}{}}}
+\subsection{Method \code{get_corporate_actions()}}{
+Get Corporate Action Announcements
+
+Retrieves announcements for corporate actions such as dividends, mergers,
+spinoffs, and stock splits. Essential for production trading systems that
+need to handle position adjustments.
+\subsection{API Endpoint}{
+
+\verb{GET https://paper-api.alpaca.markets/v2/corporate_actions/announcements}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements}{Corporate Actions}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-12-31'
+}\if{html}{\out{</div>}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_corporate_actions(
+  ca_types,
+  since,
+  until,
+  symbol = NULL,
+  cusip = NULL,
+  date_type = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{ca_types}}{Character; comma-separated corporate action types. Valid
+values: \code{"dividend"}, \code{"merger"}, \code{"spinoff"}, \code{"split"}.}
+
+\item{\code{since}}{Character; start date (\code{"YYYY-MM-DD"}). Required.}
+
+\item{\code{until}}{Character; end date (\code{"YYYY-MM-DD"}). Required.}
+
+\item{\code{symbol}}{Character or NULL; filter by ticker symbol.}
+
+\item{\code{cusip}}{Character or NULL; filter by CUSIP.}
+
+\item{\code{date_type}}{Character or NULL; which date field \code{since}/\code{until} refer to:
+\code{"declaration"}, \code{"ex"}, \code{"record"}, \code{"payable"}. Default \code{"ex"}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{id} (character): Announcement UUID.
+\item \code{corporate_action_id} (character): Corporate action ID.
+\item \code{ca_type} (character): Action type.
+\item \code{ca_sub_type} (character): Action sub-type.
+\item \code{initiating_symbol} (character): Symbol initiating the action.
+\item \code{target_symbol} (character): Target symbol (for mergers).
+\item \code{declaration_date} (character): Declaration date.
+\item \code{ex_date} (character): Ex-date.
+\item \code{record_date} (character): Record date.
+\item \code{payable_date} (character): Payable date.
+\item \code{cash} (character): Cash amount (for dividends).
+\item \code{old_rate} (character): Old rate (for splits).
+\item \code{new_rate} (character): New rate (for splits).
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+
+# Get all AAPL dividends in 2024
+divs <- market$get_corporate_actions(
+  ca_types = "dividend", since = "2024-01-01", until = "2024-12-31",
+  symbol = "AAPL"
+)
+print(divs)
+
+# Get all stock splits
+splits <- market$get_corporate_actions(
+  ca_types = "split", since = "2024-01-01", until = "2024-12-31"
+)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_news"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_news}{}}}
+\subsection{Method \code{get_news()}}{
+Get Market News
+
+Retrieves news articles from multiple sources filtered by symbols,
+date range, or content. Useful for event-driven trading strategies.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta1/news}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/news-1}{News}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&limit=10'
+}\if{html}{\out{</div>}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_news(
+  symbols = NULL,
+  start = NULL,
+  end = NULL,
+  limit = NULL,
+  sort = NULL,
+  include_content = NULL,
+  exclude_contentless = NULL,
+  page_token = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character or NULL; comma-separated symbols to filter
+(e.g., \code{"AAPL,MSFT"}).}
+
+\item{\code{start}}{Character or NULL; start date/time (RFC-3339).}
+
+\item{\code{end}}{Character or NULL; end date/time (RFC-3339).}
+
+\item{\code{limit}}{Integer or NULL; max articles (default 10, max 50).}
+
+\item{\code{sort}}{Character or NULL; \code{"desc"} (default, newest first) or \code{"asc"}.}
+
+\item{\code{include_content}}{Logical or NULL; if \code{TRUE}, include full article content.}
+
+\item{\code{exclude_contentless}}{Logical or NULL; if \code{TRUE}, exclude articles
+without content.}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{id} (integer): Article ID.
+\item \code{headline} (character): Article headline.
+\item \code{author} (character): Author name.
+\item \code{source} (character): News source.
+\item \code{summary} (character): Article summary.
+\item \code{url} (character): Article URL.
+\item \code{symbols} (list): Related symbols.
+\item \code{created_at} (character): Publication timestamp.
+\item \code{updated_at} (character): Last update timestamp.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+
+# Latest AAPL news
+news <- market$get_news(symbols = "AAPL", limit = 5)
+print(news[, .(headline, source, created_at)])
+
+# News with full content
+news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaMarketData-clone"></a>}}

@@ -34,6 +34,8 @@ snake_case throughout. No API version numbers in method names.
 - [x] Assets
 - [x] Calendar
 - [x] Clock
+- [x] Corporate Actions — `GET /v2/corporate_actions/announcements`
+- [x] News — `GET /v1beta1/news`
 
 ### 3. Trading — `AlpacaTrading` class
 
@@ -50,23 +52,23 @@ snake_case throughout. No API version numbers in method names.
 - [x] Positions
 - [x] Close position
 - [x] Activities
+- [x] Watchlists — `GET/POST/PUT/DELETE /v2/watchlists`
 
 ### 5. Options — `AlpacaOptions` class
 
 - [x] Options contracts
 - [x] Options market data (bars, trades, quotes, snapshots)
-- [ ] Options orders (via AlpacaTrading with position_intent)
+- [x] Options orders (via AlpacaTrading with `position_intent`)
 
 ### 6. Utilities and infrastructure
 
 - [x] `utils_time.R` — `time_convert_from_alpaca()` / `time_convert_to_alpaca()`
 - [x] `impl_bars.R` — time-range segmented bar fetching
 - [x] `backfill.R` — `alpaca_backfill_bars()` with CSV-based resume
-- [x] Tests — mocked unit tests for all R6 classes and helpers (172 tests)
-- [ ] Sample dataset — bundled AAPL daily bars for examples
-- [ ] Watchlists — `GET/POST/PUT/DELETE /v2/watchlists`
-- [ ] Corporate Actions — `GET /v2/corporate_actions/announcements`
-- [ ] News — `GET /v1beta1/news`
+- [x] Tests — mocked unit tests for all R6 classes and helpers
+- [x] Sample dataset — bundled AAPL daily bars (`data/alpaca_aapl_1day_bars.rda`)
+- [x] `alpaca_paginate()` — auto-pagination for cursor-based endpoints
+- [x] Margin/short-selling vignette
 
 ---
 

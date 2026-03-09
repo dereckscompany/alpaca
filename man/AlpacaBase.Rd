@@ -16,24 +16,23 @@ method for calling implementation functions.
 
 The \code{async} parameter controls execution mode for all API methods:
 \itemize{
-\item \code{async = FALSE} (default): methods return results directly
-(\code{data.table}, character, etc.).
-\item \code{async = TRUE}: methods return \link[promises:promise]{promises::promise} objects that resolve
-to the same types.
+\item \code{async = FALSE} (default): methods return results directly (\code{data.table}, etc.).
+\item \code{async = TRUE}: methods return \link[promises:promise]{promises::promise} objects that resolve to the same types.
 }
 
-When async, use \code{\link[coro:async]{coro::async()}} and \code{await()} or \code{\link[promises:then]{promises::then()}} to
-consume results. The \code{promises} package must be installed for async mode
-(\code{Suggests} dependency).
+When async, use \code{\link[coro:async]{coro::async()}} and \code{await()} or \code{\link[promises:then]{promises::then()}} to consume results.
+The \code{promises} package must be installed for async mode (\code{Suggests} dependency).
 }
 
 \subsection{Authentication}{
 
 Alpaca uses header-based authentication with two headers:
 \itemize{
-\item \code{APCA-API-KEY-ID}: Your API key ID.
-\item \code{APCA-API-SECRET-KEY}: Your API secret key.
+\item \code{APCA-API-KEY-ID}: Your API key ID
+\item \code{APCA-API-SECRET-KEY}: Your API secret key
 }
+
+No HMAC signing is required — credentials are sent directly in headers.
 }
 
 \subsection{Design}{
@@ -49,8 +48,7 @@ All fields are private:
 \itemize{
 \item \code{.keys}: List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
 \item \code{.base_url}: Character; API base URL from \code{\link[=get_base_url]{get_base_url()}}.
-\item \code{.perform}: Function; either \link[httr2:req_perform]{httr2::req_perform} or
-\link[httr2:req_perform_promise]{httr2::req_perform_promise}.
+\item \code{.perform}: Function; either \link[httr2:req_perform]{httr2::req_perform} or \link[httr2:req_perform_promise]{httr2::req_perform_promise}.
 \item \code{.is_async}: Logical; whether the instance is in async mode.
 }
 }
@@ -58,7 +56,7 @@ All fields are private:
 \examples{
 \dontrun{
 # Not instantiated directly; use subclasses:
-market <- AlpacaMarketData$new()              # sync
+market <- AlpacaMarketData$new()                 # sync
 market_async <- AlpacaMarketData$new(async = TRUE)  # async
 }
 
@@ -66,8 +64,8 @@ market_async <- AlpacaMarketData$new(async = TRUE)  # async
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{is_async}}{Logical; read-only flag indicating whether this
-instance operates in async mode.}
+\item{\code{is_async}}{Logical; read-only flag indicating whether this instance
+operates in async mode.}
 }
 \if{html}{\out{</div>}}
 }
@@ -93,11 +91,9 @@ Initialise an AlpacaBase Object
 \item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
 Defaults to \code{get_api_keys()}.}
 
-\item{\code{base_url}}{Character; API base URL. Defaults to
-\code{get_base_url()}.}
+\item{\code{base_url}}{Character; API base URL. Defaults to \code{get_base_url()}.}
 
-\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default
-\code{FALSE}.}
+\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }

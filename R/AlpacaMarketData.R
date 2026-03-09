@@ -18,6 +18,8 @@
 #' - **Assets**: Query available tradeable assets and their metadata.
 #' - **Calendar**: Get market open/close schedule.
 #' - **Clock**: Check current market status (open/closed).
+#' - **Corporate Actions**: Query dividends, splits, mergers, spinoffs.
+#' - **News**: Retrieve market news articles filtered by symbol/date.
 #'
 #' ### Base URLs
 #' Market data endpoints use `https://data.alpaca.markets` by default.
@@ -43,6 +45,8 @@
 #' | get_asset | GET /v2/assets/{symbol} | trading |
 #' | get_calendar | GET /v2/calendar | trading |
 #' | get_clock | GET /v2/clock | trading |
+#' | get_corporate_actions | GET /v2/corporate_actions/announcements | trading |
+#' | get_news | GET /v1beta1/news | data |
 #'
 #' @examples
 #' \dontrun{
@@ -598,6 +602,166 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/clock",
         .parser = as_dt_row
+      ))
+    },
+
+    # ---- Corporate Actions ----
+
+    #' @description
+    #' Get Corporate Action Announcements
+    #'
+    #' Retrieves announcements for corporate actions such as dividends, mergers,
+    #' spinoffs, and stock splits. Essential for production trading systems that
+    #' need to handle position adjustments.
+    #'
+    #' ### API Endpoint
+    #' `GET https://paper-api.alpaca.markets/v2/corporate_actions/announcements`
+    #'
+    #' ### Official Documentation
+    #' [Corporate Actions](https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements)
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-12-31'
+    #' ```
+    #'
+    #' @param ca_types Character; comma-separated corporate action types. Valid
+    #'   values: `"dividend"`, `"merger"`, `"spinoff"`, `"split"`.
+    #' @param since Character; start date (`"YYYY-MM-DD"`). Required.
+    #' @param until Character; end date (`"YYYY-MM-DD"`). Required.
+    #' @param symbol Character or NULL; filter by ticker symbol.
+    #' @param cusip Character or NULL; filter by CUSIP.
+    #' @param date_type Character or NULL; which date field `since`/`until` refer to:
+    #'   `"declaration"`, `"ex"`, `"record"`, `"payable"`. Default `"ex"`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `id` (character): Announcement UUID.
+    #'   - `corporate_action_id` (character): Corporate action ID.
+    #'   - `ca_type` (character): Action type.
+    #'   - `ca_sub_type` (character): Action sub-type.
+    #'   - `initiating_symbol` (character): Symbol initiating the action.
+    #'   - `target_symbol` (character): Target symbol (for mergers).
+    #'   - `declaration_date` (character): Declaration date.
+    #'   - `ex_date` (character): Ex-date.
+    #'   - `record_date` (character): Record date.
+    #'   - `payable_date` (character): Payable date.
+    #'   - `cash` (character): Cash amount (for dividends).
+    #'   - `old_rate` (character): Old rate (for splits).
+    #'   - `new_rate` (character): New rate (for splits).
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #'
+    #' # Get all AAPL dividends in 2024
+    #' divs <- market$get_corporate_actions(
+    #'   ca_types = "dividend", since = "2024-01-01", until = "2024-12-31",
+    #'   symbol = "AAPL"
+    #' )
+    #' print(divs)
+    #'
+    #' # Get all stock splits
+    #' splits <- market$get_corporate_actions(
+    #'   ca_types = "split", since = "2024-01-01", until = "2024-12-31"
+    #' )
+    #' }
+    get_corporate_actions = function(
+      ca_types,
+      since,
+      until,
+      symbol = NULL,
+      cusip = NULL,
+      date_type = NULL
+    ) {
+      return(private$.request(
+        endpoint = "/v2/corporate_actions/announcements",
+        query = list(
+          ca_types = ca_types,
+          since = since,
+          until = until,
+          symbol = symbol,
+          cusip = cusip,
+          date_type = date_type
+        ),
+        .parser = as_dt_list
+      ))
+    },
+
+    # ---- News ----
+
+    #' @description
+    #' Get Market News
+    #'
+    #' Retrieves news articles from multiple sources filtered by symbols,
+    #' date range, or content. Useful for event-driven trading strategies.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta1/news`
+    #'
+    #' ### Official Documentation
+    #' [News](https://docs.alpaca.markets/reference/news-1)
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&limit=10'
+    #' ```
+    #'
+    #' @param symbols Character or NULL; comma-separated symbols to filter
+    #'   (e.g., `"AAPL,MSFT"`).
+    #' @param start Character or NULL; start date/time (RFC-3339).
+    #' @param end Character or NULL; end date/time (RFC-3339).
+    #' @param limit Integer or NULL; max articles (default 10, max 50).
+    #' @param sort Character or NULL; `"desc"` (default, newest first) or `"asc"`.
+    #' @param include_content Logical or NULL; if `TRUE`, include full article content.
+    #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
+    #'   without content.
+    #' @param page_token Character or NULL; cursor for pagination.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `id` (integer): Article ID.
+    #'   - `headline` (character): Article headline.
+    #'   - `author` (character): Author name.
+    #'   - `source` (character): News source.
+    #'   - `summary` (character): Article summary.
+    #'   - `url` (character): Article URL.
+    #'   - `symbols` (list): Related symbols.
+    #'   - `created_at` (character): Publication timestamp.
+    #'   - `updated_at` (character): Last update timestamp.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #'
+    #' # Latest AAPL news
+    #' news <- market$get_news(symbols = "AAPL", limit = 5)
+    #' print(news[, .(headline, source, created_at)])
+    #'
+    #' # News with full content
+    #' news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+    #' }
+    get_news = function(
+      symbols = NULL,
+      start = NULL,
+      end = NULL,
+      limit = NULL,
+      sort = NULL,
+      include_content = NULL,
+      exclude_contentless = NULL,
+      page_token = NULL
+    ) {
+      return(private$.data_request(
+        endpoint = "/v1beta1/news",
+        query = list(
+          symbols = symbols,
+          start = start,
+          end = end,
+          limit = limit,
+          sort = sort,
+          include_content = include_content,
+          exclude_contentless = exclude_contentless,
+          page_token = page_token
+        ),
+        .parser = function(data) as_dt_list(data$news)
       ))
     }
   ),

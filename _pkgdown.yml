@@ -46,7 +46,7 @@ reference:
       - AlpacaTrading
 
   - title: Account
-    desc: Account info, positions, portfolio history, and activities
+    desc: Account info, positions, portfolio history, activities, and watchlists
     contents:
       - AlpacaAccount
 
@@ -56,14 +56,16 @@ reference:
       - AlpacaOptions
 
   - title: Backfill and Data
-    desc: Bulk data download utilities
+    desc: Bulk data download and sample datasets
     contents:
       - alpaca_backfill_bars
+      - alpaca_aapl_1day_bars
 
   - title: Request Infrastructure
-    desc: Low-level request building and execution
+    desc: Low-level request building, execution, and pagination
     contents:
       - alpaca_build_request
+      - alpaca_paginate
 
 articles:
   - title: Getting Started
@@ -71,3 +73,4 @@ articles:
     contents:
       - getting-started
       - async-usage
+      - margin-short-selling

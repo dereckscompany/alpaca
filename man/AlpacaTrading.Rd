@@ -9,63 +9,51 @@ AlpacaTrading: Order Management
 AlpacaTrading: Order Management
 }
 \details{
-Provides methods for placing, cancelling, querying, and modifying orders on
-Alpaca. Inherits from \link{AlpacaBase}.
+Provides methods for placing, modifying, cancelling, and querying orders
+on Alpaca's Trading API.
+
+Inherits from \link{AlpacaBase}. All methods support both synchronous and
+asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Purpose and Scope}{
 \itemize{
-\item \strong{Order Placement}: Place market, limit, stop, stop-limit, and
-trailing-stop orders.
-\item \strong{Order Cancellation}: Cancel by order ID or cancel all open orders.
-\item \strong{Order Queries}: Retrieve order details, list open orders, list all
-orders.
-\item \strong{Order Modification}: Replace (modify) an existing order.
+\item \strong{Place Orders}: Market, limit, stop, stop-limit, and trailing stop orders.
+\item \strong{Order Classes}: Simple, bracket, OCO, and OTO orders.
+\item \strong{Modify Orders}: Replace existing orders with updated parameters.
+\item \strong{Cancel Orders}: Cancel individual orders or all open orders.
+\item \strong{Query Orders}: List open, closed, or all orders with filtering.
 }
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/orders-4}{Orders}
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
    Method \tab Endpoint \tab HTTP \cr
    add_order \tab POST /v2/orders \tab POST \cr
-   get_order \tab GET /v2/orders/{id} \tab GET \cr
-   get_order_by_client_id \tab GET /v2/orders:by_client_order_id \tab GET \cr
    get_orders \tab GET /v2/orders \tab GET \cr
-   cancel_order \tab DELETE /v2/orders/{id} \tab DELETE \cr
+   get_order \tab GET /v2/orders/{order_id} \tab GET \cr
+   modify_order \tab PATCH /v2/orders/{order_id} \tab PATCH \cr
+   cancel_order \tab DELETE /v2/orders/{order_id} \tab DELETE \cr
    cancel_all_orders \tab DELETE /v2/orders \tab DELETE \cr
-   modify_order \tab PATCH /v2/orders/{id} \tab PATCH \cr
 }
 
 }
 }
-\section{Order Types}{
-
-\itemize{
-\item \code{"market"}: Execute immediately at best available price.
-\item \code{"limit"}: Execute at a specified price or better.
-\item \code{"stop"}: Trigger a market order when the stop price is reached.
-\item \code{"stop_limit"}: Trigger a limit order when the stop price is reached.
-\item \code{"trailing_stop"}: Dynamic stop that trails the market price.
-}
-}
-
-\section{Time-In-Force Options}{
-
-\itemize{
-\item \code{"day"}: Valid for the current trading day only.
-\item \code{"gtc"} (Good Till Cancelled): Remains until filled or cancelled.
-\item \code{"opg"}: Execute at market open (Opening auction).
-\item \code{"cls"}: Execute at market close (Closing auction).
-\item \code{"ioc"} (Immediate Or Cancel): Fill immediately or cancel remainder.
-\item \code{"fok"} (Fill Or Kill): Fill entirely or cancel completely.
-}
-}
-
 \examples{
 \dontrun{
 trading <- AlpacaTrading$new()
+
+# Place a limit order
 order <- trading$add_order(
   symbol = "AAPL", side = "buy", type = "limit",
   time_in_force = "day", qty = 1, limit_price = 150
 )
 print(order)
+
+# Cancel it
+trading$cancel_order(order$id)
 }
 
 
@@ -75,26 +63,89 @@ print(order)
 
 \dontrun{
 trading <- AlpacaTrading$new()
+
+# Market order
+order <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", qty = 1
+)
+
+# Limit order
 order <- trading$add_order(
   symbol = "AAPL", side = "buy", type = "limit",
   time_in_force = "day", qty = 1, limit_price = 150
 )
+
+# Bracket order
+order <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", qty = 10, order_class = "bracket",
+  take_profit = list(limit_price = 200),
+  stop_loss = list(stop_price = 140, limit_price = 139)
+)
+}
+
+## ------------------------------------------------
+## Method `AlpacaTrading$get_orders`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+open_orders <- trading$get_orders(status = "open")
+print(open_orders)
+}
+
+## ------------------------------------------------
+## Method `AlpacaTrading$get_order`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+order <- trading$get_order("some-order-uuid")
 print(order)
+}
+
+## ------------------------------------------------
+## Method `AlpacaTrading$modify_order`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+modified <- trading$modify_order("some-order-uuid", limit_price = 155)
+print(modified)
+}
+
+## ------------------------------------------------
+## Method `AlpacaTrading$cancel_order`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+trading$cancel_order("some-order-uuid")
+}
+
+## ------------------------------------------------
+## Method `AlpacaTrading$cancel_all_orders`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+cancelled <- trading$cancel_all_orders()
+print(cancelled)
 }
 }
 \section{Super class}{
-\code{alpaca::AlpacaBase} -> \code{AlpacaTrading}
+\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaTrading}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AlpacaTrading-add_order}{\code{AlpacaTrading$add_order()}}
-\item \href{#method-AlpacaTrading-get_order}{\code{AlpacaTrading$get_order()}}
-\item \href{#method-AlpacaTrading-get_order_by_client_id}{\code{AlpacaTrading$get_order_by_client_id()}}
 \item \href{#method-AlpacaTrading-get_orders}{\code{AlpacaTrading$get_orders()}}
+\item \href{#method-AlpacaTrading-get_order}{\code{AlpacaTrading$get_order()}}
+\item \href{#method-AlpacaTrading-modify_order}{\code{AlpacaTrading$modify_order()}}
 \item \href{#method-AlpacaTrading-cancel_order}{\code{AlpacaTrading$cancel_order()}}
 \item \href{#method-AlpacaTrading-cancel_all_orders}{\code{AlpacaTrading$cancel_all_orders()}}
-\item \href{#method-AlpacaTrading-modify_order}{\code{AlpacaTrading$modify_order()}}
 \item \href{#method-AlpacaTrading-clone}{\code{AlpacaTrading$clone()}}
 }
 }
@@ -111,10 +162,26 @@ print(order)
 \subsection{Method \code{add_order()}}{
 Place an Order
 
-Places a new order on Alpaca.
+Submits a new order to Alpaca. Supports all order types including
+market, limit, stop, stop-limit, and trailing stop. Also supports
+advanced order classes (bracket, OCO, OTO).
 \subsection{API Endpoint}{
 
-\verb{POST https://api.alpaca.markets/v2/orders}
+\verb{POST https://paper-api.alpaca.markets/v2/orders}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/postorder}{Create Order}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"symbol":"AAPL","qty":"1","side":"buy","type":"market","time_in_force":"day"\}' \\
+  'https://paper-api.alpaca.markets/v2/orders'
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$add_order(
@@ -128,11 +195,12 @@ Places a new order on Alpaca.
   stop_price = NULL,
   trail_price = NULL,
   trail_percent = NULL,
-  client_order_id = NULL,
   extended_hours = NULL,
+  client_order_id = NULL,
   order_class = NULL,
   take_profit = NULL,
-  stop_loss = NULL
+  stop_loss = NULL,
+  position_intent = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -143,161 +211,88 @@ Places a new order on Alpaca.
 
 \item{\code{side}}{Character; \code{"buy"} or \code{"sell"}.}
 
-\item{\code{type}}{Character; \code{"market"}, \code{"limit"}, \code{"stop"}, \code{"stop_limit"},
-or \code{"trailing_stop"}.}
+\item{\code{type}}{Character; order type: \code{"market"}, \code{"limit"}, \code{"stop"},
+\code{"stop_limit"}, \code{"trailing_stop"}.}
 
-\item{\code{time_in_force}}{Character; \code{"day"}, \code{"gtc"}, \code{"opg"}, \code{"cls"},
-\code{"ioc"}, or \code{"fok"}.}
+\item{\code{time_in_force}}{Character; \code{"day"}, \code{"gtc"}, \code{"opg"}, \code{"cls"}, \code{"ioc"}, \code{"fok"}.}
 
-\item{\code{qty}}{Numeric or NULL; number of shares.}
+\item{\code{qty}}{Numeric or NULL; number of shares. Mutually exclusive with \code{notional}.}
 
-\item{\code{notional}}{Numeric or NULL; dollar amount (market orders only).}
+\item{\code{notional}}{Numeric or NULL; dollar amount. Market/day orders only.}
 
-\item{\code{limit_price}}{Numeric or NULL; limit price.}
+\item{\code{limit_price}}{Numeric or NULL; limit price. Required for \code{"limit"} and
+\code{"stop_limit"} orders.}
 
-\item{\code{stop_price}}{Numeric or NULL; stop trigger price.}
+\item{\code{stop_price}}{Numeric or NULL; stop trigger price. Required for \code{"stop"} and
+\code{"stop_limit"} orders.}
 
 \item{\code{trail_price}}{Numeric or NULL; trailing stop dollar offset.}
 
-\item{\code{trail_percent}}{Numeric or NULL; trailing stop percentage.}
+\item{\code{trail_percent}}{Numeric or NULL; trailing stop percentage offset.}
 
-\item{\code{client_order_id}}{Character or NULL; unique client order ID (max 48
-chars).}
+\item{\code{extended_hours}}{Logical or NULL; allow pre/post market execution.}
 
-\item{\code{extended_hours}}{Logical or NULL; allow extended-hours trading.}
+\item{\code{client_order_id}}{Character or NULL; unique client order ID (max 128 chars).}
 
-\item{\code{order_class}}{Character or NULL; \code{"simple"}, \code{"bracket"}, \code{"oco"},
-or \code{"oto"}.}
+\item{\code{order_class}}{Character or NULL; \code{"simple"}, \code{"bracket"}, \code{"oco"}, \code{"oto"}.}
 
-\item{\code{take_profit}}{List or NULL; take-profit leg for bracket/OTO orders.}
+\item{\code{take_profit}}{List or NULL; \code{list(limit_price = ...)} for bracket orders.}
 
-\item{\code{stop_loss}}{List or NULL; stop-loss leg for bracket/OTO orders.}
+\item{\code{stop_loss}}{List or NULL; \code{list(stop_price = ..., limit_price = ...)} for bracket orders.}
+
+\item{\code{position_intent}}{Character or NULL; \code{"buy_to_open"}, \code{"buy_to_close"},
+\code{"sell_to_open"}, \code{"sell_to_close"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the following columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{id} (character): Unique order UUID.
-\item \code{client_order_id} (character): Client-assigned order ID.
-\item \code{created_at} (POSIXct): Order creation time.
-\item \code{updated_at} (POSIXct): Last update time.
-\item \code{submitted_at} (POSIXct): Order submission time.
-\item \code{filled_at} (POSIXct): Time the order was filled (NA if not filled).
-\item \code{expired_at} (POSIXct): Time the order expired (NA if not expired).
-\item \code{canceled_at} (POSIXct): Time the order was cancelled (NA if not
-cancelled).
-\item \code{asset_id} (character): Asset UUID.
+\item \code{id} (character): Order UUID.
+\item \code{client_order_id} (character): Client order ID.
 \item \code{symbol} (character): Ticker symbol.
-\item \code{asset_class} (character): Asset class (e.g., \code{"us_equity"}).
-\item \code{qty} (character): Ordered quantity.
+\item \code{side} (character): \code{"buy"} or \code{"sell"}.
+\item \code{type} (character): Order type.
+\item \code{time_in_force} (character): Time in force.
+\item \code{status} (character): Order status (e.g., \code{"accepted"}, \code{"new"}, \code{"filled"}).
+\item \code{qty} (character): Requested quantity.
 \item \code{filled_qty} (character): Quantity filled so far.
 \item \code{filled_avg_price} (character): Average fill price.
-\item \code{order_class} (character): Order class.
-\item \code{type} (character): Order type.
-\item \code{side} (character): \code{"buy"} or \code{"sell"}.
-\item \code{time_in_force} (character): Time-in-force policy.
-\item \code{limit_price} (character): Limit price (if applicable).
-\item \code{stop_price} (character): Stop price (if applicable).
-\item \code{status} (character): Order status (\code{"new"}, \code{"filled"}, \code{"canceled"},
-etc.).
-\item \code{extended_hours} (logical): Whether extended-hours trading is enabled.
+\item \code{limit_price} (character): Limit price (if set).
+\item \code{stop_price} (character): Stop price (if set).
+\item \code{created_at} (character): Order creation timestamp.
 }
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{\dontrun{
 trading <- AlpacaTrading$new()
+
+# Market order
+order <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", qty = 1
+)
+
+# Limit order
 order <- trading$add_order(
   symbol = "AAPL", side = "buy", type = "limit",
   time_in_force = "day", qty = 1, limit_price = 150
 )
-print(order)
+
+# Bracket order
+order <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "market",
+  time_in_force = "day", qty = 10, order_class = "bracket",
+  take_profit = list(limit_price = 200),
+  stop_loss = list(stop_price = 140, limit_price = 139)
+)
 }
 }
 \if{html}{\out{</div>}}
 
 }
 
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaTrading-get_order"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaTrading-get_order}{}}}
-\subsection{Method \code{get_order()}}{
-Get Order by ID
-
-Retrieves details for a specific order by its UUID.
-\subsection{API Endpoint}{
-
-\verb{GET https://api.alpaca.markets/v2/orders/\{order_id\}}
-}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order(order_id, nested = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{order_id}}{Character; the order UUID.}
-
-\item{\code{nested}}{Logical or NULL; if \code{TRUE}, include nested order objects.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{data.table} with one row and the following columns:
-\itemize{
-\item \code{id} (character): Unique order UUID.
-\item \code{client_order_id} (character): Client-assigned order ID.
-\item \code{created_at} (POSIXct): Order creation time.
-\item \code{updated_at} (POSIXct): Last update time.
-\item \code{submitted_at} (POSIXct): Order submission time.
-\item \code{filled_at} (POSIXct): Time the order was filled (NA if not filled).
-\item \code{expired_at} (POSIXct): Time the order expired (NA if not expired).
-\item \code{canceled_at} (POSIXct): Time the order was cancelled (NA if not
-cancelled).
-\item \code{asset_id} (character): Asset UUID.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{asset_class} (character): Asset class.
-\item \code{qty} (character): Ordered quantity.
-\item \code{filled_qty} (character): Quantity filled so far.
-\item \code{filled_avg_price} (character): Average fill price.
-\item \code{order_class} (character): Order class.
-\item \code{type} (character): Order type.
-\item \code{side} (character): \code{"buy"} or \code{"sell"}.
-\item \code{time_in_force} (character): Time-in-force policy.
-\item \code{limit_price} (character): Limit price (if applicable).
-\item \code{stop_price} (character): Stop price (if applicable).
-\item \code{status} (character): Order status.
-\item \code{extended_hours} (logical): Whether extended-hours trading is enabled.
-}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaTrading-get_order_by_client_id"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaTrading-get_order_by_client_id}{}}}
-\subsection{Method \code{get_order_by_client_id()}}{
-Get Order by Client Order ID
-
-Retrieves details for a specific order by its client order ID.
-\subsection{API Endpoint}{
-
-\verb{GET https://api.alpaca.markets/v2/orders:by_client_order_id}
-}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order_by_client_id(client_order_id)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{client_order_id}}{Character; the client-assigned order ID.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\code{data.table} with one row and the same columns as \code{\link[=get_order]{get_order()}}.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaTrading-get_orders"></a>}}
@@ -305,11 +300,16 @@ Retrieves details for a specific order by its client order ID.
 \subsection{Method \code{get_orders()}}{
 List Orders
 
-Retrieves a list of orders, with optional filtering by status, date
-range, and direction.
+Retrieves a list of orders with optional filtering by status, symbol,
+side, and date range. Supports pagination.
 \subsection{API Endpoint}{
 
-\verb{GET https://api.alpaca.markets/v2/orders}
+\verb{GET https://paper-api.alpaca.markets/v2/orders}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getallorders}{List Orders}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_orders(
@@ -327,117 +327,97 @@ range, and direction.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{status}}{Character or NULL; \code{"open"}, \code{"closed"}, or \code{"all"}.
-Default \code{"open"}.}
+\item{\code{status}}{Character or NULL; \code{"open"}, \code{"closed"}, \code{"all"}. Default \code{"open"}.}
 
-\item{\code{limit}}{Integer or NULL; max orders to return (default 50, max 500).}
+\item{\code{limit}}{Integer or NULL; max orders (default 50, max 500).}
 
-\item{\code{after}}{Character or NULL; return orders after this timestamp.}
+\item{\code{after}}{Character or NULL; only orders submitted after this timestamp.}
 
-\item{\code{until}}{Character or NULL; return orders until this timestamp.}
+\item{\code{until}}{Character or NULL; only orders submitted before this timestamp.}
 
 \item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{nested}}{Logical or NULL; if \code{TRUE}, include nested order objects.}
+\item{\code{nested}}{Logical or NULL; roll up multi-leg orders under \code{legs}.}
 
-\item{\code{symbols}}{Character or NULL; comma-separated list of symbols to
-filter.}
+\item{\code{symbols}}{Character or NULL; comma-separated symbol filter.}
 
-\item{\code{side}}{Character or NULL; \code{"buy"} or \code{"sell"}.}
+\item{\code{side}}{Character or NULL; filter by side.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row per order and the following columns:
-\itemize{
-\item \code{id} (character): Unique order UUID.
-\item \code{client_order_id} (character): Client-assigned order ID.
-\item \code{created_at} (POSIXct): Order creation time.
-\item \code{updated_at} (POSIXct): Last update time.
-\item \code{submitted_at} (POSIXct): Order submission time.
-\item \code{filled_at} (POSIXct): Time the order was filled.
-\item \code{expired_at} (POSIXct): Time the order expired.
-\item \code{canceled_at} (POSIXct): Time the order was cancelled.
-\item \code{asset_id} (character): Asset UUID.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{asset_class} (character): Asset class.
-\item \code{qty} (character): Ordered quantity.
-\item \code{filled_qty} (character): Quantity filled so far.
-\item \code{filled_avg_price} (character): Average fill price.
-\item \code{order_class} (character): Order class.
-\item \code{type} (character): Order type.
-\item \code{side} (character): \code{"buy"} or \code{"sell"}.
-\item \code{time_in_force} (character): Time-in-force policy.
-\item \code{limit_price} (character): Limit price (if applicable).
-\item \code{stop_price} (character): Stop price (if applicable).
-\item \code{status} (character): Order status.
-\item \code{extended_hours} (logical): Whether extended-hours trading is enabled.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the same columns as \code{\link[=add_order]{add_order()}} return value.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+open_orders <- trading$get_orders(status = "open")
+print(open_orders)
 }
 }
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaTrading-cancel_order"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaTrading-cancel_order}{}}}
-\subsection{Method \code{cancel_order()}}{
-Cancel an Order
+\if{html}{\out{<a id="method-AlpacaTrading-get_order"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaTrading-get_order}{}}}
+\subsection{Method \code{get_order()}}{
+Get Order by ID
 
-Cancels an open order by its UUID.
+Retrieves a single order by its UUID.
 \subsection{API Endpoint}{
 
-\verb{DELETE https://api.alpaca.markets/v2/orders/\{order_id\}}
+\verb{GET https://paper-api.alpaca.markets/v2/orders/\{order_id\}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_order(order_id)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order(order_id, nested = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{order_id}}{Character; the order UUID to cancel.}
+\item{\code{order_id}}{Character; order UUID.}
+
+\item{\code{nested}}{Logical or NULL; include leg orders.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (empty on success, confirming cancellation).
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+order <- trading$get_order("some-order-uuid")
+print(order)
 }
 }
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-AlpacaTrading-cancel_all_orders"></a>}}
-\if{latex}{\out{\hypertarget{method-AlpacaTrading-cancel_all_orders}{}}}
-\subsection{Method \code{cancel_all_orders()}}{
-Cancel All Open Orders
+\if{html}{\out{</div>}}
 
-Cancels all open orders.
-\subsection{API Endpoint}{
-
-\verb{DELETE https://api.alpaca.markets/v2/orders}
-}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_all_orders()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-\code{data.table} with one row per cancelled order and the following
-columns:
-\itemize{
-\item \code{id} (character): Order UUID that was cancelled.
-\item \code{status} (integer): HTTP status code of the cancellation (200 on
-success).
-\item \code{body} (list): Response body of the cancelled order.
-}
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaTrading-modify_order"></a>}}
 \if{latex}{\out{\hypertarget{method-AlpacaTrading-modify_order}{}}}
 \subsection{Method \code{modify_order()}}{
-Modify (Replace) an Order
+Replace (Modify) an Order
 
 Replaces an existing order with updated parameters. The original order
-is cancelled and a new order is created.
+is cancelled and a new order is created atomically.
 \subsection{API Endpoint}{
 
-\verb{PATCH https://api.alpaca.markets/v2/orders/\{order_id\}}
+\verb{PATCH https://paper-api.alpaca.markets/v2/orders/\{order_id\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/patchorder}{Replace Order}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$modify_order(
@@ -454,26 +434,112 @@ is cancelled and a new order is created.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{order_id}}{Character; the order UUID to replace.}
+\item{\code{order_id}}{Character; order UUID to replace.}
 
 \item{\code{qty}}{Numeric or NULL; new quantity.}
 
-\item{\code{time_in_force}}{Character or NULL; new time-in-force.}
+\item{\code{time_in_force}}{Character or NULL; new time in force.}
 
 \item{\code{limit_price}}{Numeric or NULL; new limit price.}
 
 \item{\code{stop_price}}{Numeric or NULL; new stop price.}
 
-\item{\code{trail}}{Numeric or NULL; new trail price or percentage.}
+\item{\code{trail}}{Numeric or NULL; new trail value.}
 
 \item{\code{client_order_id}}{Character or NULL; new client order ID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} with one row and the same columns as
-\code{\link[=add_order]{add_order()}}.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the replacement order details.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+modified <- trading$modify_order("some-order-uuid", limit_price = 155)
+print(modified)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaTrading-cancel_order"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaTrading-cancel_order}{}}}
+\subsection{Method \code{cancel_order()}}{
+Cancel an Order
+
+Cancels a single open order by its UUID.
+\subsection{API Endpoint}{
+
+\verb{DELETE https://paper-api.alpaca.markets/v2/orders/\{order_id\}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_order(order_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{order_id}}{Character; order UUID to cancel.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Empty \code{data.table} on success (HTTP 204), or a \code{promise} thereof.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+trading$cancel_order("some-order-uuid")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaTrading-cancel_all_orders"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaTrading-cancel_all_orders}{}}}
+\subsection{Method \code{cancel_all_orders()}}{
+Cancel All Open Orders
+
+Cancels all open orders. Returns a list of orders that were cancelled.
+\subsection{API Endpoint}{
+
+\verb{DELETE https://paper-api.alpaca.markets/v2/orders}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deleteallorders}{Cancel All Orders}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_all_orders()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+cancelled order details.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+cancelled <- trading$cancel_all_orders()
+print(cancelled)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-AlpacaTrading-clone"></a>}}
