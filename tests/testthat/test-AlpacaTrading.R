@@ -16,8 +16,12 @@ test_that("add_order returns order data.table", {
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_trading()$add_order(
-    symbol = "AAPL", side = "buy", type = "limit",
-    time_in_force = "day", qty = 1, limit_price = 150
+    symbol = "AAPL",
+    side = "buy",
+    type = "limit",
+    time_in_force = "day",
+    qty = 1,
+    limit_price = 150
   )
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
@@ -35,8 +39,11 @@ test_that("add_order sends POST to /v2/orders", {
   })
 
   new_trading()$add_order(
-    symbol = "AAPL", side = "buy", type = "market",
-    time_in_force = "day", qty = 1
+    symbol = "AAPL",
+    side = "buy",
+    type = "market",
+    time_in_force = "day",
+    qty = 1
   )
 
   expect_equal(captured_req$method, "POST")

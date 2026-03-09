@@ -47,8 +47,26 @@ mock_no_content_response <- function() {
 mock_bars_response <- function() {
   list(
     bars = list(
-      list(t = "2024-01-02T05:00:00Z", o = 187.15, h = 188.44, l = 183.89, c = 185.64, v = 82488700L, n = 1036517L, vw = 185.831),
-      list(t = "2024-01-03T05:00:00Z", o = 184.22, h = 185.88, l = 183.43, c = 184.25, v = 58414500L, n = 729382L, vw = 184.567)
+      list(
+        t = "2024-01-02T05:00:00Z",
+        o = 187.15,
+        h = 188.44,
+        l = 183.89,
+        c = 185.64,
+        v = 82488700L,
+        n = 1036517L,
+        vw = 185.831
+      ),
+      list(
+        t = "2024-01-03T05:00:00Z",
+        o = 184.22,
+        h = 185.88,
+        l = 183.43,
+        c = 184.25,
+        v = 58414500L,
+        n = 729382L,
+        vw = 184.567
+      )
     ),
     symbol = "AAPL",
     next_page_token = NULL
@@ -59,10 +77,28 @@ mock_multi_bars_response <- function() {
   list(
     bars = list(
       AAPL = list(
-        list(t = "2024-01-02T05:00:00Z", o = 187.15, h = 188.44, l = 183.89, c = 185.64, v = 82488700L, n = 1036517L, vw = 185.831)
+        list(
+          t = "2024-01-02T05:00:00Z",
+          o = 187.15,
+          h = 188.44,
+          l = 183.89,
+          c = 185.64,
+          v = 82488700L,
+          n = 1036517L,
+          vw = 185.831
+        )
       ),
       MSFT = list(
-        list(t = "2024-01-02T05:00:00Z", o = 373.00, h = 375.50, l = 371.20, c = 374.30, v = 25100000L, n = 425000L, vw = 373.890)
+        list(
+          t = "2024-01-02T05:00:00Z",
+          o = 373.00,
+          h = 375.50,
+          l = 371.20,
+          c = 374.30,
+          v = 25100000L,
+          n = 425000L,
+          vw = 373.890
+        )
       )
     ),
     next_page_token = NULL
@@ -103,16 +139,65 @@ mock_snapshot_response <- function() {
   list(
     latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L),
     latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L),
-    minuteBar = list(t = "2024-01-15T14:30:00Z", o = 185.40, h = 185.60, l = 185.30, c = 185.50, v = 5000L, n = 50L, vw = 185.45),
-    dailyBar = list(t = "2024-01-15T05:00:00Z", o = 184.00, h = 186.00, l = 183.50, c = 185.50, v = 50000000L, n = 500000L, vw = 185.00),
-    prevDailyBar = list(t = "2024-01-14T05:00:00Z", o = 183.00, h = 185.00, l = 182.50, c = 184.00, v = 45000000L, n = 450000L, vw = 183.80)
+    minuteBar = list(
+      t = "2024-01-15T14:30:00Z",
+      o = 185.40,
+      h = 185.60,
+      l = 185.30,
+      c = 185.50,
+      v = 5000L,
+      n = 50L,
+      vw = 185.45
+    ),
+    dailyBar = list(
+      t = "2024-01-15T05:00:00Z",
+      o = 184.00,
+      h = 186.00,
+      l = 183.50,
+      c = 185.50,
+      v = 50000000L,
+      n = 500000L,
+      vw = 185.00
+    ),
+    prevDailyBar = list(
+      t = "2024-01-14T05:00:00Z",
+      o = 183.00,
+      h = 185.00,
+      l = 182.50,
+      c = 184.00,
+      v = 45000000L,
+      n = 450000L,
+      vw = 183.80
+    )
   )
 }
 
 mock_assets_response <- function() {
   list(
-    list(id = "uuid-1", class = "us_equity", exchange = "NASDAQ", symbol = "AAPL", name = "Apple Inc.", status = "active", tradable = TRUE, marginable = TRUE, shortable = TRUE, fractionable = TRUE),
-    list(id = "uuid-2", class = "us_equity", exchange = "NASDAQ", symbol = "MSFT", name = "Microsoft Corporation", status = "active", tradable = TRUE, marginable = TRUE, shortable = TRUE, fractionable = TRUE)
+    list(
+      id = "uuid-1",
+      class = "us_equity",
+      exchange = "NASDAQ",
+      symbol = "AAPL",
+      name = "Apple Inc.",
+      status = "active",
+      tradable = TRUE,
+      marginable = TRUE,
+      shortable = TRUE,
+      fractionable = TRUE
+    ),
+    list(
+      id = "uuid-2",
+      class = "us_equity",
+      exchange = "NASDAQ",
+      symbol = "MSFT",
+      name = "Microsoft Corporation",
+      status = "active",
+      tradable = TRUE,
+      marginable = TRUE,
+      shortable = TRUE,
+      fractionable = TRUE
+    )
   )
 }
 
@@ -155,8 +240,26 @@ mock_order_response <- function() {
 
 mock_orders_list_response <- function() {
   list(
-    list(id = "order-1", symbol = "AAPL", side = "buy", type = "limit", status = "new", qty = "1", filled_qty = "0", created_at = "2024-01-15T14:30:00Z"),
-    list(id = "order-2", symbol = "MSFT", side = "sell", type = "market", status = "filled", qty = "10", filled_qty = "10", created_at = "2024-01-15T14:31:00Z")
+    list(
+      id = "order-1",
+      symbol = "AAPL",
+      side = "buy",
+      type = "limit",
+      status = "new",
+      qty = "1",
+      filled_qty = "0",
+      created_at = "2024-01-15T14:30:00Z"
+    ),
+    list(
+      id = "order-2",
+      symbol = "MSFT",
+      side = "sell",
+      type = "market",
+      status = "filled",
+      qty = "10",
+      filled_qty = "10",
+      created_at = "2024-01-15T14:31:00Z"
+    )
   )
 }
 
@@ -224,8 +327,24 @@ mock_portfolio_history_response <- function() {
 
 mock_activities_response <- function() {
   list(
-    list(id = "act-1", activity_type = "FILL", symbol = "AAPL", side = "buy", qty = "10", price = "185.50", transaction_time = "2024-01-15T14:30:00Z"),
-    list(id = "act-2", activity_type = "FILL", symbol = "MSFT", side = "sell", qty = "5", price = "374.00", transaction_time = "2024-01-15T14:31:00Z")
+    list(
+      id = "act-1",
+      activity_type = "FILL",
+      symbol = "AAPL",
+      side = "buy",
+      qty = "10",
+      price = "185.50",
+      transaction_time = "2024-01-15T14:30:00Z"
+    ),
+    list(
+      id = "act-2",
+      activity_type = "FILL",
+      symbol = "MSFT",
+      side = "sell",
+      qty = "5",
+      price = "374.00",
+      transaction_time = "2024-01-15T14:31:00Z"
+    )
   )
 }
 

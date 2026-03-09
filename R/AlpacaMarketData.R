@@ -398,8 +398,12 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.data_request(
         endpoint = endpoint,
         query = list(
-          start = start, end = end, limit = limit,
-          feed = feed, sort = sort, page_token = page_token
+          start = start,
+          end = end,
+          limit = limit,
+          feed = feed,
+          sort = sort,
+          page_token = page_token
         ),
         .parser = function(data) parse_trades(data$trades)
       ))
@@ -435,8 +439,12 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.data_request(
         endpoint = endpoint,
         query = list(
-          start = start, end = end, limit = limit,
-          feed = feed, sort = sort, page_token = page_token
+          start = start,
+          end = end,
+          limit = limit,
+          feed = feed,
+          sort = sort,
+          page_token = page_token
         ),
         .parser = function(data) parse_quotes(data$quotes)
       ))

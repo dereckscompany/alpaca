@@ -68,12 +68,24 @@ validate_order_params <- function(
   }
 
   # Convert numerics to character for the API
-  if (!is.null(qty)) qty <- as.character(qty)
-  if (!is.null(notional)) notional <- as.character(notional)
-  if (!is.null(limit_price)) limit_price <- as.character(limit_price)
-  if (!is.null(stop_price)) stop_price <- as.character(stop_price)
-  if (!is.null(trail_price)) trail_price <- as.character(trail_price)
-  if (!is.null(trail_percent)) trail_percent <- as.character(trail_percent)
+  if (!is.null(qty)) {
+    qty <- as.character(qty)
+  }
+  if (!is.null(notional)) {
+    notional <- as.character(notional)
+  }
+  if (!is.null(limit_price)) {
+    limit_price <- as.character(limit_price)
+  }
+  if (!is.null(stop_price)) {
+    stop_price <- as.character(stop_price)
+  }
+  if (!is.null(trail_price)) {
+    trail_price <- as.character(trail_price)
+  }
+  if (!is.null(trail_percent)) {
+    trail_percent <- as.character(trail_percent)
+  }
 
   # Type-specific validation
   if (type == "market") {
@@ -84,17 +96,27 @@ validate_order_params <- function(
       rlang::abort("Parameters 'qty' and 'notional' are mutually exclusive.")
     }
   } else if (type == "limit") {
-    if (is.null(qty)) rlang::abort("Parameter 'qty' is required for limit orders.")
+    if (is.null(qty)) {
+      rlang::abort("Parameter 'qty' is required for limit orders.")
+    }
     if (is.null(limit_price)) rlang::abort("Parameter 'limit_price' is required for limit orders.")
   } else if (type == "stop") {
-    if (is.null(qty)) rlang::abort("Parameter 'qty' is required for stop orders.")
+    if (is.null(qty)) {
+      rlang::abort("Parameter 'qty' is required for stop orders.")
+    }
     if (is.null(stop_price)) rlang::abort("Parameter 'stop_price' is required for stop orders.")
   } else if (type == "stop_limit") {
-    if (is.null(qty)) rlang::abort("Parameter 'qty' is required for stop-limit orders.")
-    if (is.null(stop_price)) rlang::abort("Parameter 'stop_price' is required for stop-limit orders.")
+    if (is.null(qty)) {
+      rlang::abort("Parameter 'qty' is required for stop-limit orders.")
+    }
+    if (is.null(stop_price)) {
+      rlang::abort("Parameter 'stop_price' is required for stop-limit orders.")
+    }
     if (is.null(limit_price)) rlang::abort("Parameter 'limit_price' is required for stop-limit orders.")
   } else if (type == "trailing_stop") {
-    if (is.null(qty)) rlang::abort("Parameter 'qty' is required for trailing stop orders.")
+    if (is.null(qty)) {
+      rlang::abort("Parameter 'qty' is required for trailing stop orders.")
+    }
     if (is.null(trail_price) && is.null(trail_percent)) {
       rlang::abort("Either 'trail_price' or 'trail_percent' must be specified for trailing stop orders.")
     }

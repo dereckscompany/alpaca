@@ -54,8 +54,12 @@ alpaca_backfill_bars <- function(
   keys = get_api_keys(),
   data_base_url = get_data_base_url()
 ) {
-  if (is.character(start)) start <- as.POSIXct(start, tz = "UTC")
-  if (is.character(end)) end <- as.POSIXct(end, tz = "UTC")
+  if (is.character(start)) {
+    start <- as.POSIXct(start, tz = "UTC")
+  }
+  if (is.character(end)) {
+    end <- as.POSIXct(end, tz = "UTC")
+  }
 
   # Read existing CSV for resume support
   existing <- data.table::data.table()
@@ -65,13 +69,11 @@ alpaca_backfill_bars <- function(
     if (nrow(existing) > 0 && all(c("symbol", "timeframe") %in% names(existing))) {
       completed <- unique(paste(existing$symbol, existing$timeframe, sep = "|"))
     }
-    message(sprintf("Resuming: %d existing rows, %d combos already done.",
-                     nrow(existing), length(completed)))
+    message(sprintf("Resuming: %d existing rows, %d combos already done.", nrow(existing), length(completed)))
   }
 
   # Build task grid
-  tasks <- expand.grid(symbol = symbols, timeframe = timeframes,
-                       stringsAsFactors = FALSE)
+  tasks <- expand.grid(symbol = symbols, timeframe = timeframes, stringsAsFactors = FALSE)
   tasks$key <- paste(tasks$symbol, tasks$timeframe, sep = "|")
   tasks <- tasks[!tasks$key %in% completed, , drop = FALSE]
 
@@ -90,22 +92,25 @@ alpaca_backfill_bars <- function(
     tf <- tasks$timeframe[i]
     message(sprintf("  [%d/%d] %s %s", i, nrow(tasks), sym, tf))
 
-    dt <- tryCatch({
-      alpaca_fetch_bars(
-        symbol = sym,
-        timeframe = tf,
-        start = start,
-        end = end,
-        keys = keys,
-        data_base_url = data_base_url,
-        adjustment = adjustment,
-        feed = feed,
-        sleep = sleep
-      )
-    }, error = function(e) {
-      message(sprintf("    ERROR: %s", conditionMessage(e)))
-      NULL
-    })
+    dt <- tryCatch(
+      {
+        alpaca_fetch_bars(
+          symbol = sym,
+          timeframe = tf,
+          start = start,
+          end = end,
+          keys = keys,
+          data_base_url = data_base_url,
+          adjustment = adjustment,
+          feed = feed,
+          sleep = sleep
+        )
+      },
+      error = function(e) {
+        message(sprintf("    ERROR: %s", conditionMessage(e)))
+        NULL
+      }
+    )
 
     if (!is.null(dt) && nrow(dt) > 0) {
       dt[, symbol := sym]

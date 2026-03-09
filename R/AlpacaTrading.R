@@ -300,10 +300,18 @@ AlpacaTrading <- R6::R6Class(
       trail = NULL,
       client_order_id = NULL
     ) {
-      if (!is.null(qty)) qty <- as.character(qty)
-      if (!is.null(limit_price)) limit_price <- as.character(limit_price)
-      if (!is.null(stop_price)) stop_price <- as.character(stop_price)
-      if (!is.null(trail)) trail <- as.character(trail)
+      if (!is.null(qty)) {
+        qty <- as.character(qty)
+      }
+      if (!is.null(limit_price)) {
+        limit_price <- as.character(limit_price)
+      }
+      if (!is.null(stop_price)) {
+        stop_price <- as.character(stop_price)
+      }
+      if (!is.null(trail)) {
+        trail <- as.character(trail)
+      }
 
       endpoint <- paste0("/v2/orders/", order_id)
       return(private$.request(

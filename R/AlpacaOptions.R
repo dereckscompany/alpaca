@@ -176,8 +176,12 @@ AlpacaOptions <- R6::R6Class(
       limit = NULL,
       page_token = NULL
     ) {
-      if (!is.null(strike_price_gte)) strike_price_gte <- as.character(strike_price_gte)
-      if (!is.null(strike_price_lte)) strike_price_lte <- as.character(strike_price_lte)
+      if (!is.null(strike_price_gte)) {
+        strike_price_gte <- as.character(strike_price_gte)
+      }
+      if (!is.null(strike_price_lte)) {
+        strike_price_lte <- as.character(strike_price_lte)
+      }
 
       return(private$.request(
         endpoint = "/v2/options/contracts",
@@ -352,7 +356,9 @@ AlpacaOptions <- R6::R6Class(
           }
           dts <- lapply(names(quotes_map), function(sym) {
             dt <- parse_quotes(list(quotes_map[[sym]]))
-            if (nrow(dt) > 0) dt[, symbol := sym]
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
             return(dt)
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
@@ -388,7 +394,9 @@ AlpacaOptions <- R6::R6Class(
           }
           dts <- lapply(names(snaps), function(sym) {
             dt <- parse_snapshot(snaps[[sym]])
-            if (nrow(dt) > 0) dt[, symbol := sym]
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
             return(dt)
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)

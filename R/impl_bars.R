@@ -9,9 +9,16 @@
 #' @keywords internal
 #' @noRd
 alpaca_timeframe_map <- c(
-  "1Min" = 60, "5Min" = 300, "15Min" = 900, "30Min" = 1800,
-  "1Hour" = 3600, "2Hour" = 7200, "4Hour" = 14400,
-  "1Day" = 86400, "1Week" = 604800, "1Month" = 2592000
+  "1Min" = 60,
+  "5Min" = 300,
+  "15Min" = 900,
+  "30Min" = 1800,
+  "1Hour" = 3600,
+  "2Hour" = 7200,
+  "4Hour" = 14400,
+  "1Day" = 86400,
+  "1Week" = 604800,
+  "1Month" = 2592000
 )
 
 #' Fetch Bars with Time-Range Segmentation
@@ -52,13 +59,21 @@ alpaca_fetch_bars <- function(
   sleep = 0.2
 ) {
   # Convert to POSIXct if needed
-  if (is.character(start)) start <- as.POSIXct(start, tz = "UTC")
-  if (is.character(end)) end <- as.POSIXct(end, tz = "UTC")
+  if (is.character(start)) {
+    start <- as.POSIXct(start, tz = "UTC")
+  }
+  if (is.character(end)) {
+    end <- as.POSIXct(end, tz = "UTC")
+  }
 
   bar_seconds <- alpaca_timeframe_map[[timeframe]]
   if (is.null(bar_seconds)) {
-    rlang::abort(paste0("Unknown timeframe: ", timeframe, ". Valid: ",
-                        paste(names(alpaca_timeframe_map), collapse = ", ")))
+    rlang::abort(paste0(
+      "Unknown timeframe: ",
+      timeframe,
+      ". Valid: ",
+      paste(names(alpaca_timeframe_map), collapse = ", ")
+    ))
   }
 
   # Compute segments

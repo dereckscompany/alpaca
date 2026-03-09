@@ -272,8 +272,12 @@ AlpacaAccount <- R6::R6Class(
       if (!is.null(qty) && !is.null(percentage)) {
         rlang::abort("`qty` and `percentage` are mutually exclusive.")
       }
-      if (!is.null(qty)) qty <- as.character(qty)
-      if (!is.null(percentage)) percentage <- as.character(percentage)
+      if (!is.null(qty)) {
+        qty <- as.character(qty)
+      }
+      if (!is.null(percentage)) {
+        percentage <- as.character(percentage)
+      }
 
       endpoint <- paste0("/v2/positions/", symbol_or_id)
       return(private$.request(
