@@ -78,3 +78,51 @@ test_that("get_option_snapshot uses data base URL", {
   expect_true(grepl("data\\.alpaca\\.markets", captured_url))
   expect_true(grepl("v1beta1/options/snapshots", captured_url))
 })
+
+test_that("get_option_latest_trades returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_option_latest_trades_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_options()$get_option_latest_trades("AAPL240621C00200000")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_true("symbol" %in% names(dt))
+  expect_equal(dt$symbol, "AAPL240621C00200000")
+})
+
+test_that("get_option_latest_trades uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_option_latest_trades_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_options()$get_option_latest_trades("AAPL240621C00200000")
+  expect_true(grepl("v1beta1/options/trades/latest", captured_url))
+  expect_true(grepl("data\\.alpaca\\.markets", captured_url))
+})
+
+test_that("get_option_chain returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_option_chain_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_options()$get_option_chain("AAPL")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  expect_true("symbol" %in% names(dt))
+  expect_equal(names(dt)[1], "symbol")
+})
+
+test_that("get_option_chain uses correct endpoint and data base URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_option_chain_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_options()$get_option_chain("AAPL", type = "call")
+  expect_true(grepl("v1beta1/options/snapshots/AAPL", captured_url))
+  expect_true(grepl("data\\.alpaca\\.markets", captured_url))
+})

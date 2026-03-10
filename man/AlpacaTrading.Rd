@@ -34,6 +34,7 @@ asynchronous execution depending on the \code{async} parameter at construction.
    add_order \tab POST /v2/orders \tab POST \cr
    get_orders \tab GET /v2/orders \tab GET \cr
    get_order \tab GET /v2/orders/{order_id} \tab GET \cr
+   get_order_by_client_id \tab GET /v2/orders:by_client_order_id \tab GET \cr
    modify_order \tab PATCH /v2/orders/{order_id} \tab PATCH \cr
    cancel_order \tab DELETE /v2/orders/{order_id} \tab DELETE \cr
    cancel_all_orders \tab DELETE /v2/orders \tab DELETE \cr
@@ -106,6 +107,16 @@ print(order)
 }
 
 ## ------------------------------------------------
+## Method `AlpacaTrading$get_order_by_client_id`
+## ------------------------------------------------
+
+\dontrun{
+trading <- AlpacaTrading$new()
+order <- trading$get_order_by_client_id("my-unique-order-id")
+print(order)
+}
+
+## ------------------------------------------------
 ## Method `AlpacaTrading$modify_order`
 ## ------------------------------------------------
 
@@ -143,6 +154,7 @@ print(cancelled)
 \item \href{#method-AlpacaTrading-add_order}{\code{AlpacaTrading$add_order()}}
 \item \href{#method-AlpacaTrading-get_orders}{\code{AlpacaTrading$get_orders()}}
 \item \href{#method-AlpacaTrading-get_order}{\code{AlpacaTrading$get_order()}}
+\item \href{#method-AlpacaTrading-get_order_by_client_id}{\code{AlpacaTrading$get_order_by_client_id()}}
 \item \href{#method-AlpacaTrading-modify_order}{\code{AlpacaTrading$modify_order()}}
 \item \href{#method-AlpacaTrading-cancel_order}{\code{AlpacaTrading$cancel_order()}}
 \item \href{#method-AlpacaTrading-cancel_all_orders}{\code{AlpacaTrading$cancel_all_orders()}}
@@ -394,6 +406,45 @@ Retrieves a single order by its UUID.
 \preformatted{\dontrun{
 trading <- AlpacaTrading$new()
 order <- trading$get_order("some-order-uuid")
+print(order)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaTrading-get_order_by_client_id"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaTrading-get_order_by_client_id}{}}}
+\subsection{Method \code{get_order_by_client_id()}}{
+Get Order by Client Order ID
+
+Retrieves a single order by its client order ID. Useful for idempotent
+order tracking in production systems.
+\subsection{API Endpoint}{
+
+\verb{GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order_by_client_id(client_order_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{client_order_id}}{Character; the client order ID (max 128 chars).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+trading <- AlpacaTrading$new()
+order <- trading$get_order_by_client_id("my-unique-order-id")
 print(order)
 }
 }

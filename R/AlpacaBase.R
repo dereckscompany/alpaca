@@ -102,7 +102,7 @@ AlpacaBase <- R6::R6Class(
       body = NULL,
       auth = TRUE,
       .parser = identity,
-      timeout = 10
+      timeout = 30
     ) {
       return(alpaca_build_request(
         base_url = private$.base_url,

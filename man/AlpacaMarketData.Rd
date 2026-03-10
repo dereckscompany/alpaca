@@ -26,6 +26,7 @@ asynchronous execution depending on the \code{async} parameter at construction.
 \item \strong{Clock}: Check current market status (open/closed).
 \item \strong{Corporate Actions}: Query dividends, splits, mergers, spinoffs.
 \item \strong{News}: Retrieve market news articles filtered by symbol/date.
+\item \strong{Screener}: Most active stocks, top market movers.
 }
 }
 
@@ -47,9 +48,9 @@ base URL. Both are configurable via constructor parameters.
    Method \tab Endpoint \tab Base \cr
    get_bars \tab GET /v2/stocks/{symbol}/bars \tab data \cr
    get_bars_multi \tab GET /v2/stocks/bars \tab data \cr
-   get_latest_bar \tab GET /v2/stocks/{symbol}/latest/bar \tab data \cr
-   get_latest_trade \tab GET /v2/stocks/{symbol}/latest/trade \tab data \cr
-   get_latest_quote \tab GET /v2/stocks/{symbol}/latest/quote \tab data \cr
+   get_latest_bar \tab GET /v2/stocks/{symbol}/bars/latest \tab data \cr
+   get_latest_trade \tab GET /v2/stocks/{symbol}/trades/latest \tab data \cr
+   get_latest_quote \tab GET /v2/stocks/{symbol}/quotes/latest \tab data \cr
    get_snapshot \tab GET /v2/stocks/{symbol}/snapshot \tab data \cr
    get_trades \tab GET /v2/stocks/{symbol}/trades \tab data \cr
    get_quotes \tab GET /v2/stocks/{symbol}/quotes \tab data \cr
@@ -59,6 +60,12 @@ base URL. Both are configurable via constructor parameters.
    get_clock \tab GET /v2/clock \tab trading \cr
    get_corporate_actions \tab GET /v2/corporate_actions/announcements \tab trading \cr
    get_news \tab GET /v1beta1/news \tab data \cr
+   get_latest_bars_multi \tab GET /v2/stocks/bars/latest \tab data \cr
+   get_latest_trades_multi \tab GET /v2/stocks/trades/latest \tab data \cr
+   get_latest_quotes_multi \tab GET /v2/stocks/quotes/latest \tab data \cr
+   get_snapshots_multi \tab GET /v2/stocks/snapshots \tab data \cr
+   get_most_actives \tab GET /v1beta1/screener/stocks/most-actives \tab data \cr
+   get_movers \tab GET /v1beta1/screener/{market_type}/movers \tab data \cr
 }
 
 }
@@ -142,6 +149,26 @@ print(snap)
 }
 
 ## ------------------------------------------------
+## Method `AlpacaMarketData$get_latest_bars_multi`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_latest_bars_multi(c("AAPL", "MSFT"))
+print(bars)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_snapshots_multi`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+snaps <- market$get_snapshots_multi(c("AAPL", "MSFT", "GOOGL"))
+print(snaps)
+}
+
+## ------------------------------------------------
 ## Method `AlpacaMarketData$get_assets`
 ## ------------------------------------------------
 
@@ -215,6 +242,26 @@ print(news[, .(headline, source, created_at)])
 # News with full content
 news <- market$get_news(symbols = "TSLA", include_content = TRUE)
 }
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_most_actives`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+actives <- market$get_most_actives(by = "volume", top = 20)
+print(actives)
+}
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_movers`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+movers <- market$get_movers(top = 5)
+print(movers)
+}
 }
 \section{Super class}{
 \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaMarketData}
@@ -229,6 +276,10 @@ news <- market$get_news(symbols = "TSLA", include_content = TRUE)
 \item \href{#method-AlpacaMarketData-get_latest_trade}{\code{AlpacaMarketData$get_latest_trade()}}
 \item \href{#method-AlpacaMarketData-get_latest_quote}{\code{AlpacaMarketData$get_latest_quote()}}
 \item \href{#method-AlpacaMarketData-get_snapshot}{\code{AlpacaMarketData$get_snapshot()}}
+\item \href{#method-AlpacaMarketData-get_latest_bars_multi}{\code{AlpacaMarketData$get_latest_bars_multi()}}
+\item \href{#method-AlpacaMarketData-get_latest_trades_multi}{\code{AlpacaMarketData$get_latest_trades_multi()}}
+\item \href{#method-AlpacaMarketData-get_latest_quotes_multi}{\code{AlpacaMarketData$get_latest_quotes_multi()}}
+\item \href{#method-AlpacaMarketData-get_snapshots_multi}{\code{AlpacaMarketData$get_snapshots_multi()}}
 \item \href{#method-AlpacaMarketData-get_trades}{\code{AlpacaMarketData$get_trades()}}
 \item \href{#method-AlpacaMarketData-get_quotes}{\code{AlpacaMarketData$get_quotes()}}
 \item \href{#method-AlpacaMarketData-get_assets}{\code{AlpacaMarketData$get_assets()}}
@@ -237,6 +288,8 @@ news <- market$get_news(symbols = "TSLA", include_content = TRUE)
 \item \href{#method-AlpacaMarketData-get_clock}{\code{AlpacaMarketData$get_clock()}}
 \item \href{#method-AlpacaMarketData-get_corporate_actions}{\code{AlpacaMarketData$get_corporate_actions()}}
 \item \href{#method-AlpacaMarketData-get_news}{\code{AlpacaMarketData$get_news()}}
+\item \href{#method-AlpacaMarketData-get_most_actives}{\code{AlpacaMarketData$get_most_actives()}}
+\item \href{#method-AlpacaMarketData-get_movers}{\code{AlpacaMarketData$get_movers()}}
 \item \href{#method-AlpacaMarketData-clone}{\code{AlpacaMarketData$clone()}}
 }
 }
@@ -449,7 +502,7 @@ Get Latest Bar
 Retrieves the most recent bar for a single symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/bar}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/bars/latest}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bar(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -490,7 +543,7 @@ Get Latest Trade
 Retrieves the most recent trade for a symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/trade}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/trades/latest}
 }
 
 \subsection{Official Documentation}{
@@ -544,7 +597,7 @@ Get Latest Quote (NBBO)
 Retrieves the most recent National Best Bid and Offer for a symbol.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/latest/quote}
+\verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes/latest}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -619,6 +672,146 @@ flattened snapshot fields (prefixed by section name).
 market <- AlpacaMarketData$new()
 snap <- market$get_snapshot("AAPL")
 print(snap)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_latest_bars_multi"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_latest_bars_multi}{}}}
+\subsection{Method \code{get_latest_bars_multi()}}{
+Get Latest Bars for Multiple Symbols
+
+Retrieves the most recent bar for multiple symbols in a single request.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v2/stocks/bars/latest}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; ticker symbols.}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and the same columns as \code{\link[=get_bars]{get_bars()}}.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+bars <- market$get_latest_bars_multi(c("AAPL", "MSFT"))
+print(bars)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_latest_trades_multi"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_latest_trades_multi}{}}}
+\subsection{Method \code{get_latest_trades_multi()}}{
+Get Latest Trades for Multiple Symbols
+
+Retrieves the most recent trade for multiple symbols in a single request.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v2/stocks/trades/latest}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; ticker symbols.}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and trade columns.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_latest_quotes_multi"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_latest_quotes_multi}{}}}
+\subsection{Method \code{get_latest_quotes_multi()}}{
+Get Latest Quotes for Multiple Symbols
+
+Retrieves the most recent NBBO quote for multiple symbols in a single request.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v2/stocks/quotes/latest}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; ticker symbols.}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and quote columns.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_snapshots_multi"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_snapshots_multi}{}}}
+\subsection{Method \code{get_snapshots_multi()}}{
+Get Snapshots for Multiple Symbols
+
+Retrieves real-time snapshots for multiple symbols in a single request.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v2/stocks/snapshots}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; ticker symbols.}
+
+\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and flattened snapshot fields.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+snaps <- market$get_snapshots_multi(c("AAPL", "MSFT", "GOOGL"))
+print(snaps)
 }
 }
 \if{html}{\out{</div>}}
@@ -1112,6 +1305,97 @@ print(news[, .(headline, source, created_at)])
 
 # News with full content
 news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_most_actives"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_most_actives}{}}}
+\subsection{Method \code{get_most_actives()}}{
+Get Most Active Stocks
+
+Retrieves the most active stocks by volume or trade count.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_most_actives(by = NULL, top = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{by}}{Character or NULL; ranking metric: \code{"volume"} (default) or \code{"trades"}.}
+
+\item{\code{top}}{Integer or NULL; number of results to return (default 10).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{symbol} (character): Ticker symbol.
+\item \code{volume} (numeric): Trading volume.
+\item \code{trade_count} (numeric): Number of trades.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+actives <- market$get_most_actives(by = "volume", top = 20)
+print(actives)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_movers"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_movers}{}}}
+\subsection{Method \code{get_movers()}}{
+Get Top Market Movers
+
+Retrieves the top market movers (gainers and losers) by percentage change.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta1/screener/\{market_type\}/movers}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_movers(market_type = "stocks", top = NULL)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{market_type}}{Character; \code{"stocks"} (default) or \code{"crypto"}.}
+
+\item{\code{top}}{Integer or NULL; number of results per direction (default 10).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{symbol} (character): Ticker symbol.
+\item \code{percent_change} (numeric): Percentage change.
+\item \code{change} (numeric): Absolute price change.
+\item \code{price} (numeric): Current price.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+movers <- market$get_movers(top = 5)
+print(movers)
 }
 }
 \if{html}{\out{</div>}}

@@ -14,6 +14,7 @@
 #' - **Contracts**: Search and filter available options contracts.
 #' - **Market Data**: Retrieve historical and latest options market data.
 #' - **Snapshots**: Get real-time snapshots of options contracts.
+#' - **Options Chain**: Retrieve the full options chain for an underlying.
 #'
 #' ### Base URLs
 #' Options market data endpoints use `https://data.alpaca.markets`.
@@ -33,6 +34,8 @@
 #' | get_option_latest_quotes | GET /v1beta1/options/quotes/latest | data |
 #' | get_option_snapshots | GET /v1beta1/options/snapshots | data |
 #' | get_option_snapshot | GET /v1beta1/options/snapshots/{symbol} | data |
+#' | get_option_latest_trades | GET /v1beta1/options/trades/latest | data |
+#' | get_option_chain | GET /v1beta1/options/snapshots/{underlying_symbol} | data |
 #'
 #' @examples
 #' \dontrun{
@@ -371,6 +374,43 @@ AlpacaOptions <- R6::R6Class(
     },
 
     #' @description
+    #' Get Latest Options Trades
+    #'
+    #' Retrieves the latest trades for one or more options contracts.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta1/options/trades/latest`
+    #'
+    #' @param symbols Character; comma-separated OCC option symbols.
+    #' @param feed Character or NULL; data feed.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   trade columns plus a `symbol` column.
+    get_option_latest_trades = function(symbols, feed = NULL) {
+      return(private$.data_request(
+        endpoint = "/v1beta1/options/trades/latest",
+        query = list(symbols = symbols, feed = feed),
+        .parser = function(data) {
+          trades_map <- data$trades
+          if (is.null(trades_map) || length(trades_map) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(trades_map), function(sym) {
+            dt <- parse_trades(list(trades_map[[sym]]))
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
+    },
+
+    #' @description
     #' Get Options Snapshots
     #'
     #' Retrieves real-time snapshots for multiple options contracts, including
@@ -434,6 +474,91 @@ AlpacaOptions <- R6::R6Class(
         query = list(feed = feed),
         .parser = parse_snapshot
       ))
+    },
+
+    #' @description
+    #' Get Options Chain
+    #'
+    #' Retrieves the full options chain for an underlying symbol. Returns all
+    #' available contracts with their latest market data.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta1/options/snapshots/{underlying_symbol}`
+    #'
+    #' @param underlying_symbol Character; the underlying ticker symbol (e.g., `"AAPL"`).
+    #' @param type Character or NULL; `"call"`, `"put"`.
+    #' @param expiration_date Character or NULL; exact expiration date (`"YYYY-MM-DD"`).
+    #' @param expiration_date_gte Character or NULL; expiration on or after this date.
+    #' @param expiration_date_lte Character or NULL; expiration on or before this date.
+    #' @param strike_price_gte Numeric or NULL; minimum strike price.
+    #' @param strike_price_lte Numeric or NULL; maximum strike price.
+    #' @param root_symbol Character or NULL; options root symbol.
+    #' @param feed Character or NULL; data feed.
+    #' @param limit Integer or NULL; max results. Default 100.
+    #' @param page_token Character or NULL; cursor for pagination.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   flattened snapshot fields plus a `symbol` column.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' opts <- AlpacaOptions$new()
+    #' chain <- opts$get_option_chain("AAPL", type = "call",
+    #'                                 expiration_date_gte = "2024-06-01")
+    #' print(chain)
+    #' }
+    get_option_chain = function(
+      underlying_symbol,
+      type = NULL,
+      expiration_date = NULL,
+      expiration_date_gte = NULL,
+      expiration_date_lte = NULL,
+      strike_price_gte = NULL,
+      strike_price_lte = NULL,
+      root_symbol = NULL,
+      feed = NULL,
+      limit = NULL,
+      page_token = NULL
+    ) {
+      if (!is.null(strike_price_gte)) {
+        strike_price_gte <- as.character(strike_price_gte)
+      }
+      if (!is.null(strike_price_lte)) {
+        strike_price_lte <- as.character(strike_price_lte)
+      }
+
+      return(private$.data_request(
+        endpoint = paste0("/v1beta1/options/snapshots/", underlying_symbol),
+        query = list(
+          type = type,
+          expiration_date = expiration_date,
+          expiration_date_gte = expiration_date_gte,
+          expiration_date_lte = expiration_date_lte,
+          strike_price_gte = strike_price_gte,
+          strike_price_lte = strike_price_lte,
+          root_symbol = root_symbol,
+          feed = feed,
+          limit = limit,
+          page_token = page_token
+        ),
+        .parser = function(data) {
+          snaps <- data$snapshots
+          if (is.null(snaps) || length(snaps) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(snaps), function(sym) {
+            dt <- parse_snapshot(snaps[[sym]])
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
     }
   ),
   private = list(
@@ -444,7 +569,7 @@ AlpacaOptions <- R6::R6Class(
       endpoint,
       query = list(),
       .parser = identity,
-      timeout = 10
+      timeout = 30
     ) {
       return(alpaca_build_request(
         base_url = private$.data_base_url,

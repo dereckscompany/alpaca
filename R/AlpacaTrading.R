@@ -25,6 +25,7 @@
 #' | add_order | POST /v2/orders | POST |
 #' | get_orders | GET /v2/orders | GET |
 #' | get_order | GET /v2/orders/{order_id} | GET |
+#' | get_order_by_client_id | GET /v2/orders:by_client_order_id | GET |
 #' | modify_order | PATCH /v2/orders/{order_id} | PATCH |
 #' | cancel_order | DELETE /v2/orders/{order_id} | DELETE |
 #' | cancel_all_orders | DELETE /v2/orders | DELETE |
@@ -257,6 +258,32 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         query = list(nested = nested),
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Get Order by Client Order ID
+    #'
+    #' Retrieves a single order by its client order ID. Useful for idempotent
+    #' order tracking in production systems.
+    #'
+    #' ### API Endpoint
+    #' `GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id`
+    #'
+    #' @param client_order_id Character; the client order ID (max 128 chars).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' trading <- AlpacaTrading$new()
+    #' order <- trading$get_order_by_client_id("my-unique-order-id")
+    #' print(order)
+    #' }
+    get_order_by_client_id = function(client_order_id) {
+      return(private$.request(
+        endpoint = "/v2/orders:by_client_order_id",
+        query = list(client_order_id = client_order_id),
         .parser = as_dt_row
       ))
     },

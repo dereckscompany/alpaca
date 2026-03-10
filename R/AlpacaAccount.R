@@ -14,6 +14,8 @@
 #' - **Account**: Retrieve current account details (equity, buying power, etc.).
 #' - **Positions**: View all open positions or a specific position by symbol.
 #' - **Close Positions**: Close individual positions (fully or partially).
+#' - **Options Exercise**: Exercise options positions.
+#' - **Account Config**: View and update account configurations.
 #' - **Portfolio History**: View historical portfolio value snapshots.
 #' - **Activities**: Query account activity history (fills, dividends, etc.).
 #' - **Watchlists**: Create, update, and manage symbol watchlists.
@@ -32,6 +34,9 @@
 #' | get_position | GET /v2/positions/{symbol_or_id} | GET |
 #' | close_position | DELETE /v2/positions/{symbol_or_id} | DELETE |
 #' | close_all_positions | DELETE /v2/positions | DELETE |
+#' | get_account_config | GET /v2/account/configurations | GET |
+#' | modify_account_config | PATCH /v2/account/configurations | PATCH |
+#' | exercise_option | POST /v2/positions/{symbol_or_id}/exercise | POST |
 #' | get_portfolio_history | GET /v2/account/portfolio/history | GET |
 #' | get_activities | GET /v2/account/activities | GET |
 #' | get_activities_by_type | GET /v2/account/activities/{type} | GET |
@@ -140,6 +145,89 @@ AlpacaAccount <- R6::R6Class(
     get_account = function() {
       return(private$.request(
         endpoint = "/v2/account",
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Get Account Configurations
+    #'
+    #' Retrieves the current account configuration settings including DTBP
+    #' check behavior, trade confirmation emails, and shorting restrictions.
+    #'
+    #' ### API Endpoint
+    #' `GET https://paper-api.alpaca.markets/v2/account/configurations`
+    #'
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `dtbp_check` (character): Day trading buying power check method.
+    #'   - `no_shorting` (logical): Whether shorting is disabled.
+    #'   - `suspend_trade` (logical): Whether trading is suspended.
+    #'   - `trade_confirm_email` (character): Trade confirmation email setting.
+    #'   - `fractional_trading` (logical): Whether fractional trading is enabled.
+    #'   - `max_margin_multiplier` (character): Maximum margin multiplier.
+    #'   - `pdt_check` (character): PDT check method.
+    #'   - `max_options_trading_level` (integer): Options trading level.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' config <- acct$get_account_config()
+    #' print(config)
+    #' }
+    get_account_config = function() {
+      return(private$.request(
+        endpoint = "/v2/account/configurations",
+        .parser = as_dt_row
+      ))
+    },
+
+    #' @description
+    #' Update Account Configurations
+    #'
+    #' Modifies one or more account configuration settings.
+    #'
+    #' ### API Endpoint
+    #' `PATCH https://paper-api.alpaca.markets/v2/account/configurations`
+    #'
+    #' @param dtbp_check Character or NULL; DTBP check method: `"both"`, `"entry"`, `"exit"`.
+    #' @param no_shorting Logical or NULL; if `TRUE`, disables short selling.
+    #' @param suspend_trade Logical or NULL; if `TRUE`, suspends all trading.
+    #' @param trade_confirm_email Character or NULL; `"all"`, `"none"`.
+    #' @param fractional_trading Logical or NULL; enable/disable fractional trading.
+    #' @param max_margin_multiplier Character or NULL; `"1"` (no margin) or `"2"` (Reg-T).
+    #' @param pdt_check Character or NULL; `"both"`, `"entry"`, `"exit"`.
+    #' @param max_options_trading_level Integer or NULL; options trading level (0-2).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   the updated configuration.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$modify_account_config(no_shorting = TRUE)
+    #' }
+    modify_account_config = function(
+      dtbp_check = NULL,
+      no_shorting = NULL,
+      suspend_trade = NULL,
+      trade_confirm_email = NULL,
+      fractional_trading = NULL,
+      max_margin_multiplier = NULL,
+      pdt_check = NULL,
+      max_options_trading_level = NULL
+    ) {
+      return(private$.request(
+        endpoint = "/v2/account/configurations",
+        method = "PATCH",
+        body = list(
+          dtbp_check = dtbp_check,
+          no_shorting = no_shorting,
+          suspend_trade = suspend_trade,
+          trade_confirm_email = trade_confirm_email,
+          fractional_trading = fractional_trading,
+          max_margin_multiplier = max_margin_multiplier,
+          pdt_check = pdt_check,
+          max_options_trading_level = max_options_trading_level
+        ),
         .parser = as_dt_row
       ))
     },
@@ -328,6 +416,31 @@ AlpacaAccount <- R6::R6Class(
           }
           as_dt_list(data)
         }
+      ))
+    },
+
+    #' @description
+    #' Exercise an Options Position
+    #'
+    #' Exercises an options position. Only applicable to options contracts.
+    #'
+    #' ### API Endpoint
+    #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
+    #'
+    #' @param symbol_or_id Character; OCC option symbol or asset UUID.
+    #' @return Empty `data.table` on success (HTTP 204).
+    #'
+    #' @examples
+    #' \dontrun{
+    #' acct <- AlpacaAccount$new()
+    #' acct$exercise_option("AAPL240621C00200000")
+    #' }
+    exercise_option = function(symbol_or_id) {
+      endpoint <- paste0("/v2/positions/", symbol_or_id, "/exercise")
+      return(private$.request(
+        endpoint = endpoint,
+        method = "POST",
+        .parser = function(data) data.table::data.table()
       ))
     },
 

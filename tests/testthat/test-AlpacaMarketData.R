@@ -127,3 +127,96 @@ test_that("get_assets uses trading base URL", {
   new_market()$get_assets()
   expect_true(grepl("paper-api\\.alpaca\\.markets", captured_url))
 })
+
+test_that("get_latest_bars_multi returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_latest_bars_multi_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_latest_bars_multi(c("AAPL", "MSFT"))
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  expect_true("symbol" %in% names(dt))
+  expect_equal(names(dt)[1], "symbol")
+  expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
+})
+
+test_that("get_latest_trades_multi returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_latest_trades_multi_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_latest_trades_multi(c("AAPL", "MSFT"))
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  expect_true("symbol" %in% names(dt))
+  expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
+  expect_true("price" %in% names(dt))
+})
+
+test_that("get_latest_quotes_multi returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_latest_quotes_multi_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_latest_quotes_multi(c("AAPL", "MSFT"))
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  expect_true("symbol" %in% names(dt))
+  expect_true(all(c("ask_price", "bid_price") %in% names(dt)))
+})
+
+test_that("get_snapshots_multi returns data.table with symbol column", {
+  resp <- mock_alpaca_response(mock_snapshots_multi_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_snapshots_multi(c("AAPL", "MSFT"))
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  expect_true("symbol" %in% names(dt))
+  expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
+})
+
+test_that("get_most_actives returns data.table", {
+  resp <- mock_alpaca_response(mock_most_actives_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_most_actives()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 3L)
+  expect_true("symbol" %in% names(dt))
+  expect_true("volume" %in% names(dt))
+})
+
+test_that("get_most_actives uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_most_actives_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_most_actives(by = "volume", top = 10)
+  expect_true(grepl("screener/stocks/most-actives", captured_url))
+  expect_true(grepl("data\\.alpaca\\.markets", captured_url))
+})
+
+test_that("get_movers returns data.table with direction column", {
+  resp <- mock_alpaca_response(mock_movers_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_movers()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 4L)
+  expect_true("direction" %in% names(dt))
+  expect_setequal(unique(dt$direction), c("gainer", "loser"))
+})
+
+test_that("get_movers uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_movers_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_movers(market_type = "stocks", top = 5)
+  expect_true(grepl("screener/stocks/movers", captured_url))
+})

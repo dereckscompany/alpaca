@@ -98,3 +98,26 @@ test_that("modify_order sends PATCH request", {
   expect_equal(captured_req$method, "PATCH")
   expect_true(grepl("order-uuid-123", captured_req$url))
 })
+
+test_that("get_order_by_client_id returns single-row data.table", {
+  resp <- mock_alpaca_response(mock_order_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$get_order_by_client_id("client-123")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$id, "order-uuid-123")
+})
+
+test_that("get_order_by_client_id uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_order_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_trading()$get_order_by_client_id("my-client-id")
+  expect_true(grepl("orders:by_client_order_id", captured_url))
+  expect_true(grepl("client_order_id=my-client-id", captured_url))
+})

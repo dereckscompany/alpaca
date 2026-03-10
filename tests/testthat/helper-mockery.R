@@ -554,3 +554,231 @@ mock_bars_page2_response <- function() {
     next_page_token = NULL
   )
 }
+
+# ---- Account Config Fixtures ----
+
+mock_account_config_response <- function() {
+  list(
+    dtbp_check = "both",
+    no_shorting = FALSE,
+    suspend_trade = FALSE,
+    trade_confirm_email = "all",
+    fractional_trading = TRUE,
+    max_margin_multiplier = "4",
+    pdt_check = "both",
+    max_options_trading_level = 2L
+  )
+}
+
+# ---- Multi-Symbol Latest Fixtures ----
+
+mock_latest_bars_multi_response <- function() {
+  list(
+    bars = list(
+      AAPL = list(
+        t = "2024-01-15T14:30:00Z",
+        o = 185.00,
+        h = 186.00,
+        l = 184.50,
+        c = 185.50,
+        v = 1000000L,
+        n = 10000L,
+        vw = 185.25
+      ),
+      MSFT = list(
+        t = "2024-01-15T14:30:00Z",
+        o = 373.00,
+        h = 374.00,
+        l = 372.50,
+        c = 373.50,
+        v = 500000L,
+        n = 5000L,
+        vw = 373.25
+      )
+    )
+  )
+}
+
+mock_latest_trades_multi_response <- function() {
+  list(
+    trades = list(
+      AAPL = list(
+        t = "2024-01-15T14:30:00.123Z",
+        p = 185.50,
+        s = 100L,
+        x = "V",
+        c = list("@"),
+        z = "C",
+        i = 12345L
+      ),
+      MSFT = list(
+        t = "2024-01-15T14:30:00.456Z",
+        p = 373.50,
+        s = 50L,
+        x = "Q",
+        c = list("@"),
+        z = "C",
+        i = 12346L
+      )
+    )
+  )
+}
+
+mock_latest_quotes_multi_response <- function() {
+  list(
+    quotes = list(
+      AAPL = list(
+        t = "2024-01-15T14:30:00.456Z",
+        ax = "V",
+        ap = 185.55,
+        "as" = 200L,
+        bx = "Q",
+        bp = 185.50,
+        bs = 300L,
+        c = list("R"),
+        z = "C"
+      ),
+      MSFT = list(
+        t = "2024-01-15T14:30:00.789Z",
+        ax = "Q",
+        ap = 373.55,
+        "as" = 100L,
+        bx = "V",
+        bp = 373.50,
+        bs = 150L,
+        c = list("R"),
+        z = "C"
+      )
+    )
+  )
+}
+
+mock_snapshots_multi_response <- function() {
+  list(
+    AAPL = list(
+      latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L),
+      latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L),
+      minuteBar = list(
+        t = "2024-01-15T14:30:00Z",
+        o = 185.40,
+        h = 185.60,
+        l = 185.30,
+        c = 185.50,
+        v = 5000L,
+        n = 50L,
+        vw = 185.45
+      ),
+      dailyBar = list(
+        t = "2024-01-15T05:00:00Z",
+        o = 184.00,
+        h = 186.00,
+        l = 183.50,
+        c = 185.50,
+        v = 50000000L,
+        n = 500000L,
+        vw = 185.00
+      ),
+      prevDailyBar = list(
+        t = "2024-01-14T05:00:00Z",
+        o = 183.00,
+        h = 185.00,
+        l = 182.50,
+        c = 184.00,
+        v = 45000000L,
+        n = 450000L,
+        vw = 183.80
+      )
+    ),
+    MSFT = list(
+      latestTrade = list(t = "2024-01-15T14:30:00Z", p = 373.50, s = 50L),
+      latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 373.55, bp = 373.50, "as" = 100L, bs = 150L),
+      minuteBar = list(
+        t = "2024-01-15T14:30:00Z",
+        o = 373.00,
+        h = 374.00,
+        l = 372.50,
+        c = 373.50,
+        v = 3000L,
+        n = 30L,
+        vw = 373.25
+      ),
+      dailyBar = list(
+        t = "2024-01-15T05:00:00Z",
+        o = 372.00,
+        h = 375.00,
+        l = 371.00,
+        c = 373.50,
+        v = 25000000L,
+        n = 250000L,
+        vw = 373.00
+      ),
+      prevDailyBar = list(
+        t = "2024-01-14T05:00:00Z",
+        o = 371.00,
+        h = 373.00,
+        l = 370.00,
+        c = 372.00,
+        v = 22000000L,
+        n = 220000L,
+        vw = 371.50
+      )
+    )
+  )
+}
+
+# ---- Screener Fixtures ----
+
+mock_most_actives_response <- function() {
+  list(
+    most_actives = list(
+      list(symbol = "TSLA", volume = 150000000, trade_count = 2000000),
+      list(symbol = "AAPL", volume = 80000000, trade_count = 1000000),
+      list(symbol = "NVDA", volume = 70000000, trade_count = 900000)
+    )
+  )
+}
+
+mock_movers_response <- function() {
+  list(
+    gainers = list(
+      list(symbol = "XYZ", percent_change = 15.5, change = 3.20, price = 23.85),
+      list(symbol = "ABC", percent_change = 12.3, change = 5.10, price = 46.55)
+    ),
+    losers = list(
+      list(symbol = "DEF", percent_change = -10.2, change = -4.50, price = 39.60),
+      list(symbol = "GHI", percent_change = -8.5, change = -2.10, price = 22.60)
+    )
+  )
+}
+
+# ---- Option Latest Trades / Chain Fixtures ----
+
+mock_option_latest_trades_response <- function() {
+  list(
+    trades = list(
+      AAPL240621C00200000 = list(
+        t = "2024-06-15T14:30:00.123Z",
+        p = 5.50,
+        s = 10L,
+        x = "C",
+        c = list("@"),
+        i = 99999L
+      )
+    )
+  )
+}
+
+mock_option_chain_response <- function() {
+  list(
+    snapshots = list(
+      AAPL240621C00200000 = list(
+        latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L),
+        latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 5.60, bp = 5.40, "as" = 50L, bs = 40L)
+      ),
+      AAPL240621C00210000 = list(
+        latestTrade = list(t = "2024-06-15T14:30:00Z", p = 3.20, s = 5L),
+        latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 3.30, bp = 3.10, "as" = 30L, bs = 25L)
+      )
+    )
+  )
+}

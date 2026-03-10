@@ -15,6 +15,27 @@ to_snake_case <- function(names) {
   return(out)
 }
 
+#' Wrap Multi-Element List Fields
+#'
+#' Wraps any field that is a list with length > 1 inside another list(),
+#' so that `rbindlist()` treats it as a single list-column entry rather
+#' than expanding it into multiple rows.
+#'
+#' @param x A named list (single record).
+#' @return The same list with multi-element list fields wrapped.
+#'
+#' @keywords internal
+#' @noRd
+wrap_list_fields <- function(x) {
+  for (nm in names(x)) {
+    val <- x[[nm]]
+    if (is.list(val) && length(val) > 1) {
+      x[[nm]] <- list(val)
+    }
+  }
+  return(x)
+}
+
 #' Convert a Named List to a Single-Row data.table
 #'
 #' Converts a flat named list (typically from an Alpaca API JSON response)
@@ -159,6 +180,9 @@ parse_trades <- function(trades) {
   if (is.null(trades) || length(trades) == 0) {
     return(data.table::data.table())
   }
+  # Wrap multi-element list fields (e.g., conditions) to prevent rbindlist
+  # from expanding them into multiple rows
+  trades <- lapply(trades, wrap_list_fields)
   dt <- data.table::rbindlist(trades, fill = TRUE)
   name_map <- c(
     t = "timestamp",
@@ -192,6 +216,7 @@ parse_quotes <- function(quotes) {
   if (is.null(quotes) || length(quotes) == 0) {
     return(data.table::data.table())
   }
+  quotes <- lapply(quotes, wrap_list_fields)
   dt <- data.table::rbindlist(quotes, fill = TRUE)
   name_map <- c(
     t = "timestamp",

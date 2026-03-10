@@ -20,6 +20,7 @@
 #' - **Clock**: Check current market status (open/closed).
 #' - **Corporate Actions**: Query dividends, splits, mergers, spinoffs.
 #' - **News**: Retrieve market news articles filtered by symbol/date.
+#' - **Screener**: Most active stocks, top market movers.
 #'
 #' ### Base URLs
 #' Market data endpoints use `https://data.alpaca.markets` by default.
@@ -35,9 +36,9 @@
 #' |--------|----------|------|
 #' | get_bars | GET /v2/stocks/{symbol}/bars | data |
 #' | get_bars_multi | GET /v2/stocks/bars | data |
-#' | get_latest_bar | GET /v2/stocks/{symbol}/latest/bar | data |
-#' | get_latest_trade | GET /v2/stocks/{symbol}/latest/trade | data |
-#' | get_latest_quote | GET /v2/stocks/{symbol}/latest/quote | data |
+#' | get_latest_bar | GET /v2/stocks/{symbol}/bars/latest | data |
+#' | get_latest_trade | GET /v2/stocks/{symbol}/trades/latest | data |
+#' | get_latest_quote | GET /v2/stocks/{symbol}/quotes/latest | data |
 #' | get_snapshot | GET /v2/stocks/{symbol}/snapshot | data |
 #' | get_trades | GET /v2/stocks/{symbol}/trades | data |
 #' | get_quotes | GET /v2/stocks/{symbol}/quotes | data |
@@ -47,6 +48,12 @@
 #' | get_clock | GET /v2/clock | trading |
 #' | get_corporate_actions | GET /v2/corporate_actions/announcements | trading |
 #' | get_news | GET /v1beta1/news | data |
+#' | get_latest_bars_multi | GET /v2/stocks/bars/latest | data |
+#' | get_latest_trades_multi | GET /v2/stocks/trades/latest | data |
+#' | get_latest_quotes_multi | GET /v2/stocks/quotes/latest | data |
+#' | get_snapshots_multi | GET /v2/stocks/snapshots | data |
+#' | get_most_actives | GET /v1beta1/screener/stocks/most-actives | data |
+#' | get_movers | GET /v1beta1/screener/{market_type}/movers | data |
 #'
 #' @examples
 #' \dontrun{
@@ -244,7 +251,7 @@ AlpacaMarketData <- R6::R6Class(
     #' Retrieves the most recent bar for a single symbol.
     #'
     #' ### API Endpoint
-    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/latest/bar`
+    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest`
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -258,7 +265,7 @@ AlpacaMarketData <- R6::R6Class(
     #' print(bar)
     #' }
     get_latest_bar = function(symbol, feed = NULL) {
-      endpoint <- paste0("/v2/stocks/", symbol, "/latest/bar")
+      endpoint <- paste0("/v2/stocks/", symbol, "/bars/latest")
       return(private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed),
@@ -274,7 +281,7 @@ AlpacaMarketData <- R6::R6Class(
     #' Retrieves the most recent trade for a symbol.
     #'
     #' ### API Endpoint
-    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/latest/trade`
+    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades/latest`
     #'
     #' ### Official Documentation
     #' [Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
@@ -297,7 +304,7 @@ AlpacaMarketData <- R6::R6Class(
     #' print(trade)
     #' }
     get_latest_trade = function(symbol, feed = NULL) {
-      endpoint <- paste0("/v2/stocks/", symbol, "/latest/trade")
+      endpoint <- paste0("/v2/stocks/", symbol, "/trades/latest")
       return(private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed),
@@ -313,7 +320,7 @@ AlpacaMarketData <- R6::R6Class(
     #' Retrieves the most recent National Best Bid and Offer for a symbol.
     #'
     #' ### API Endpoint
-    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/latest/quote`
+    #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest`
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -333,7 +340,7 @@ AlpacaMarketData <- R6::R6Class(
     #' print(quote)
     #' }
     get_latest_quote = function(symbol, feed = NULL) {
-      endpoint <- paste0("/v2/stocks/", symbol, "/latest/quote")
+      endpoint <- paste0("/v2/stocks/", symbol, "/quotes/latest")
       return(private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed),
@@ -371,6 +378,181 @@ AlpacaMarketData <- R6::R6Class(
         .parser = parse_snapshot
       ))
     },
+
+    #' @description
+    #' Get Latest Bars for Multiple Symbols
+    #'
+    #' Retrieves the most recent bar for multiple symbols in a single request.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v2/stocks/bars/latest`
+    #'
+    #' @param symbols Character vector; ticker symbols.
+    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
+    #'   `symbol` column and the same columns as [get_bars()].
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' bars <- market$get_latest_bars_multi(c("AAPL", "MSFT"))
+    #' print(bars)
+    #' }
+    get_latest_bars_multi = function(symbols, feed = NULL) {
+      return(private$.data_request(
+        endpoint = "/v2/stocks/bars/latest",
+        query = list(
+          symbols = paste(symbols, collapse = ","),
+          feed = feed
+        ),
+        .parser = function(data) {
+          bars_map <- data$bars
+          if (is.null(bars_map) || length(bars_map) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(bars_map), function(sym) {
+            dt <- parse_bars(list(bars_map[[sym]]))
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
+    },
+
+    #' @description
+    #' Get Latest Trades for Multiple Symbols
+    #'
+    #' Retrieves the most recent trade for multiple symbols in a single request.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v2/stocks/trades/latest`
+    #'
+    #' @param symbols Character vector; ticker symbols.
+    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
+    #'   `symbol` column and trade columns.
+    get_latest_trades_multi = function(symbols, feed = NULL) {
+      return(private$.data_request(
+        endpoint = "/v2/stocks/trades/latest",
+        query = list(
+          symbols = paste(symbols, collapse = ","),
+          feed = feed
+        ),
+        .parser = function(data) {
+          trades_map <- data$trades
+          if (is.null(trades_map) || length(trades_map) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(trades_map), function(sym) {
+            dt <- parse_trades(list(trades_map[[sym]]))
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
+    },
+
+    #' @description
+    #' Get Latest Quotes for Multiple Symbols
+    #'
+    #' Retrieves the most recent NBBO quote for multiple symbols in a single request.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v2/stocks/quotes/latest`
+    #'
+    #' @param symbols Character vector; ticker symbols.
+    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
+    #'   `symbol` column and quote columns.
+    get_latest_quotes_multi = function(symbols, feed = NULL) {
+      return(private$.data_request(
+        endpoint = "/v2/stocks/quotes/latest",
+        query = list(
+          symbols = paste(symbols, collapse = ","),
+          feed = feed
+        ),
+        .parser = function(data) {
+          quotes_map <- data$quotes
+          if (is.null(quotes_map) || length(quotes_map) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(quotes_map), function(sym) {
+            dt <- parse_quotes(list(quotes_map[[sym]]))
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
+    },
+
+    #' @description
+    #' Get Snapshots for Multiple Symbols
+    #'
+    #' Retrieves real-time snapshots for multiple symbols in a single request.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v2/stocks/snapshots`
+    #'
+    #' @param symbols Character vector; ticker symbols.
+    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
+    #'   `symbol` column and flattened snapshot fields.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' snaps <- market$get_snapshots_multi(c("AAPL", "MSFT", "GOOGL"))
+    #' print(snaps)
+    #' }
+    get_snapshots_multi = function(symbols, feed = NULL) {
+      return(private$.data_request(
+        endpoint = "/v2/stocks/snapshots",
+        query = list(
+          symbols = paste(symbols, collapse = ","),
+          feed = feed
+        ),
+        .parser = function(data) {
+          if (is.null(data) || length(data) == 0) {
+            return(data.table::data.table())
+          }
+          dts <- lapply(names(data), function(sym) {
+            dt <- parse_snapshot(data[[sym]])
+            if (nrow(dt) > 0) {
+              dt[, symbol := sym]
+            }
+            return(dt)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if ("symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+          }
+          return(dt)
+        }
+      ))
+    },
+
+    # ---- Historical Trades & Quotes ----
 
     #' @description
     #' Get Historical Trades
@@ -763,6 +945,90 @@ AlpacaMarketData <- R6::R6Class(
         ),
         .parser = function(data) as_dt_list(data$news)
       ))
+    },
+
+    # ---- Screener ----
+
+    #' @description
+    #' Get Most Active Stocks
+    #'
+    #' Retrieves the most active stocks by volume or trade count.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives`
+    #'
+    #' @param by Character or NULL; ranking metric: `"volume"` (default) or `"trades"`.
+    #' @param top Integer or NULL; number of results to return (default 10).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `symbol` (character): Ticker symbol.
+    #'   - `volume` (numeric): Trading volume.
+    #'   - `trade_count` (numeric): Number of trades.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' actives <- market$get_most_actives(by = "volume", top = 20)
+    #' print(actives)
+    #' }
+    get_most_actives = function(by = NULL, top = NULL) {
+      return(private$.data_request(
+        endpoint = "/v1beta1/screener/stocks/most-actives",
+        query = list(by = by, top = top),
+        .parser = function(data) as_dt_list(data$most_actives)
+      ))
+    },
+
+    #' @description
+    #' Get Top Market Movers
+    #'
+    #' Retrieves the top market movers (gainers and losers) by percentage change.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta1/screener/{market_type}/movers`
+    #'
+    #' @param market_type Character; `"stocks"` (default) or `"crypto"`.
+    #' @param top Integer or NULL; number of results per direction (default 10).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `symbol` (character): Ticker symbol.
+    #'   - `percent_change` (numeric): Percentage change.
+    #'   - `change` (numeric): Absolute price change.
+    #'   - `price` (numeric): Current price.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' movers <- market$get_movers(top = 5)
+    #' print(movers)
+    #' }
+    get_movers = function(market_type = "stocks", top = NULL) {
+      endpoint <- paste0("/v1beta1/screener/", market_type, "/movers")
+      return(private$.data_request(
+        endpoint = endpoint,
+        query = list(top = top),
+        .parser = function(data) {
+          gainers <- data$gainers
+          losers <- data$losers
+          dts <- list()
+          if (!is.null(gainers) && length(gainers) > 0) {
+            g <- as_dt_list(gainers)
+            if (nrow(g) > 0) {
+              g[, direction := "gainer"]
+            }
+            dts <- c(dts, list(g))
+          }
+          if (!is.null(losers) && length(losers) > 0) {
+            l <- as_dt_list(losers)
+            if (nrow(l) > 0) {
+              l[, direction := "loser"]
+            }
+            dts <- c(dts, list(l))
+          }
+          if (length(dts) == 0) {
+            return(data.table::data.table())
+          }
+          return(data.table::rbindlist(dts, fill = TRUE))
+        }
+      ))
     }
   ),
   private = list(
@@ -773,7 +1039,7 @@ AlpacaMarketData <- R6::R6Class(
       endpoint,
       query = list(),
       .parser = identity,
-      timeout = 10
+      timeout = 30
     ) {
       return(alpaca_build_request(
         base_url = private$.data_base_url,

@@ -20,6 +20,8 @@ asynchronous execution depending on the \code{async} parameter at construction.
 \item \strong{Account}: Retrieve current account details (equity, buying power, etc.).
 \item \strong{Positions}: View all open positions or a specific position by symbol.
 \item \strong{Close Positions}: Close individual positions (fully or partially).
+\item \strong{Options Exercise}: Exercise options positions.
+\item \strong{Account Config}: View and update account configurations.
 \item \strong{Portfolio History}: View historical portfolio value snapshots.
 \item \strong{Activities}: Query account activity history (fills, dividends, etc.).
 \item \strong{Watchlists}: Create, update, and manage symbol watchlists.
@@ -42,6 +44,9 @@ asynchronous execution depending on the \code{async} parameter at construction.
    get_position \tab GET /v2/positions/{symbol_or_id} \tab GET \cr
    close_position \tab DELETE /v2/positions/{symbol_or_id} \tab DELETE \cr
    close_all_positions \tab DELETE /v2/positions \tab DELETE \cr
+   get_account_config \tab GET /v2/account/configurations \tab GET \cr
+   modify_account_config \tab PATCH /v2/account/configurations \tab PATCH \cr
+   exercise_option \tab POST /v2/positions/{symbol_or_id}/exercise \tab POST \cr
    get_portfolio_history \tab GET /v2/account/portfolio/history \tab GET \cr
    get_activities \tab GET /v2/account/activities \tab GET \cr
    get_activities_by_type \tab GET /v2/account/activities/{type} \tab GET \cr
@@ -79,6 +84,25 @@ acct <- AlpacaAccount$new()
 info <- acct$get_account()
 cat("Equity:", info$equity, "\n")
 cat("Buying power:", info$buying_power, "\n")
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$get_account_config`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+config <- acct$get_account_config()
+print(config)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$modify_account_config`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$modify_account_config(no_shorting = TRUE)
 }
 
 ## ------------------------------------------------
@@ -125,6 +149,15 @@ acct$close_position("AAPL", qty = 5)
 \dontrun{
 acct <- AlpacaAccount$new()
 acct$close_all_positions(cancel_orders = TRUE)
+}
+
+## ------------------------------------------------
+## Method `AlpacaAccount$exercise_option`
+## ------------------------------------------------
+
+\dontrun{
+acct <- AlpacaAccount$new()
+acct$exercise_option("AAPL240621C00200000")
 }
 
 ## ------------------------------------------------
@@ -231,10 +264,13 @@ acct$cancel_watchlist("some-uuid")
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-AlpacaAccount-get_account}{\code{AlpacaAccount$get_account()}}
+\item \href{#method-AlpacaAccount-get_account_config}{\code{AlpacaAccount$get_account_config()}}
+\item \href{#method-AlpacaAccount-modify_account_config}{\code{AlpacaAccount$modify_account_config()}}
 \item \href{#method-AlpacaAccount-get_positions}{\code{AlpacaAccount$get_positions()}}
 \item \href{#method-AlpacaAccount-get_position}{\code{AlpacaAccount$get_position()}}
 \item \href{#method-AlpacaAccount-close_position}{\code{AlpacaAccount$close_position()}}
 \item \href{#method-AlpacaAccount-close_all_positions}{\code{AlpacaAccount$close_all_positions()}}
+\item \href{#method-AlpacaAccount-exercise_option}{\code{AlpacaAccount$exercise_option()}}
 \item \href{#method-AlpacaAccount-get_portfolio_history}{\code{AlpacaAccount$get_portfolio_history()}}
 \item \href{#method-AlpacaAccount-get_activities}{\code{AlpacaAccount$get_activities()}}
 \item \href{#method-AlpacaAccount-get_activities_by_type}{\code{AlpacaAccount$get_activities_by_type()}}
@@ -342,6 +378,109 @@ acct <- AlpacaAccount$new()
 info <- acct$get_account()
 cat("Equity:", info$equity, "\n")
 cat("Buying power:", info$buying_power, "\n")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-get_account_config"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-get_account_config}{}}}
+\subsection{Method \code{get_account_config()}}{
+Get Account Configurations
+
+Retrieves the current account configuration settings including DTBP
+check behavior, trade confirmation emails, and shorting restrictions.
+\subsection{API Endpoint}{
+
+\verb{GET https://paper-api.alpaca.markets/v2/account/configurations}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_account_config()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{dtbp_check} (character): Day trading buying power check method.
+\item \code{no_shorting} (logical): Whether shorting is disabled.
+\item \code{suspend_trade} (logical): Whether trading is suspended.
+\item \code{trade_confirm_email} (character): Trade confirmation email setting.
+\item \code{fractional_trading} (logical): Whether fractional trading is enabled.
+\item \code{max_margin_multiplier} (character): Maximum margin multiplier.
+\item \code{pdt_check} (character): PDT check method.
+\item \code{max_options_trading_level} (integer): Options trading level.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+config <- acct$get_account_config()
+print(config)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-modify_account_config"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-modify_account_config}{}}}
+\subsection{Method \code{modify_account_config()}}{
+Update Account Configurations
+
+Modifies one or more account configuration settings.
+\subsection{API Endpoint}{
+
+\verb{PATCH https://paper-api.alpaca.markets/v2/account/configurations}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$modify_account_config(
+  dtbp_check = NULL,
+  no_shorting = NULL,
+  suspend_trade = NULL,
+  trade_confirm_email = NULL,
+  fractional_trading = NULL,
+  max_margin_multiplier = NULL,
+  pdt_check = NULL,
+  max_options_trading_level = NULL
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{dtbp_check}}{Character or NULL; DTBP check method: \code{"both"}, \code{"entry"}, \code{"exit"}.}
+
+\item{\code{no_shorting}}{Logical or NULL; if \code{TRUE}, disables short selling.}
+
+\item{\code{suspend_trade}}{Logical or NULL; if \code{TRUE}, suspends all trading.}
+
+\item{\code{trade_confirm_email}}{Character or NULL; \code{"all"}, \code{"none"}.}
+
+\item{\code{fractional_trading}}{Logical or NULL; enable/disable fractional trading.}
+
+\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"} (no margin) or \code{"2"} (Reg-T).}
+
+\item{\code{pdt_check}}{Character or NULL; \code{"both"}, \code{"entry"}, \code{"exit"}.}
+
+\item{\code{max_options_trading_level}}{Integer or NULL; options trading level (0-2).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the updated configuration.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$modify_account_config(no_shorting = TRUE)
 }
 }
 \if{html}{\out{</div>}}
@@ -570,6 +709,43 @@ closing order details for each position.
 \preformatted{\dontrun{
 acct <- AlpacaAccount$new()
 acct$close_all_positions(cancel_orders = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaAccount-exercise_option"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaAccount-exercise_option}{}}}
+\subsection{Method \code{exercise_option()}}{
+Exercise an Options Position
+
+Exercises an options position. Only applicable to options contracts.
+\subsection{API Endpoint}{
+
+\verb{POST https://paper-api.alpaca.markets/v2/positions/\{symbol_or_id\}/exercise}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$exercise_option(symbol_or_id)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbol_or_id}}{Character; OCC option symbol or asset UUID.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Empty \code{data.table} on success (HTTP 204).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+acct <- AlpacaAccount$new()
+acct$exercise_option("AAPL240621C00200000")
 }
 }
 \if{html}{\out{</div>}}

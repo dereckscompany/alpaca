@@ -121,3 +121,54 @@ test_that("get_activities_by_type uses correct endpoint", {
   new_account()$get_activities_by_type("FILL")
   expect_true(grepl("/v2/account/activities/FILL", captured_url))
 })
+
+test_that("get_account_config returns data.table with config fields", {
+  resp <- mock_alpaca_response(mock_account_config_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_account()$get_account_config()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_true(all(c("dtbp_check", "no_shorting", "fractional_trading") %in% names(dt)))
+  expect_equal(dt$dtbp_check, "both")
+})
+
+test_that("get_account_config uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_account_config_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_account()$get_account_config()
+  expect_true(grepl("/v2/account/configurations", captured_url))
+})
+
+test_that("modify_account_config sends PATCH request", {
+  captured_req <- NULL
+  resp <- mock_alpaca_response(mock_account_config_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_req <<- req
+    return(resp)
+  })
+
+  new_account()$modify_account_config(no_shorting = TRUE)
+  expect_equal(captured_req$method, "PATCH")
+  expect_true(grepl("/v2/account/configurations", captured_req$url))
+})
+
+test_that("exercise_option sends POST to correct endpoint", {
+  captured_req <- NULL
+  resp <- mock_no_content_response()
+  httr2::local_mocked_responses(function(req) {
+    captured_req <<- req
+    return(resp)
+  })
+
+  dt <- new_account()$exercise_option("AAPL240621C00200000")
+  expect_equal(captured_req$method, "POST")
+  expect_true(grepl("/v2/positions/AAPL240621C00200000/exercise", captured_req$url))
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 0L)
+})
