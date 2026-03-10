@@ -55,10 +55,10 @@ alpaca_backfill_bars <- function(
   data_base_url = get_data_base_url()
 ) {
   if (is.character(start)) {
-    start <- as.POSIXct(start, tz = "UTC")
+    start <- lubridate::as_datetime(start, tz = "UTC")
   }
   if (is.character(end)) {
-    end <- as.POSIXct(end, tz = "UTC")
+    end <- lubridate::as_datetime(end, tz = "UTC")
   }
 
   # Read existing CSV for resume support

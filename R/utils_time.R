@@ -40,7 +40,7 @@ time_convert_to_alpaca <- function(x) {
     return(NA_character_)
   }
   if (is.character(x)) {
-    x <- as.POSIXct(x, tz = "UTC")
+    x <- lubridate::as_datetime(x, tz = "UTC")
   }
   return(format(x, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"))
 }

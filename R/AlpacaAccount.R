@@ -428,7 +428,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' @param symbol_or_id Character; OCC option symbol or asset UUID.
-    #' @return Empty `data.table` on success (HTTP 204).
+    #' @return `invisible(NULL)` on success (HTTP 204).
     #'
     #' @examples
     #' \dontrun{
@@ -440,7 +440,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "POST",
-        .parser = function(data) data.table::data.table()
+        .parser = function(data) return(invisible(NULL))
       ))
     },
 
@@ -521,7 +521,7 @@ AlpacaAccount <- R6::R6Class(
             return(data.table::data.table())
           }
           dt <- data.table::data.table(
-            timestamp = as.POSIXct(unlist(data$timestamp), origin = "1970-01-01", tz = "UTC"),
+            timestamp = lubridate::as_datetime(unlist(data$timestamp), tz = "UTC"),
             equity = as.numeric(unlist(data$equity)),
             profit_loss = as.numeric(unlist(data$profit_loss)),
             profit_loss_pct = as.numeric(unlist(data$profit_loss_pct))
@@ -825,7 +825,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' @param watchlist_id Character; watchlist UUID.
-    #' @return Empty `data.table` on success (HTTP 204).
+    #' @return `invisible(NULL)` on success (HTTP 204).
     #'
     #' @examples
     #' \dontrun{
@@ -837,7 +837,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) data.table::data.table()
+        .parser = function(data) return(invisible(NULL))
       ))
     }
   )

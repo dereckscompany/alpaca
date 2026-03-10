@@ -60,10 +60,10 @@ alpaca_fetch_bars <- function(
 ) {
   # Convert to POSIXct if needed
   if (is.character(start)) {
-    start <- as.POSIXct(start, tz = "UTC")
+    start <- lubridate::as_datetime(start, tz = "UTC")
   }
   if (is.character(end)) {
-    end <- as.POSIXct(end, tz = "UTC")
+    end <- lubridate::as_datetime(end, tz = "UTC")
   }
 
   bar_seconds <- alpaca_timeframe_map[[timeframe]]
@@ -77,7 +77,7 @@ alpaca_fetch_bars <- function(
   }
 
   # Compute segments
-  span_seconds <- as.numeric(difftime(end, start, units = "secs"))
+  span_seconds <- lubridate::time_length(end - start, unit = "seconds")
   segment_seconds <- limit_per_request * bar_seconds
   n_segments <- max(1L, ceiling(span_seconds / segment_seconds))
 

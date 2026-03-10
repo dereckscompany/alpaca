@@ -569,8 +569,14 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   trade columns (see [get_latest_trade()]).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `timestamp` (POSIXct): Trade timestamp.
+    #'   - `price` (numeric): Trade price.
+    #'   - `size` (integer): Trade size.
+    #'   - `exchange` (character): Exchange code.
+    #'   - `conditions` (list): Trade conditions.
+    #'   - `tape` (character): SIP tape.
+    #'   - `id` (integer): Trade ID.
     get_trades = function(
       symbol,
       start = NULL,
@@ -610,8 +616,14 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   quote columns (see [get_latest_quote()]).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `timestamp` (POSIXct): Quote timestamp.
+    #'   - `ask_exchange` (character): Ask exchange code.
+    #'   - `ask_price` (numeric): Ask price.
+    #'   - `ask_size` (integer): Ask size.
+    #'   - `bid_exchange` (character): Bid exchange code.
+    #'   - `bid_price` (numeric): Bid price.
+    #'   - `bid_size` (integer): Bid size.
     get_quotes = function(
       symbol,
       start = NULL,
