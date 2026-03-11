@@ -80,6 +80,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Account](https://docs.alpaca.markets/reference/getaccount-1)
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -158,6 +159,30 @@ AlpacaAccount <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/account/configurations`
     #'
+    #' ### Official Documentation
+    #' [Get Account Configurations](https://docs.alpaca.markets/reference/getaccountconfig-1)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/account/configurations'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "dtbp_check": "both",
+    #'   "no_shorting": false,
+    #'   "suspend_trade": false,
+    #'   "trade_confirm_email": "all",
+    #'   "fractional_trading": true,
+    #'   "max_margin_multiplier": "4",
+    #'   "pdt_check": "entry",
+    #'   "max_options_trading_level": 2
+    #' }
+    #' ```
+    #'
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `dtbp_check` (character): Day trading buying power check method.
     #'   - `no_shorting` (logical): Whether shorting is disabled.
@@ -188,6 +213,40 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `PATCH https://paper-api.alpaca.markets/v2/account/configurations`
+    #'
+    #' ### Official Documentation
+    #' [Update Account Configurations](https://docs.alpaca.markets/reference/patchaccountconfig-1)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X PATCH -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   -H "Content-Type: application/json" \
+    #'   -d '{"no_shorting": true, "fractional_trading": false}' \
+    #'   'https://paper-api.alpaca.markets/v2/account/configurations'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "no_shorting": true,
+    #'   "fractional_trading": false
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "dtbp_check": "both",
+    #'   "no_shorting": true,
+    #'   "suspend_trade": false,
+    #'   "trade_confirm_email": "all",
+    #'   "fractional_trading": false,
+    #'   "max_margin_multiplier": "4",
+    #'   "pdt_check": "entry",
+    #'   "max_options_trading_level": 2
+    #' }
+    #' ```
     #'
     #' @param dtbp_check Character or NULL; DTBP check method: `"both"`, `"entry"`, `"exit"`.
     #' @param no_shorting Logical or NULL; if `TRUE`, disables short selling.
@@ -244,6 +303,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get All Open Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -312,6 +372,33 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Open Position](https://docs.alpaca.markets/reference/getopenposition-1)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/positions/AAPL'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "asset_id": "904837e3-3b76-47ec-b432-046db621571b",
+    #'   "symbol": "AAPL",
+    #'   "exchange": "NASDAQ",
+    #'   "asset_class": "us_equity",
+    #'   "avg_entry_price": "185.50",
+    #'   "qty": "10",
+    #'   "side": "long",
+    #'   "market_value": "1870.00",
+    #'   "cost_basis": "1855.00",
+    #'   "unrealized_pl": "15.00",
+    #'   "unrealized_plpc": "0.008",
+    #'   "current_price": "187.00",
+    #'   "lastday_price": "186.00",
+    #'   "change_today": "0.005"
+    #' }
+    #' ```
     #'
     #' @param symbol_or_id Character; ticker symbol (e.g., `"AAPL"`) or asset UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
@@ -342,6 +429,32 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Close Position](https://docs.alpaca.markets/reference/deleteposition)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/positions/AAPL?percentage=50'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+    #'   "client_order_id": "eb9e2aaa-f71a-4f51-b5b4-52a6c565dad4",
+    #'   "created_at": "2026-03-10T14:30:00.000Z",
+    #'   "updated_at": "2026-03-10T14:30:00.000Z",
+    #'   "submitted_at": "2026-03-10T14:30:00.000Z",
+    #'   "symbol": "AAPL",
+    #'   "asset_class": "us_equity",
+    #'   "qty": "5",
+    #'   "filled_qty": "0",
+    #'   "type": "market",
+    #'   "side": "sell",
+    #'   "time_in_force": "day",
+    #'   "status": "pending_new"
+    #' }
+    #' ```
     #'
     #' @param symbol_or_id Character; ticker symbol or asset UUID.
     #' @param qty Numeric or NULL; number of shares to close. Mutually exclusive
@@ -394,6 +507,45 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Close All Positions](https://docs.alpaca.markets/reference/deleteallopenpositions)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/positions?cancel_orders=true'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "symbol": "AAPL",
+    #'     "status": 200,
+    #'     "body": {
+    #'       "id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+    #'       "symbol": "AAPL",
+    #'       "qty": "10",
+    #'       "side": "sell",
+    #'       "type": "market",
+    #'       "time_in_force": "day",
+    #'       "status": "pending_new"
+    #'     }
+    #'   },
+    #'   {
+    #'     "symbol": "MSFT",
+    #'     "status": 200,
+    #'     "body": {
+    #'       "id": "b3d29c1a-7e5f-4a2b-9c1d-8e7f6a5b4c3d",
+    #'       "symbol": "MSFT",
+    #'       "qty": "5",
+    #'       "side": "sell",
+    #'       "type": "market",
+    #'       "time_in_force": "day",
+    #'       "status": "pending_new"
+    #'     }
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @param cancel_orders Logical; if `TRUE`, cancels all open orders before
     #'   liquidating positions. Default `FALSE`.
@@ -444,6 +596,26 @@ AlpacaAccount <- R6::R6Class(
     #' ### API Endpoint
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
+    #' ### Official Documentation
+    #' [Exercise Option](https://docs.alpaca.markets/reference/postpositionsymboloridexercise)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/positions/AAPL240621C00200000/exercise'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' The API returns `204 No Content` on success. This method returns a
+    #' confirmation `data.table`:
+    #' ```json
+    #' {
+    #'   "symbol": "AAPL240621C00200000",
+    #'   "status": "exercised"
+    #' }
+    #' ```
+    #'
     #' @param symbol_or_id Character; OCC option symbol or asset UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
     #'   - `symbol` (character): The exercised option symbol or asset UUID.
@@ -480,6 +652,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Portfolio History](https://docs.alpaca.markets/reference/getportfoliohistory)
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -569,6 +742,33 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Account Activities](https://docs.alpaca.markets/reference/getaccountactivities)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/account/activities?activity_types=FILL&direction=desc&page_size=10'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "20260310120000000::b3d29c1a-7e5f-4a2b-9c1d-8e7f6a5b4c3d",
+    #'     "activity_type": "FILL",
+    #'     "symbol": "AAPL",
+    #'     "side": "buy",
+    #'     "qty": "10",
+    #'     "price": "187.25",
+    #'     "cum_qty": "10",
+    #'     "leaves_qty": "0",
+    #'     "type": "fill",
+    #'     "transaction_time": "2026-03-10T12:00:00.000Z",
+    #'     "order_id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+    #'     "order_status": "filled"
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @param activity_types Character or NULL; comma-separated activity types to
     #'   filter (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
@@ -618,6 +818,36 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/account/activities/{activity_type}`
+    #'
+    #' ### Official Documentation
+    #' [Get Account Activities by Type](https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/account/activities/FILL?direction=desc&page_size=5'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "20260310140000000::a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    #'     "activity_type": "FILL",
+    #'     "symbol": "TSLA",
+    #'     "side": "buy",
+    #'     "qty": "5",
+    #'     "price": "178.50",
+    #'     "cum_qty": "5",
+    #'     "leaves_qty": "0",
+    #'     "type": "fill",
+    #'     "transaction_time": "2026-03-10T14:00:00.000Z",
+    #'     "order_id": "c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f",
+    #'     "order_status": "filled"
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @param activity_type Character; activity type (e.g., `"FILL"`, `"DIV"`,
     #'   `"TRANS"`, `"JNLC"`, `"JNLS"`, `"CSD"`, `"CSW"`).
@@ -672,6 +902,33 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Watchlists](https://docs.alpaca.markets/reference/getwatchlists)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'     "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'     "name": "Tech Stocks",
+    #'     "created_at": "2026-01-15T10:30:00Z",
+    #'     "updated_at": "2026-03-10T08:00:00Z"
+    #'   },
+    #'   {
+    #'     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    #'     "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'     "name": "Energy Sector",
+    #'     "created_at": "2026-02-20T14:00:00Z",
+    #'     "updated_at": "2026-03-09T16:45:00Z"
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Watchlist UUID.
@@ -701,6 +958,45 @@ AlpacaAccount <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
+    #' ### Official Documentation
+    #' [Get Watchlist by ID](https://docs.alpaca.markets/reference/getwatchlistbyid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'   "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'   "name": "Tech Stocks",
+    #'   "created_at": "2026-01-15T10:30:00Z",
+    #'   "updated_at": "2026-03-10T08:00:00Z",
+    #'   "assets": [
+    #'     {
+    #'       "id": "904837e3-3b76-47ec-b432-046db621571b",
+    #'       "symbol": "AAPL",
+    #'       "name": "Apple Inc.",
+    #'       "exchange": "NASDAQ",
+    #'       "asset_class": "us_equity",
+    #'       "tradable": true
+    #'     },
+    #'     {
+    #'       "id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01",
+    #'       "symbol": "MSFT",
+    #'       "name": "Microsoft Corporation",
+    #'       "exchange": "NASDAQ",
+    #'       "asset_class": "us_equity",
+    #'       "tradable": true
+    #'     }
+    #'   ]
+    #' }
+    #' ```
+    #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   watchlist metadata and an `assets` list column containing the symbols.
@@ -729,6 +1025,39 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Create Watchlist](https://docs.alpaca.markets/reference/postwatchlist)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   -H "Content-Type: application/json" \
+    #'   -d '{"name": "My Tech Stocks", "symbols": ["AAPL", "MSFT", "GOOGL"]}' \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "name": "My Tech Stocks",
+    #'   "symbols": ["AAPL", "MSFT", "GOOGL"]
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "d7e8f9a0-b1c2-3456-7890-abcdef123456",
+    #'   "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'   "name": "My Tech Stocks",
+    #'   "created_at": "2026-03-10T15:00:00Z",
+    #'   "updated_at": "2026-03-10T15:00:00Z",
+    #'   "assets": [
+    #'     {"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."},
+    #'     {"id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01", "symbol": "MSFT", "name": "Microsoft Corporation"},
+    #'     {"id": "c3d4e5f6-a7b8-9012-3456-789abcdef012", "symbol": "GOOGL", "name": "Alphabet Inc."}
+    #'   ]
+    #' }
+    #' ```
     #'
     #' @param name Character; watchlist name.
     #' @param symbols Character vector or NULL; initial symbols (e.g.,
@@ -758,6 +1087,41 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `PUT https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' ### Official Documentation
+    #' [Update Watchlist](https://docs.alpaca.markets/reference/putwatchlistbyid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X PUT -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   -H "Content-Type: application/json" \
+    #'   -d '{"name": "Updated Name", "symbols": ["AAPL", "TSLA"]}' \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "name": "Updated Name",
+    #'   "symbols": ["AAPL", "TSLA"]
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'   "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'   "name": "Updated Name",
+    #'   "created_at": "2026-01-15T10:30:00Z",
+    #'   "updated_at": "2026-03-10T16:00:00Z",
+    #'   "assets": [
+    #'     {"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."},
+    #'     {"id": "e5f6a7b8-c9d0-1234-5678-9abcdef01234", "symbol": "TSLA", "name": "Tesla, Inc."}
+    #'   ]
+    #' }
+    #' ```
     #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @param name Character; new watchlist name.
@@ -789,6 +1153,41 @@ AlpacaAccount <- R6::R6Class(
     #' ### API Endpoint
     #' `POST https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
+    #' ### Official Documentation
+    #' [Add Symbol to Watchlist](https://docs.alpaca.markets/reference/postwatchlistbyid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   -H "Content-Type: application/json" \
+    #'   -d '{"symbol": "NVDA"}' \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "symbol": "NVDA"
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'   "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    #'   "name": "Tech Stocks",
+    #'   "created_at": "2026-01-15T10:30:00Z",
+    #'   "updated_at": "2026-03-10T16:30:00Z",
+    #'   "assets": [
+    #'     {"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."},
+    #'     {"id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01", "symbol": "MSFT", "name": "Microsoft Corporation"},
+    #'     {"id": "f6a7b8c9-d0e1-2345-6789-abcdef012345", "symbol": "NVDA", "name": "NVIDIA Corporation"}
+    #'   ]
+    #' }
+    #' ```
+    #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @param symbol Character; ticker symbol to add (e.g., `"AAPL"`).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
@@ -816,6 +1215,27 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}/{symbol}`
+    #'
+    #' ### Official Documentation
+    #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234/AAPL'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' The API returns `204 No Content` on success. This method returns a
+    #' confirmation `data.table`:
+    #' ```json
+    #' {
+    #'   "watchlist_id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'   "symbol": "AAPL",
+    #'   "status": "removed"
+    #' }
+    #' ```
     #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @param symbol Character; ticker symbol to remove.
@@ -856,6 +1276,26 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
+    #'
+    #' ### Official Documentation
+    #' [Delete Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' The API returns `204 No Content` on success. This method returns a
+    #' confirmation `data.table`:
+    #' ```json
+    #' {
+    #'   "watchlist_id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    #'   "status": "deleted"
+    #' }
+    #' ```
     #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:

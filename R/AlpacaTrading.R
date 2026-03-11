@@ -65,6 +65,7 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Create Order](https://docs.alpaca.markets/reference/postorder)
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -72,6 +73,59 @@ AlpacaTrading <- R6::R6Class(
     #'   -H "Content-Type: application/json" \
     #'   -d '{"symbol":"AAPL","qty":"1","side":"buy","type":"market","time_in_force":"day"}' \
     #'   'https://paper-api.alpaca.markets/v2/orders'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "symbol": "AAPL",
+    #'   "qty": "1",
+    #'   "side": "buy",
+    #'   "type": "limit",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "150.00",
+    #'   "extended_hours": false,
+    #'   "client_order_id": "my-order-001",
+    #'   "order_class": "simple"
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'   "client_order_id": "my-order-001",
+    #'   "created_at": "2026-03-10T14:30:00.000000Z",
+    #'   "updated_at": "2026-03-10T14:30:00.000000Z",
+    #'   "submitted_at": "2026-03-10T14:30:00.000000Z",
+    #'   "filled_at": null,
+    #'   "expired_at": null,
+    #'   "canceled_at": null,
+    #'   "failed_at": null,
+    #'   "replaced_at": null,
+    #'   "replaced_by": null,
+    #'   "replaces": null,
+    #'   "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'   "symbol": "AAPL",
+    #'   "asset_class": "us_equity",
+    #'   "notional": null,
+    #'   "qty": "1",
+    #'   "filled_qty": "0",
+    #'   "filled_avg_price": null,
+    #'   "order_class": "simple",
+    #'   "order_type": "limit",
+    #'   "type": "limit",
+    #'   "side": "buy",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "150.00",
+    #'   "stop_price": null,
+    #'   "status": "accepted",
+    #'   "extended_hours": false,
+    #'   "legs": null,
+    #'   "trail_percent": null,
+    #'   "trail_price": null,
+    #'   "hwm": null
+    #' }
     #' ```
     #'
     #' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
@@ -191,6 +245,53 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [List Orders](https://docs.alpaca.markets/reference/getallorders)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/orders?status=open&limit=50&direction=desc'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'     "client_order_id": "my-order-001",
+    #'     "created_at": "2026-03-10T14:30:00.000000Z",
+    #'     "updated_at": "2026-03-10T14:30:00.000000Z",
+    #'     "submitted_at": "2026-03-10T14:30:00.000000Z",
+    #'     "filled_at": null,
+    #'     "expired_at": null,
+    #'     "canceled_at": null,
+    #'     "failed_at": null,
+    #'     "replaced_at": null,
+    #'     "replaced_by": null,
+    #'     "replaces": null,
+    #'     "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'     "symbol": "AAPL",
+    #'     "asset_class": "us_equity",
+    #'     "notional": null,
+    #'     "qty": "1",
+    #'     "filled_qty": "0",
+    #'     "filled_avg_price": null,
+    #'     "order_class": "simple",
+    #'     "order_type": "limit",
+    #'     "type": "limit",
+    #'     "side": "buy",
+    #'     "time_in_force": "day",
+    #'     "limit_price": "150.00",
+    #'     "stop_price": null,
+    #'     "status": "new",
+    #'     "extended_hours": false,
+    #'     "legs": null,
+    #'     "trail_percent": null,
+    #'     "trail_price": null,
+    #'     "hwm": null
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @param status Character or NULL; `"open"`, `"closed"`, `"all"`. Default `"open"`.
     #' @param limit Integer or NULL; max orders (default 50, max 500).
@@ -243,6 +344,54 @@ AlpacaTrading <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
+    #' ### Official Documentation
+    #' [Get Order](https://docs.alpaca.markets/reference/getorderbyorderid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'   "client_order_id": "my-order-001",
+    #'   "created_at": "2026-03-10T14:30:00.000000Z",
+    #'   "updated_at": "2026-03-10T14:30:05.000000Z",
+    #'   "submitted_at": "2026-03-10T14:30:00.000000Z",
+    #'   "filled_at": "2026-03-10T14:30:05.000000Z",
+    #'   "expired_at": null,
+    #'   "canceled_at": null,
+    #'   "failed_at": null,
+    #'   "replaced_at": null,
+    #'   "replaced_by": null,
+    #'   "replaces": null,
+    #'   "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'   "symbol": "AAPL",
+    #'   "asset_class": "us_equity",
+    #'   "notional": null,
+    #'   "qty": "1",
+    #'   "filled_qty": "1",
+    #'   "filled_avg_price": "149.85",
+    #'   "order_class": "simple",
+    #'   "order_type": "limit",
+    #'   "type": "limit",
+    #'   "side": "buy",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "150.00",
+    #'   "stop_price": null,
+    #'   "status": "filled",
+    #'   "extended_hours": false,
+    #'   "legs": null,
+    #'   "trail_percent": null,
+    #'   "trail_price": null,
+    #'   "hwm": null
+    #' }
+    #' ```
+    #'
     #' @param order_id Character; order UUID.
     #' @param nested Logical or NULL; include leg orders.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row.
@@ -270,6 +419,54 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id`
+    #'
+    #' ### Official Documentation
+    #' [Get Order by Client ID](https://docs.alpaca.markets/reference/getorderbyclientorderid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/orders:by_client_order_id?client_order_id=my-order-001'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'   "client_order_id": "my-order-001",
+    #'   "created_at": "2026-03-10T14:30:00.000000Z",
+    #'   "updated_at": "2026-03-10T14:30:05.000000Z",
+    #'   "submitted_at": "2026-03-10T14:30:00.000000Z",
+    #'   "filled_at": "2026-03-10T14:30:05.000000Z",
+    #'   "expired_at": null,
+    #'   "canceled_at": null,
+    #'   "failed_at": null,
+    #'   "replaced_at": null,
+    #'   "replaced_by": null,
+    #'   "replaces": null,
+    #'   "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'   "symbol": "AAPL",
+    #'   "asset_class": "us_equity",
+    #'   "notional": null,
+    #'   "qty": "1",
+    #'   "filled_qty": "1",
+    #'   "filled_avg_price": "149.85",
+    #'   "order_class": "simple",
+    #'   "order_type": "limit",
+    #'   "type": "limit",
+    #'   "side": "buy",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "150.00",
+    #'   "stop_price": null,
+    #'   "status": "filled",
+    #'   "extended_hours": false,
+    #'   "legs": null,
+    #'   "trail_percent": null,
+    #'   "trail_price": null,
+    #'   "hwm": null
+    #' }
+    #' ```
     #'
     #' @param client_order_id Character; the client order ID (max 128 chars).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row.
@@ -301,6 +498,65 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Replace Order](https://docs.alpaca.markets/reference/patchorder)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X PATCH -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   -H "Content-Type: application/json" \
+    #'   -d '{"qty":"2","limit_price":"155.00"}' \
+    #'   'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+    #' ```
+    #'
+    #' ### JSON Request
+    #' ```json
+    #' {
+    #'   "qty": "2",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "155.00",
+    #'   "stop_price": null,
+    #'   "trail": null,
+    #'   "client_order_id": "my-order-001-modified"
+    #' }
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "e7f3c1a2-8d5b-4f6e-9a2c-1b3d5e7f9a1c",
+    #'   "client_order_id": "my-order-001-modified",
+    #'   "created_at": "2026-03-10T14:35:00.000000Z",
+    #'   "updated_at": "2026-03-10T14:35:00.000000Z",
+    #'   "submitted_at": "2026-03-10T14:35:00.000000Z",
+    #'   "filled_at": null,
+    #'   "expired_at": null,
+    #'   "canceled_at": null,
+    #'   "failed_at": null,
+    #'   "replaced_at": null,
+    #'   "replaced_by": null,
+    #'   "replaces": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'   "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'   "symbol": "AAPL",
+    #'   "asset_class": "us_equity",
+    #'   "notional": null,
+    #'   "qty": "2",
+    #'   "filled_qty": "0",
+    #'   "filled_avg_price": null,
+    #'   "order_class": "simple",
+    #'   "order_type": "limit",
+    #'   "type": "limit",
+    #'   "side": "buy",
+    #'   "time_in_force": "day",
+    #'   "limit_price": "155.00",
+    #'   "stop_price": null,
+    #'   "status": "accepted",
+    #'   "extended_hours": false,
+    #'   "legs": null,
+    #'   "trail_percent": null,
+    #'   "trail_price": null,
+    #'   "hwm": null
+    #' }
+    #' ```
     #'
     #' @param order_id Character; order UUID to replace.
     #' @param qty Numeric or NULL; new quantity.
@@ -366,6 +622,26 @@ AlpacaTrading <- R6::R6Class(
     #' ### API Endpoint
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
+    #' ### Official Documentation
+    #' [Cancel Order](https://docs.alpaca.markets/reference/deleteorderbyorderid)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' The API returns HTTP 204 (No Content) on success. This method returns a
+    #' confirmation `data.table`:
+    #' ```json
+    #' {
+    #'   "order_id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'   "status": "cancelled"
+    #' }
+    #' ```
+    #'
     #' @param order_id Character; order UUID to cancel.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
     #'   - `order_id` (character): The cancelled order UUID.
@@ -400,6 +676,57 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Cancel All Orders](https://docs.alpaca.markets/reference/deleteallorders)
+    #' Verified: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/orders'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'     "status": 200,
+    #'     "body": {
+    #'       "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    #'       "client_order_id": "my-order-001",
+    #'       "created_at": "2026-03-10T14:30:00.000000Z",
+    #'       "updated_at": "2026-03-10T14:40:00.000000Z",
+    #'       "submitted_at": "2026-03-10T14:30:00.000000Z",
+    #'       "filled_at": null,
+    #'       "expired_at": null,
+    #'       "canceled_at": "2026-03-10T14:40:00.000000Z",
+    #'       "failed_at": null,
+    #'       "replaced_at": null,
+    #'       "replaced_by": null,
+    #'       "replaces": null,
+    #'       "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'       "symbol": "AAPL",
+    #'       "asset_class": "us_equity",
+    #'       "notional": null,
+    #'       "qty": "1",
+    #'       "filled_qty": "0",
+    #'       "filled_avg_price": null,
+    #'       "order_class": "simple",
+    #'       "order_type": "limit",
+    #'       "type": "limit",
+    #'       "side": "buy",
+    #'       "time_in_force": "day",
+    #'       "limit_price": "150.00",
+    #'       "stop_price": null,
+    #'       "status": "pending_cancel",
+    #'       "extended_hours": false,
+    #'       "legs": null,
+    #'       "trail_percent": null,
+    #'       "trail_price": null,
+    #'       "hwm": null
+    #'     }
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
     #'   When orders are cancelled, one row per order with full order details.

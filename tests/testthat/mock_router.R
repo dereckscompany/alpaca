@@ -81,8 +81,16 @@ box::use(./`helper-mockery`[
   # ---- Trading API (paper-api.alpaca.markets) ----
 
   # Account config (before generic /v2/account)
-  list(pattern = "v2/account/configurations", fixture = function() return(mock_account_config_response()), method = "GET"),
-  list(pattern = "v2/account/configurations", fixture = function() return(mock_account_config_response()), method = "PATCH"),
+  list(
+    pattern = "v2/account/configurations",
+    fixture = function() return(mock_account_config_response()),
+    method = "GET"
+  ),
+  list(
+    pattern = "v2/account/configurations",
+    fixture = function() return(mock_account_config_response()),
+    method = "PATCH"
+  ),
 
   # Portfolio history (before generic /v2/account)
   list(pattern = "v2/account/portfolio/history", fixture = function() return(mock_portfolio_history_response())),

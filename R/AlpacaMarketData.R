@@ -82,6 +82,29 @@ AlpacaMarketData <- R6::R6Class(
     #' @description
     #' Initialise an AlpacaMarketData Object
     #'
+    #' Creates a new `AlpacaMarketData` instance for querying market data,
+    #' assets, calendar, and clock from Alpaca's REST API.
+    #'
+    #' ### API Endpoint
+    #' No HTTP request is made during construction. The object stores
+    #' credentials and base URLs for subsequent method calls.
+    #'
+    #' ### Official Documentation
+    #' - [Authentication](https://docs.alpaca.markets/docs/getting-started)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' # No request at construction. Verify credentials with the clock endpoint:
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/clock'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' # (No response — constructor does not call an endpoint)
+    #' ```
+    #'
     #' @param keys List; API credentials from [get_api_keys()].
     #' @param base_url Character; trading API base URL. Defaults to `get_base_url()`.
     #' @param data_base_url Character; market data API base URL. Defaults to
@@ -111,7 +134,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Bars](https://docs.alpaca.markets/docs/historical-stock-data-1)
+    #' [Historical Stock Bars](https://docs.alpaca.markets/reference/stockbars)
+    #' Verifieid: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -197,6 +221,31 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/bars`
     #'
+    #' ### Official Documentation
+    #' [Multi Stock Bars](https://docs.alpaca.markets/reference/stockbars-1)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/bars?symbols=AAPL,MSFT&timeframe=1Day&start=2024-01-01&limit=2'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "bars": {
+    #'     "AAPL": [
+    #'       {"t": "2024-01-02T05:00:00Z", "o": 187.15, "h": 188.44, "l": 183.89, "c": 185.64, "v": 82488700, "n": 1036517, "vw": 185.831}
+    #'     ],
+    #'     "MSFT": [
+    #'       {"t": "2024-01-02T05:00:00Z", "o": 373.86, "h": 376.04, "l": 371.34, "c": 374.72, "v": 22622100, "n": 345678, "vw": 374.12}
+    #'     ]
+    #'   },
+    #'   "next_page_token": null
+    #' }
+    #' ```
+    #'
     #' @param symbols Character vector; ticker symbols (max 100).
     #' @param timeframe Character; bar timeframe (see `get_bars()` for valid values).
     #' @param start Character or NULL; start date/time.
@@ -253,6 +302,33 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest`
     #'
+    #' ### Official Documentation
+    #' [Latest Stock Bar](https://docs.alpaca.markets/reference/stocklatestbar)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/bars/latest'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "bar": {
+    #'     "t": "2024-01-15T20:59:00Z",
+    #'     "o": 185.30,
+    #'     "h": 185.45,
+    #'     "l": 185.20,
+    #'     "c": 185.42,
+    #'     "v": 1234567,
+    #'     "n": 15432,
+    #'     "vw": 185.35
+    #'   },
+    #'   "symbol": "AAPL"
+    #' }
+    #' ```
+    #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
@@ -285,6 +361,29 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/trades/latest'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "trade": {
+    #'     "t": "2024-01-15T20:00:00.123456Z",
+    #'     "x": "V",
+    #'     "p": 185.64,
+    #'     "s": 100,
+    #'     "c": ["@"],
+    #'     "i": 12345,
+    #'     "z": "C"
+    #'   },
+    #'   "symbol": "AAPL"
+    #' }
+    #' ```
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -321,6 +420,34 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest`
+    #'
+    #' ### Official Documentation
+    #' [Latest Quote](https://docs.alpaca.markets/reference/stocklatestquote)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/quotes/latest'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "quote": {
+    #'     "t": "2024-01-15T20:00:00.000123Z",
+    #'     "ax": "Q",
+    #'     "ap": 185.65,
+    #'     "as": 3,
+    #'     "bx": "K",
+    #'     "bp": 185.63,
+    #'     "bs": 2,
+    #'     "c": ["R"],
+    #'     "z": "C"
+    #'   },
+    #'   "symbol": "AAPL"
+    #' }
+    #' ```
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -359,6 +486,27 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/snapshot`
     #'
+    #' ### Official Documentation
+    #' [Stock Snapshot](https://docs.alpaca.markets/reference/stocksnapshot)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/snapshot'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "latestTrade": {"t": "2024-01-15T20:00:00Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"},
+    #'   "latestQuote": {"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"},
+    #'   "minuteBar": {"t": "2024-01-15T19:59:00Z", "o": 185.50, "h": 185.65, "l": 185.40, "c": 185.60, "v": 45230, "n": 312, "vw": 185.52},
+    #'   "dailyBar": {"t": "2024-01-15T05:00:00Z", "o": 184.20, "h": 186.10, "l": 183.80, "c": 185.64, "v": 56789012, "n": 678901, "vw": 185.12},
+    #'   "prevDailyBar": {"t": "2024-01-12T05:00:00Z", "o": 185.60, "h": 186.00, "l": 184.50, "c": 185.59, "v": 48234567, "n": 543210, "vw": 185.30}
+    #' }
+    #' ```
+    #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
@@ -386,6 +534,26 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/bars/latest`
+    #'
+    #' ### Official Documentation
+    #' [Latest Multi Bars](https://docs.alpaca.markets/reference/stocklatestbars)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/bars/latest?symbols=AAPL,MSFT'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "bars": {
+    #'     "AAPL": {"t": "2024-01-15T20:59:00Z", "o": 185.30, "h": 185.45, "l": 185.20, "c": 185.42, "v": 1234567, "n": 15432, "vw": 185.35},
+    #'     "MSFT": {"t": "2024-01-15T20:59:00Z", "o": 420.10, "h": 420.50, "l": 419.80, "c": 420.35, "v": 987654, "n": 12345, "vw": 420.22}
+    #'   }
+    #' }
+    #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -434,6 +602,26 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/trades/latest`
     #'
+    #' ### Official Documentation
+    #' [Latest Multi Trades](https://docs.alpaca.markets/reference/stocklatesttrades)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/trades/latest?symbols=AAPL,MSFT'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "trades": {
+    #'     "AAPL": {"t": "2024-01-15T20:00:00.123456Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"},
+    #'     "MSFT": {"t": "2024-01-15T20:00:00.654321Z", "x": "Q", "p": 420.72, "s": 50, "c": ["@"], "i": 67890, "z": "C"}
+    #'   }
+    #' }
+    #' ```
+    #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
@@ -474,6 +662,26 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/quotes/latest`
     #'
+    #' ### Official Documentation
+    #' [Latest Multi Quotes](https://docs.alpaca.markets/reference/stocklatestquotes)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/quotes/latest?symbols=AAPL,MSFT'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "quotes": {
+    #'     "AAPL": {"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"},
+    #'     "MSFT": {"t": "2024-01-15T20:00:00Z", "ax": "N", "ap": 420.75, "as": 1, "bx": "P", "bp": 420.70, "bs": 4, "c": ["R"], "z": "C"}
+    #'   }
+    #' }
+    #' ```
+    #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
@@ -513,6 +721,36 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/snapshots`
+    #'
+    #' ### Official Documentation
+    #' [Multi Stock Snapshots](https://docs.alpaca.markets/reference/stocksnapshots)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/snapshots?symbols=AAPL,MSFT'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "AAPL": {
+    #'     "latestTrade": {"t": "2024-01-15T20:00:00Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"},
+    #'     "latestQuote": {"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"},
+    #'     "minuteBar": {"t": "2024-01-15T19:59:00Z", "o": 185.50, "h": 185.65, "l": 185.40, "c": 185.60, "v": 45230, "n": 312, "vw": 185.52},
+    #'     "dailyBar": {"t": "2024-01-15T05:00:00Z", "o": 184.20, "h": 186.10, "l": 183.80, "c": 185.64, "v": 56789012, "n": 678901, "vw": 185.12},
+    #'     "prevDailyBar": {"t": "2024-01-12T05:00:00Z", "o": 185.60, "h": 186.00, "l": 184.50, "c": 185.59, "v": 48234567, "n": 543210, "vw": 185.30}
+    #'   },
+    #'   "MSFT": {
+    #'     "latestTrade": {"t": "2024-01-15T20:00:00Z", "x": "Q", "p": 420.72, "s": 50, "c": ["@"], "i": 67890, "z": "C"},
+    #'     "latestQuote": {"t": "2024-01-15T20:00:00Z", "ax": "N", "ap": 420.75, "as": 1, "bx": "P", "bp": 420.70, "bs": 4, "c": ["R"], "z": "C"},
+    #'     "minuteBar": {"t": "2024-01-15T19:59:00Z", "o": 420.30, "h": 420.80, "l": 420.20, "c": 420.65, "v": 32100, "n": 245, "vw": 420.50},
+    #'     "dailyBar": {"t": "2024-01-15T05:00:00Z", "o": 419.50, "h": 421.00, "l": 418.80, "c": 420.72, "v": 23456789, "n": 345678, "vw": 420.10},
+    #'     "prevDailyBar": {"t": "2024-01-12T05:00:00Z", "o": 420.00, "h": 421.50, "l": 419.00, "c": 420.45, "v": 21345678, "n": 312345, "vw": 420.25}
+    #'   }
+    #' }
+    #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
@@ -562,6 +800,29 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades`
     #'
+    #' ### Official Documentation
+    #' [Historical Stock Trades](https://docs.alpaca.markets/reference/stocktrades)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/trades?start=2024-01-15&limit=3'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "trades": [
+    #'     {"t": "2024-01-15T09:30:00.123456Z", "x": "V", "p": 184.25, "s": 200, "c": ["@", "T"], "i": 10001, "z": "C"},
+    #'     {"t": "2024-01-15T09:30:00.234567Z", "x": "Q", "p": 184.30, "s": 100, "c": ["@"], "i": 10002, "z": "C"},
+    #'     {"t": "2024-01-15T09:30:00.345678Z", "x": "N", "p": 184.28, "s": 50, "c": ["@"], "i": 10003, "z": "C"}
+    #'   ],
+    #'   "symbol": "AAPL",
+    #'   "next_page_token": "QUFQTHwyMDI0LTAxLTE1VDA5OjMwOjAwLjM0NTY3OFp8MTAwMDM="
+    #' }
+    #' ```
+    #'
     #' @param symbol Character; ticker symbol.
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
@@ -608,6 +869,28 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes`
+    #'
+    #' ### Official Documentation
+    #' [Historical Stock Quotes](https://docs.alpaca.markets/reference/stockquotes)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v2/stocks/AAPL/quotes?start=2024-01-15&limit=2'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "quotes": [
+    #'     {"t": "2024-01-15T09:30:00.000123Z", "ax": "Q", "ap": 184.30, "as": 5, "bx": "K", "bp": 184.25, "bs": 3, "c": ["R"], "z": "C"},
+    #'     {"t": "2024-01-15T09:30:00.001234Z", "ax": "N", "ap": 184.32, "as": 2, "bx": "P", "bp": 184.27, "bs": 4, "c": ["R"], "z": "C"}
+    #'   ],
+    #'   "symbol": "AAPL",
+    #'   "next_page_token": "QUFQTHwyMDI0LTAxLTE1VDA5OjMwOjAwLjAwMTIzNFp8Mg=="
+    #' }
+    #' ```
     #'
     #' @param symbol Character; ticker symbol.
     #' @param start Character or NULL; start date/time.
@@ -660,6 +943,33 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Assets](https://docs.alpaca.markets/reference/get-v2-assets)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'     "class": "us_equity",
+    #'     "exchange": "NASDAQ",
+    #'     "symbol": "AAPL",
+    #'     "name": "Apple Inc.",
+    #'     "status": "active",
+    #'     "tradable": true,
+    #'     "marginable": true,
+    #'     "maintenance_margin_requirement": 30,
+    #'     "shortable": true,
+    #'     "easy_to_borrow": true,
+    #'     "fractionable": true
+    #'   }
+    #' ]
+    #' ```
     #'
     #' @param status Character or NULL; filter by status (`"active"`, `"inactive"`).
     #' @param asset_class Character or NULL; filter by class (`"us_equity"`,
@@ -699,6 +1009,34 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/assets/{symbol_or_id}`
     #'
+    #' ### Official Documentation
+    #' [Asset by ID or Symbol](https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/assets/AAPL'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    #'   "class": "us_equity",
+    #'   "exchange": "NASDAQ",
+    #'   "symbol": "AAPL",
+    #'   "name": "Apple Inc.",
+    #'   "status": "active",
+    #'   "tradable": true,
+    #'   "marginable": true,
+    #'   "maintenance_margin_requirement": 30,
+    #'   "shortable": true,
+    #'   "easy_to_borrow": true,
+    #'   "fractionable": true
+    #' }
+    #' ```
+    #'
     #' @param symbol_or_id Character; ticker symbol or asset UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   the same columns as `get_assets()`, single row.
@@ -730,6 +1068,23 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Calendar](https://docs.alpaca.markets/reference/get-v2-calendar)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://paper-api.alpaca.markets/v2/calendar?start=2024-01-01&end=2024-01-05'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {"date": "2024-01-02", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-04"},
+    #'   {"date": "2024-01-03", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-05"},
+    #'   {"date": "2024-01-04", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-08"},
+    #'   {"date": "2024-01-05", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-09"}
+    #' ]
+    #' ```
     #'
     #' @param start Character or NULL; start date (`"YYYY-MM-DD"`).
     #' @param end Character or NULL; end date (`"YYYY-MM-DD"`).
@@ -763,6 +1118,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Clock](https://docs.alpaca.markets/reference/get-v2-clock)
+    #' Verifieid: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -813,11 +1169,33 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Corporate Actions](https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements)
+    #' Verifieid: 2026-03-10
     #'
     #' ### curl
     #' ```
     #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
-    #'   'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-12-31'
+    #'   'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-03-31'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' [
+    #'   {
+    #'     "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    #'     "corporate_action_id": "DIV_AAPL_2024Q1",
+    #'     "ca_type": "dividend",
+    #'     "ca_sub_type": "cash",
+    #'     "initiating_symbol": "AAPL",
+    #'     "target_symbol": "AAPL",
+    #'     "declaration_date": "2024-02-01",
+    #'     "ex_date": "2024-02-09",
+    #'     "record_date": "2024-02-12",
+    #'     "payable_date": "2024-02-15",
+    #'     "cash": "0.24",
+    #'     "old_rate": "1",
+    #'     "new_rate": "1"
+    #'   }
+    #' ]
     #' ```
     #'
     #' @param ca_types Character; comma-separated corporate action types. Valid
@@ -894,11 +1272,33 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [News](https://docs.alpaca.markets/reference/news-1)
+    #' Verifieid: 2026-03-10
     #'
     #' ### curl
     #' ```
     #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
     #'   'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&limit=10'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "news": [
+    #'     {
+    #'       "id": 35678901,
+    #'       "headline": "Apple Reports Record Q1 Revenue of $119.6 Billion",
+    #'       "author": "Reuters",
+    #'       "source": "reuters",
+    #'       "summary": "Apple Inc reported record first-quarter revenue driven by strong iPhone sales...",
+    #'       "url": "https://www.reuters.com/technology/apple-q1-2024-earnings",
+    #'       "symbols": ["AAPL"],
+    #'       "created_at": "2024-01-15T18:30:00Z",
+    #'       "updated_at": "2024-01-15T18:35:00Z",
+    #'       "images": [{"size": "large", "url": "https://example.com/aapl.jpg"}]
+    #'     }
+    #'   ],
+    #'   "next_page_token": "MTIzNDU2Nzg5MA=="
+    #' }
     #' ```
     #'
     #' @param symbols Character or NULL; comma-separated symbols to filter
@@ -973,6 +1373,30 @@ AlpacaMarketData <- R6::R6Class(
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives`
     #'
+    #' ### Official Documentation
+    #' [Most Active Stocks](https://docs.alpaca.markets/reference/mostactives)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=5'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "most_actives": [
+    #'     {"symbol": "AAPL", "volume": 82488700, "trade_count": 1036517},
+    #'     {"symbol": "TSLA", "volume": 74523100, "trade_count": 987654},
+    #'     {"symbol": "NVDA", "volume": 65432100, "trade_count": 876543},
+    #'     {"symbol": "AMD", "volume": 54321000, "trade_count": 765432},
+    #'     {"symbol": "MSFT", "volume": 22622100, "trade_count": 345678}
+    #'   ],
+    #'   "last_updated": "2024-01-15T20:00:00Z"
+    #' }
+    #' ```
+    #'
     #' @param by Character or NULL; ranking metric: `"volume"` (default) or `"trades"`.
     #' @param top Integer or NULL; number of results to return (default 10).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
@@ -1001,6 +1425,34 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### API Endpoint
     #' `GET https://data.alpaca.markets/v1beta1/screener/{market_type}/movers`
+    #'
+    #' ### Official Documentation
+    #' [Top Market Movers](https://docs.alpaca.markets/reference/movers)
+    #' Verifieid: 2026-03-10
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=3'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "gainers": [
+    #'     {"symbol": "SMCI", "percent_change": 8.52, "change": 6.45, "price": 82.15},
+    #'     {"symbol": "PLTR", "percent_change": 5.31, "change": 1.23, "price": 24.40},
+    #'     {"symbol": "RIVN", "percent_change": 4.87, "change": 0.82, "price": 17.67}
+    #'   ],
+    #'   "losers": [
+    #'     {"symbol": "MRNA", "percent_change": -6.12, "change": -6.80, "price": 104.30},
+    #'     {"symbol": "ENPH", "percent_change": -5.45, "change": -6.10, "price": 105.80},
+    #'     {"symbol": "COIN", "percent_change": -4.98, "change": -7.50, "price": 143.10}
+    #'   ],
+    #'   "market_type": "stocks",
+    #'   "last_updated": "2024-01-15T20:00:00Z"
+    #' }
+    #' ```
     #'
     #' @param market_type Character; `"stocks"` (default) or `"crypto"`.
     #' @param top Integer or NULL; number of results per direction (default 10).
