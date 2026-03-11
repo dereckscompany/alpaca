@@ -1,0 +1,11 @@
+pandoc: 3.1.11
+pkgdown: 2.2.0
+pkgdown_sha: ~
+articles:
+  async-usage: async-usage.html
+  getting-started: getting-started.html
+  margin-short-selling: margin-short-selling.html
+last_built: 2026-03-11T07:29Z
+urls:
+  reference: https://dereckmezquita.github.io/alpaca/reference
+  article: https://dereckmezquita.github.io/alpaca/articles

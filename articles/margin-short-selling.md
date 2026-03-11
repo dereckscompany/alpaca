@@ -1,0 +1,263 @@
+# Margin Trading and Short Selling with alpaca
+
+This vignette covers margin trading, short selling, and options position
+management using the `alpaca` package. Unlike crypto exchanges which
+require separate margin/futures classes, Alpaca integrates margin and
+short selling directly into the standard trading API.
+
+## How Margin Works on Alpaca
+
+Alpaca accounts support margin trading out of the box:
+
+- **Reg-T margin**: 2x buying power for overnight positions
+- **Day-trading margin**: 4x buying power for positions opened and
+  closed same-day (requires PDT flag and \$25k+ equity)
+- **Short selling**: Sell stocks you don’t own; Alpaca borrows shares
+  automatically
+
+No special endpoints or classes are needed — `AlpacaTrading` and
+`AlpacaAccount` handle everything.
+
+## Setup
+
+``` r
+library(alpaca)
+
+trading <- AlpacaTrading$new()
+acct <- AlpacaAccount$new()
+market <- AlpacaMarketData$new()
+```
+
+## Check Margin Status
+
+``` r
+info <- acct$get_account()
+
+# Key margin fields
+info[, .(
+  equity,
+  buying_power,         # Total buying power (includes margin)
+  regt_buying_power,    # Reg-T (2x) buying power
+  daytrading_buying_power, # 4x for day trades (if PDT)
+  initial_margin,       # Current initial margin requirement
+  maintenance_margin,   # Maintenance margin requirement
+  long_market_value,    # Total long positions
+  short_market_value,   # Total short positions
+  multiplier,           # Account leverage multiplier (2 or 4)
+  pattern_day_trader    # PDT flag
+)]
+```
+
+## Check if a Stock is Shortable/Marginable
+
+``` r
+# Check asset attributes
+asset <- market$get_asset("AAPL")
+cat("Shortable:", asset$shortable, "\n")
+cat("Marginable:", asset$marginable, "\n")
+cat("Fractionable:", asset$fractionable, "\n")
+
+# Filter for all shortable stocks
+assets <- market$get_assets(status = "active", asset_class = "us_equity")
+shortable <- assets[shortable == TRUE]
+cat("Shortable stocks:", nrow(shortable), "\n")
+```
+
+## Short Selling
+
+Short selling on Alpaca is simply placing a **sell order** for a stock
+you don’t currently own. Alpaca handles the borrow automatically.
+
+### Open a Short Position
+
+``` r
+# Short 100 shares of AAPL at market
+order <- trading$add_order(
+  symbol = "AAPL",
+  side = "sell",
+  type = "market",
+  time_in_force = "day",
+  qty = 100
+)
+print(order[, .(id, symbol, side, type, status)])
+```
+
+### Monitor the Short Position
+
+``` r
+# Check the position — side will be "short"
+pos <- acct$get_position("AAPL")
+print(pos[, .(
+  symbol, qty, side,
+  avg_entry_price, current_price,
+  unrealized_pl, unrealized_plpc
+)])
+```
+
+### Close the Short (Buy to Cover)
+
+``` r
+# Option 1: Buy the shares back manually
+trading$add_order(
+  symbol = "AAPL",
+  side = "buy",
+  type = "market",
+  time_in_force = "day",
+  qty = 100
+)
+
+# Option 2: Use close_position (simpler)
+acct$close_position("AAPL")
+
+# Option 3: Close 50% of the short
+acct$close_position("AAPL", percentage = 50)
+```
+
+### Short with a Bracket Order (Risk Management)
+
+``` r
+# Short with automatic take-profit and stop-loss
+order <- trading$add_order(
+  symbol = "TSLA",
+  side = "sell",
+  type = "limit",
+  time_in_force = "gtc",
+  qty = 50,
+  limit_price = 250,
+  order_class = "bracket",
+  take_profit = list(limit_price = 200),   # Buy back at $200 for profit
+
+  stop_loss = list(stop_price = 275, limit_price = 280)  # Stop loss at $275
+)
+```
+
+## Margin Long Positions
+
+With a margin account, you can buy more shares than your cash allows.
+
+``` r
+# Your buying power is 2x (or 4x for day trades) your equity
+info <- acct$get_account()
+cat("Cash:", info$cash, "\n")
+cat("Buying power:", info$buying_power, "\n")
+
+# Buy $200k worth of stock with only $100k cash
+order <- trading$add_order(
+  symbol = "SPY",
+  side = "buy",
+  type = "market",
+  time_in_force = "day",
+  notional = 200000  # Dollar-based order
+)
+```
+
+## Options Trading with Position Intent
+
+For options, use `position_intent` to signal your intent:
+
+``` r
+opts <- AlpacaOptions$new()
+
+# Find an options contract
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 5
+)
+print(contracts[, .(symbol, type, strike_price, expiration_date)])
+
+# Buy to open a call option
+order <- trading$add_order(
+  symbol = contracts$symbol[1],
+  side = "buy",
+  type = "limit",
+  time_in_force = "day",
+  qty = 1,
+  limit_price = 5.00,
+  position_intent = "buy_to_open"
+)
+
+# Sell to close the option
+trading$add_order(
+  symbol = contracts$symbol[1],
+  side = "sell",
+  type = "limit",
+  time_in_force = "day",
+  qty = 1,
+  limit_price = 7.50,
+  position_intent = "sell_to_close"
+)
+```
+
+## Corporate Actions
+
+Monitor dividends and splits that affect your positions:
+
+``` r
+# Get upcoming dividends for your positions
+divs <- market$get_corporate_actions(
+  ca_types = "dividend",
+  since = "2024-01-01",
+  until = "2024-12-31",
+  symbol = "AAPL"
+)
+print(divs[, .(ca_type, initiating_symbol, ex_date, cash)])
+
+# Check for stock splits
+splits <- market$get_corporate_actions(
+  ca_types = "split",
+  since = "2024-01-01",
+  until = "2024-12-31"
+)
+```
+
+## News-Driven Trading
+
+Use the news endpoint for event-driven strategies:
+
+``` r
+# Get latest news for your watchlist
+news <- market$get_news(symbols = "AAPL,TSLA,NVDA", limit = 10)
+print(news[, .(headline, source, created_at)])
+```
+
+## Portfolio Risk Monitoring
+
+``` r
+# Full position overview
+positions <- acct$get_positions()
+if (nrow(positions) > 0) {
+  positions[, .(
+    symbol, side, qty,
+    market_value, unrealized_pl, unrealized_plpc,
+    change_today
+  )]
+}
+
+# Portfolio history for P/L tracking
+history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
+print(history)
+
+# Account activities (fills, dividends, etc.)
+fills <- acct$get_activities_by_type("FILL")
+print(fills)
+```
+
+## Emergency: Close Everything
+
+``` r
+# Cancel all open orders and close all positions
+acct$close_all_positions(cancel_orders = TRUE)
+```
+
+## Next Steps
+
+- See
+  [`vignette("getting-started")`](https://dereckmezquita.github.io/alpaca/articles/getting-started.md)
+  for basic market data and order placement.
+- See
+  [`vignette("async-usage")`](https://dereckmezquita.github.io/alpaca/articles/async-usage.md)
+  for promise-based async workflows.
+- Explore the [Alpaca API documentation](https://docs.alpaca.markets/)
+  for full endpoint details.
