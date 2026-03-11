@@ -49,7 +49,7 @@ wrap_list_fields <- function(x) {
 #' @noRd
 as_dt_row <- function(x) {
   if (is.null(x) || length(x) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   x <- lapply(x, function(val) {
     if (is.null(val)) {
@@ -65,7 +65,7 @@ as_dt_row <- function(x) {
   })
   dt <- data.table::as.data.table(x)
   data.table::setnames(dt, to_snake_case(names(dt)))
-  return(dt)
+  return(dt[])
 }
 
 #' Convert a List of Lists to a data.table
@@ -81,10 +81,10 @@ as_dt_row <- function(x) {
 #' @noRd
 as_dt_list <- function(items) {
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   dt <- data.table::rbindlist(lapply(items, as_dt_row), fill = TRUE)
-  return(dt)
+  return(dt[])
 }
 
 #' Parse an RFC-3339 Timestamp to POSIXct
@@ -116,7 +116,7 @@ rfc3339_to_datetime <- function(x) {
 #' @noRd
 parse_bars <- function(bars) {
   if (is.null(bars) || length(bars) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   dt <- data.table::rbindlist(bars, fill = TRUE)
   name_map <- c(
