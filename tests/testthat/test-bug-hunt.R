@@ -78,36 +78,28 @@ test_that("alpaca_fetch_bars works correctly in async mode", {
 })
 
 # ---------------------------------------------------------------------------
-# Bug #8 (alpaca): wrap_list_fields misses length-1 list fields
+# Bug #8 (alpaca): wrap_list_fields wraps list fields consistently
+# Note: parse_trades no longer uses wrap_list_fields for conditions (it uses
+# long format instead), but wrap_list_fields is still used by other parsers.
 # ---------------------------------------------------------------------------
 test_that("wrap_list_fields wraps length-1 list fields consistently", {
-  # Trade with single condition (length-1 list)
-  trade1 <- list(
-    t = "2024-01-02T14:30:00Z",
-    p = 185.5,
-    s = 100,
-    c = list("@")
-  )
+  # Record with single-element list field
+  rec1 <- list(name = "A", tags = list("stock"))
 
-  # Trade with multiple conditions (length>1 list)
-  trade2 <- list(
-    t = "2024-01-02T14:30:01Z",
-    p = 185.6,
-    s = 200,
-    c = list("@", "T")
-  )
+  # Record with multiple-element list field
+  rec2 <- list(name = "B", tags = list("stock", "tech"))
 
-  wrapped1 <- alpaca:::wrap_list_fields(trade1)
-  wrapped2 <- alpaca:::wrap_list_fields(trade2)
+  wrapped1 <- alpaca:::wrap_list_fields(rec1)
+  wrapped2 <- alpaca:::wrap_list_fields(rec2)
 
   # Both should have their list fields wrapped
   expect_true(
-    is.list(wrapped1$c) && length(wrapped1$c) == 1 && is.list(wrapped1$c[[1]]),
-    info = "Single-element list field should be double-wrapped: list(list('@'))"
+    is.list(wrapped1$tags) && length(wrapped1$tags) == 1 && is.list(wrapped1$tags[[1]]),
+    info = "Single-element list field should be double-wrapped: list(list('stock'))"
   )
   expect_true(
-    is.list(wrapped2$c) && length(wrapped2$c) == 1,
-    info = "Multi-element list field should be wrapped: list(list('@', 'T'))"
+    is.list(wrapped2$tags) && length(wrapped2$tags) == 1,
+    info = "Multi-element list field should be wrapped: list(list('stock', 'tech'))"
   )
 
   # Should be rbindlist-compatible
@@ -116,7 +108,7 @@ test_that("wrap_list_fields wraps length-1 list fields consistently", {
   combined <- data.table::rbindlist(list(dt1, dt2), fill = TRUE)
 
   expect_equal(nrow(combined), 2L)
-  expect_true(is.list(combined$c), info = "Combined data.table should have consistent list column type")
+  expect_true(is.list(combined$tags), info = "Combined data.table should have consistent list column type")
 })
 
 # ---------------------------------------------------------------------------

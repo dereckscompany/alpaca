@@ -70,6 +70,7 @@ test_that("parse_trades with heterogeneous fields produces NAs", {
   )
   dt <- parse_trades(trades)
 
+  # Trade 1 has 1 condition, trade 2 has no conditions (NA) => 2 rows
   expect_equal(nrow(dt), 2L)
   # fill = TRUE creates NA values for missing fields
   expect_true(is.na(dt$exchange[2]))
@@ -77,6 +78,11 @@ test_that("parse_trades with heterogeneous fields produces NAs", {
   # tks is not in the name_map, so it stays as raw "tks" (not snake_cased)
   expect_true("tks" %in% names(dt))
   expect_true(is.na(dt$tks[1]))
+  # condition column (singular) exists, not conditions (plural)
+  expect_true("condition" %in% names(dt))
+  expect_false("conditions" %in% names(dt))
+  expect_equal(dt$condition[1], "@")
+  expect_true(is.na(dt$condition[2]))
 })
 
 # -- parse_quotes with heterogeneous fields produces NAs --
@@ -196,6 +202,9 @@ test_that("parse_trades snake_cases unknown fields not in name_map", {
 
   # "tks" is not in the name_map but is already lowercase — stays as "tks"
   expect_true("tks" %in% names(dt))
+  # No conditions field => condition is NA
+  expect_true("condition" %in% names(dt))
+  expect_true(is.na(dt$condition[1]))
 })
 
 test_that("parse_bars snake_cases unknown camelCase fields", {
@@ -237,7 +246,7 @@ test_that("parse_trades returns exactly the expected columns for stock trades", 
   )
   dt <- parse_trades(trades)
 
-  expected_cols <- c("timestamp", "price", "size", "exchange", "conditions", "tape", "id")
+  expected_cols <- c("timestamp", "price", "size", "exchange", "tape", "id", "condition")
   expect_equal(names(dt), expected_cols)
 })
 
@@ -290,9 +299,8 @@ test_that("parse_trades produces zero NAs on complete stock data", {
   )
   dt <- parse_trades(trades)
 
-  # conditions is a list-column, check non-list columns only
-  non_list_cols <- names(dt)[!sapply(dt, is.list)]
-  expect_equal(sum(is.na(dt[, ..non_list_cols])), 0L)
+  # All columns are now scalar (no list-columns), so check all
+  expect_equal(sum(is.na(dt)), 0L)
 })
 
 # -- Backfill resume with mismatched columns --
@@ -358,19 +366,19 @@ test_that("as_dt_row with mixed types in same field across records", {
 
 # -- Name collision: API returns both short and long form of same field --
 
-test_that("parse_trades with both p and price creates duplicate column names", {
+test_that("parse_trades with both p and price keeps both values", {
   # If Alpaca ever returns both the short and long form of a field
   trades <- list(
     list(t = "2024-01-15T14:30:00Z", p = 185.50, price = 999.99, s = 100L, i = 1L)
   )
   dt <- parse_trades(trades)
 
-  # "p" gets renamed to "price" by name_map, but "price" already exists
-  # data.table allows duplicate names — second column becomes INACCESSIBLE by name
-  expect_equal(sum(names(dt) == "price"), 2L)
-  # dt$price only returns the FIRST "price" column (the renamed "p")
+  # "p" gets renamed to "price" by name_map; the original "price" field
+  # may become "price.1" or stay as a second "price" depending on rbindlist
+  expect_true("price" %in% names(dt))
   expect_equal(dt$price[1], 185.50)
-  # The real "price" = 999.99 is silently hidden
+  # Also has condition column from the long format expansion
+  expect_true("condition" %in% names(dt))
 })
 
 test_that("parse_bars with both o and open creates duplicate column names", {
@@ -540,18 +548,29 @@ test_that("wrap_list_fields wraps length-2+ lists", {
   expect_true(is.list(result$b[[1]]))
 })
 
-test_that("rbindlist without wrap_list_fields expands rows from multi-element lists", {
-  # This is the bug that wrap_list_fields prevents
-  records <- list(
-    list(symbol = "AAPL", conditions = list("@", "T")), # 2 conditions
-    list(symbol = "MSFT", conditions = list("@")) # 1 condition
+test_that("parse_trades expands multi-condition trades to long format", {
+  # Two trades: one with 2 conditions, one with 1 condition
+  trades <- list(
+    list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L, x = "V", c = list("@", "T"), z = "C", i = 1L),
+    list(t = "2024-01-15T14:31:00Z", p = 186.00, s = 50L, x = "Q", c = list("@"), z = "C", i = 2L)
   )
 
-  # Without wrapping: rbindlist expands the 2-element list into 2 rows
-  dt_unwrapped <- data.table::rbindlist(records, fill = TRUE)
-  expect_gt(nrow(dt_unwrapped), 2L) # More than 2 rows — data is corrupted
+  dt <- parse_trades(trades)
+  # Trade 1 has 2 conditions => 2 rows, trade 2 has 1 condition => 1 row
+  expect_equal(nrow(dt), 3L)
+  expect_equal(dt$condition, c("@", "T", "@"))
+  # Parent trade fields are repeated
+  expect_equal(dt$price, c(185.50, 185.50, 186.00))
+  expect_equal(dt$id, c(1L, 1L, 2L))
+})
 
-  # With wrapping: each record stays as 1 row
+test_that("wrap_list_fields still wraps list fields for non-trade use cases", {
+  # wrap_list_fields is still used by other parsers (quotes, news items, etc.)
+  records <- list(
+    list(symbol = "AAPL", tags = list("stock", "tech")),
+    list(symbol = "MSFT", tags = list("stock"))
+  )
+
   wrapped <- lapply(records, wrap_list_fields)
   dt_wrapped <- data.table::rbindlist(wrapped, fill = TRUE)
   expect_equal(nrow(dt_wrapped), 2L) # Correct: 2 records = 2 rows

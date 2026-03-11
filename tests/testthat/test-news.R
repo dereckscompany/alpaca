@@ -1,6 +1,6 @@
 # Tests for AlpacaMarketData news method
 
-test_that("get_news returns data.table of articles", {
+test_that("get_news returns long-format data.table with symbol column", {
   mock_perform <- function(req) {
     mock_alpaca_response(mock_news_response())
   }
@@ -15,9 +15,16 @@ test_that("get_news returns data.table of articles", {
   result <- market$get_news(symbols = "AAPL", limit = 10)
 
   expect_s3_class(result, "data.table")
-  expect_equal(nrow(result), 2)
-  expect_true(all(c("headline", "source", "author", "created_at") %in% names(result)))
+  # Article 1 has 1 symbol ("AAPL"), article 2 has 3 symbols ("AAPL", "MSFT", "NVDA")
+  # Total rows = 1 + 3 = 4
+  expect_equal(nrow(result), 4)
+  expect_true(all(c("headline", "source", "author", "created_at", "symbol") %in% names(result)))
+  expect_false("symbols" %in% names(result))
   expect_equal(result$source[1], "benzinga")
+  # First article's single row
+  expect_equal(result$symbol[1], "AAPL")
+  # Second article expanded to 3 rows
+  expect_setequal(result[id == 12346L]$symbol, c("AAPL", "MSFT", "NVDA"))
 })
 
 test_that("get_news uses data base URL", {

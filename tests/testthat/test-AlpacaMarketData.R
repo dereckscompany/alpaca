@@ -36,14 +36,17 @@ test_that("get_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trade returns single-row data.table", {
+test_that("get_latest_trade returns long-format data.table with condition column", {
   resp <- mock_alpaca_response(mock_trade_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trade("AAPL")
   expect_s3_class(dt, "data.table")
+  # Mock trade has 1 condition ["@"], so 1 row
   expect_equal(nrow(dt), 1L)
-  expect_true(all(c("timestamp", "price", "size") %in% names(dt)))
+  expect_true(all(c("timestamp", "price", "size", "condition") %in% names(dt)))
+  expect_false("conditions" %in% names(dt))
+  expect_equal(dt$condition[1], "@")
 })
 
 test_that("get_latest_quote returns single-row data.table", {
@@ -140,16 +143,19 @@ test_that("get_latest_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trades_multi returns data.table with symbol column", {
+test_that("get_latest_trades_multi returns long-format data.table with condition column", {
   resp <- mock_alpaca_response(mock_latest_trades_multi_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trades_multi(c("AAPL", "MSFT"))
   expect_s3_class(dt, "data.table")
+  # Each mock trade has 1 condition, so 2 trades * 1 condition = 2 rows
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
   expect_true("price" %in% names(dt))
+  expect_true("condition" %in% names(dt))
+  expect_false("conditions" %in% names(dt))
 })
 
 test_that("get_latest_quotes_multi returns data.table with symbol column", {

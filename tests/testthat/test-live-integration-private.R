@@ -185,11 +185,11 @@ test_that("[LIVE] watchlist CRUD lifecycle", {
     }
   }
 
-  # Create
+  # Create — long format: one row per asset
   wl <- acct$add_watchlist(wl_name, symbols = c("AAPL", "MSFT"))
   expect_s3_class(wl, "data.table")
-  expect_equal(wl$name, wl_name)
-  wl_id <- wl$id
+  expect_equal(unique(wl$name), wl_name)
+  wl_id <- wl$id[1]
   throttle()
 
   # Read
@@ -198,9 +198,9 @@ test_that("[LIVE] watchlist CRUD lifecycle", {
   expect_true(wl_id %in% all_wl$id)
   throttle()
 
-  # Get single
+  # Get single — long format: one row per asset
   single <- acct$get_watchlist(wl_id)
-  expect_equal(single$name, wl_name)
+  expect_equal(unique(single$name), wl_name)
   throttle()
 
   # Add symbol
@@ -212,9 +212,9 @@ test_that("[LIVE] watchlist CRUD lifecycle", {
   acct$cancel_watchlist_symbol(wl_id, "MSFT")
   throttle()
 
-  # Update
+  # Update — long format: one row per asset
   modified <- acct$modify_watchlist(wl_id, name = updated_name, symbols = c("AAPL", "GOOGL", "NVDA"))
-  expect_equal(modified$name, updated_name)
+  expect_equal(unique(modified$name), updated_name)
   throttle()
 
   # Delete

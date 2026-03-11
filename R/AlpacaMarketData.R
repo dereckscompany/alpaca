@@ -387,14 +387,15 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
+    #'   format with one row per trade condition. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
-    #'   - `conditions` (list): Trade conditions.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
+    #'   - `condition` (character): Trade condition code.
     #'
     #' @examples
     #' \dontrun{
@@ -830,14 +831,15 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
+    #'   format with one row per trade condition. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
-    #'   - `conditions` (list): Trade conditions.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
+    #'   - `condition` (character): Trade condition code.
     get_trades = function(
       symbol,
       start = NULL,
@@ -1311,16 +1313,17 @@ AlpacaMarketData <- R6::R6Class(
     #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
     #'   without content.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
+    #'   format with one row per related symbol. Columns:
     #'   - `id` (integer): Article ID.
     #'   - `headline` (character): Article headline.
     #'   - `author` (character): Author name.
     #'   - `source` (character): News source.
     #'   - `summary` (character): Article summary.
     #'   - `url` (character): Article URL.
-    #'   - `symbols` (list): Related symbols.
     #'   - `created_at` (character): Publication timestamp.
     #'   - `updated_at` (character): Last update timestamp.
+    #'   - `symbol` (character): Related ticker symbol.
     #'
     #' @examples
     #' \dontrun{
@@ -1359,7 +1362,7 @@ AlpacaMarketData <- R6::R6Class(
           exclude_contentless = exclude_contentless,
           page_token = page_token
         ),
-        .parser = function(data) as_dt_list(data$news)
+        .parser = function(data) parse_news(data$news)
       ))
     },
 

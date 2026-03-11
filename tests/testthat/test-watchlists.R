@@ -19,7 +19,7 @@ test_that("get_watchlists returns data.table of watchlists", {
   expect_equal(result$name[1], "Tech Stocks")
 })
 
-test_that("get_watchlist returns single watchlist with assets", {
+test_that("get_watchlist returns long-format data.table with one row per asset", {
   mock_perform <- function(req) {
     mock_alpaca_response(mock_watchlist_response())
   }
@@ -33,8 +33,13 @@ test_that("get_watchlist returns single watchlist with assets", {
   result <- acct$get_watchlist("wl-uuid-1")
 
   expect_s3_class(result, "data.table")
-  expect_equal(nrow(result), 1)
-  expect_equal(result$name, "Tech Stocks")
+  # Mock watchlist has 2 assets (AAPL, MSFT) => 2 rows
+  expect_equal(nrow(result), 2)
+  expect_equal(unique(result$name), "Tech Stocks")
+  expect_true("asset_symbol" %in% names(result))
+  expect_true("asset_id" %in% names(result))
+  expect_false("assets" %in% names(result))
+  expect_setequal(result$asset_symbol, c("AAPL", "MSFT"))
 })
 
 test_that("add_watchlist sends POST with name and symbols", {

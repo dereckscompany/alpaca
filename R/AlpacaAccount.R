@@ -998,8 +998,11 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param watchlist_id Character; watchlist UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   watchlist metadata and an `assets` list column containing the symbols.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
+    #'   format with one row per asset in the watchlist. Columns include watchlist
+    #'   metadata (`id`, `account_id`, `name`, `created_at`, `updated_at`) and
+    #'   asset columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
+    #'   `asset_name`, etc.).
     #'
     #' @examples
     #' \dontrun{
@@ -1011,7 +1014,7 @@ AlpacaAccount <- R6::R6Class(
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
       return(private$.request(
         endpoint = endpoint,
-        .parser = as_dt_row
+        .parser = parse_watchlist
       ))
     },
 
@@ -1076,7 +1079,7 @@ AlpacaAccount <- R6::R6Class(
         endpoint = "/v2/watchlists",
         method = "POST",
         body = list(name = name, symbols = symbols),
-        .parser = as_dt_row
+        .parser = parse_watchlist
       ))
     },
 
@@ -1141,7 +1144,7 @@ AlpacaAccount <- R6::R6Class(
         endpoint = endpoint,
         method = "PUT",
         body = list(name = name, symbols = symbols),
-        .parser = as_dt_row
+        .parser = parse_watchlist
       ))
     },
 
@@ -1204,7 +1207,7 @@ AlpacaAccount <- R6::R6Class(
         endpoint = endpoint,
         method = "POST",
         body = list(symbol = symbol),
-        .parser = as_dt_row
+        .parser = parse_watchlist
       ))
     },
 
@@ -1264,7 +1267,7 @@ AlpacaAccount <- R6::R6Class(
               status = "removed"
             )[])
           }
-          as_dt_row(data)
+          parse_watchlist(data)
         }
       ))
     },

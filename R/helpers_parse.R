@@ -167,14 +167,17 @@ parse_multi_bars <- function(data) {
   return(data.table::rbindlist(dts, fill = TRUE)[])
 }
 
-#' Parse Alpaca Trade Data to data.table
+#' Parse Alpaca Trade Data to data.table (Long Format)
 #'
 #' Converts a list of trade objects (with short field names) into a tidy
-#' [data.table::data.table] with descriptive column names.
+#' [data.table::data.table] with descriptive column names. Trade conditions
+#' are expanded to long format: one row per condition, with parent trade
+#' fields repeated. Trades with no conditions get a single row with
+#' `condition = NA`.
 #'
 #' @param trades A list of trade objects from the Alpaca API.
 #' @return A [data.table::data.table] with columns: `timestamp`, `price`,
-#'   `size`, `exchange`, `conditions`, `tape`, `id`.
+#'   `size`, `exchange`, `condition`, `tape`, `id`.
 #'
 #' @keywords internal
 #' @noRd
@@ -182,16 +185,23 @@ parse_trades <- function(trades) {
   if (is.null(trades) || length(trades) == 0) {
     return(data.table::data.table()[])
   }
-  # Wrap multi-element list fields (e.g., conditions) to prevent rbindlist
-  # from expanding them into multiple rows
-  trades <- lapply(trades, wrap_list_fields)
-  dt <- data.table::rbindlist(trades, fill = TRUE)
+  # Extract conditions before rbindlist, then expand to long format
+  conditions_list <- lapply(trades, function(tr) {
+    conds <- tr[["c"]]
+    if (is.null(conds) || length(conds) == 0) return(NA_character_)
+    return(as.character(unlist(conds)))
+  })
+  # Remove conditions from trades for clean rbindlist
+  trades_no_conds <- lapply(trades, function(tr) {
+    tr[["c"]] <- NULL
+    return(tr)
+  })
+  dt <- data.table::rbindlist(trades_no_conds, fill = TRUE)
   name_map <- c(
     t = "timestamp",
     p = "price",
     s = "size",
     x = "exchange",
-    c = "conditions",
     z = "tape",
     i = "id"
   )
@@ -203,6 +213,14 @@ parse_trades <- function(trades) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
+  # Add a row index to track which trade each condition belongs to
+  dt[, .trade_idx := .I]
+  # Expand conditions to long format
+  conds_dt <- data.table::rbindlist(lapply(seq_along(conditions_list), function(i) {
+    data.table::data.table(.trade_idx = i, condition = conditions_list[[i]])
+  }))
+  dt <- dt[conds_dt, on = ".trade_idx"]
+  dt[, .trade_idx := NULL]
   return(dt[])
 }
 
@@ -329,5 +347,84 @@ parse_snapshot <- function(snapshot) {
     data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
+  return(dt[])
+}
+
+#' Parse Alpaca News Response to Long-Format data.table
+#'
+#' Expands the `symbols` array field so that each news article is represented
+#' by one row per related symbol. Articles with no symbols get a single row
+#' with `symbol = NA`.
+#'
+#' @param news_items A list of news article objects from the Alpaca API.
+#' @return A [data.table::data.table] in long format with a `symbol` column.
+#'
+#' @keywords internal
+#' @noRd
+parse_news <- function(news_items) {
+  if (is.null(news_items) || length(news_items) == 0) {
+    return(data.table::data.table()[])
+  }
+  # Extract symbols before rbindlist, then expand to long format
+  symbols_list <- lapply(news_items, function(item) {
+    syms <- item[["symbols"]]
+    if (is.null(syms) || length(syms) == 0) return(NA_character_)
+    return(as.character(unlist(syms)))
+  })
+  # Remove symbols from items for clean rbindlist
+  items_no_syms <- lapply(news_items, function(item) {
+    item[["symbols"]] <- NULL
+    return(wrap_list_fields(item))
+  })
+  dt <- data.table::rbindlist(items_no_syms, fill = TRUE)
+  data.table::setnames(dt, to_snake_case(names(dt)))
+  # Add a row index to track which article each symbol belongs to
+  dt[, .article_idx := .I]
+  # Expand symbols to long format
+  syms_dt <- data.table::rbindlist(lapply(seq_along(symbols_list), function(i) {
+    data.table::data.table(.article_idx = i, symbol = symbols_list[[i]])
+  }))
+  dt <- dt[syms_dt, on = ".article_idx"]
+  dt[, .article_idx := NULL]
+  return(dt[])
+}
+
+#' Parse Alpaca Watchlist Response to Long-Format data.table
+#'
+#' Expands the `assets` array field so that each watchlist is represented
+#' by one row per asset. Watchlists with no assets get a single row with
+#' asset columns set to NA.
+#'
+#' @param wl A named list representing a single watchlist response from the
+#'   Alpaca API.
+#' @return A [data.table::data.table] in long format with asset columns
+#'   (prefixed `asset_`) alongside watchlist metadata.
+#'
+#' @keywords internal
+#' @noRd
+parse_watchlist <- function(wl) {
+  if (is.null(wl) || length(wl) == 0) {
+    return(data.table::data.table()[])
+  }
+  assets <- wl[["assets"]]
+  wl[["assets"]] <- NULL
+  # Build the parent watchlist row
+  parent <- as_dt_row(wl)
+  if (is.null(assets) || length(assets) == 0) {
+    # No assets: return one row with NA asset columns
+    parent[, asset_id := NA_character_]
+    parent[, asset_symbol := NA_character_]
+    parent[, asset_name := NA_character_]
+    return(parent[])
+  }
+  # Build the assets data.table
+  assets_dt <- data.table::rbindlist(assets, fill = TRUE)
+  data.table::setnames(assets_dt, to_snake_case(names(assets_dt)))
+  # Prefix asset columns to avoid collision with watchlist columns
+  asset_cols <- names(assets_dt)
+  data.table::setnames(assets_dt, paste0("asset_", asset_cols))
+  # Cross-join: repeat parent row for each asset
+  parent_rep <- parent[rep(1L, nrow(assets_dt)), ]
+  dt <- cbind(parent_rep, assets_dt)
   return(dt[])
 }
