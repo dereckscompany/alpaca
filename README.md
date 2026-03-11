@@ -2,15 +2,16 @@
 # alpaca
 
 <!-- badges: start -->
+
 [![R-CMD-check](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
 An R API wrapper for the [Alpaca](https://alpaca.markets/) trading
-platform. Provides R6 classes for market data, stock trading, options,
+platform. Provides `R6` classes for market data, stock trading, options,
 account management, and positions. Supports both synchronous and
-asynchronous (promise-based) operation via httr2.
+asynchronous (promise based) operation via `httr2`.
 
 ## Disclaimer
 
@@ -55,6 +56,38 @@ remotes::install_github("dereckmezquita/alpaca")
 
 ## Setup
 
+``` r
+# special mock for local build
+box::use(
+  alpaca[
+    get_api_keys,
+    get_base_url,
+    get_data_base_url
+  ],
+  ./tests/testthat/mock_router[mock_router]
+)
+
+KEYS <- get_api_keys(
+  api_key = "fake-key",
+  api_secret = "fake-secret"
+)
+
+TBASE <- "https://paper-api.alpaca.markets"
+DBASE <- "https://data.alpaca.markets"
+
+options(httr2_mock = mock_router)
+
+# normal imports
+box::use(
+  alpaca[
+    AlpacaMarketData,
+    AlpacaTrading,
+    AlpacaAccount,
+    AlpacaOptions
+  ]
+)
+```
+
 Set your API credentials as environment variables in `.Renviron`:
 
 ``` bash
@@ -79,72 +112,78 @@ market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DB
 ``` r
 bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01", end = "2024-01-31")
 bars[]
-#>              timestamp   open   high    low  close   volume trade_count    vwap
-#>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
-#> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
-#> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
 ```
+
+    #>              timestamp   open   high    low  close   volume trade_count    vwap
+    #>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
+    #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
+    #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
 
 ### Latest Trade
 
 ``` r
 trade <- market$get_latest_trade("AAPL")
 trade[]
-#>              timestamp price  size exchange conditions   tape    id
-#>                 <POSc> <num> <int>   <char>     <list> <char> <int>
-#> 1: 2024-01-15 14:30:00 185.5   100        V  <list[1]>      C 12345
 ```
+
+    #>              timestamp price  size exchange conditions   tape    id
+    #>                 <POSc> <num> <int>   <char>     <list> <char> <int>
+    #> 1: 2024-01-15 14:30:00 185.5   100        V  <list[1]>      C 12345
 
 ### Latest Quote (NBBO)
 
 ``` r
 quote <- market$get_latest_quote("AAPL")
 quote[]
-#>              timestamp ask_exchange ask_price ask_size bid_exchange bid_price
-#>                 <POSc>       <char>     <num>    <int>       <char>     <num>
-#> 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5
-#>    bid_size conditions   tape
-#>       <int>     <list> <char>
-#> 1:      300  <list[1]>      C
 ```
+
+    #>              timestamp ask_exchange ask_price ask_size bid_exchange bid_price
+    #>                 <POSc>       <char>     <num>    <int>       <char>     <num>
+    #> 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5
+    #>    bid_size conditions   tape
+    #>       <int>     <list> <char>
+    #> 1:      300  <list[1]>      C
 
 ### Market Clock
 
 ``` r
 market$get_clock()
-#>                        timestamp is_open                 next_open
-#>                           <char>  <lgcl>                    <char>
-#> 1: 2024-01-15T14:30:00.000-05:00    TRUE 2024-01-16T09:30:00-05:00
-#>                   next_close
-#>                       <char>
-#> 1: 2024-01-15T16:00:00-05:00
 ```
+
+    #>                        timestamp is_open                 next_open
+    #>                           <char>  <lgcl>                    <char>
+    #> 1: 2024-01-15T14:30:00.000-05:00    TRUE 2024-01-16T09:30:00-05:00
+    #>                   next_close
+    #>                       <char>
+    #> 1: 2024-01-15T16:00:00-05:00
 
 ### Available Assets
 
 ``` r
 assets <- market$get_assets(status = "active", asset_class = "us_equity")
 assets[]
-#>        id     class exchange symbol                  name status tradable
-#>    <char>    <char>   <char> <char>                <char> <char>   <lgcl>
-#> 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE
-#> 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE
-#>    marginable shortable fractionable
-#>        <lgcl>    <lgcl>       <lgcl>
-#> 1:       TRUE      TRUE         TRUE
-#> 2:       TRUE      TRUE         TRUE
 ```
+
+    #>        id     class exchange symbol                  name status tradable
+    #>    <char>    <char>   <char> <char>                <char> <char>   <lgcl>
+    #> 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE
+    #> 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE
+    #>    marginable shortable fractionable
+    #>        <lgcl>    <lgcl>       <lgcl>
+    #> 1:       TRUE      TRUE         TRUE
+    #> 2:       TRUE      TRUE         TRUE
 
 ### Market News
 
 ``` r
 news <- market$get_news(symbols = "AAPL", limit = 5)
 news[, .(headline, source, created_at)]
-#>                              headline   source           created_at
-#>                                <char>   <char>               <char>
-#> 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
-#> 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
 ```
+
+    #>                              headline   source           created_at
+    #>                                <char>   <char>               <char>
+    #> 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
+    #> 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
 
 ## Account
 
@@ -157,36 +196,39 @@ acct <- AlpacaAccount$new(keys = KEYS, base_url = TBASE)
 ``` r
 info <- acct$get_account()
 info[, .(status, equity, buying_power, cash)]
-#>    status equity buying_power   cash
-#>    <char> <char>       <char> <char>
-#> 1: ACTIVE 100000       400000 100000
 ```
+
+    #>    status equity buying_power   cash
+    #>    <char> <char>       <char> <char>
+    #> 1: ACTIVE 100000       400000 100000
 
 ### Open Positions
 
 ``` r
 acct$get_positions()
-#>     asset_id symbol exchange asset_class avg_entry_price    qty   side
-#>       <char> <char>   <char>      <char>          <char> <char> <char>
-#> 1: uuid-aapl   AAPL   NASDAQ   us_equity          185.50     10   long
-#>    market_value cost_basis unrealized_pl unrealized_plpc current_price
-#>          <char>     <char>        <char>          <char>        <char>
-#> 1:      1870.00    1855.00         15.00           0.008        187.00
-#>    lastday_price change_today
-#>           <char>       <char>
-#> 1:        186.00        0.005
 ```
+
+    #>     asset_id symbol exchange asset_class avg_entry_price    qty   side
+    #>       <char> <char>   <char>      <char>          <char> <char> <char>
+    #> 1: uuid-aapl   AAPL   NASDAQ   us_equity          185.50     10   long
+    #>    market_value cost_basis unrealized_pl unrealized_plpc current_price
+    #>          <char>     <char>        <char>          <char>        <char>
+    #> 1:      1870.00    1855.00         15.00           0.008        187.00
+    #>    lastday_price change_today
+    #>           <char>       <char>
+    #> 1:        186.00        0.005
 
 ### Portfolio History
 
 ``` r
 acct$get_portfolio_history(period = "1M", timeframe = "1D")
-#>     timestamp    equity profit_loss profit_loss_pct
-#>        <POSc>     <num>       <num>           <num>
-#> 1: 2024-01-01 100000.00        0.00          0.0000
-#> 2: 2024-01-02 100150.50      150.50          0.0015
-#> 3: 2024-01-03  99800.25     -200.25         -0.0020
 ```
+
+    #>     timestamp    equity profit_loss profit_loss_pct
+    #>        <POSc>     <num>       <num>           <num>
+    #> 1: 2024-01-01 100000.00        0.00          0.0000
+    #> 2: 2024-01-02 100150.50      150.50          0.0015
+    #> 3: 2024-01-03  99800.25     -200.25         -0.0020
 
 ## Trading
 
@@ -202,29 +244,32 @@ order <- trading$add_order(
   time_in_force = "day", qty = 1, limit_price = 150
 )
 order[, .(id, symbol, side, type, status, limit_price)]
-#>                id symbol   side   type   status limit_price
-#>            <char> <char> <char> <char>   <char>      <char>
-#> 1: order-uuid-123   AAPL    buy  limit accepted      150.00
 ```
+
+    #>                id symbol   side   type   status limit_price
+    #>            <char> <char> <char> <char>   <char>      <char>
+    #> 1: order-uuid-123   AAPL    buy  limit accepted      150.00
 
 ### List Open Orders
 
 ``` r
 trading$get_orders(status = "open")
-#>         id symbol   side   type status    qty filled_qty           created_at
-#>     <char> <char> <char> <char> <char> <char>     <char>               <char>
-#> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z
-#> 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z
 ```
+
+    #>         id symbol   side   type status    qty filled_qty           created_at
+    #>     <char> <char> <char> <char> <char> <char>     <char>               <char>
+    #> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z
+    #> 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z
 
 ### Cancel an Order
 
 ``` r
 trading$cancel_order("order-uuid-123")
-#>          order_id    status
-#>            <char>    <char>
-#> 1: order-uuid-123 cancelled
 ```
+
+    #>          order_id    status
+    #>            <char>    <char>
+    #> 1: order-uuid-123 cancelled
 
 ## Options
 
@@ -242,30 +287,32 @@ contracts <- opts$get_contracts(
   limit = 10
 )
 contracts[, .(symbol, type, strike_price, expiration_date)]
-#>                 symbol   type strike_price expiration_date
-#>                 <char> <char>       <char>          <char>
-#> 1: AAPL240621C00200000   call       200.00      2024-06-21
-#> 2: AAPL240621P00180000    put       180.00      2024-06-21
 ```
+
+    #>                 symbol   type strike_price expiration_date
+    #>                 <char> <char>       <char>          <char>
+    #> 1: AAPL240621C00200000   call       200.00      2024-06-21
+    #> 2: AAPL240621P00180000    put       180.00      2024-06-21
 
 ### Options Chain
 
 ``` r
 chain <- opts$get_option_chain("AAPL", type = "call")
 chain[]
-#>                 symbol latest_trade_timestamp latest_trade_price
-#>                 <char>                 <char>              <num>
-#> 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5
-#> 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2
-#>    latest_trade_size latest_quote_timestamp latest_quote_ask_price
-#>                <int>                 <char>                  <num>
-#> 1:                10   2024-06-15T14:30:00Z                    5.6
-#> 2:                 5   2024-06-15T14:30:00Z                    3.3
-#>    latest_quote_bid_price latest_quote_ask_size latest_quote_bid_size
-#>                     <num>                 <int>                 <int>
-#> 1:                    5.4                    50                    40
-#> 2:                    3.1                    30                    25
 ```
+
+    #>                 symbol latest_trade_timestamp latest_trade_price
+    #>                 <char>                 <char>              <num>
+    #> 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5
+    #> 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2
+    #>    latest_trade_size latest_quote_timestamp latest_quote_ask_price
+    #>                <int>                 <char>                  <num>
+    #> 1:                10   2024-06-15T14:30:00Z                    5.6
+    #> 2:                 5   2024-06-15T14:30:00Z                    3.3
+    #>    latest_quote_bid_price latest_quote_ask_size latest_quote_bid_size
+    #>                     <num>                 <int>                 <int>
+    #> 1:                    5.4                    50                    40
+    #> 2:                    3.1                    30                    25
 
 ## Short Selling
 
@@ -314,15 +361,16 @@ testing and demonstration:
 ``` r
 data(alpaca_aapl_1day_bars, package = "alpaca")
 head(alpaca_aapl_1day_bars)
-#>              timestamp   open   high    low  close    volume trade_count   vwap
-#>                 <POSc>  <num>  <num>  <num>  <num>     <int>       <int>  <num>
-#> 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60
-#> 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32
-#> 3: 2024-01-04 05:00:00 187.83 189.45 187.83 188.51  95992257      784214 188.84
-#> 4: 2024-01-05 05:00:00 190.50 191.47 189.27 190.39 111126156     1312892 190.31
-#> 5: 2024-01-08 05:00:00 192.39 192.39 190.41 191.64 106732757     1218918 191.42
-#> 6: 2024-01-09 05:00:00 190.84 192.20 190.19 191.43  98753716     1029576 191.44
 ```
+
+    #>              timestamp   open   high    low  close    volume trade_count   vwap
+    #>                 <POSc>  <num>  <num>  <num>  <num>     <int>       <int>  <num>
+    #> 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60
+    #> 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32
+    #> 3: 2024-01-04 05:00:00 187.83 189.45 187.83 188.51  95992257      784214 188.84
+    #> 4: 2024-01-05 05:00:00 190.50 191.47 189.27 190.39 111126156     1312892 190.31
+    #> 5: 2024-01-08 05:00:00 192.39 192.39 190.41 191.64 106732757     1218918 191.42
+    #> 6: 2024-01-09 05:00:00 190.84 192.20 190.19 191.43  98753716     1029576 191.44
 
 ## Async Usage
 
