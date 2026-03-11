@@ -136,9 +136,9 @@ alpaca_fetch_bars <- function(
   acc_promise <- promises::promise_resolve(list())
   for (seg in segments) {
     acc_promise <- promises::then(acc_promise, function(acc) {
-      promises::then(fetch_segment(seg), function(result) {
-        c(acc, list(result))
-      })
+      return(promises::then(fetch_segment(seg), function(result) {
+        return(c(acc, list(result)))
+      }))
     })
   }
   return(promises::then(acc_promise, combine_results))

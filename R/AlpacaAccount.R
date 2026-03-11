@@ -420,12 +420,12 @@ AlpacaAccount <- R6::R6Class(
             body <- item$body
             item$body <- NULL
             if (is.list(body)) {
-              c(item, body)
+              return(c(item, body))
             } else {
-              item
+              return(item)
             }
           })
-          as_dt_list(unwrapped)
+          return(as_dt_list(unwrapped))
         }
       ))
     },
