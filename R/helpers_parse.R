@@ -130,7 +130,9 @@ parse_bars <- function(bars) {
     vw = "vwap"
   )
   idx <- names(dt) %in% names(name_map)
-  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  if (any(idx)) {
+    data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  }
   data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
@@ -194,7 +196,9 @@ parse_trades <- function(trades) {
     i = "id"
   )
   idx <- names(dt) %in% names(name_map)
-  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  if (any(idx)) {
+    data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  }
   data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
@@ -230,7 +234,9 @@ parse_quotes <- function(quotes) {
     z = "tape"
   )
   idx <- names(dt) %in% names(name_map)
-  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  if (any(idx)) {
+    data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  }
   data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
@@ -266,7 +272,9 @@ parse_snapshot <- function(snapshot) {
     }
   }
   dt <- as_dt_row(flat)
-  if (ncol(dt) == 0) return(dt)
+  if (ncol(dt) == 0) {
+    return(dt)
+  }
   # Expand abbreviated field names with explicit map
   snapshot_name_map <- c(
     # latestTrade
@@ -317,7 +325,9 @@ parse_snapshot <- function(snapshot) {
     prev_daily_bar_vw = "prev_daily_bar_vwap"
   )
   idx <- names(dt) %in% names(snapshot_name_map)
-  if (any(idx)) data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
+  if (any(idx)) {
+    data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
+  }
   data.table::setnames(dt, to_snake_case(names(dt)))
   return(dt)
 }
