@@ -44,6 +44,9 @@ then_or_now <- function(x, fn, is_async = FALSE) {
 #'   Default `identity`.
 #' @param is_async Logical; whether `.perform` returns promises. Default `FALSE`.
 #' @param timeout Numeric; request timeout in seconds. Default `10`.
+#' @param simplifyVector Logical; passed to [httr2::resp_body_json]. Default
+#'   `FALSE`. Set to `TRUE` for endpoints returning parallel arrays so JSON
+#'   nulls become NA in atomic vectors.
 #' @return Parsed and post-processed API response data, or a promise thereof.
 #'
 #' @importFrom httr2 request req_method req_url_path_append req_url_query
@@ -60,7 +63,8 @@ alpaca_build_request <- function(
   .perform = httr2::req_perform,
   .parser = identity,
   is_async = FALSE,
-  timeout = 10
+  timeout = 10,
+  simplifyVector = FALSE
 ) {
   req <- httr2::request(base_url)
   req <- httr2::req_url_path_append(req, endpoint)
@@ -99,7 +103,7 @@ alpaca_build_request <- function(
   return(then_or_now(
     result,
     function(resp) {
-      data <- parse_alpaca_response(resp)
+      data <- parse_alpaca_response(resp, simplifyVector = simplifyVector)
       return(.parser(data))
     },
     is_async = is_async
@@ -216,13 +220,16 @@ alpaca_paginate <- function(
 #' with a `message` field.
 #'
 #' @param resp An [httr2::response] object.
+#' @param simplifyVector Logical; passed to [httr2::resp_body_json]. Default
+#'   `FALSE` (lists preserved). Set to `TRUE` for endpoints returning parallel
+#'   arrays (e.g., portfolio history) so JSON nulls become NA in atomic vectors.
 #' @return The parsed JSON response data.
 #'
 #' @importFrom httr2 resp_status resp_body_json resp_body_string
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
-parse_alpaca_response <- function(resp) {
+parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
   status <- httr2::resp_status(resp)
 
   # Handle 204 No Content (e.g., successful DELETE)
@@ -231,7 +238,7 @@ parse_alpaca_response <- function(resp) {
   }
 
   parsed <- tryCatch(
-    httr2::resp_body_json(resp, simplifyVector = FALSE),
+    httr2::resp_body_json(resp, simplifyVector = simplifyVector),
     error = function(e) NULL
   )
 

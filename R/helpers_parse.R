@@ -129,9 +129,9 @@ parse_bars <- function(bars) {
     n = "trade_count",
     vw = "vwap"
   )
-  current <- names(dt)
-  new_names <- ifelse(current %in% names(name_map), name_map[current], current)
-  data.table::setnames(dt, new_names)
+  idx <- names(dt) %in% names(name_map)
+  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
@@ -193,9 +193,9 @@ parse_trades <- function(trades) {
     z = "tape",
     i = "id"
   )
-  current <- names(dt)
-  new_names <- ifelse(current %in% names(name_map), name_map[current], current)
-  data.table::setnames(dt, new_names)
+  idx <- names(dt) %in% names(name_map)
+  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
@@ -229,9 +229,9 @@ parse_quotes <- function(quotes) {
     c = "conditions",
     z = "tape"
   )
-  current <- names(dt)
-  new_names <- ifelse(current %in% names(name_map), name_map[current], current)
-  data.table::setnames(dt, new_names)
+  idx <- names(dt) %in% names(name_map)
+  if (any(idx)) data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
+  data.table::setnames(dt, to_snake_case(names(dt)))
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
@@ -253,8 +253,10 @@ parse_snapshot <- function(snapshot) {
   if (is.null(snapshot) || length(snapshot) == 0) {
     return(data.table::data.table())
   }
+  # Flatten nested sections into a single list with prefixed raw names
+  sections <- c("latestTrade", "latestQuote", "minuteBar", "dailyBar", "prevDailyBar")
   flat <- list()
-  for (section in c("latestTrade", "latestQuote", "minuteBar", "dailyBar", "prevDailyBar")) {
+  for (section in sections) {
     sub <- snapshot[[section]]
     if (!is.null(sub)) {
       prefix <- to_snake_case(section)
@@ -263,5 +265,59 @@ parse_snapshot <- function(snapshot) {
       }
     }
   }
-  return(as_dt_row(flat))
+  dt <- as_dt_row(flat)
+  if (ncol(dt) == 0) return(dt)
+  # Expand abbreviated field names with explicit map
+  snapshot_name_map <- c(
+    # latestTrade
+    latest_trade_t = "latest_trade_timestamp",
+    latest_trade_p = "latest_trade_price",
+    latest_trade_s = "latest_trade_size",
+    latest_trade_x = "latest_trade_exchange",
+    latest_trade_c = "latest_trade_conditions",
+    latest_trade_z = "latest_trade_tape",
+    latest_trade_i = "latest_trade_id",
+    latest_trade_tks = "latest_trade_taker_side",
+    # latestQuote
+    latest_quote_t = "latest_quote_timestamp",
+    latest_quote_ax = "latest_quote_ask_exchange",
+    latest_quote_ap = "latest_quote_ask_price",
+    latest_quote_as = "latest_quote_ask_size",
+    latest_quote_bx = "latest_quote_bid_exchange",
+    latest_quote_bp = "latest_quote_bid_price",
+    latest_quote_bs = "latest_quote_bid_size",
+    latest_quote_c = "latest_quote_conditions",
+    latest_quote_z = "latest_quote_tape",
+    # minuteBar
+    minute_bar_t = "minute_bar_timestamp",
+    minute_bar_o = "minute_bar_open",
+    minute_bar_h = "minute_bar_high",
+    minute_bar_l = "minute_bar_low",
+    minute_bar_c = "minute_bar_close",
+    minute_bar_v = "minute_bar_volume",
+    minute_bar_n = "minute_bar_trade_count",
+    minute_bar_vw = "minute_bar_vwap",
+    # dailyBar
+    daily_bar_t = "daily_bar_timestamp",
+    daily_bar_o = "daily_bar_open",
+    daily_bar_h = "daily_bar_high",
+    daily_bar_l = "daily_bar_low",
+    daily_bar_c = "daily_bar_close",
+    daily_bar_v = "daily_bar_volume",
+    daily_bar_n = "daily_bar_trade_count",
+    daily_bar_vw = "daily_bar_vwap",
+    # prevDailyBar
+    prev_daily_bar_t = "prev_daily_bar_timestamp",
+    prev_daily_bar_o = "prev_daily_bar_open",
+    prev_daily_bar_h = "prev_daily_bar_high",
+    prev_daily_bar_l = "prev_daily_bar_low",
+    prev_daily_bar_c = "prev_daily_bar_close",
+    prev_daily_bar_v = "prev_daily_bar_volume",
+    prev_daily_bar_n = "prev_daily_bar_trade_count",
+    prev_daily_bar_vw = "prev_daily_bar_vwap"
+  )
+  idx <- names(dt) %in% names(snapshot_name_map)
+  if (any(idx)) data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
+  data.table::setnames(dt, to_snake_case(names(dt)))
+  return(dt)
 }

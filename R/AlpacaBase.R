@@ -102,7 +102,8 @@ AlpacaBase <- R6::R6Class(
       body = NULL,
       auth = TRUE,
       .parser = identity,
-      timeout = 30
+      timeout = 30,
+      simplifyVector = FALSE
     ) {
       return(alpaca_build_request(
         base_url = private$.base_url,
@@ -114,7 +115,8 @@ AlpacaBase <- R6::R6Class(
         .perform = private$.perform,
         .parser = .parser,
         is_async = private$.is_async,
-        timeout = timeout
+        timeout = timeout,
+        simplifyVector = simplifyVector
       ))
     }
   )

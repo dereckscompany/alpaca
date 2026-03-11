@@ -516,15 +516,16 @@ AlpacaAccount <- R6::R6Class(
           intraday_reporting = intraday_reporting,
           pnl_reset = pnl_reset
         ),
+        simplifyVector = TRUE,
         .parser = function(data) {
           if (is.null(data) || is.null(data$timestamp) || length(data$timestamp) == 0) {
             return(data.table::data.table())
           }
           dt <- data.table::data.table(
-            timestamp = lubridate::as_datetime(unlist(data$timestamp), tz = "UTC"),
-            equity = as.numeric(unlist(data$equity)),
-            profit_loss = as.numeric(unlist(data$profit_loss)),
-            profit_loss_pct = as.numeric(unlist(data$profit_loss_pct))
+            timestamp = lubridate::as_datetime(as.integer(data$timestamp), tz = "UTC"),
+            equity = as.numeric(data$equity),
+            profit_loss = as.numeric(data$profit_loss),
+            profit_loss_pct = as.numeric(data$profit_loss_pct)
           )
           return(dt)
         }
