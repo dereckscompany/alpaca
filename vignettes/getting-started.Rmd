@@ -82,22 +82,26 @@ md <- AlpacaMarketData$new(keys = keys, base_url = tbase, data_base_url = dbase)
 ### Historical Bars
 
 ```{r bars}
-bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01",
-                    end = "2024-01-31")
+bars <- md$get_bars(
+  symbol = "AAPL",
+  timeframe = "1Day",
+  start = "2024-01-01",
+  end = "2024-01-31"
+)
 bars[]
 ```
 
 ### Latest Trade
 
 ```{r latest-trade}
-trade <- md$get_latest_trade("AAPL")
+trade <- md$get_latest_trade(symbol = "AAPL")
 trade[]
 ```
 
 ### Latest Quote
 
 ```{r latest-quote}
-quote <- md$get_latest_quote("AAPL")
+quote <- md$get_latest_quote(symbol = "AAPL")
 quote[]
 ```
 
@@ -210,7 +214,7 @@ open_orders[]
 ### Cancel a Specific Order
 
 ```{r cancel-order}
-trading$cancel_order("order-uuid-123")
+trading$cancel_order(order_id = "order-uuid-123")
 ```
 
 ### Cancel All Open Orders
@@ -249,7 +253,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 ### Options Chain
 
 ```{r option-chain}
-chain <- opts$get_option_chain("AAPL", type = "call")
+chain <- opts$get_option_chain(underlying_symbol = "AAPL", type = "call")
 chain[]
 ```
 
@@ -259,10 +263,10 @@ chain[]
 
 ```{r, eval = FALSE}
 # Close 50% of a position
-acct$close_position("AAPL", percentage = 50)
+acct$close_position(symbol_or_id = "AAPL", percentage = 50)
 
 # Close entire position
-acct$close_position("AAPL")
+acct$close_position(symbol_or_id = "AAPL")
 
 # Close all positions (dangerous!)
 acct$close_all_positions(cancel_orders = TRUE)

@@ -3,7 +3,7 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/dereckscompany/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckscompany/alpaca/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
@@ -51,7 +51,7 @@ need a column, drop it yourself.
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("dereckmezquita/alpaca")
+remotes::install_github("dereckscompany/alpaca")
 ```
 
 ## Setup
@@ -110,7 +110,12 @@ market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DB
 ### Historical Bars
 
 ``` r
-bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01", end = "2024-01-31")
+bars <- market$get_bars(
+  symbol = "AAPL",
+  timeframe = "1Day",
+  start = "2024-01-01",
+  end = "2024-01-31"
+)
 bars[]
 ```
 
@@ -122,7 +127,7 @@ bars[]
 ### Latest Trade
 
 ``` r
-trade <- market$get_latest_trade("AAPL")
+trade <- market$get_latest_trade(symbol = "AAPL")
 trade[]
 ```
 
@@ -133,7 +138,7 @@ trade[]
 ### Latest Quote (NBBO)
 
 ``` r
-quote <- market$get_latest_quote("AAPL")
+quote <- market$get_latest_quote(symbol = "AAPL")
 quote[]
 ```
 
@@ -242,8 +247,12 @@ trading <- AlpacaTrading$new(keys = KEYS, base_url = TBASE)
 
 ``` r
 order <- trading$add_order(
-  symbol = "AAPL", side = "buy", type = "limit",
-  time_in_force = "day", qty = 1, limit_price = 150
+  symbol = "AAPL",
+  side = "buy",
+  type = "limit",
+  time_in_force = "day",
+  qty = 1,
+  limit_price = 150
 )
 order[, .(id, symbol, side, type, status, limit_price)]
 ```
@@ -266,7 +275,7 @@ trading$get_orders(status = "open")
 ### Cancel an Order
 
 ``` r
-trading$cancel_order("order-uuid-123")
+trading$cancel_order(order_id = "order-uuid-123")
 ```
 
     #>          order_id    status
@@ -299,7 +308,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 ### Options Chain
 
 ``` r
-chain <- opts$get_option_chain("AAPL", type = "call")
+chain <- opts$get_option_chain(underlying_symbol = "AAPL", type = "call")
 chain[]
 ```
 
@@ -325,12 +334,15 @@ a sell order for a symbol you don’t own:
 ``` r
 # Short 100 shares of AAPL at market
 trading$add_order(
-  symbol = "AAPL", side = "sell", type = "market",
-  time_in_force = "day", qty = 100
+  symbol = "AAPL",
+  side = "sell",
+  type = "market",
+  time_in_force = "day",
+  qty = 100
 )
 
 # Close the short (buy to cover)
-acct$close_position("AAPL")
+acct$close_position(symbol_or_id = "AAPL")
 ```
 
 ## Bulk Historical Data
@@ -383,8 +395,12 @@ Use `coro::async()` to write sequential-looking async code:
 market_async <- AlpacaMarketData$new(async = TRUE)
 
 main <- coro::async(function() {
-  bars <- await(market_async$get_bars("AAPL", "1Day",
-                                       start = "2024-01-01", end = "2024-01-31"))
+  bars <- await(market_async$get_bars(
+    symbol = "AAPL",
+    timeframe = "1Day",
+    start = "2024-01-01",
+    end = "2024-01-31"
+  ))
   clock <- await(market_async$get_clock())
 
   print(bars)
@@ -392,7 +408,9 @@ main <- coro::async(function() {
 })
 
 main()
-while (!later::loop_empty()) later::run_now()
+while (!later::loop_empty()) {
+  later::run_now()
+}
 ```
 
     #>      close     high      low trade_count    open           timestamp   volume
