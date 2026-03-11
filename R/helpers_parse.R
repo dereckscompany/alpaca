@@ -188,7 +188,9 @@ parse_trades <- function(trades) {
   # Extract conditions before rbindlist, then expand to long format
   conditions_list <- lapply(trades, function(tr) {
     conds <- tr[["c"]]
-    if (is.null(conds) || length(conds) == 0) return(NA_character_)
+    if (is.null(conds) || length(conds) == 0) {
+      return(NA_character_)
+    }
     return(as.character(unlist(conds)))
   })
   # Remove conditions from trades for clean rbindlist
@@ -368,7 +370,9 @@ parse_news <- function(news_items) {
   # Extract symbols before rbindlist, then expand to long format
   symbols_list <- lapply(news_items, function(item) {
     syms <- item[["symbols"]]
-    if (is.null(syms) || length(syms) == 0) return(NA_character_)
+    if (is.null(syms) || length(syms) == 0) {
+      return(NA_character_)
+    }
     return(as.character(unlist(syms)))
   })
   # Remove symbols from items for clean rbindlist

@@ -46,8 +46,12 @@ test_that("async bar fetch captures each segment independently (local() fix)", {
 
   # Force resolution
   result <- NULL
-  promises::then(final_promise, function(val) { result <<- val })
-  for (i in 1:20) { later::run_now(0.1) }
+  promises::then(final_promise, function(val) {
+    result <<- val
+  })
+  for (i in 1:20) {
+    later::run_now(0.1)
+  }
 
   expect_false(is.null(result), info = "Promise should have resolved")
   expect_equal(nrow(result), 3L)
