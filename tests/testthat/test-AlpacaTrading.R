@@ -69,13 +69,12 @@ test_that("get_order returns single-row data.table", {
   expect_equal(dt$id, "order-uuid-123")
 })
 
-test_that("cancel_order returns empty data.table on 204", {
+test_that("cancel_order returns invisible(NULL) on 204", {
   resp <- mock_no_content_response()
   httr2::local_mocked_responses(function(req) resp)
 
-  dt <- new_trading()$cancel_order("order-uuid-123")
-  expect_s3_class(dt, "data.table")
-  expect_equal(nrow(dt), 0L)
+  result <- new_trading()$cancel_order("order-uuid-123")
+  expect_null(result)
 })
 
 test_that("cancel_all_orders returns data.table", {

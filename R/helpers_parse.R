@@ -137,7 +137,7 @@ parse_bars <- function(bars) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
-  return(dt)
+  return(dt[])
 }
 
 #' Parse Multi-Symbol Bar Response
@@ -154,7 +154,7 @@ parse_bars <- function(bars) {
 parse_multi_bars <- function(data) {
   bars_map <- data$bars
   if (is.null(bars_map) || length(bars_map) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   dts <- lapply(names(bars_map), function(sym) {
     dt <- parse_bars(bars_map[[sym]])
@@ -162,9 +162,9 @@ parse_multi_bars <- function(data) {
       dt[, symbol := sym]
       data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
     }
-    return(dt)
+    return(dt[])
   })
-  return(data.table::rbindlist(dts, fill = TRUE))
+  return(data.table::rbindlist(dts, fill = TRUE)[])
 }
 
 #' Parse Alpaca Trade Data to data.table
@@ -180,7 +180,7 @@ parse_multi_bars <- function(data) {
 #' @noRd
 parse_trades <- function(trades) {
   if (is.null(trades) || length(trades) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   # Wrap multi-element list fields (e.g., conditions) to prevent rbindlist
   # from expanding them into multiple rows
@@ -203,7 +203,7 @@ parse_trades <- function(trades) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
-  return(dt)
+  return(dt[])
 }
 
 #' Parse Alpaca Quote Data to data.table
@@ -218,7 +218,7 @@ parse_trades <- function(trades) {
 #' @noRd
 parse_quotes <- function(quotes) {
   if (is.null(quotes) || length(quotes) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   quotes <- lapply(quotes, wrap_list_fields)
   dt <- data.table::rbindlist(quotes, fill = TRUE)
@@ -241,7 +241,7 @@ parse_quotes <- function(quotes) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
-  return(dt)
+  return(dt[])
 }
 
 #' Parse Snapshot Data to data.table
@@ -257,7 +257,7 @@ parse_quotes <- function(quotes) {
 #' @noRd
 parse_snapshot <- function(snapshot) {
   if (is.null(snapshot) || length(snapshot) == 0) {
-    return(data.table::data.table())
+    return(data.table::data.table()[])
   }
   # Flatten nested sections into a single list with prefixed raw names
   sections <- c("latestTrade", "latestQuote", "minuteBar", "dailyBar", "prevDailyBar")
@@ -273,7 +273,7 @@ parse_snapshot <- function(snapshot) {
   }
   dt <- as_dt_row(flat)
   if (ncol(dt) == 0) {
-    return(dt)
+    return(dt[])
   }
   # Expand abbreviated field names with explicit map
   snapshot_name_map <- c(
@@ -329,5 +329,5 @@ parse_snapshot <- function(snapshot) {
     data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  return(dt)
+  return(dt[])
 }

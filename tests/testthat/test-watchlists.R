@@ -113,7 +113,7 @@ test_that("cancel_watchlist_symbol sends DELETE for symbol", {
   expect_true(grepl("wl-uuid-1/AAPL", captured_req$url))
 })
 
-test_that("cancel_watchlist sends DELETE and returns empty dt", {
+test_that("cancel_watchlist sends DELETE and returns invisible(NULL)", {
   mock_perform <- function(req) {
     mock_no_content_response()
   }
@@ -126,6 +126,5 @@ test_that("cancel_watchlist sends DELETE and returns empty dt", {
 
   result <- acct$cancel_watchlist("wl-uuid-1")
 
-  expect_s3_class(result, "data.table")
-  expect_equal(nrow(result), 0)
+  expect_null(result)
 })

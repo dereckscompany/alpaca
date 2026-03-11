@@ -408,20 +408,20 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           bars_map <- data$bars
           if (is.null(bars_map) || length(bars_map) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           dts <- lapply(names(bars_map), function(sym) {
             dt <- parse_bars(list(bars_map[[sym]]))
             if (nrow(dt) > 0) {
               dt[, symbol := sym]
             }
-            return(dt)
+            return(dt[])
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if ("symbol" %in% names(dt)) {
             data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
           }
-          return(dt)
+          return(dt[])
         }
       ))
     },
@@ -448,20 +448,20 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           trades_map <- data$trades
           if (is.null(trades_map) || length(trades_map) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           dts <- lapply(names(trades_map), function(sym) {
             dt <- parse_trades(list(trades_map[[sym]]))
             if (nrow(dt) > 0) {
               dt[, symbol := sym]
             }
-            return(dt)
+            return(dt[])
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if ("symbol" %in% names(dt)) {
             data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
           }
-          return(dt)
+          return(dt[])
         }
       ))
     },
@@ -488,20 +488,20 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           quotes_map <- data$quotes
           if (is.null(quotes_map) || length(quotes_map) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           dts <- lapply(names(quotes_map), function(sym) {
             dt <- parse_quotes(list(quotes_map[[sym]]))
             if (nrow(dt) > 0) {
               dt[, symbol := sym]
             }
-            return(dt)
+            return(dt[])
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if ("symbol" %in% names(dt)) {
             data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
           }
-          return(dt)
+          return(dt[])
         }
       ))
     },
@@ -534,20 +534,20 @@ AlpacaMarketData <- R6::R6Class(
         ),
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           dts <- lapply(names(data), function(sym) {
             dt <- parse_snapshot(data[[sym]])
             if (nrow(dt) > 0) {
               dt[, symbol := sym]
             }
-            return(dt)
+            return(dt[])
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if ("symbol" %in% names(dt)) {
             data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
           }
-          return(dt)
+          return(dt[])
         }
       ))
     },
@@ -1040,9 +1040,9 @@ AlpacaMarketData <- R6::R6Class(
             dts <- c(dts, list(l))
           }
           if (length(dts) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
-          return(data.table::rbindlist(dts, fill = TRUE))
+          return(data.table::rbindlist(dts, fill = TRUE)[])
         }
       ))
     }

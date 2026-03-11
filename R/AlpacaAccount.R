@@ -412,7 +412,7 @@ AlpacaAccount <- R6::R6Class(
         query = list(cancel_orders = tolower(as.character(cancel_orders))),
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           # Alpaca returns [{symbol, status, body: {order...}}, ...]
           # Unwrap body into top-level fields
@@ -530,7 +530,7 @@ AlpacaAccount <- R6::R6Class(
         simplifyVector = TRUE,
         .parser = function(data) {
           if (is.null(data) || is.null(data$timestamp) || length(data$timestamp) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           dt <- data.table::data.table(
             timestamp = lubridate::as_datetime(as.integer(data$timestamp), tz = "UTC"),
@@ -538,7 +538,7 @@ AlpacaAccount <- R6::R6Class(
             profit_loss = as.numeric(data$profit_loss),
             profit_loss_pct = as.numeric(data$profit_loss_pct)
           )
-          return(dt)
+          return(dt[])
         }
       ))
     },
@@ -821,7 +821,7 @@ AlpacaAccount <- R6::R6Class(
         method = "DELETE",
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table()[])
           }
           as_dt_row(data)
         }

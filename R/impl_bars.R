@@ -96,7 +96,7 @@ alpaca_fetch_bars <- function(
       combined <- unique(combined, by = "timestamp")
       data.table::setorder(combined, timestamp)
     }
-    return(combined)
+    return(combined[])
   }
 
   fetch_segment <- function(seg) {
