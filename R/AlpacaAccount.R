@@ -414,7 +414,18 @@ AlpacaAccount <- R6::R6Class(
           if (is.null(data) || length(data) == 0) {
             return(data.table::data.table())
           }
-          as_dt_list(data)
+          # Alpaca returns [{symbol, status, body: {order...}}, ...]
+          # Unwrap body into top-level fields
+          unwrapped <- lapply(data, function(item) {
+            body <- item$body
+            item$body <- NULL
+            if (is.list(body)) {
+              c(item, body)
+            } else {
+              item
+            }
+          })
+          as_dt_list(unwrapped)
         }
       ))
     },

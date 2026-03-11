@@ -943,6 +943,10 @@ AlpacaMarketData <- R6::R6Class(
       exclude_contentless = NULL,
       page_token = NULL
     ) {
+      # Join symbols with comma like other multi-symbol methods
+      if (!is.null(symbols) && length(symbols) > 1) {
+        symbols <- paste(symbols, collapse = ",")
+      }
       return(private$.data_request(
         endpoint = "/v1beta1/news",
         query = list(

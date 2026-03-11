@@ -81,20 +81,33 @@ alpaca_fetch_bars <- function(
   segment_seconds <- limit_per_request * bar_seconds
   n_segments <- max(1L, ceiling(span_seconds / segment_seconds))
 
-  results <- vector("list", n_segments)
+  # Build segment boundaries
+  segments <- vector("list", n_segments)
   seg_start <- start
-
   for (i in seq_len(n_segments)) {
     seg_end <- min(seg_start + segment_seconds, end)
+    segments[[i]] <- list(start = seg_start, end = seg_end)
+    seg_start <- seg_end
+  }
 
-    dt <- alpaca_build_request(
+  combine_results <- function(results) {
+    combined <- data.table::rbindlist(results, fill = TRUE)
+    if (nrow(combined) > 0 && "timestamp" %in% names(combined)) {
+      combined <- unique(combined, by = "timestamp")
+      data.table::setorder(combined, timestamp)
+    }
+    return(combined)
+  }
+
+  fetch_segment <- function(seg) {
+    alpaca_build_request(
       base_url = data_base_url,
       endpoint = paste0("/v2/stocks/", symbol, "/bars"),
       method = "GET",
       query = list(
         timeframe = timeframe,
-        start = format(seg_start, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
-        end = format(seg_end, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        start = format(seg$start, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+        end = format(seg$end, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
         limit = limit_per_request,
         adjustment = adjustment,
         feed = feed
@@ -105,21 +118,28 @@ alpaca_fetch_bars <- function(
       is_async = is_async,
       timeout = 30
     )
+  }
 
-    results[[i]] <- dt
-    seg_start <- seg_end
-
-    if (i < n_segments && sleep > 0) {
-      Sys.sleep(sleep)
+  if (!is_async) {
+    # Synchronous: simple loop
+    results <- vector("list", n_segments)
+    for (i in seq_len(n_segments)) {
+      results[[i]] <- fetch_segment(segments[[i]])
+      if (i < n_segments && sleep > 0) {
+        Sys.sleep(sleep)
+      }
     }
+    return(combine_results(results))
   }
 
-  # Combine and deduplicate
-  combined <- data.table::rbindlist(results, fill = TRUE)
-  if (nrow(combined) > 0 && "timestamp" %in% names(combined)) {
-    combined <- unique(combined, by = "timestamp")
-    data.table::setorder(combined, timestamp)
+  # Async: chain promises sequentially
+  acc_promise <- promises::promise_resolve(list())
+  for (seg in segments) {
+    acc_promise <- promises::then(acc_promise, function(acc) {
+      promises::then(fetch_segment(seg), function(result) {
+        c(acc, list(result))
+      })
+    })
   }
-
-  return(combined)
+  return(promises::then(acc_promise, combine_results))
 }

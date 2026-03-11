@@ -29,7 +29,7 @@ to_snake_case <- function(names) {
 wrap_list_fields <- function(x) {
   for (nm in names(x)) {
     val <- x[[nm]]
-    if (is.list(val) && length(val) > 1) {
+    if (is.list(val) && length(val) >= 1) {
       x[[nm]] <- list(val)
     }
   }
@@ -58,7 +58,7 @@ as_dt_row <- function(x) {
     if (is.list(val) && length(val) == 0) {
       return(NA)
     }
-    if (is.list(val) && length(val) > 1) {
+    if (is.list(val) && length(val) >= 1) {
       return(list(val))
     }
     return(val)
