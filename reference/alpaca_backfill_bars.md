@@ -62,12 +62,12 @@ alpaca_backfill_bars(
 - keys:
 
   List; API credentials. Defaults to
-  [`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - data_base_url:
 
   Character; market data base URL. Defaults to
-  [`get_data_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_data_base_url.md).
+  [`get_data_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_data_base_url.md).
 
 ## Value
 

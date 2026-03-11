@@ -52,7 +52,7 @@ info[, .(
 
 ``` r
 # Check asset attributes
-asset <- market$get_asset("AAPL")
+asset <- market$get_asset(symbol_or_id = "AAPL")
 cat("Shortable:", asset$shortable, "\n")
 cat("Marginable:", asset$marginable, "\n")
 cat("Fractionable:", asset$fractionable, "\n")
@@ -86,7 +86,7 @@ print(order[, .(id, symbol, side, type, status)])
 
 ``` r
 # Check the position — side will be "short"
-pos <- acct$get_position("AAPL")
+pos <- acct$get_position(symbol_or_id = "AAPL")
 print(pos[, .(
   symbol, qty, side,
   avg_entry_price, current_price,
@@ -107,10 +107,10 @@ trading$add_order(
 )
 
 # Option 2: Use close_position (simpler)
-acct$close_position("AAPL")
+acct$close_position(symbol_or_id = "AAPL")
 
 # Option 3: Close 50% of the short
-acct$close_position("AAPL", percentage = 50)
+acct$close_position(symbol_or_id = "AAPL", percentage = 50)
 ```
 
 ### Short with a Bracket Order (Risk Management)
@@ -240,7 +240,7 @@ history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
 print(history)
 
 # Account activities (fills, dividends, etc.)
-fills <- acct$get_activities_by_type("FILL")
+fills <- acct$get_activities_by_type(activity_type = "FILL")
 print(fills)
 ```
 
@@ -254,10 +254,10 @@ acct$close_all_positions(cancel_orders = TRUE)
 ## Next Steps
 
 - See
-  [`vignette("getting-started")`](https://dereckmezquita.github.io/alpaca/articles/getting-started.md)
+  [`vignette("getting-started")`](https://dereckscompany.github.io/alpaca/articles/getting-started.md)
   for basic market data and order placement.
 - See
-  [`vignette("async-usage")`](https://dereckmezquita.github.io/alpaca/articles/async-usage.md)
+  [`vignette("async-usage")`](https://dereckscompany.github.io/alpaca/articles/async-usage.md)
   for promise-based async workflows.
 - Explore the [Alpaca API documentation](https://docs.alpaca.markets/)
   for full endpoint details.

@@ -42,7 +42,7 @@
 </li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckmezquita/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckscompany/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
@@ -80,7 +80,7 @@
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dereckmezquita/alpaca"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dereckscompany/alpaca"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
@@ -131,7 +131,12 @@
 <h3 id="historical-bars">Historical Bars<a class="anchor" aria-label="anchor" href="#historical-bars"></a>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">bars</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_bars</span><span class="op">(</span><span class="st">"AAPL"</span>, timeframe <span class="op">=</span> <span class="st">"1Day"</span>, start <span class="op">=</span> <span class="st">"2024-01-01"</span>, end <span class="op">=</span> <span class="st">"2024-01-31"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">bars</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_bars</span><span class="op">(</span></span>
+<span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
+<span>  timeframe <span class="op">=</span> <span class="st">"1Day"</span>,</span>
+<span>  start <span class="op">=</span> <span class="st">"2024-01-01"</span>,</span>
+<span>  end <span class="op">=</span> <span class="st">"2024-01-31"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="va">bars</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#&gt;              timestamp   open   high    low  close   volume trade_count    vwap</span></span>
 <span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;int&gt;       &lt;int&gt;   &lt;num&gt;</span></span>
@@ -142,7 +147,7 @@
 <h3 id="latest-trade">Latest Trade<a class="anchor" aria-label="anchor" href="#latest-trade"></a>
 </h3>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_trade</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_trade</span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="va">trade</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#&gt;              timestamp price  size exchange   tape    id condition</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;int&gt;   &lt;char&gt; &lt;char&gt; &lt;int&gt;    &lt;char&gt;</span></span>
@@ -152,7 +157,7 @@
 <h3 id="latest-quote-nbbo">Latest Quote (NBBO)<a class="anchor" aria-label="anchor" href="#latest-quote-nbbo"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">quote</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_quote</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">quote</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_quote</span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="va">quote</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#&gt;              timestamp ask_exchange ask_price ask_size bid_exchange bid_price</span></span>
 <span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;       &lt;char&gt;     &lt;num&gt;    &lt;int&gt;       &lt;char&gt;     &lt;num&gt;</span></span>
@@ -254,8 +259,12 @@
 </h3>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">trading</span><span class="op">$</span><span class="fu">add_order</span><span class="op">(</span></span>
-<span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>, side <span class="op">=</span> <span class="st">"buy"</span>, type <span class="op">=</span> <span class="st">"limit"</span>,</span>
-<span>  time_in_force <span class="op">=</span> <span class="st">"day"</span>, qty <span class="op">=</span> <span class="fl">1</span>, limit_price <span class="op">=</span> <span class="fl">150</span></span>
+<span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
+<span>  side <span class="op">=</span> <span class="st">"buy"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"limit"</span>,</span>
+<span>  time_in_force <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span>  qty <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  limit_price <span class="op">=</span> <span class="fl">150</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">order</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">id</span>, <span class="va">symbol</span>, <span class="va">side</span>, <span class="va">type</span>, <span class="va">status</span>, <span class="va">limit_price</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <div class="sourceCode" id="cb26"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co">#&gt;                id symbol   side   type   status limit_price</span></span>
@@ -276,7 +285,7 @@
 <h3 id="cancel-an-order">Cancel an Order<a class="anchor" aria-label="anchor" href="#cancel-an-order"></a>
 </h3>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span><span class="st">"order-uuid-123"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span>order_id <span class="op">=</span> <span class="st">"order-uuid-123"</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#&gt;          order_id    status</span></span>
 <span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="co">#&gt;            &lt;char&gt;    &lt;char&gt;</span></span>
 <span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; 1: order-uuid-123 cancelled</span></span></code></pre></div>
@@ -307,7 +316,7 @@
 <h3 id="options-chain">Options Chain<a class="anchor" aria-label="anchor" href="#options-chain"></a>
 </h3>
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">chain</span> <span class="op">&lt;-</span> <span class="va">opts</span><span class="op">$</span><span class="fu">get_option_chain</span><span class="op">(</span><span class="st">"AAPL"</span>, type <span class="op">=</span> <span class="st">"call"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">chain</span> <span class="op">&lt;-</span> <span class="va">opts</span><span class="op">$</span><span class="fu">get_option_chain</span><span class="op">(</span>underlying_symbol <span class="op">=</span> <span class="st">"AAPL"</span>, type <span class="op">=</span> <span class="st">"call"</span><span class="op">)</span></span>
 <span><span class="va">chain</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <div class="sourceCode" id="cb35"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co">#&gt;                 symbol latest_trade_timestamp latest_trade_price</span></span>
 <span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;char&gt;                 &lt;char&gt;              &lt;num&gt;</span></span>
@@ -330,12 +339,15 @@
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Short 100 shares of AAPL at market</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">add_order</span><span class="op">(</span></span>
-<span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>, side <span class="op">=</span> <span class="st">"sell"</span>, type <span class="op">=</span> <span class="st">"market"</span>,</span>
-<span>  time_in_force <span class="op">=</span> <span class="st">"day"</span>, qty <span class="op">=</span> <span class="fl">100</span></span>
+<span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
+<span>  side <span class="op">=</span> <span class="st">"sell"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"market"</span>,</span>
+<span>  time_in_force <span class="op">=</span> <span class="st">"day"</span>,</span>
+<span>  qty <span class="op">=</span> <span class="fl">100</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Close the short (buy to cover)</span></span>
-<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span>symbol_or_id <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="bulk-historical-data">Bulk Historical Data<a class="anchor" aria-label="anchor" href="#bulk-historical-data"></a>
@@ -381,8 +393,12 @@
 <code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaMarketData.html">AlpacaMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">main</span> <span class="op">&lt;-</span> <span class="fu">coro</span><span class="fu">::</span><span class="fu"><a href="https://coro.r-lib.org/reference/async.html" class="external-link">async</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">bars</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_bars</span><span class="op">(</span><span class="st">"AAPL"</span>, <span class="st">"1Day"</span>,</span>
-<span>                                       start <span class="op">=</span> <span class="st">"2024-01-01"</span>, end <span class="op">=</span> <span class="st">"2024-01-31"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">bars</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_bars</span><span class="op">(</span></span>
+<span>    symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
+<span>    timeframe <span class="op">=</span> <span class="st">"1Day"</span>,</span>
+<span>    start <span class="op">=</span> <span class="st">"2024-01-01"</span>,</span>
+<span>    end <span class="op">=</span> <span class="st">"2024-01-31"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="va">clock</span> <span class="op">&lt;-</span> <span class="fu">await</span><span class="op">(</span><span class="va">market_async</span><span class="op">$</span><span class="fu">get_clock</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">bars</span><span class="op">)</span></span>
@@ -390,7 +406,9 @@
 <span><span class="op">}</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">main</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/loop_empty.html" class="external-link">loop_empty</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/run_now.html" class="external-link">run_now</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/loop_empty.html" class="external-link">loop_empty</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/run_now.html" class="external-link">run_now</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 <div class="sourceCode" id="cb41"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open           timestamp   volume</span></span>
 <span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;int&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;int&gt;</span></span>
 <span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a><span class="co">#&gt;  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943</span></span>
@@ -496,8 +514,8 @@
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
 <li><a href="https://cloud.r-project.org/package=alpaca" class="external-link">View on CRAN</a></li>
-<li><a href="https://github.com/dereckmezquita/alpaca/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/dereckmezquita/alpaca/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/dereckscompany/alpaca/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/dereckscompany/alpaca/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -534,7 +552,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/dereckscompany/alpaca/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/dereckscompany/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 </ul>
 </div>

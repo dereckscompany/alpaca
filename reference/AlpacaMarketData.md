@@ -11,7 +11,7 @@ including historical bars (OHLCV), latest quotes/trades, snapshots,
 asset info, market calendar, and clock.
 
 Inherits from
-[AlpacaBase](https://dereckmezquita.github.io/alpaca/reference/AlpacaBase.md).
+[AlpacaBase](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md).
 All methods support both synchronous and asynchronous execution
 depending on the `async` parameter at construction.
 
@@ -79,7 +79,7 @@ URL. Both are configurable via constructor parameters.
 
 ## Super class
 
-[`alpaca::AlpacaBase`](https://dereckmezquita.github.io/alpaca/reference/AlpacaBase.md)
+[`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaMarketData`
 
 ## Methods
@@ -173,17 +173,17 @@ credentials and base URLs for subsequent method calls.
 - `keys`:
 
   List; API credentials from
-  [`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `base_url`:
 
   Character; trading API base URL. Defaults to
-  [`get_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_base_url.md).
+  [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `data_base_url`:
 
   Character; market data API base URL. Defaults to
-  [`get_data_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_data_base_url.md).
+  [`get_data_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_data_base_url.md).
 
 - `async`:
 

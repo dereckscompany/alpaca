@@ -43,8 +43,12 @@ md <- AlpacaMarketData$new()
 ### Historical Bars
 
 ``` r
-bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01",
-                    end = "2024-01-31")
+bars <- md$get_bars(
+  symbol = "AAPL",
+  timeframe = "1Day",
+  start = "2024-01-01",
+  end = "2024-01-31"
+)
 bars[]
 ```
 
@@ -56,7 +60,7 @@ bars[]
 ### Latest Trade
 
 ``` r
-trade <- md$get_latest_trade("AAPL")
+trade <- md$get_latest_trade(symbol = "AAPL")
 trade[]
 ```
 
@@ -67,7 +71,7 @@ trade[]
 ### Latest Quote
 
 ``` r
-quote <- md$get_latest_quote("AAPL")
+quote <- md$get_latest_quote(symbol = "AAPL")
 quote[]
 ```
 
@@ -247,7 +251,7 @@ open_orders[]
 ### Cancel a Specific Order
 
 ``` r
-trading$cancel_order("order-uuid-123")
+trading$cancel_order(order_id = "order-uuid-123")
 ```
 
     #>          order_id    status
@@ -294,7 +298,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 ### Options Chain
 
 ``` r
-chain <- opts$get_option_chain("AAPL", type = "call")
+chain <- opts$get_option_chain(underlying_symbol = "AAPL", type = "call")
 chain[]
 ```
 
@@ -317,10 +321,10 @@ chain[]
 
 ``` r
 # Close 50% of a position
-acct$close_position("AAPL", percentage = 50)
+acct$close_position(symbol_or_id = "AAPL", percentage = 50)
 
 # Close entire position
-acct$close_position("AAPL")
+acct$close_position(symbol_or_id = "AAPL")
 
 # Close all positions (dangerous!)
 acct$close_all_positions(cancel_orders = TRUE)
@@ -329,10 +333,10 @@ acct$close_all_positions(cancel_orders = TRUE)
 ## Next Steps
 
 - See
-  [`vignette("async-usage")`](https://dereckmezquita.github.io/alpaca/articles/async-usage.md)
+  [`vignette("async-usage")`](https://dereckscompany.github.io/alpaca/articles/async-usage.md)
   for promise-based async workflows.
 - See
-  [`vignette("margin-short-selling")`](https://dereckmezquita.github.io/alpaca/articles/margin-short-selling.md)
+  [`vignette("margin-short-selling")`](https://dereckscompany.github.io/alpaca/articles/margin-short-selling.md)
   for margin and short selling.
 - Explore the [Alpaca API documentation](https://docs.alpaca.markets/)
   for full endpoint details.

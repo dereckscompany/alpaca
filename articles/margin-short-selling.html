@@ -40,7 +40,7 @@
 </li>
       </ul>
 <ul class="navbar-nav">
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckmezquita/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckscompany/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json">
 </form></li>
@@ -62,7 +62,7 @@
 Mezquita</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dereckmezquita/alpaca/blob/v0.0.1/vignettes/margin-short-selling.Rmd" class="external-link"><code>vignettes/margin-short-selling.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.0.1/vignettes/margin-short-selling.Rmd" class="external-link"><code>vignettes/margin-short-selling.Rmd</code></a></small>
       <div class="d-none name"><code>margin-short-selling.Rmd</code></div>
     </div>
 
@@ -96,7 +96,7 @@ everything.</p>
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dereckmezquita.github.io/alpaca/">alpaca</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dereckscompany.github.io/alpaca/">alpaca</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">trading</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/AlpacaTrading.html">AlpacaTrading</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">acct</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/AlpacaAccount.html">AlpacaAccount</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span>
@@ -127,7 +127,7 @@ everything.</p>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check asset attributes</span></span>
-<span><span class="va">asset</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_asset</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span>
+<span><span class="va">asset</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_asset</span><span class="op">(</span>symbol_or_id <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Shortable:"</span>, <span class="va">asset</span><span class="op">$</span><span class="va">shortable</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Marginable:"</span>, <span class="va">asset</span><span class="op">$</span><span class="va">marginable</span>, <span class="st">"\n"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Fractionable:"</span>, <span class="va">asset</span><span class="op">$</span><span class="va">fractionable</span>, <span class="st">"\n"</span><span class="op">)</span></span>
@@ -162,7 +162,7 @@ borrow automatically.</p>
 </h3>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Check the position — side will be "short"</span></span>
-<span><span class="va">pos</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_position</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span>
+<span><span class="va">pos</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_position</span><span class="op">(</span>symbol_or_id <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">pos</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span></span>
 <span>  <span class="va">symbol</span>, <span class="va">qty</span>, <span class="va">side</span>,</span>
 <span>  <span class="va">avg_entry_price</span>, <span class="va">current_price</span>,</span>
@@ -183,10 +183,10 @@ borrow automatically.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Option 2: Use close_position (simpler)</span></span>
-<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span><span class="st">"AAPL"</span><span class="op">)</span></span>
+<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span>symbol_or_id <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Option 3: Close 50% of the short</span></span>
-<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span><span class="st">"AAPL"</span>, percentage <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">acct</span><span class="op">$</span><span class="fu">close_position</span><span class="op">(</span>symbol_or_id <span class="op">=</span> <span class="st">"AAPL"</span>, percentage <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="short-with-a-bracket-order-risk-management">Short with a Bracket Order (Risk Management)<a class="anchor" aria-label="anchor" href="#short-with-a-bracket-order-risk-management"></a>
@@ -315,7 +315,7 @@ intent:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">history</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Account activities (fills, dividends, etc.)</span></span>
-<span><span class="va">fills</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_activities_by_type</span><span class="op">(</span><span class="st">"FILL"</span><span class="op">)</span></span>
+<span><span class="va">fills</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_activities_by_type</span><span class="op">(</span>activity_type <span class="op">=</span> <span class="st">"FILL"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">fills</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

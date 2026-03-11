@@ -10,7 +10,7 @@ Provides methods for placing, modifying, cancelling, and querying orders
 on Alpaca's Trading API.
 
 Inherits from
-[AlpacaBase](https://dereckmezquita.github.io/alpaca/reference/AlpacaBase.md).
+[AlpacaBase](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md).
 All methods support both synchronous and asynchronous execution
 depending on the `async` parameter at construction.
 
@@ -46,7 +46,7 @@ depending on the `async` parameter at construction.
 
 ## Super class
 
-[`alpaca::AlpacaBase`](https://dereckmezquita.github.io/alpaca/reference/AlpacaBase.md)
+[`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaTrading`
 
 ## Methods
@@ -71,7 +71,7 @@ depending on the `async` parameter at construction.
 
 Inherited methods
 
-- [`alpaca::AlpacaBase$initialize()`](https://dereckmezquita.github.io/alpaca/reference/AlpacaBase.html#method-initialize)
+- [`alpaca::AlpacaBase$initialize()`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.html#method-initialize)
 
 ------------------------------------------------------------------------
 

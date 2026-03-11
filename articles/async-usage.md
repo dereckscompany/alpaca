@@ -41,8 +41,12 @@ md <- AlpacaMarketData$new(async = TRUE)
 
 main <- async(function() {
   # These run concurrently
-  bars_promise <- md$get_bars("AAPL", timeframe = "1Day",
-                              start = "2024-01-01", end = "2024-01-31")
+  bars_promise <- md$get_bars(
+    symbol = "AAPL",
+    timeframe = "1Day",
+    start = "2024-01-01",
+    end = "2024-01-31"
+  )
   clock_promise <- md$get_clock()
 
   bars <- await(bars_promise)
@@ -53,7 +57,9 @@ main <- async(function() {
 })
 
 main()
-while (!loop_empty()) run_now()
+while (!loop_empty()) {
+  run_now()
+}
 ```
 
 ## Parallel Requests
@@ -70,7 +76,7 @@ symbols <- c("AAPL", "MSFT", "GOOGL", "AMZN", "TSLA")
 
 # Launch all requests in parallel
 bar_promises <- lapply(symbols, function(sym) {
-  md$get_latest_bar(sym)
+  md$get_latest_bar(symbol = sym)
 })
 
 # Collect results as they arrive
@@ -83,7 +89,9 @@ for (i in seq_along(bar_promises)) {
   })(i)
 }
 
-while (!later::loop_empty()) later::run_now()
+while (!later::loop_empty()) {
+  later::run_now()
+}
 
 # Combine into a single data.table
 all_bars <- data.table::rbindlist(results, fill = TRUE)
@@ -105,8 +113,12 @@ acct <- AlpacaAccount$new(async = TRUE)
 main <- async(function() {
   # Place order
   order <- await(trading$add_order(
-    symbol = "AAPL", side = "buy", type = "limit",
-    time_in_force = "day", qty = 1, limit_price = 150
+    symbol = "AAPL",
+    side = "buy",
+    type = "limit",
+    time_in_force = "day",
+    qty = 1,
+    limit_price = 150
   ))
   cat("Order placed:", order$id, "\n")
 
@@ -120,7 +132,9 @@ main <- async(function() {
 })
 
 main()
-while (!loop_empty()) run_now()
+while (!loop_empty()) {
+  run_now()
+}
 ```
 
 ## Async in Shiny
@@ -136,15 +150,24 @@ md <- AlpacaMarketData$new(async = TRUE)
 
 server <- function(input, output, session) {
   bars <- reactive({
-    md$get_bars(input$symbol, timeframe = "1Day",
-                start = input$start, end = input$end)
+    md$get_bars(
+      symbol = input$symbol,
+      timeframe = "1Day",
+      start = input$start,
+      end = input$end
+    )
   })
 
   output$chart <- renderPlot({
     bars() %...>% function(data) {
-      plot(data$t, data$c, type = "l",
-           main = paste(input$symbol, "Close Price"),
-           xlab = "Date", ylab = "Price")
+      plot(
+        data$t,
+        data$c,
+        type = "l",
+        main = paste(input$symbol, "Close Price"),
+        xlab = "Date",
+        ylab = "Price"
+      )
     }
   })
 }
@@ -163,7 +186,10 @@ library(later)
 
 md <- AlpacaMarketData$new(async = TRUE)
 
-md$get_bars("INVALID_SYMBOL", timeframe = "1Day") %...>%
+md$get_bars(
+  symbol = "INVALID_SYMBOL",
+  timeframe = "1Day"
+) %...>%
   function(data) {
     cat("Got", nrow(data), "bars\n")
   } %...!%
@@ -171,13 +197,15 @@ md$get_bars("INVALID_SYMBOL", timeframe = "1Day") %...>%
     cat("Error:", conditionMessage(err), "\n")
   }
 
-while (!later::loop_empty()) later::run_now()
+while (!later::loop_empty()) {
+  later::run_now()
+}
 ```
 
 ## Next Steps
 
 - See
-  [`vignette("getting-started")`](https://dereckmezquita.github.io/alpaca/articles/getting-started.md)
+  [`vignette("getting-started")`](https://dereckscompany.github.io/alpaca/articles/getting-started.md)
   for synchronous usage and full API coverage.
 - Explore the [Alpaca API documentation](https://docs.alpaca.markets/)
   for endpoint details.

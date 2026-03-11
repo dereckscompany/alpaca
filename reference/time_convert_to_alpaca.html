@@ -24,7 +24,7 @@ the Alpaca API. Output is always in UTC with Z suffix."></head><body>
     <li><a class="dropdown-item" href="../articles/async-usage.html">Asynchronous Usage with alpaca</a></li>
     <li><a class="dropdown-item" href="../articles/margin-short-selling.html">Margin Trading and Short Selling with alpaca</a></li>
   </ul></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckmezquita/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/dereckscompany/alpaca" target="_blank"><span class="fa fa-github fa-lg"></span></a></li>
 <li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
       </ul></div>
@@ -36,7 +36,7 @@ the Alpaca API. Output is always in UTC with Z suffix."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Convert POSIXct to RFC-3339 Timestamp String</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckmezquita/alpaca/blob/v0.0.1/R/utils_time.R" class="external-link"><code>R/utils_time.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.0.1/R/utils_time.R" class="external-link"><code>R/utils_time.R</code></a></small>
       <div class="d-none name"><code>time_convert_to_alpaca.Rd</code></div>
     </div>
 
@@ -66,7 +66,7 @@ the Alpaca API. Output is always in UTC with <code>Z</code> suffix.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">time_convert_to_alpaca</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2026-03-11T08:00:19Z"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2026-03-11T21:57:01Z"</span>
 <span class="r-in"><span><span class="fu">time_convert_to_alpaca</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html" class="external-link">as.POSIXct</a></span><span class="op">(</span><span class="st">"2024-01-15 14:30:00"</span>, tz <span class="op">=</span> <span class="st">"UTC"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "2024-01-15T14:30:00Z"</span>
 <span class="r-in"><span></span></span>

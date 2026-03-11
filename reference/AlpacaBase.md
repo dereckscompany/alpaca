@@ -41,8 +41,8 @@ No HMAC signing is required — credentials are sent directly in headers.
 ### Design
 
 This class is not meant to be instantiated directly. Subclasses (e.g.,
-[AlpacaMarketData](https://dereckmezquita.github.io/alpaca/reference/AlpacaMarketData.md),
-[AlpacaTrading](https://dereckmezquita.github.io/alpaca/reference/AlpacaTrading.md))
+[AlpacaMarketData](https://dereckscompany.github.io/alpaca/reference/AlpacaMarketData.md),
+[AlpacaTrading](https://dereckscompany.github.io/alpaca/reference/AlpacaTrading.md))
 inherit from it and define their own public methods that delegate to
 `private$.request()`.
 
@@ -51,10 +51,10 @@ inherit from it and define their own public methods that delegate to
 All fields are private:
 
 - `.keys`: List; API credentials from
-  [`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `.base_url`: Character; API base URL from
-  [`get_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_base_url.md).
+  [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `.perform`: Function; either
   [httr2::req_perform](https://httr2.r-lib.org/reference/req_perform.html)
@@ -93,14 +93,14 @@ Initialise an AlpacaBase Object
 - `keys`:
 
   List; API credentials from
-  [`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
   Defaults to
-  [`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md).
+  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `base_url`:
 
   Character; API base URL. Defaults to
-  [`get_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_base_url.md).
+  [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `async`:
 

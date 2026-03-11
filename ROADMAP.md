@@ -29,9 +29,9 @@ parsing)
 
 `helpers_parse.R` (response parsing utilities)
 
-[`get_api_keys()`](https://dereckmezquita.github.io/alpaca/reference/get_api_keys.md)
+[`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md)
 and
-[`get_base_url()`](https://dereckmezquita.github.io/alpaca/reference/get_base_url.md)
+[`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md)
 configuration helpers
 
 ### 2. Market Data — `AlpacaMarketData` class
@@ -89,14 +89,14 @@ Options orders (via AlpacaTrading with `position_intent`)
 ### 6. Utilities and infrastructure
 
 `utils_time.R` —
-[`time_convert_from_alpaca()`](https://dereckmezquita.github.io/alpaca/reference/time_convert_from_alpaca.md)
+[`time_convert_from_alpaca()`](https://dereckscompany.github.io/alpaca/reference/time_convert_from_alpaca.md)
 /
-[`time_convert_to_alpaca()`](https://dereckmezquita.github.io/alpaca/reference/time_convert_to_alpaca.md)
+[`time_convert_to_alpaca()`](https://dereckscompany.github.io/alpaca/reference/time_convert_to_alpaca.md)
 
 `impl_bars.R` — time-range segmented bar fetching
 
 `backfill.R` —
-[`alpaca_backfill_bars()`](https://dereckmezquita.github.io/alpaca/reference/alpaca_backfill_bars.md)
+[`alpaca_backfill_bars()`](https://dereckscompany.github.io/alpaca/reference/alpaca_backfill_bars.md)
 with CSV-based resume
 
 Tests — mocked unit tests for all R6 classes and helpers
@@ -104,7 +104,7 @@ Tests — mocked unit tests for all R6 classes and helpers
 Sample dataset — bundled AAPL daily bars
 (`data/alpaca_aapl_1day_bars.rda`)
 
-[`alpaca_paginate()`](https://dereckmezquita.github.io/alpaca/reference/alpaca_paginate.md)
+[`alpaca_paginate()`](https://dereckscompany.github.io/alpaca/reference/alpaca_paginate.md)
 — auto-pagination for cursor-based endpoints
 
 Margin/short-selling vignette

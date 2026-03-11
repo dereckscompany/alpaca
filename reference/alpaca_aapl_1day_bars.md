@@ -3,7 +3,7 @@
 Simulated daily bar data for AAPL (Apple Inc.) covering 250 trading days
 in 2024. Generated with a random walk model for demonstration and
 testing purposes. Column structure matches the output of
-[AlpacaMarketData](https://dereckmezquita.github.io/alpaca/reference/AlpacaMarketData.md)`$get_bars()`.
+[AlpacaMarketData](https://dereckscompany.github.io/alpaca/reference/AlpacaMarketData.md)`$get_bars()`.
 
 ## Usage
 
