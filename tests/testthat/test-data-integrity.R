@@ -519,13 +519,15 @@ test_that("parse_multi_bars handles symbol with slash (crypto)", {
 
 # -- wrap_list_fields edge cases --
 
-test_that("wrap_list_fields does not wrap length-1 lists", {
+test_that("wrap_list_fields wraps length-1 lists", {
   x <- list(a = 1, b = list("single"))
   result <- wrap_list_fields(x)
 
-  # Length-1 list is NOT wrapped — it stays as list("single")
+  # Length-1 list IS wrapped — becomes list(list("single"))
   expect_true(is.list(result$b))
   expect_equal(length(result$b), 1L)
+  expect_true(is.list(result$b[[1]]))
+  expect_equal(result$b[[1]], list("single"))
 })
 
 test_that("wrap_list_fields wraps length-2+ lists", {

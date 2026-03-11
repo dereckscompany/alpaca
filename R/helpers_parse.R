@@ -17,7 +17,7 @@ to_snake_case <- function(names) {
 
 #' Wrap Multi-Element List Fields
 #'
-#' Wraps any field that is a list with length > 1 inside another list(),
+#' Wraps any field that is a list with length >= 1 inside another list(),
 #' so that `rbindlist()` treats it as a single list-column entry rather
 #' than expanding it into multiple rows.
 #'

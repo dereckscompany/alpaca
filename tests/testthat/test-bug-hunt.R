@@ -331,7 +331,7 @@ test_that("alpaca_paginate accepts and forwards custom timeout", {
 
   # Verify the timeout was set to 30s (30000ms), not the default 10s
   req_options <- captured_req$options
-  timeout_val <- req_options$timeout_ms %||% (req_options$timeout * 1000)
+  timeout_val <- if (!is.null(req_options$timeout_ms)) req_options$timeout_ms else (req_options$timeout * 1000)
   expect_equal(
     timeout_val,
     30000,

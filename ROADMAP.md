@@ -1,6 +1,6 @@
 # alpaca — Roadmap
 
-> Version 0.1.0 (unreleased) · Last updated 2026-03-09
+> Version 0.1.0 · Last updated 2026-03-11
 
 ## Naming convention
 
