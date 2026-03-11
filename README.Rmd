@@ -92,19 +92,21 @@ market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DB
 
 ```{r}
 bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01", end = "2024-01-31")
-bars
+bars[]
 ```
 
 ### Latest Trade
 
 ```{r}
-market$get_latest_trade("AAPL")
+trade <- market$get_latest_trade("AAPL")
+trade[]
 ```
 
 ### Latest Quote (NBBO)
 
 ```{r}
-market$get_latest_quote("AAPL")
+quote <- market$get_latest_quote("AAPL")
+quote[]
 ```
 
 ### Market Clock
@@ -117,7 +119,7 @@ market$get_clock()
 
 ```{r}
 assets <- market$get_assets(status = "active", asset_class = "us_equity")
-assets
+assets[]
 ```
 
 ### Market News
@@ -214,7 +216,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 
 ```{r}
 chain <- opts$get_option_chain("AAPL", type = "call")
-chain
+chain[]
 ```
 
 ## Short Selling

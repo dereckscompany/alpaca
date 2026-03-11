@@ -84,40 +84,42 @@ md <- AlpacaMarketData$new(keys = keys, base_url = tbase, data_base_url = dbase)
 ```{r bars}
 bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01",
                     end = "2024-01-31")
-bars
+bars[]
 ```
 
 ### Latest Trade
 
 ```{r latest-trade}
-md$get_latest_trade("AAPL")
+trade <- md$get_latest_trade("AAPL")
+trade[]
 ```
 
 ### Latest Quote
 
 ```{r latest-quote}
-md$get_latest_quote("AAPL")
+quote <- md$get_latest_quote("AAPL")
+quote[]
 ```
 
 ### Market Clock
 
 ```{r clock}
 clock <- md$get_clock()
-clock
+clock[]
 ```
 
 ### Available Assets
 
 ```{r assets}
 assets <- md$get_assets(status = "active", asset_class = "us_equity")
-assets
+assets[]
 ```
 
 ### Market Calendar
 
 ```{r calendar}
 cal <- md$get_calendar(start = "2024-01-01", end = "2024-01-31")
-cal
+cal[]
 ```
 
 ### Market News
@@ -153,21 +155,21 @@ info[, .(status, equity, buying_power, cash)]
 
 ```{r positions}
 positions <- acct$get_positions()
-positions
+positions[]
 ```
 
 ### Portfolio History
 
 ```{r portfolio-history}
 history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
-history
+history[]
 ```
 
 ### Account Activities
 
 ```{r activities}
 activities <- acct$get_activities(activity_types = "FILL")
-activities
+activities[]
 ```
 
 ---
@@ -202,7 +204,7 @@ order[, .(id, symbol, side, type, status)]
 
 ```{r open-orders}
 open_orders <- trading$get_orders(status = "open")
-open_orders
+open_orders[]
 ```
 
 ### Cancel a Specific Order
@@ -248,7 +250,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 
 ```{r option-chain}
 chain <- opts$get_option_chain("AAPL", type = "call")
-chain
+chain[]
 ```
 
 ---

@@ -78,19 +78,34 @@ market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DB
 
 ``` r
 bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01", end = "2024-01-31")
-bars
+bars[]
+#>              timestamp   open   high    low  close   volume trade_count    vwap
+#>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
+#> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
+#> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
 ```
 
 ### Latest Trade
 
 ``` r
-market$get_latest_trade("AAPL")
+trade <- market$get_latest_trade("AAPL")
+trade[]
+#>              timestamp price  size exchange conditions   tape    id
+#>                 <POSc> <num> <int>   <char>     <list> <char> <int>
+#> 1: 2024-01-15 14:30:00 185.5   100        V  <list[1]>      C 12345
 ```
 
 ### Latest Quote (NBBO)
 
 ``` r
-market$get_latest_quote("AAPL")
+quote <- market$get_latest_quote("AAPL")
+quote[]
+#>              timestamp ask_exchange ask_price ask_size bid_exchange bid_price
+#>                 <POSc>       <char>     <num>    <int>       <char>     <num>
+#> 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5
+#>    bid_size conditions   tape
+#>       <int>     <list> <char>
+#> 1:      300  <list[1]>      C
 ```
 
 ### Market Clock
@@ -109,7 +124,7 @@ market$get_clock()
 
 ``` r
 assets <- market$get_assets(status = "active", asset_class = "us_equity")
-assets
+assets[]
 #>        id     class exchange symbol                  name status tradable
 #>    <char>    <char>   <char> <char>                <char> <char>   <lgcl>
 #> 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE
@@ -234,7 +249,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 
 ``` r
 chain <- opts$get_option_chain("AAPL", type = "call")
-chain
+chain[]
 #>                 symbol latest_trade_timestamp latest_trade_price
 #>                 <char>                 <char>              <num>
 #> 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5
