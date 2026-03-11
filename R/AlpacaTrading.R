@@ -22,13 +22,13 @@
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
 #' |--------|----------|------|
-#' | add_order | POST /v2/orders | POST |
-#' | get_orders | GET /v2/orders | GET |
-#' | get_order | GET /v2/orders/{order_id} | GET |
-#' | get_order_by_client_id | GET /v2/orders:by_client_order_id | GET |
-#' | modify_order | PATCH /v2/orders/{order_id} | PATCH |
-#' | cancel_order | DELETE /v2/orders/{order_id} | DELETE |
-#' | cancel_all_orders | DELETE /v2/orders | DELETE |
+#' | add_order | `POST /v2/orders` | POST |
+#' | get_orders | `GET /v2/orders` | GET |
+#' | get_order | `GET /v2/orders/\{order_id\}` | GET |
+#' | get_order_by_client_id | `GET /v2/orders:by_client_order_id` | GET |
+#' | modify_order | `PATCH /v2/orders/\{order_id\}` | PATCH |
+#' | cancel_order | `DELETE /v2/orders/\{order_id\}` | DELETE |
+#' | cancel_all_orders | `DELETE /v2/orders` | DELETE |
 #'
 #' @examples
 #' \dontrun{
@@ -201,7 +201,7 @@ AlpacaTrading <- R6::R6Class(
     #' @param symbols Character or NULL; comma-separated symbol filter.
     #' @param side Character or NULL; filter by side.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same columns as [add_order()] return value.
+    #'   the same columns as `add_order()` return value.
     #'
     #' @examples
     #' \dontrun{
@@ -367,7 +367,7 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' @param order_id Character; order UUID to cancel.
-    #' @return `invisible(NULL)` on success (HTTP 204), or a `promise` thereof.
+    #' @return An empty [data.table::data.table] on success (HTTP 204), or a `promise` thereof.
     #'
     #' @examples
     #' \dontrun{
@@ -379,7 +379,7 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) return(data.table::data.table())
       ))
     },
 

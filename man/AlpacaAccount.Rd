@@ -39,24 +39,24 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Endpoints Covered}{\tabular{lll}{
    Method \tab Endpoint \tab HTTP \cr
-   get_account \tab GET /v2/account \tab GET \cr
-   get_positions \tab GET /v2/positions \tab GET \cr
-   get_position \tab GET /v2/positions/{symbol_or_id} \tab GET \cr
-   close_position \tab DELETE /v2/positions/{symbol_or_id} \tab DELETE \cr
-   close_all_positions \tab DELETE /v2/positions \tab DELETE \cr
-   get_account_config \tab GET /v2/account/configurations \tab GET \cr
-   modify_account_config \tab PATCH /v2/account/configurations \tab PATCH \cr
-   exercise_option \tab POST /v2/positions/{symbol_or_id}/exercise \tab POST \cr
-   get_portfolio_history \tab GET /v2/account/portfolio/history \tab GET \cr
-   get_activities \tab GET /v2/account/activities \tab GET \cr
-   get_activities_by_type \tab GET /v2/account/activities/{type} \tab GET \cr
-   get_watchlists \tab GET /v2/watchlists \tab GET \cr
-   get_watchlist \tab GET /v2/watchlists/{id} \tab GET \cr
-   add_watchlist \tab POST /v2/watchlists \tab POST \cr
-   modify_watchlist \tab PUT /v2/watchlists/{id} \tab PUT \cr
-   add_watchlist_symbol \tab POST /v2/watchlists/{id} \tab POST \cr
-   cancel_watchlist_symbol \tab DELETE /v2/watchlists/{id}/{symbol} \tab DELETE \cr
-   cancel_watchlist \tab DELETE /v2/watchlists/{id} \tab DELETE \cr
+   get_account \tab \code{GET /v2/account} \tab GET \cr
+   get_positions \tab \code{GET /v2/positions} \tab GET \cr
+   get_position \tab \verb{GET /v2/positions/\\\{symbol_or_id\\\}} \tab GET \cr
+   close_position \tab \verb{DELETE /v2/positions/\\\{symbol_or_id\\\}} \tab DELETE \cr
+   close_all_positions \tab \code{DELETE /v2/positions} \tab DELETE \cr
+   get_account_config \tab \code{GET /v2/account/configurations} \tab GET \cr
+   modify_account_config \tab \code{PATCH /v2/account/configurations} \tab PATCH \cr
+   exercise_option \tab \verb{POST /v2/positions/\\\{symbol_or_id\\\}/exercise} \tab POST \cr
+   get_portfolio_history \tab \code{GET /v2/account/portfolio/history} \tab GET \cr
+   get_activities \tab \code{GET /v2/account/activities} \tab GET \cr
+   get_activities_by_type \tab \verb{GET /v2/account/activities/\\\{type\\\}} \tab GET \cr
+   get_watchlists \tab \code{GET /v2/watchlists} \tab GET \cr
+   get_watchlist \tab \verb{GET /v2/watchlists/\\\{id\\\}} \tab GET \cr
+   add_watchlist \tab \code{POST /v2/watchlists} \tab POST \cr
+   modify_watchlist \tab \verb{PUT /v2/watchlists/\\\{id\\\}} \tab PUT \cr
+   add_watchlist_symbol \tab \verb{POST /v2/watchlists/\\\{id\\\}} \tab POST \cr
+   cancel_watchlist_symbol \tab \verb{DELETE /v2/watchlists/\\\{id\\\}/\\\{symbol\\\}} \tab DELETE \cr
+   cancel_watchlist \tab \verb{DELETE /v2/watchlists/\\\{id\\\}} \tab DELETE \cr
 }
 
 }
@@ -599,7 +599,7 @@ Retrieves a single open position by symbol or asset UUID.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
-same columns as \code{\link[=get_positions]{get_positions()}}, single row.
+same columns as \code{get_positions()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -739,7 +739,7 @@ Exercises an options position. Only applicable to options contracts.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{invisible(NULL)} on success (HTTP 204).
+An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1245,7 +1245,7 @@ Permanently deletes a watchlist.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{invisible(NULL)} on success (HTTP 204).
+An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

@@ -27,15 +27,15 @@
 #' ### Endpoints Covered
 #' | Method | Endpoint | Base |
 #' |--------|----------|------|
-#' | get_contracts | GET /v2/options/contracts | trading |
-#' | get_contract | GET /v2/options/contracts/{symbol_or_id} | trading |
-#' | get_option_bars | GET /v1beta1/options/bars | data |
-#' | get_option_trades | GET /v1beta1/options/trades | data |
-#' | get_option_latest_quotes | GET /v1beta1/options/quotes/latest | data |
-#' | get_option_snapshots | GET /v1beta1/options/snapshots | data |
-#' | get_option_snapshot | GET /v1beta1/options/snapshots/{symbol} | data |
-#' | get_option_latest_trades | GET /v1beta1/options/trades/latest | data |
-#' | get_option_chain | GET /v1beta1/options/snapshots/{underlying_symbol} | data |
+#' | get_contracts | `GET /v2/options/contracts` | trading |
+#' | get_contract | `GET /v2/options/contracts/\{symbol_or_id\}` | trading |
+#' | get_option_bars | `GET /v1beta1/options/bars` | data |
+#' | get_option_trades | `GET /v1beta1/options/trades` | data |
+#' | get_option_latest_quotes | `GET /v1beta1/options/quotes/latest` | data |
+#' | get_option_snapshots | `GET /v1beta1/options/snapshots` | data |
+#' | get_option_snapshot | `GET /v1beta1/options/snapshots/\{symbol\}` | data |
+#' | get_option_latest_trades | `GET /v1beta1/options/trades/latest` | data |
+#' | get_option_chain | `GET /v1beta1/options/snapshots/\{underlying_symbol\}` | data |
 #'
 #' @examples
 #' \dontrun{
@@ -218,7 +218,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' @param symbol_or_id Character; OCC option symbol or contract UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same columns as [get_contracts()], single row.
+    #'   the same columns as `get_contracts()`, single row.
     #'
     #' @examples
     #' \dontrun{

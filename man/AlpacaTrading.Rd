@@ -31,13 +31,13 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Endpoints Covered}{\tabular{lll}{
    Method \tab Endpoint \tab HTTP \cr
-   add_order \tab POST /v2/orders \tab POST \cr
-   get_orders \tab GET /v2/orders \tab GET \cr
-   get_order \tab GET /v2/orders/{order_id} \tab GET \cr
-   get_order_by_client_id \tab GET /v2/orders:by_client_order_id \tab GET \cr
-   modify_order \tab PATCH /v2/orders/{order_id} \tab PATCH \cr
-   cancel_order \tab DELETE /v2/orders/{order_id} \tab DELETE \cr
-   cancel_all_orders \tab DELETE /v2/orders \tab DELETE \cr
+   add_order \tab \code{POST /v2/orders} \tab POST \cr
+   get_orders \tab \code{GET /v2/orders} \tab GET \cr
+   get_order \tab \verb{GET /v2/orders/\\\{order_id\\\}} \tab GET \cr
+   get_order_by_client_id \tab \code{GET /v2/orders:by_client_order_id} \tab GET \cr
+   modify_order \tab \verb{PATCH /v2/orders/\\\{order_id\\\}} \tab PATCH \cr
+   cancel_order \tab \verb{DELETE /v2/orders/\\\{order_id\\\}} \tab DELETE \cr
+   cancel_all_orders \tab \code{DELETE /v2/orders} \tab DELETE \cr
 }
 
 }
@@ -359,7 +359,7 @@ side, and date range. Supports pagination.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{\link[=add_order]{add_order()}} return value.
+the same columns as \code{add_order()} return value.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -541,7 +541,7 @@ Cancels a single open order by its UUID.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{invisible(NULL)} on success (HTTP 204), or a \code{promise} thereof.
+An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204), or a \code{promise} thereof.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

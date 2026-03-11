@@ -39,15 +39,15 @@ Contract metadata endpoints use the trading base URL.
 
 \subsection{Endpoints Covered}{\tabular{lll}{
    Method \tab Endpoint \tab Base \cr
-   get_contracts \tab GET /v2/options/contracts \tab trading \cr
-   get_contract \tab GET /v2/options/contracts/{symbol_or_id} \tab trading \cr
-   get_option_bars \tab GET /v1beta1/options/bars \tab data \cr
-   get_option_trades \tab GET /v1beta1/options/trades \tab data \cr
-   get_option_latest_quotes \tab GET /v1beta1/options/quotes/latest \tab data \cr
-   get_option_snapshots \tab GET /v1beta1/options/snapshots \tab data \cr
-   get_option_snapshot \tab GET /v1beta1/options/snapshots/{symbol} \tab data \cr
-   get_option_latest_trades \tab GET /v1beta1/options/trades/latest \tab data \cr
-   get_option_chain \tab GET /v1beta1/options/snapshots/{underlying_symbol} \tab data \cr
+   get_contracts \tab \code{GET /v2/options/contracts} \tab trading \cr
+   get_contract \tab \verb{GET /v2/options/contracts/\\\{symbol_or_id\\\}} \tab trading \cr
+   get_option_bars \tab \code{GET /v1beta1/options/bars} \tab data \cr
+   get_option_trades \tab \code{GET /v1beta1/options/trades} \tab data \cr
+   get_option_latest_quotes \tab \code{GET /v1beta1/options/quotes/latest} \tab data \cr
+   get_option_snapshots \tab \code{GET /v1beta1/options/snapshots} \tab data \cr
+   get_option_snapshot \tab \verb{GET /v1beta1/options/snapshots/\\\{symbol\\\}} \tab data \cr
+   get_option_latest_trades \tab \code{GET /v1beta1/options/trades/latest} \tab data \cr
+   get_option_chain \tab \verb{GET /v1beta1/options/snapshots/\\\{underlying_symbol\\\}} \tab data \cr
 }
 
 }
@@ -340,7 +340,7 @@ Retrieves a single options contract by its OCC symbol or UUID.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{\link[=get_contracts]{get_contracts()}}, single row.
+the same columns as \code{get_contracts()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

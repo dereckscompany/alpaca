@@ -21,7 +21,7 @@ alpaca_backfill_bars(
 \item{symbols}{Character vector; ticker symbols (e.g., \code{c("AAPL", "MSFT")}).}
 
 \item{timeframes}{Character vector; bar timeframes (e.g., \code{c("1Day", "1Hour")}).
-See \link{alpaca_timeframe_map} for valid values.}
+See \code{alpaca_timeframe_map} for valid values.}
 
 \item{start}{Character or POSIXct; start date/time.}
 

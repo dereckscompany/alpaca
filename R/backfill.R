@@ -9,7 +9,7 @@
 #'
 #' @param symbols Character vector; ticker symbols (e.g., `c("AAPL", "MSFT")`).
 #' @param timeframes Character vector; bar timeframes (e.g., `c("1Day", "1Hour")`).
-#'   See [alpaca_timeframe_map] for valid values.
+#'   See `alpaca_timeframe_map` for valid values.
 #' @param start Character or POSIXct; start date/time.
 #' @param end Character or POSIXct; end date/time. Defaults to `Sys.time()`.
 #' @param path Character; file path for CSV output. Default `"alpaca_bars.csv"`.

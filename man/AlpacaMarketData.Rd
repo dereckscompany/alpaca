@@ -46,26 +46,26 @@ base URL. Both are configurable via constructor parameters.
 
 \subsection{Endpoints Covered}{\tabular{lll}{
    Method \tab Endpoint \tab Base \cr
-   get_bars \tab GET /v2/stocks/{symbol}/bars \tab data \cr
-   get_bars_multi \tab GET /v2/stocks/bars \tab data \cr
-   get_latest_bar \tab GET /v2/stocks/{symbol}/bars/latest \tab data \cr
-   get_latest_trade \tab GET /v2/stocks/{symbol}/trades/latest \tab data \cr
-   get_latest_quote \tab GET /v2/stocks/{symbol}/quotes/latest \tab data \cr
-   get_snapshot \tab GET /v2/stocks/{symbol}/snapshot \tab data \cr
-   get_trades \tab GET /v2/stocks/{symbol}/trades \tab data \cr
-   get_quotes \tab GET /v2/stocks/{symbol}/quotes \tab data \cr
-   get_assets \tab GET /v2/assets \tab trading \cr
-   get_asset \tab GET /v2/assets/{symbol} \tab trading \cr
-   get_calendar \tab GET /v2/calendar \tab trading \cr
-   get_clock \tab GET /v2/clock \tab trading \cr
-   get_corporate_actions \tab GET /v2/corporate_actions/announcements \tab trading \cr
-   get_news \tab GET /v1beta1/news \tab data \cr
-   get_latest_bars_multi \tab GET /v2/stocks/bars/latest \tab data \cr
-   get_latest_trades_multi \tab GET /v2/stocks/trades/latest \tab data \cr
-   get_latest_quotes_multi \tab GET /v2/stocks/quotes/latest \tab data \cr
-   get_snapshots_multi \tab GET /v2/stocks/snapshots \tab data \cr
-   get_most_actives \tab GET /v1beta1/screener/stocks/most-actives \tab data \cr
-   get_movers \tab GET /v1beta1/screener/{market_type}/movers \tab data \cr
+   get_bars \tab \verb{GET /v2/stocks/\\\{symbol\\\}/bars} \tab data \cr
+   get_bars_multi \tab \code{GET /v2/stocks/bars} \tab data \cr
+   get_latest_bar \tab \verb{GET /v2/stocks/\\\{symbol\\\}/bars/latest} \tab data \cr
+   get_latest_trade \tab \verb{GET /v2/stocks/\\\{symbol\\\}/trades/latest} \tab data \cr
+   get_latest_quote \tab \verb{GET /v2/stocks/\\\{symbol\\\}/quotes/latest} \tab data \cr
+   get_snapshot \tab \verb{GET /v2/stocks/\\\{symbol\\\}/snapshot} \tab data \cr
+   get_trades \tab \verb{GET /v2/stocks/\\\{symbol\\\}/trades} \tab data \cr
+   get_quotes \tab \verb{GET /v2/stocks/\\\{symbol\\\}/quotes} \tab data \cr
+   get_assets \tab \code{GET /v2/assets} \tab trading \cr
+   get_asset \tab \verb{GET /v2/assets/\\\{symbol\\\}} \tab trading \cr
+   get_calendar \tab \code{GET /v2/calendar} \tab trading \cr
+   get_clock \tab \code{GET /v2/clock} \tab trading \cr
+   get_corporate_actions \tab \code{GET /v2/corporate_actions/announcements} \tab trading \cr
+   get_news \tab \code{GET /v1beta1/news} \tab data \cr
+   get_latest_bars_multi \tab \code{GET /v2/stocks/bars/latest} \tab data \cr
+   get_latest_trades_multi \tab \code{GET /v2/stocks/trades/latest} \tab data \cr
+   get_latest_quotes_multi \tab \code{GET /v2/stocks/quotes/latest} \tab data \cr
+   get_snapshots_multi \tab \code{GET /v2/stocks/snapshots} \tab data \cr
+   get_most_actives \tab \code{GET /v1beta1/screener/stocks/most-actives} \tab data \cr
+   get_movers \tab \verb{GET /v1beta1/screener/\\\{market_type\\\}/movers} \tab data \cr
 }
 
 }
@@ -458,7 +458,7 @@ Retrieves historical bar data for multiple symbols in a single request.
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols (max 100).}
 
-\item{\code{timeframe}}{Character; bar timeframe (see \code{\link[=get_bars]{get_bars()}} for valid values).}
+\item{\code{timeframe}}{Character; bar timeframe (see \code{get_bars()} for valid values).}
 
 \item{\code{start}}{Character or NULL; start date/time.}
 
@@ -478,7 +478,7 @@ Retrieves historical bar data for multiple symbols in a single request.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column prepended plus the same columns as \code{\link[=get_bars]{get_bars()}}.
+\code{symbol} column prepended plus the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -519,7 +519,7 @@ Retrieves the most recent bar for a single symbol.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
-same columns as \code{\link[=get_bars]{get_bars()}}, single row.
+same columns as \code{get_bars()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -705,7 +705,7 @@ Retrieves the most recent bar for multiple symbols in a single request.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and the same columns as \code{\link[=get_bars]{get_bars()}}.
+\code{symbol} column and the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1013,7 +1013,7 @@ Retrieves metadata for a single asset.
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{\link[=get_assets]{get_assets()}}, single row.
+the same columns as \code{get_assets()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

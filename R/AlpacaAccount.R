@@ -29,24 +29,24 @@
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
 #' |--------|----------|------|
-#' | get_account | GET /v2/account | GET |
-#' | get_positions | GET /v2/positions | GET |
-#' | get_position | GET /v2/positions/{symbol_or_id} | GET |
-#' | close_position | DELETE /v2/positions/{symbol_or_id} | DELETE |
-#' | close_all_positions | DELETE /v2/positions | DELETE |
-#' | get_account_config | GET /v2/account/configurations | GET |
-#' | modify_account_config | PATCH /v2/account/configurations | PATCH |
-#' | exercise_option | POST /v2/positions/{symbol_or_id}/exercise | POST |
-#' | get_portfolio_history | GET /v2/account/portfolio/history | GET |
-#' | get_activities | GET /v2/account/activities | GET |
-#' | get_activities_by_type | GET /v2/account/activities/{type} | GET |
-#' | get_watchlists | GET /v2/watchlists | GET |
-#' | get_watchlist | GET /v2/watchlists/{id} | GET |
-#' | add_watchlist | POST /v2/watchlists | POST |
-#' | modify_watchlist | PUT /v2/watchlists/{id} | PUT |
-#' | add_watchlist_symbol | POST /v2/watchlists/{id} | POST |
-#' | cancel_watchlist_symbol | DELETE /v2/watchlists/{id}/{symbol} | DELETE |
-#' | cancel_watchlist | DELETE /v2/watchlists/{id} | DELETE |
+#' | get_account | `GET /v2/account` | GET |
+#' | get_positions | `GET /v2/positions` | GET |
+#' | get_position | `GET /v2/positions/\{symbol_or_id\}` | GET |
+#' | close_position | `DELETE /v2/positions/\{symbol_or_id\}` | DELETE |
+#' | close_all_positions | `DELETE /v2/positions` | DELETE |
+#' | get_account_config | `GET /v2/account/configurations` | GET |
+#' | modify_account_config | `PATCH /v2/account/configurations` | PATCH |
+#' | exercise_option | `POST /v2/positions/\{symbol_or_id\}/exercise` | POST |
+#' | get_portfolio_history | `GET /v2/account/portfolio/history` | GET |
+#' | get_activities | `GET /v2/account/activities` | GET |
+#' | get_activities_by_type | `GET /v2/account/activities/\{type\}` | GET |
+#' | get_watchlists | `GET /v2/watchlists` | GET |
+#' | get_watchlist | `GET /v2/watchlists/\{id\}` | GET |
+#' | add_watchlist | `POST /v2/watchlists` | POST |
+#' | modify_watchlist | `PUT /v2/watchlists/\{id\}` | PUT |
+#' | add_watchlist_symbol | `POST /v2/watchlists/\{id\}` | POST |
+#' | cancel_watchlist_symbol | `DELETE /v2/watchlists/\{id\}/\{symbol\}` | DELETE |
+#' | cancel_watchlist | `DELETE /v2/watchlists/\{id\}` | DELETE |
 #'
 #' @examples
 #' \dontrun{
@@ -315,7 +315,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param symbol_or_id Character; ticker symbol (e.g., `"AAPL"`) or asset UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
-    #'   same columns as [get_positions()], single row.
+    #'   same columns as `get_positions()`, single row.
     #'
     #' @examples
     #' \dontrun{
@@ -439,7 +439,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' @param symbol_or_id Character; OCC option symbol or asset UUID.
-    #' @return `invisible(NULL)` on success (HTTP 204).
+    #' @return An empty [data.table::data.table] on success (HTTP 204).
     #'
     #' @examples
     #' \dontrun{
@@ -451,7 +451,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "POST",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) return(data.table::data.table())
       ))
     },
 
@@ -837,7 +837,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' @param watchlist_id Character; watchlist UUID.
-    #' @return `invisible(NULL)` on success (HTTP 204).
+    #' @return An empty [data.table::data.table] on success (HTTP 204).
     #'
     #' @examples
     #' \dontrun{
@@ -849,7 +849,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) return(data.table::data.table())
       ))
     }
   )

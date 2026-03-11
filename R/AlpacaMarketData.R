@@ -34,26 +34,26 @@
 #' ### Endpoints Covered
 #' | Method | Endpoint | Base |
 #' |--------|----------|------|
-#' | get_bars | GET /v2/stocks/{symbol}/bars | data |
-#' | get_bars_multi | GET /v2/stocks/bars | data |
-#' | get_latest_bar | GET /v2/stocks/{symbol}/bars/latest | data |
-#' | get_latest_trade | GET /v2/stocks/{symbol}/trades/latest | data |
-#' | get_latest_quote | GET /v2/stocks/{symbol}/quotes/latest | data |
-#' | get_snapshot | GET /v2/stocks/{symbol}/snapshot | data |
-#' | get_trades | GET /v2/stocks/{symbol}/trades | data |
-#' | get_quotes | GET /v2/stocks/{symbol}/quotes | data |
-#' | get_assets | GET /v2/assets | trading |
-#' | get_asset | GET /v2/assets/{symbol} | trading |
-#' | get_calendar | GET /v2/calendar | trading |
-#' | get_clock | GET /v2/clock | trading |
-#' | get_corporate_actions | GET /v2/corporate_actions/announcements | trading |
-#' | get_news | GET /v1beta1/news | data |
-#' | get_latest_bars_multi | GET /v2/stocks/bars/latest | data |
-#' | get_latest_trades_multi | GET /v2/stocks/trades/latest | data |
-#' | get_latest_quotes_multi | GET /v2/stocks/quotes/latest | data |
-#' | get_snapshots_multi | GET /v2/stocks/snapshots | data |
-#' | get_most_actives | GET /v1beta1/screener/stocks/most-actives | data |
-#' | get_movers | GET /v1beta1/screener/{market_type}/movers | data |
+#' | get_bars | `GET /v2/stocks/\{symbol\}/bars` | data |
+#' | get_bars_multi | `GET /v2/stocks/bars` | data |
+#' | get_latest_bar | `GET /v2/stocks/\{symbol\}/bars/latest` | data |
+#' | get_latest_trade | `GET /v2/stocks/\{symbol\}/trades/latest` | data |
+#' | get_latest_quote | `GET /v2/stocks/\{symbol\}/quotes/latest` | data |
+#' | get_snapshot | `GET /v2/stocks/\{symbol\}/snapshot` | data |
+#' | get_trades | `GET /v2/stocks/\{symbol\}/trades` | data |
+#' | get_quotes | `GET /v2/stocks/\{symbol\}/quotes` | data |
+#' | get_assets | `GET /v2/assets` | trading |
+#' | get_asset | `GET /v2/assets/\{symbol\}` | trading |
+#' | get_calendar | `GET /v2/calendar` | trading |
+#' | get_clock | `GET /v2/clock` | trading |
+#' | get_corporate_actions | `GET /v2/corporate_actions/announcements` | trading |
+#' | get_news | `GET /v1beta1/news` | data |
+#' | get_latest_bars_multi | `GET /v2/stocks/bars/latest` | data |
+#' | get_latest_trades_multi | `GET /v2/stocks/trades/latest` | data |
+#' | get_latest_quotes_multi | `GET /v2/stocks/quotes/latest` | data |
+#' | get_snapshots_multi | `GET /v2/stocks/snapshots` | data |
+#' | get_most_actives | `GET /v1beta1/screener/stocks/most-actives` | data |
+#' | get_movers | `GET /v1beta1/screener/\{market_type\}/movers` | data |
 #'
 #' @examples
 #' \dontrun{
@@ -198,7 +198,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/bars`
     #'
     #' @param symbols Character vector; ticker symbols (max 100).
-    #' @param timeframe Character; bar timeframe (see [get_bars()] for valid values).
+    #' @param timeframe Character; bar timeframe (see `get_bars()` for valid values).
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max bars per symbol (1-10000, default 1000).
@@ -207,7 +207,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column prepended plus the same columns as [get_bars()].
+    #'   `symbol` column prepended plus the same columns as `get_bars()`.
     #'
     #' @examples
     #' \dontrun{
@@ -256,7 +256,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
-    #'   same columns as [get_bars()], single row.
+    #'   same columns as `get_bars()`, single row.
     #'
     #' @examples
     #' \dontrun{
@@ -390,7 +390,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and the same columns as [get_bars()].
+    #'   `symbol` column and the same columns as `get_bars()`.
     #'
     #' @examples
     #' \dontrun{
@@ -701,7 +701,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbol_or_id Character; ticker symbol or asset UUID.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same columns as [get_assets()], single row.
+    #'   the same columns as `get_assets()`, single row.
     #'
     #' @examples
     #' \dontrun{
