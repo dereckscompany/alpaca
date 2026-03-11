@@ -152,6 +152,34 @@ print(chain)
 \if{latex}{\out{\hypertarget{method-AlpacaOptions-new}{}}}
 \subsection{Method \code{new()}}{
 Initialise an AlpacaOptions Object
+
+Creates a new AlpacaOptions instance for querying options contracts,
+market data, and options chain information.
+\subsection{API Endpoint}{
+
+Constructor only — no HTTP request is made.
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/docs/options-trading}{Options Trading Overview}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# No HTTP request — this is a constructor. Verify credentials with:
+curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/options/contracts?limit=1'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{# N/A — constructor does not make an HTTP request.
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$new(
   keys = get_api_keys(),
@@ -193,8 +221,10 @@ symbol, type, expiration date, strike price, and more.
 }
 
 \subsection{Official Documentation}{
-
-\href{https://docs.alpaca.markets/reference/optioncontracts}{Options Contracts}
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optioncontracts}{Get Options Contracts}
+Verifieid: 2026-03-10
+}
 }
 
 \subsection{curl}{
@@ -327,6 +357,44 @@ Retrieves a single options contract by its OCC symbol or UUID.
 
 \verb{GET https://paper-api.alpaca.markets/v2/options/contracts/\{symbol_or_id\}}
 }
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/getoptioncontract}{Get Option Contract by ID or Symbol}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/options/contracts/AAPL250620C00200000'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "symbol": "AAPL250620C00200000",
+  "name": "AAPL Jun 20 2025 200.00 Call",
+  "status": "active",
+  "tradable": true,
+  "type": "call",
+  "strike_price": "200",
+  "expiration_date": "2025-06-20",
+  "underlying_symbol": "AAPL",
+  "underlying_asset_id": "b28f4066-5c6d-479b-a2af-85dc1a8f02fd",
+  "style": "american",
+  "root_symbol": "AAPL",
+  "size": "100",
+  "open_interest": "8523",
+  "open_interest_date": "2025-03-07",
+  "close_price": "12.35",
+  "close_price_date": "2025-03-07"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_contract(symbol_or_id)}\if{html}{\out{</div>}}
 }
@@ -368,8 +436,49 @@ Retrieves historical bar data for options contracts.
 }
 
 \subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionbars}{Options Bars}
+Verifieid: 2026-03-10
+}
+}
 
-\href{https://docs.alpaca.markets/docs/options-market-data}{Options Bars}
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/bars?symbols=AAPL250620C00200000&timeframe=1Day&start=2025-03-01&limit=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "bars": \{
+    "AAPL250620C00200000": [
+      \{
+        "t": "2025-03-03T05:00:00Z",
+        "o": 11.80,
+        "h": 13.25,
+        "l": 11.50,
+        "c": 12.90,
+        "v": 4523,
+        "n": 312,
+        "vw": 12.45
+      \},
+      \{
+        "t": "2025-03-04T05:00:00Z",
+        "o": 12.90,
+        "h": 14.10,
+        "l": 12.60,
+        "c": 13.75,
+        "v": 5891,
+        "n": 428,
+        "vw": 13.30
+      \}
+    ]
+  \},
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_bars(
@@ -430,6 +539,46 @@ Retrieves historical trade data for options contracts.
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/trades}
 }
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optiontrades}{Options Trades}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/trades?symbols=AAPL250620C00200000&start=2025-03-01&limit=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "trades": \{
+    "AAPL250620C00200000": [
+      \{
+        "t": "2025-03-03T14:30:02.123456Z",
+        "p": 12.35,
+        "s": 10,
+        "x": "C",
+        "c": ["a", "I"]
+      \},
+      \{
+        "t": "2025-03-03T14:31:15.654321Z",
+        "p": 12.40,
+        "s": 5,
+        "x": "P",
+        "c": ["a"]
+      \}
+    ]
+  \},
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_trades(
   symbols,
@@ -471,6 +620,39 @@ Retrieves the latest NBBO quotes for one or more options contracts.
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/quotes/latest}
 }
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionlatestquotes}{Latest Options Quotes}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/quotes/latest?symbols=AAPL250620C00200000'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "quotes": \{
+    "AAPL250620C00200000": \{
+      "t": "2025-03-07T20:59:58.123456Z",
+      "ax": "C",
+      "ap": 12.50,
+      "as": 15,
+      "bx": "P",
+      "bp": 12.30,
+      "bs": 22,
+      "c": "A"
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_latest_quotes(symbols, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -499,6 +681,36 @@ Retrieves the latest trades for one or more options contracts.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/trades/latest}
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionlatesttrades}{Latest Options Trades}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/trades/latest?symbols=AAPL250620C00200000'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "trades": \{
+    "AAPL250620C00200000": \{
+      "t": "2025-03-07T20:58:45.987654Z",
+      "p": 12.35,
+      "s": 3,
+      "x": "C",
+      "c": ["a"]
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_latest_trades(symbols, feed = NULL)}\if{html}{\out{</div>}}
@@ -530,6 +742,83 @@ the latest trade, latest quote, and implied volatility.
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/snapshots}
 }
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionsnapshots}{Options Snapshots}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/snapshots?symbols=AAPL250620C00200000,AAPL250620P00200000'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "snapshots": \{
+    "AAPL250620C00200000": \{
+      "latestTrade": \{
+        "t": "2025-03-07T20:58:45.987654Z",
+        "p": 12.35,
+        "s": 3,
+        "x": "C",
+        "c": ["a"]
+      \},
+      "latestQuote": \{
+        "t": "2025-03-07T20:59:58.123456Z",
+        "ax": "C",
+        "ap": 12.50,
+        "as": 15,
+        "bx": "P",
+        "bp": 12.30,
+        "bs": 22,
+        "c": "A"
+      \},
+      "impliedVolatility": 0.2856,
+      "greeks": \{
+        "delta": 0.5423,
+        "gamma": 0.0187,
+        "theta": -0.0842,
+        "vega": 0.3215,
+        "rho": 0.1456
+      \}
+    \},
+    "AAPL250620P00200000": \{
+      "latestTrade": \{
+        "t": "2025-03-07T20:57:30.456789Z",
+        "p": 8.75,
+        "s": 5,
+        "x": "P",
+        "c": ["a"]
+      \},
+      "latestQuote": \{
+        "t": "2025-03-07T20:59:55.789012Z",
+        "ax": "P",
+        "ap": 8.90,
+        "as": 10,
+        "bx": "C",
+        "bp": 8.60,
+        "bs": 18,
+        "c": "A"
+      \},
+      "impliedVolatility": 0.2712,
+      "greeks": \{
+        "delta": -0.4577,
+        "gamma": 0.0187,
+        "theta": -0.0756,
+        "vega": 0.3215,
+        "rho": -0.1289
+      \}
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshots(symbols, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -558,6 +847,52 @@ Retrieves a real-time snapshot for a single options contract.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/snapshots/\{symbol\}}
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionsnapshot}{Option Snapshot}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/snapshots/AAPL250620C00200000'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "latestTrade": \{
+    "t": "2025-03-07T20:58:45.987654Z",
+    "p": 12.35,
+    "s": 3,
+    "x": "C",
+    "c": ["a"]
+  \},
+  "latestQuote": \{
+    "t": "2025-03-07T20:59:58.123456Z",
+    "ax": "C",
+    "ap": 12.50,
+    "as": 15,
+    "bx": "P",
+    "bp": 12.30,
+    "bs": 22,
+    "c": "A"
+  \},
+  "impliedVolatility": 0.2856,
+  "greeks": \{
+    "delta": 0.5423,
+    "gamma": 0.0187,
+    "theta": -0.0842,
+    "vega": 0.3215,
+    "rho": 0.1456
+  \}
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -600,6 +935,84 @@ available contracts with their latest market data.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/options/snapshots/\{underlying_symbol\}}
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/reference/optionchain}{Options Chain / Snapshots by Underlying}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/options/snapshots/AAPL?type=call&expiration_date_gte=2025-06-01&strike_price_gte=190&strike_price_lte=210&limit=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "snapshots": \{
+    "AAPL250620C00195000": \{
+      "latestTrade": \{
+        "t": "2025-03-07T20:55:12.345678Z",
+        "p": 15.20,
+        "s": 2,
+        "x": "C",
+        "c": ["a"]
+      \},
+      "latestQuote": \{
+        "t": "2025-03-07T20:59:50.123456Z",
+        "ax": "P",
+        "ap": 15.40,
+        "as": 12,
+        "bx": "C",
+        "bp": 15.00,
+        "bs": 20,
+        "c": "A"
+      \},
+      "impliedVolatility": 0.2734,
+      "greeks": \{
+        "delta": 0.6012,
+        "gamma": 0.0165,
+        "theta": -0.0912,
+        "vega": 0.3089,
+        "rho": 0.1623
+      \}
+    \},
+    "AAPL250620C00200000": \{
+      "latestTrade": \{
+        "t": "2025-03-07T20:58:45.987654Z",
+        "p": 12.35,
+        "s": 3,
+        "x": "C",
+        "c": ["a"]
+      \},
+      "latestQuote": \{
+        "t": "2025-03-07T20:59:58.123456Z",
+        "ax": "C",
+        "ap": 12.50,
+        "as": 15,
+        "bx": "P",
+        "bp": 12.30,
+        "bs": 22,
+        "c": "A"
+      \},
+      "impliedVolatility": 0.2856,
+      "greeks": \{
+        "delta": 0.5423,
+        "gamma": 0.0187,
+        "theta": -0.0842,
+        "vega": 0.3215,
+        "rho": 0.1456
+      \}
+    \}
+  \},
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_chain(

@@ -298,6 +298,35 @@ print(movers)
 \if{latex}{\out{\hypertarget{method-AlpacaMarketData-new}{}}}
 \subsection{Method \code{new()}}{
 Initialise an AlpacaMarketData Object
+
+Creates a new \code{AlpacaMarketData} instance for querying market data,
+assets, calendar, and clock from Alpaca's REST API.
+\subsection{API Endpoint}{
+
+No HTTP request is made during construction. The object stores
+credentials and base URLs for subsequent method calls.
+}
+
+\subsection{Official Documentation}{
+\itemize{
+\item \href{https://docs.alpaca.markets/docs/getting-started}{Authentication}
+Verifieid: 2026-03-10
+}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# No request at construction. Verify credentials with the clock endpoint:
+curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/clock'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{# (No response — constructor does not call an endpoint)
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$new(
   keys = get_api_keys(),
@@ -340,7 +369,8 @@ include open, high, low, close, volume, trade count, and VWAP.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/docs/historical-stock-data-1}{Historical Stock Bars}
+\href{https://docs.alpaca.markets/reference/stockbars}{Historical Stock Bars}
+Verifieid: 2026-03-10
 }
 
 \subsection{curl}{
@@ -439,6 +469,35 @@ Retrieves historical bar data for multiple symbols in a single request.
 
 \verb{GET https://data.alpaca.markets/v2/stocks/bars}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stockbars-1}{Multi Stock Bars}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/bars?symbols=AAPL,MSFT&timeframe=1Day&start=2024-01-01&limit=2'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "bars": \{
+    "AAPL": [
+      \{"t": "2024-01-02T05:00:00Z", "o": 187.15, "h": 188.44, "l": 183.89, "c": 185.64, "v": 82488700, "n": 1036517, "vw": 185.831\}
+    ],
+    "MSFT": [
+      \{"t": "2024-01-02T05:00:00Z", "o": 373.86, "h": 376.04, "l": 371.34, "c": 374.72, "v": 22622100, "n": 345678, "vw": 374.12\}
+    ]
+  \},
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_bars_multi(
   symbols,
@@ -504,6 +563,37 @@ Retrieves the most recent bar for a single symbol.
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/bars/latest}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatestbar}{Latest Stock Bar}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/bars/latest'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "bar": \{
+    "t": "2024-01-15T20:59:00Z",
+    "o": 185.30,
+    "h": 185.45,
+    "l": 185.20,
+    "c": 185.42,
+    "v": 1234567,
+    "n": 15432,
+    "vw": 185.35
+  \},
+  "symbol": "AAPL"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bar(symbol, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -549,6 +639,31 @@ Retrieves the most recent trade for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/stocklatesttrade}{Latest Trade}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/trades/latest'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "trade": \{
+    "t": "2024-01-15T20:00:00.123456Z",
+    "x": "V",
+    "p": 185.64,
+    "s": 100,
+    "c": ["@"],
+    "i": 12345,
+    "z": "C"
+  \},
+  "symbol": "AAPL"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -598,6 +713,38 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes/latest}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatestquote}{Latest Quote}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/quotes/latest'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "quote": \{
+    "t": "2024-01-15T20:00:00.000123Z",
+    "ax": "Q",
+    "ap": 185.65,
+    "as": 3,
+    "bx": "K",
+    "bp": 185.63,
+    "bs": 2,
+    "c": ["R"],
+    "z": "C"
+  \},
+  "symbol": "AAPL"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL)}\if{html}{\out{</div>}}
@@ -649,6 +796,31 @@ latest quote, minute bar, daily bar, and previous daily bar.
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/snapshot}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocksnapshot}{Stock Snapshot}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/snapshot'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "latestTrade": \{"t": "2024-01-15T20:00:00Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"\},
+  "latestQuote": \{"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"\},
+  "minuteBar": \{"t": "2024-01-15T19:59:00Z", "o": 185.50, "h": 185.65, "l": 185.40, "c": 185.60, "v": 45230, "n": 312, "vw": 185.52\},
+  "dailyBar": \{"t": "2024-01-15T05:00:00Z", "o": 184.20, "h": 186.10, "l": 183.80, "c": 185.64, "v": 56789012, "n": 678901, "vw": 185.12\},
+  "prevDailyBar": \{"t": "2024-01-12T05:00:00Z", "o": 185.60, "h": 186.00, "l": 184.50, "c": 185.59, "v": 48234567, "n": 543210, "vw": 185.30\}
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -689,6 +861,30 @@ Retrieves the most recent bar for multiple symbols in a single request.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/bars/latest}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatestbars}{Latest Multi Bars}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/bars/latest?symbols=AAPL,MSFT'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "bars": \{
+    "AAPL": \{"t": "2024-01-15T20:59:00Z", "o": 185.30, "h": 185.45, "l": 185.20, "c": 185.42, "v": 1234567, "n": 15432, "vw": 185.35\},
+    "MSFT": \{"t": "2024-01-15T20:59:00Z", "o": 420.10, "h": 420.50, "l": 419.80, "c": 420.35, "v": 987654, "n": 12345, "vw": 420.22\}
+  \}
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
@@ -731,6 +927,30 @@ Retrieves the most recent trade for multiple symbols in a single request.
 
 \verb{GET https://data.alpaca.markets/v2/stocks/trades/latest}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatesttrades}{Latest Multi Trades}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/trades/latest?symbols=AAPL,MSFT'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "trades": \{
+    "AAPL": \{"t": "2024-01-15T20:00:00.123456Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"\},
+    "MSFT": \{"t": "2024-01-15T20:00:00.654321Z", "x": "Q", "p": 420.72, "s": 50, "c": ["@"], "i": 67890, "z": "C"\}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -760,6 +980,30 @@ Retrieves the most recent NBBO quote for multiple symbols in a single request.
 
 \verb{GET https://data.alpaca.markets/v2/stocks/quotes/latest}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocklatestquotes}{Latest Multi Quotes}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/quotes/latest?symbols=AAPL,MSFT'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "quotes": \{
+    "AAPL": \{"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"\},
+    "MSFT": \{"t": "2024-01-15T20:00:00Z", "ax": "N", "ap": 420.75, "as": 1, "bx": "P", "bp": 420.70, "bs": 4, "c": ["R"], "z": "C"\}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
 }
@@ -788,6 +1032,40 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/snapshots}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocksnapshots}{Multi Stock Snapshots}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/snapshots?symbols=AAPL,MSFT'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "AAPL": \{
+    "latestTrade": \{"t": "2024-01-15T20:00:00Z", "x": "V", "p": 185.64, "s": 100, "c": ["@"], "i": 12345, "z": "C"\},
+    "latestQuote": \{"t": "2024-01-15T20:00:00Z", "ax": "Q", "ap": 185.65, "as": 3, "bx": "K", "bp": 185.63, "bs": 2, "c": ["R"], "z": "C"\},
+    "minuteBar": \{"t": "2024-01-15T19:59:00Z", "o": 185.50, "h": 185.65, "l": 185.40, "c": 185.60, "v": 45230, "n": 312, "vw": 185.52\},
+    "dailyBar": \{"t": "2024-01-15T05:00:00Z", "o": 184.20, "h": 186.10, "l": 183.80, "c": 185.64, "v": 56789012, "n": 678901, "vw": 185.12\},
+    "prevDailyBar": \{"t": "2024-01-12T05:00:00Z", "o": 185.60, "h": 186.00, "l": 184.50, "c": 185.59, "v": 48234567, "n": 543210, "vw": 185.30\}
+  \},
+  "MSFT": \{
+    "latestTrade": \{"t": "2024-01-15T20:00:00Z", "x": "Q", "p": 420.72, "s": 50, "c": ["@"], "i": 67890, "z": "C"\},
+    "latestQuote": \{"t": "2024-01-15T20:00:00Z", "ax": "N", "ap": 420.75, "as": 1, "bx": "P", "bp": 420.70, "bs": 4, "c": ["R"], "z": "C"\},
+    "minuteBar": \{"t": "2024-01-15T19:59:00Z", "o": 420.30, "h": 420.80, "l": 420.20, "c": 420.65, "v": 32100, "n": 245, "vw": 420.50\},
+    "dailyBar": \{"t": "2024-01-15T05:00:00Z", "o": 419.50, "h": 421.00, "l": 418.80, "c": 420.72, "v": 23456789, "n": 345678, "vw": 420.10\},
+    "prevDailyBar": \{"t": "2024-01-12T05:00:00Z", "o": 420.00, "h": 421.50, "l": 419.00, "c": 420.45, "v": 21345678, "n": 312345, "vw": 420.25\}
+  \}
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
@@ -829,6 +1107,33 @@ Retrieves historical trade data for a symbol.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/trades}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stocktrades}{Historical Stock Trades}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/trades?start=2024-01-15&limit=3'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "trades": [
+    \{"t": "2024-01-15T09:30:00.123456Z", "x": "V", "p": 184.25, "s": 200, "c": ["@", "T"], "i": 10001, "z": "C"\},
+    \{"t": "2024-01-15T09:30:00.234567Z", "x": "Q", "p": 184.30, "s": 100, "c": ["@"], "i": 10002, "z": "C"\},
+    \{"t": "2024-01-15T09:30:00.345678Z", "x": "N", "p": 184.28, "s": 50, "c": ["@"], "i": 10003, "z": "C"\}
+  ],
+  "symbol": "AAPL",
+  "next_page_token": "QUFQTHwyMDI0LTAxLTE1VDA5OjMwOjAwLjM0NTY3OFp8MTAwMDM="
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_trades(
@@ -884,6 +1189,32 @@ Retrieves historical quote (NBBO) data for a symbol.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v2/stocks/\{symbol\}/quotes}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/stockquotes}{Historical Stock Quotes}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v2/stocks/AAPL/quotes?start=2024-01-15&limit=2'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "quotes": [
+    \{"t": "2024-01-15T09:30:00.000123Z", "ax": "Q", "ap": 184.30, "as": 5, "bx": "K", "bp": 184.25, "bs": 3, "c": ["R"], "z": "C"\},
+    \{"t": "2024-01-15T09:30:00.001234Z", "ax": "N", "ap": 184.32, "as": 2, "bx": "P", "bp": 184.27, "bs": 4, "c": ["R"], "z": "C"\}
+  ],
+  "symbol": "AAPL",
+  "next_page_token": "QUFQTHwyMDI0LTAxLTE1VDA5OjMwOjAwLjAwMTIzNFp8Mg=="
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_quotes(
@@ -944,6 +1275,35 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/get-v2-assets}{Assets}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/assets?status=active&asset_class=us_equity'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    "class": "us_equity",
+    "exchange": "NASDAQ",
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "status": "active",
+    "tradable": true,
+    "marginable": true,
+    "maintenance_margin_requirement": 30,
+    "shortable": true,
+    "easy_to_borrow": true,
+    "fractionable": true
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(status = NULL, asset_class = NULL, exchange = NULL)}\if{html}{\out{</div>}}
@@ -1000,6 +1360,38 @@ Retrieves metadata for a single asset.
 
 \verb{GET https://paper-api.alpaca.markets/v2/assets/\{symbol_or_id\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/assets/AAPL'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+  "class": "us_equity",
+  "exchange": "NASDAQ",
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "status": "active",
+  "tradable": true,
+  "marginable": true,
+  "maintenance_margin_requirement": 30,
+  "shortable": true,
+  "easy_to_borrow": true,
+  "fractionable": true
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_asset(symbol_or_id)}\if{html}{\out{</div>}}
 }
@@ -1044,6 +1436,25 @@ Includes early closure information.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/get-v2-calendar}{Calendar}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/calendar?start=2024-01-01&end=2024-01-05'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{"date": "2024-01-02", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-04"\},
+  \{"date": "2024-01-03", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-05"\},
+  \{"date": "2024-01-04", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-08"\},
+  \{"date": "2024-01-05", "open": "09:30", "close": "16:00", "session_open": "0700", "session_close": "1900", "settlement_date": "2024-01-09"\}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL)}\if{html}{\out{</div>}}
@@ -1095,6 +1506,7 @@ open and the next open/close times.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/get-v2-clock}{Clock}
+Verifieid: 2026-03-10
 }
 
 \subsection{curl}{
@@ -1157,12 +1569,35 @@ need to handle position adjustments.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements}{Corporate Actions}
+Verifieid: 2026-03-10
 }
 
 \subsection{curl}{
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
-  'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-12-31'
+  'https://paper-api.alpaca.markets/v2/corporate_actions/announcements?ca_types=dividend&since=2024-01-01&until=2024-03-31'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "corporate_action_id": "DIV_AAPL_2024Q1",
+    "ca_type": "dividend",
+    "ca_sub_type": "cash",
+    "initiating_symbol": "AAPL",
+    "target_symbol": "AAPL",
+    "declaration_date": "2024-02-01",
+    "ex_date": "2024-02-09",
+    "record_date": "2024-02-12",
+    "payable_date": "2024-02-15",
+    "cash": "0.24",
+    "old_rate": "1",
+    "new_rate": "1"
+  \}
+]
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
@@ -1252,12 +1687,35 @@ date range, or content. Useful for event-driven trading strategies.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/news-1}{News}
+Verifieid: 2026-03-10
 }
 
 \subsection{curl}{
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
   'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&limit=10'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "news": [
+    \{
+      "id": 35678901,
+      "headline": "Apple Reports Record Q1 Revenue of $119.6 Billion",
+      "author": "Reuters",
+      "source": "reuters",
+      "summary": "Apple Inc reported record first-quarter revenue driven by strong iPhone sales...",
+      "url": "https://www.reuters.com/technology/apple-q1-2024-earnings",
+      "symbols": ["AAPL"],
+      "created_at": "2024-01-15T18:30:00Z",
+      "updated_at": "2024-01-15T18:35:00Z",
+      "images": [\{"size": "large", "url": "https://example.com/aapl.jpg"\}]
+    \}
+  ],
+  "next_page_token": "MTIzNDU2Nzg5MA=="
+\}
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
@@ -1339,6 +1797,34 @@ Retrieves the most active stocks by volume or trade count.
 
 \verb{GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/mostactives}{Most Active Stocks}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/screener/stocks/most-actives?by=volume&top=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "most_actives": [
+    \{"symbol": "AAPL", "volume": 82488700, "trade_count": 1036517\},
+    \{"symbol": "TSLA", "volume": 74523100, "trade_count": 987654\},
+    \{"symbol": "NVDA", "volume": 65432100, "trade_count": 876543\},
+    \{"symbol": "AMD", "volume": 54321000, "trade_count": 765432\},
+    \{"symbol": "MSFT", "volume": 22622100, "trade_count": 345678\}
+  ],
+  "last_updated": "2024-01-15T20:00:00Z"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_most_actives(by = NULL, top = NULL)}\if{html}{\out{</div>}}
 }
@@ -1383,6 +1869,38 @@ Retrieves the top market movers (gainers and losers) by percentage change.
 \subsection{API Endpoint}{
 
 \verb{GET https://data.alpaca.markets/v1beta1/screener/\{market_type\}/movers}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/movers}{Top Market Movers}
+Verifieid: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta1/screener/stocks/movers?top=3'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "gainers": [
+    \{"symbol": "SMCI", "percent_change": 8.52, "change": 6.45, "price": 82.15\},
+    \{"symbol": "PLTR", "percent_change": 5.31, "change": 1.23, "price": 24.40\},
+    \{"symbol": "RIVN", "percent_change": 4.87, "change": 0.82, "price": 17.67\}
+  ],
+  "losers": [
+    \{"symbol": "MRNA", "percent_change": -6.12, "change": -6.80, "price": 104.30\},
+    \{"symbol": "ENPH", "percent_change": -5.45, "change": -6.10, "price": 105.80\},
+    \{"symbol": "COIN", "percent_change": -4.98, "change": -7.50, "price": 143.10\}
+  ],
+  "market_type": "stocks",
+  "last_updated": "2024-01-15T20:00:00Z"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_movers(market_type = "stocks", top = NULL)}\if{html}{\out{</div>}}

@@ -307,6 +307,7 @@ cash, margin, and account status.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getaccount-1}{Get Account}
+Verified: 2026-03-10
 }
 
 \subsection{curl}{
@@ -397,6 +398,34 @@ check behavior, trade confirmation emails, and shorting restrictions.
 
 \verb{GET https://paper-api.alpaca.markets/v2/account/configurations}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getaccountconfig-1}{Get Account Configurations}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/account/configurations'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "dtbp_check": "both",
+  "no_shorting": false,
+  "suspend_trade": false,
+  "trade_confirm_email": "all",
+  "fractional_trading": true,
+  "max_margin_multiplier": "4",
+  "pdt_check": "entry",
+  "max_options_trading_level": 2
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_account_config()}\if{html}{\out{</div>}}
 }
@@ -437,6 +466,45 @@ Modifies one or more account configuration settings.
 \subsection{API Endpoint}{
 
 \verb{PATCH https://paper-api.alpaca.markets/v2/account/configurations}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/patchaccountconfig-1}{Update Account Configurations}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X PATCH -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"no_shorting": true, "fractional_trading": false\}' \\
+  'https://paper-api.alpaca.markets/v2/account/configurations'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "no_shorting": true,
+  "fractional_trading": false
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "dtbp_check": "both",
+  "no_shorting": true,
+  "suspend_trade": false,
+  "trade_confirm_email": "all",
+  "fractional_trading": false,
+  "max_margin_multiplier": "4",
+  "pdt_check": "entry",
+  "max_options_trading_level": 2
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$modify_account_config(
@@ -503,6 +571,7 @@ Retrieves all currently open positions in the account.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Get All Open Positions}
+Verified: 2026-03-10
 }
 
 \subsection{curl}{
@@ -585,6 +654,35 @@ Retrieves a single open position by symbol or asset UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getopenposition-1}{Get Open Position}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/positions/AAPL'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "asset_id": "904837e3-3b76-47ec-b432-046db621571b",
+  "symbol": "AAPL",
+  "exchange": "NASDAQ",
+  "asset_class": "us_equity",
+  "avg_entry_price": "185.50",
+  "qty": "10",
+  "side": "long",
+  "market_value": "1870.00",
+  "cost_basis": "1855.00",
+  "unrealized_pl": "15.00",
+  "unrealized_plpc": "0.008",
+  "current_price": "187.00",
+  "lastday_price": "186.00",
+  "change_today": "0.005"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_position(symbol_or_id)}\if{html}{\out{</div>}}
@@ -630,6 +728,34 @@ full position or a partial amount by quantity or percentage.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/deleteposition}{Close Position}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/positions/AAPL?percentage=50'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+  "client_order_id": "eb9e2aaa-f71a-4f51-b5b4-52a6c565dad4",
+  "created_at": "2026-03-10T14:30:00.000Z",
+  "updated_at": "2026-03-10T14:30:00.000Z",
+  "submitted_at": "2026-03-10T14:30:00.000Z",
+  "symbol": "AAPL",
+  "asset_class": "us_equity",
+  "qty": "5",
+  "filled_qty": "0",
+  "type": "market",
+  "side": "sell",
+  "time_in_force": "day",
+  "status": "pending_new"
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_position(symbol_or_id, qty = NULL, percentage = NULL)}\if{html}{\out{</div>}}
@@ -687,6 +813,47 @@ Closes all open positions. Optionally cancels all open orders first.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/deleteallopenpositions}{Close All Positions}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/positions?cancel_orders=true'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "symbol": "AAPL",
+    "status": 200,
+    "body": \{
+      "id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+      "symbol": "AAPL",
+      "qty": "10",
+      "side": "sell",
+      "type": "market",
+      "time_in_force": "day",
+      "status": "pending_new"
+    \}
+  \},
+  \{
+    "symbol": "MSFT",
+    "status": 200,
+    "body": \{
+      "id": "b3d29c1a-7e5f-4a2b-9c1d-8e7f6a5b4c3d",
+      "symbol": "MSFT",
+      "qty": "5",
+      "side": "sell",
+      "type": "market",
+      "time_in_force": "day",
+      "status": "pending_new"
+    \}
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$close_all_positions(cancel_orders = FALSE)}\if{html}{\out{</div>}}
@@ -701,8 +868,13 @@ liquidating positions. Default \code{FALSE}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-closing order details for each position.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+When positions are closed, one row per position with full order details.
+When no open positions exist, a single confirmation row with columns:
+\itemize{
+\item \code{cancel_orders} (logical): Whether orders were also cancelled.
+\item \code{status} (character): \code{"closed"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -727,6 +899,31 @@ Exercises an options position. Only applicable to options contracts.
 
 \verb{POST https://paper-api.alpaca.markets/v2/positions/\{symbol_or_id\}/exercise}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/postpositionsymboloridexercise}{Exercise Option}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/positions/AAPL240621C00200000/exercise'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+The API returns \verb{204 No Content} on success. This method returns a
+confirmation \code{data.table}:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "symbol": "AAPL240621C00200000",
+  "status": "exercised"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$exercise_option(symbol_or_id)}\if{html}{\out{</div>}}
 }
@@ -739,7 +936,11 @@ Exercises an options position. Only applicable to options contracts.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204).
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
+\itemize{
+\item \code{symbol} (character): The exercised option symbol or asset UUID.
+\item \code{status} (character): \code{"exercised"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -768,6 +969,7 @@ Retrieves the portfolio value history as a time series.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
+Verified: 2026-03-10
 }
 
 \subsection{curl}{
@@ -860,6 +1062,35 @@ include order fills, dividends, transfers, and other events.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/account/activities?activity_types=FILL&direction=desc&page_size=10'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "20260310120000000::b3d29c1a-7e5f-4a2b-9c1d-8e7f6a5b4c3d",
+    "activity_type": "FILL",
+    "symbol": "AAPL",
+    "side": "buy",
+    "qty": "10",
+    "price": "187.25",
+    "cum_qty": "10",
+    "leaves_qty": "0",
+    "type": "fill",
+    "transaction_time": "2026-03-10T12:00:00.000Z",
+    "order_id": "61e69015-8549-4bab-b63c-cc230e7e2e8b",
+    "order_status": "filled"
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities(
@@ -920,6 +1151,40 @@ Retrieves account activities filtered to a specific type.
 \subsection{API Endpoint}{
 
 \verb{GET https://paper-api.alpaca.markets/v2/account/activities/\{activity_type\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype}{Get Account Activities by Type}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/account/activities/FILL?direction=desc&page_size=5'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "20260310140000000::a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "activity_type": "FILL",
+    "symbol": "TSLA",
+    "side": "buy",
+    "qty": "5",
+    "price": "178.50",
+    "cum_qty": "5",
+    "leaves_qty": "0",
+    "type": "fill",
+    "transaction_time": "2026-03-10T14:00:00.000Z",
+    "order_id": "c4d5e6f7-a8b9-0c1d-2e3f-4a5b6c7d8e9f",
+    "order_status": "filled"
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities_by_type(
@@ -985,6 +1250,35 @@ Retrieves all watchlists for the account.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getwatchlists}{Watchlists}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/watchlists'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+    "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    "name": "Tech Stocks",
+    "created_at": "2026-01-15T10:30:00Z",
+    "updated_at": "2026-03-10T08:00:00Z"
+  \},
+  \{
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+    "name": "Energy Sector",
+    "created_at": "2026-02-20T14:00:00Z",
+    "updated_at": "2026-03-09T16:45:00Z"
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_watchlists()}\if{html}{\out{</div>}}
@@ -1023,6 +1317,49 @@ Retrieves a single watchlist including its asset entries.
 \subsection{API Endpoint}{
 
 \verb{GET https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getwatchlistbyid}{Get Watchlist by ID}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+  "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+  "name": "Tech Stocks",
+  "created_at": "2026-01-15T10:30:00Z",
+  "updated_at": "2026-03-10T08:00:00Z",
+  "assets": [
+    \{
+      "id": "904837e3-3b76-47ec-b432-046db621571b",
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "exchange": "NASDAQ",
+      "asset_class": "us_equity",
+      "tradable": true
+    \},
+    \{
+      "id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01",
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "exchange": "NASDAQ",
+      "asset_class": "us_equity",
+      "tradable": true
+    \}
+  ]
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_watchlist(watchlist_id)}\if{html}{\out{</div>}}
@@ -1067,6 +1404,42 @@ Creates a new watchlist with an optional initial set of symbols.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/postwatchlist}{Create Watchlist}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"name": "My Tech Stocks", "symbols": ["AAPL", "MSFT", "GOOGL"]\}' \\
+  'https://paper-api.alpaca.markets/v2/watchlists'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "name": "My Tech Stocks",
+  "symbols": ["AAPL", "MSFT", "GOOGL"]
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "d7e8f9a0-b1c2-3456-7890-abcdef123456",
+  "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+  "name": "My Tech Stocks",
+  "created_at": "2026-03-10T15:00:00Z",
+  "updated_at": "2026-03-10T15:00:00Z",
+  "assets": [
+    \{"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."\},
+    \{"id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01", "symbol": "MSFT", "name": "Microsoft Corporation"\},
+    \{"id": "c3d4e5f6-a7b8-9012-3456-789abcdef012", "symbol": "GOOGL", "name": "Alphabet Inc."\}
+  ]
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$add_watchlist(name, symbols = NULL)}\if{html}{\out{</div>}}
@@ -1109,6 +1482,46 @@ Replaces the name and/or symbols of an existing watchlist.
 \subsection{API Endpoint}{
 
 \verb{PUT https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/putwatchlistbyid}{Update Watchlist}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X PUT -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"name": "Updated Name", "symbols": ["AAPL", "TSLA"]\}' \\
+  'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "name": "Updated Name",
+  "symbols": ["AAPL", "TSLA"]
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+  "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+  "name": "Updated Name",
+  "created_at": "2026-01-15T10:30:00Z",
+  "updated_at": "2026-03-10T16:00:00Z",
+  "assets": [
+    \{"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."\},
+    \{"id": "e5f6a7b8-c9d0-1234-5678-9abcdef01234", "symbol": "TSLA", "name": "Tesla, Inc."\}
+  ]
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$modify_watchlist(watchlist_id, name, symbols)}\if{html}{\out{</div>}}
@@ -1153,6 +1566,46 @@ Appends a single symbol to an existing watchlist.
 
 \verb{POST https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/postwatchlistbyid}{Add Symbol to Watchlist}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X POST -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"symbol": "NVDA"\}' \\
+  'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "symbol": "NVDA"
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+  "account_id": "e6fe16f3-64a4-4921-8928-cadf02f92f98",
+  "name": "Tech Stocks",
+  "created_at": "2026-01-15T10:30:00Z",
+  "updated_at": "2026-03-10T16:30:00Z",
+  "assets": [
+    \{"id": "904837e3-3b76-47ec-b432-046db621571b", "symbol": "AAPL", "name": "Apple Inc."\},
+    \{"id": "b2e3f4a5-c6d7-8901-2345-6789abcdef01", "symbol": "MSFT", "name": "Microsoft Corporation"\},
+    \{"id": "f6a7b8c9-d0e1-2345-6789-abcdef012345", "symbol": "NVDA", "name": "NVIDIA Corporation"\}
+  ]
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$add_watchlist_symbol(watchlist_id, symbol)}\if{html}{\out{</div>}}
 }
@@ -1193,6 +1646,32 @@ Removes a single symbol from a watchlist.
 
 \verb{DELETE https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}/\{symbol\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol}{Remove Symbol from Watchlist}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234/AAPL'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+The API returns \verb{204 No Content} on success. This method returns a
+confirmation \code{data.table}:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "watchlist_id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+  "symbol": "AAPL",
+  "status": "removed"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$cancel_watchlist_symbol(watchlist_id, symbol)}\if{html}{\out{</div>}}
 }
@@ -1207,8 +1686,14 @@ Removes a single symbol from a watchlist.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the updated watchlist, or empty data.table on 204.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+When the API returns the updated watchlist, a single row with watchlist details.
+On 204 No Content, a single confirmation row with columns:
+\itemize{
+\item \code{watchlist_id} (character): The watchlist UUID.
+\item \code{symbol} (character): The removed ticker symbol.
+\item \code{status} (character): \code{"removed"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1233,6 +1718,31 @@ Permanently deletes a watchlist.
 
 \verb{DELETE https://paper-api.alpaca.markets/v2/watchlists/\{watchlist_id\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deletewatchlistbyid}{Delete Watchlist}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/watchlists/f5a6b7c8-d9e0-1234-5678-9abcdef01234'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+The API returns \verb{204 No Content} on success. This method returns a
+confirmation \code{data.table}:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "watchlist_id": "f5a6b7c8-d9e0-1234-5678-9abcdef01234",
+  "status": "deleted"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$cancel_watchlist(watchlist_id)}\if{html}{\out{</div>}}
 }
@@ -1245,7 +1755,11 @@ Permanently deletes a watchlist.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204).
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
+\itemize{
+\item \code{watchlist_id} (character): The deleted watchlist UUID.
+\item \code{status} (character): \code{"deleted"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

@@ -185,6 +185,7 @@ advanced order classes (bracket, OCO, OTO).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/postorder}{Create Order}
+Verified: 2026-03-10
 }
 
 \subsection{curl}{
@@ -193,6 +194,61 @@ advanced order classes (bracket, OCO, OTO).
   -H "Content-Type: application/json" \\
   -d '\{"symbol":"AAPL","qty":"1","side":"buy","type":"market","time_in_force":"day"\}' \\
   'https://paper-api.alpaca.markets/v2/orders'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "symbol": "AAPL",
+  "qty": "1",
+  "side": "buy",
+  "type": "limit",
+  "time_in_force": "day",
+  "limit_price": "150.00",
+  "extended_hours": false,
+  "client_order_id": "my-order-001",
+  "order_class": "simple"
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+  "client_order_id": "my-order-001",
+  "created_at": "2026-03-10T14:30:00.000000Z",
+  "updated_at": "2026-03-10T14:30:00.000000Z",
+  "submitted_at": "2026-03-10T14:30:00.000000Z",
+  "filled_at": null,
+  "expired_at": null,
+  "canceled_at": null,
+  "failed_at": null,
+  "replaced_at": null,
+  "replaced_by": null,
+  "replaces": null,
+  "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+  "symbol": "AAPL",
+  "asset_class": "us_equity",
+  "notional": null,
+  "qty": "1",
+  "filled_qty": "0",
+  "filled_avg_price": null,
+  "order_class": "simple",
+  "order_type": "limit",
+  "type": "limit",
+  "side": "buy",
+  "time_in_force": "day",
+  "limit_price": "150.00",
+  "stop_price": null,
+  "status": "accepted",
+  "extended_hours": false,
+  "legs": null,
+  "trail_percent": null,
+  "trail_price": null,
+  "hwm": null
+\}
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
@@ -322,6 +378,55 @@ side, and date range. Supports pagination.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/getallorders}{List Orders}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/orders?status=open&limit=50&direction=desc'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    "client_order_id": "my-order-001",
+    "created_at": "2026-03-10T14:30:00.000000Z",
+    "updated_at": "2026-03-10T14:30:00.000000Z",
+    "submitted_at": "2026-03-10T14:30:00.000000Z",
+    "filled_at": null,
+    "expired_at": null,
+    "canceled_at": null,
+    "failed_at": null,
+    "replaced_at": null,
+    "replaced_by": null,
+    "replaces": null,
+    "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+    "symbol": "AAPL",
+    "asset_class": "us_equity",
+    "notional": null,
+    "qty": "1",
+    "filled_qty": "0",
+    "filled_avg_price": null,
+    "order_class": "simple",
+    "order_type": "limit",
+    "type": "limit",
+    "side": "buy",
+    "time_in_force": "day",
+    "limit_price": "150.00",
+    "stop_price": null,
+    "status": "new",
+    "extended_hours": false,
+    "legs": null,
+    "trail_percent": null,
+    "trail_price": null,
+    "hwm": null
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_orders(
@@ -385,6 +490,58 @@ Retrieves a single order by its UUID.
 
 \verb{GET https://paper-api.alpaca.markets/v2/orders/\{order_id\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getorderbyorderid}{Get Order}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+  "client_order_id": "my-order-001",
+  "created_at": "2026-03-10T14:30:00.000000Z",
+  "updated_at": "2026-03-10T14:30:05.000000Z",
+  "submitted_at": "2026-03-10T14:30:00.000000Z",
+  "filled_at": "2026-03-10T14:30:05.000000Z",
+  "expired_at": null,
+  "canceled_at": null,
+  "failed_at": null,
+  "replaced_at": null,
+  "replaced_by": null,
+  "replaces": null,
+  "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+  "symbol": "AAPL",
+  "asset_class": "us_equity",
+  "notional": null,
+  "qty": "1",
+  "filled_qty": "1",
+  "filled_avg_price": "149.85",
+  "order_class": "simple",
+  "order_type": "limit",
+  "type": "limit",
+  "side": "buy",
+  "time_in_force": "day",
+  "limit_price": "150.00",
+  "stop_price": null,
+  "status": "filled",
+  "extended_hours": false,
+  "legs": null,
+  "trail_percent": null,
+  "trail_price": null,
+  "hwm": null
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order(order_id, nested = NULL)}\if{html}{\out{</div>}}
 }
@@ -425,6 +582,58 @@ order tracking in production systems.
 \subsection{API Endpoint}{
 
 \verb{GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/getorderbyclientorderid}{Get Order by Client ID}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X GET -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/orders:by_client_order_id?client_order_id=my-order-001'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+  "client_order_id": "my-order-001",
+  "created_at": "2026-03-10T14:30:00.000000Z",
+  "updated_at": "2026-03-10T14:30:05.000000Z",
+  "submitted_at": "2026-03-10T14:30:00.000000Z",
+  "filled_at": "2026-03-10T14:30:05.000000Z",
+  "expired_at": null,
+  "canceled_at": null,
+  "failed_at": null,
+  "replaced_at": null,
+  "replaced_by": null,
+  "replaces": null,
+  "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+  "symbol": "AAPL",
+  "asset_class": "us_equity",
+  "notional": null,
+  "qty": "1",
+  "filled_qty": "1",
+  "filled_avg_price": "149.85",
+  "order_class": "simple",
+  "order_type": "limit",
+  "type": "limit",
+  "side": "buy",
+  "time_in_force": "day",
+  "limit_price": "150.00",
+  "stop_price": null,
+  "status": "filled",
+  "extended_hours": false,
+  "legs": null,
+  "trail_percent": null,
+  "trail_price": null,
+  "hwm": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$get_order_by_client_id(client_order_id)}\if{html}{\out{</div>}}
@@ -469,6 +678,68 @@ is cancelled and a new order is created atomically.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/patchorder}{Replace Order}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X PATCH -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  -H "Content-Type: application/json" \\
+  -d '\{"qty":"2","limit_price":"155.00"\}' \\
+  'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Request}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "qty": "2",
+  "time_in_force": "day",
+  "limit_price": "155.00",
+  "stop_price": null,
+  "trail": null,
+  "client_order_id": "my-order-001-modified"
+\}
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "id": "e7f3c1a2-8d5b-4f6e-9a2c-1b3d5e7f9a1c",
+  "client_order_id": "my-order-001-modified",
+  "created_at": "2026-03-10T14:35:00.000000Z",
+  "updated_at": "2026-03-10T14:35:00.000000Z",
+  "submitted_at": "2026-03-10T14:35:00.000000Z",
+  "filled_at": null,
+  "expired_at": null,
+  "canceled_at": null,
+  "failed_at": null,
+  "replaced_at": null,
+  "replaced_by": null,
+  "replaces": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+  "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+  "symbol": "AAPL",
+  "asset_class": "us_equity",
+  "notional": null,
+  "qty": "2",
+  "filled_qty": "0",
+  "filled_avg_price": null,
+  "order_class": "simple",
+  "order_type": "limit",
+  "type": "limit",
+  "side": "buy",
+  "time_in_force": "day",
+  "limit_price": "155.00",
+  "stop_price": null,
+  "status": "accepted",
+  "extended_hours": false,
+  "legs": null,
+  "trail_percent": null,
+  "trail_price": null,
+  "hwm": null
+\}
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$modify_order(
@@ -529,6 +800,31 @@ Cancels a single open order by its UUID.
 
 \verb{DELETE https://paper-api.alpaca.markets/v2/orders/\{order_id\}}
 }
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/deleteorderbyorderid}{Cancel Order}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/orders/b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+The API returns HTTP 204 (No Content) on success. This method returns a
+confirmation \code{data.table}:
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "order_id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+  "status": "cancelled"
+\}
+}\if{html}{\out{</div>}}
+}
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_order(order_id)}\if{html}{\out{</div>}}
 }
@@ -541,7 +837,11 @@ Cancels a single open order by its UUID.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An empty \link[data.table:data.table]{data.table::data.table} on success (HTTP 204), or a \code{promise} thereof.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
+\itemize{
+\item \code{order_id} (character): The cancelled order UUID.
+\item \code{status} (character): \code{"cancelled"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -570,14 +870,71 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/reference/deleteallorders}{Cancel All Orders}
+Verified: 2026-03-10
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -X DELETE -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://paper-api.alpaca.markets/v2/orders'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{[
+  \{
+    "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+    "status": 200,
+    "body": \{
+      "id": "b3a0b82d-62f4-4c23-87a5-3e5b1e3c0a1f",
+      "client_order_id": "my-order-001",
+      "created_at": "2026-03-10T14:30:00.000000Z",
+      "updated_at": "2026-03-10T14:40:00.000000Z",
+      "submitted_at": "2026-03-10T14:30:00.000000Z",
+      "filled_at": null,
+      "expired_at": null,
+      "canceled_at": "2026-03-10T14:40:00.000000Z",
+      "failed_at": null,
+      "replaced_at": null,
+      "replaced_by": null,
+      "replaces": null,
+      "asset_id": "b0b6dd9d-8b9b-48a9-ba46-b9d54906e415",
+      "symbol": "AAPL",
+      "asset_class": "us_equity",
+      "notional": null,
+      "qty": "1",
+      "filled_qty": "0",
+      "filled_avg_price": null,
+      "order_class": "simple",
+      "order_type": "limit",
+      "type": "limit",
+      "side": "buy",
+      "time_in_force": "day",
+      "limit_price": "150.00",
+      "stop_price": null,
+      "status": "pending_cancel",
+      "extended_hours": false,
+      "legs": null,
+      "trail_percent": null,
+      "trail_price": null,
+      "hwm": null
+    \}
+  \}
+]
+}\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$cancel_all_orders()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-cancelled order details.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+When orders are cancelled, one row per order with full order details.
+When no open orders exist, a single confirmation row with columns:
+\itemize{
+\item \code{status} (character): \code{"cancelled"}.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

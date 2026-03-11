@@ -221,6 +221,9 @@ trading$get_orders(status = "open")
 
 ``` r
 trading$cancel_order("order-uuid-123")
+#>          order_id    status
+#>            <char>    <char>
+#> 1: order-uuid-123 cancelled
 ```
 
 ## Options
