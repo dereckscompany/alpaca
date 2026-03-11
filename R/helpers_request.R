@@ -245,7 +245,13 @@ parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
   if (status < 200L || status >= 300L) {
     msg <- "No error message provided."
     if (!is.null(parsed)) {
-      msg <- if (!is.null(parsed$message)) parsed$message else if (!is.null(parsed$msg)) parsed$msg else msg
+      msg <- if (!is.null(parsed$message)) {
+        parsed$message
+      } else if (!is.null(parsed$msg)) {
+        parsed$msg
+      } else {
+        msg
+      }
     } else {
       msg <- tryCatch(
         httr2::resp_body_string(resp),
