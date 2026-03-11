@@ -1,5 +1,5 @@
 # Runs test coverage and deploys HTML report to GitHub Pages.
-# Coverage report: https://dereckmezquita.github.io/alpaca/coverage/
+# Coverage report: https://dereckscompany.github.io/alpaca/coverage/
 on:
   push:
     branches: [master, main]
