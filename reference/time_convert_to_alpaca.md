@@ -23,7 +23,7 @@ Character string in RFC-3339 format (e.g., `"2024-01-15T14:30:00Z"`).
 
 ``` r
 time_convert_to_alpaca(Sys.time())
-#> [1] "2026-03-11T07:29:53Z"
+#> [1] "2026-03-11T08:00:19Z"
 time_convert_to_alpaca(as.POSIXct("2024-01-15 14:30:00", tz = "UTC"))
 #> [1] "2024-01-15T14:30:00Z"
 ```
