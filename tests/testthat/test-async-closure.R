@@ -4,10 +4,10 @@
 # the loop variable `seg` is shared across all iterations, so by the time the
 # promises resolve, every closure sees the LAST value of `seg`.
 #
-# The fix uses local() to force eager evaluation, giving each iteration its own
-# copy. These tests verify the fixed pattern works correctly.
+# The fix uses Reduce() instead of a for-loop. Reduce() passes each element as
+# a function argument, which forces eager evaluation per iteration.
 
-test_that("async bar fetch captures each segment independently (local() fix)", {
+test_that("async bar fetch captures each segment independently (Reduce fix)", {
   segments <- list(
     list(start = as.POSIXct("2024-01-01", tz = "UTC"), end = as.POSIXct("2024-01-09", tz = "UTC")),
     list(start = as.POSIXct("2024-01-10", tz = "UTC"), end = as.POSIXct("2024-01-19", tz = "UTC")),
@@ -27,22 +27,24 @@ test_that("async bar fetch captures each segment independently (local() fix)", {
     data.table::rbindlist(results)
   }
 
-  # NOTE: local() is required here to force eager evaluation of `seg`.
-  # Without it, all closures share the same `seg` binding and every promise
-  # resolves using the LAST segment's value. This mirrors the fixed pattern
-  # in impl_bars.R.
-  acc_promise <- promises::promise_resolve(list())
-  for (seg in segments) {
-    local({
-      my_seg <- seg
-      acc_promise <<- promises::then(acc_promise, function(acc) {
-        return(promises::then(fetch_segment(my_seg), function(result) {
-          return(c(acc, list(result)))
-        }))
+  # NOTE: Reduce() is used instead of a for-loop to avoid the closure capture
+  # bug. Reduce() passes `seg` as a function argument, forcing eager evaluation
+  # per iteration. A for-loop closure over `seg` would resolve every promise
+  # using the LAST segment's value. This mirrors the pattern in impl_bars.R.
+  seed <- promises::promise_resolve(list())
+  chain <- Reduce(
+    function(acc_promise, seg) {
+      promises::then(acc_promise, function(acc) {
+        promises::then(fetch_segment(seg), function(result) {
+          c(acc, list(result))
+        })
       })
-    })
-  }
-  final_promise <- promises::then(acc_promise, combine_results)
+    },
+    segments,
+    accumulate = FALSE,
+    init = seed
+  )
+  final_promise <- promises::then(chain, combine_results)
 
   # Force resolution
   result <- NULL
