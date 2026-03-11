@@ -367,7 +367,7 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' @param order_id Character; order UUID to cancel.
-    #' @return An empty [data.table::data.table] on success (HTTP 204), or a `promise` thereof.
+    #' @return Called for side effect; returns `invisible(NULL)`, or a `promise` thereof.
     #'
     #' @examples
     #' \dontrun{
@@ -379,7 +379,7 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(data.table::data.table())
+        .parser = function(data) return(invisible(NULL))
       ))
     },
 

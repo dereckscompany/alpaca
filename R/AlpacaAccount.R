@@ -439,7 +439,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' @param symbol_or_id Character; OCC option symbol or asset UUID.
-    #' @return An empty [data.table::data.table] on success (HTTP 204).
+    #' @return Called for side effect; returns `invisible(NULL)`.
     #'
     #' @examples
     #' \dontrun{
@@ -451,7 +451,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "POST",
-        .parser = function(data) return(data.table::data.table())
+        .parser = function(data) return(invisible(NULL))
       ))
     },
 
@@ -837,7 +837,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' @param watchlist_id Character; watchlist UUID.
-    #' @return An empty [data.table::data.table] on success (HTTP 204).
+    #' @return Called for side effect; returns `invisible(NULL)`.
     #'
     #' @examples
     #' \dontrun{
@@ -849,7 +849,7 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(data.table::data.table())
+        .parser = function(data) return(invisible(NULL))
       ))
     }
   )
