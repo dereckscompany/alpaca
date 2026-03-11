@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   fig.align = "center",
   out.width = "100%",
-  collapse = TRUE,
+  results = "hold",
   comment = "#>"
 )
 ```
@@ -17,16 +17,27 @@ knitr::opts_chunk$set(
 # alpaca
 
 <!-- badges: start -->
+[![R-CMD-check](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/dereckmezquita/alpaca/actions/workflows/R-CMD-check.yaml)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-An R API wrapper for the [Alpaca](https://alpaca.markets/) trading platform. Provides R6 classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise-based) operation via httr2.
+An R API wrapper for the [Alpaca](https://alpaca.markets/) trading platform. Provides `R6` classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise based) operation via `httr2`.
 
 ## Disclaimer
 
 This software is provided "as is", without warranty of any kind. **This package interacts with live brokerage accounts and can execute real trades involving real money.** By using this package you accept full responsibility for any financial losses, erroneous transactions, or other damages that may result. Always test with paper trading first, use API key permissions to restrict access to only what you need, and never share your API credentials. The author(s) and contributor(s) are not liable for any financial loss or damage arising from the use of this software.
 
 We invite you to read the source code and make contributions if you find a bug or wish to make an improvement.
+
+## Design Philosophy
+
+All API responses are returned as `data.table` objects with two transformations applied:
+
+1. **snake_case column names** -- camelCase keys from the JSON response (e.g. `latestTrade`, `nextClose`) are converted to snake_case (`latest_trade`, `next_close`) via a mechanical transformation. No columns are renamed beyond this.
+
+2. **Timestamps to POSIXct** -- Columns containing RFC-3339 timestamps or epoch seconds are converted to `POSIXct` in-place under their snake_case name.
+
+That's it. **No fields are dropped and no columns are renamed** beyond the camelCase-to-snake_case conversion. If a column exists in the Alpaca API response, it will exist in the returned `data.table`. If you don't need a column, drop it yourself.
 
 ## Installation
 
@@ -36,6 +47,38 @@ remotes::install_github("dereckmezquita/alpaca")
 ```
 
 ## Setup
+
+```{r}
+# special mock for local build
+box::use(
+  alpaca[
+    get_api_keys,
+    get_base_url,
+    get_data_base_url
+  ],
+  ./tests/testthat/mock_router[mock_router]
+)
+
+KEYS <- get_api_keys(
+  api_key = "fake-key",
+  api_secret = "fake-secret"
+)
+
+TBASE <- "https://paper-api.alpaca.markets"
+DBASE <- "https://data.alpaca.markets"
+
+options(httr2_mock = mock_router)
+
+# normal imports
+box::use(
+  alpaca[
+    AlpacaMarketData,
+    AlpacaTrading,
+    AlpacaAccount,
+    AlpacaOptions
+  ]
+)
+```
 
 Set your API credentials as environment variables in `.Renviron`:
 
@@ -47,9 +90,213 @@ ALPACA_API_ENDPOINT = https://paper-api.alpaca.markets
 
 If you don't have a key, visit the [Alpaca dashboard](https://app.alpaca.markets/).
 
-## Quick Start
+## Quick Start -- Market Data
 
-*Examples will be added as API classes are implemented.*
+All endpoints require authentication (even market data).
+
+```{r}
+market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
+```
+
+### Historical Bars
+
+```{r}
+bars <- market$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01", end = "2024-01-31")
+bars[]
+```
+
+### Latest Trade
+
+```{r}
+trade <- market$get_latest_trade("AAPL")
+trade[]
+```
+
+### Latest Quote (NBBO)
+
+```{r}
+quote <- market$get_latest_quote("AAPL")
+quote[]
+```
+
+### Market Clock
+
+```{r}
+market$get_clock()
+```
+
+### Available Assets
+
+```{r}
+assets <- market$get_assets(status = "active", asset_class = "us_equity")
+assets[]
+```
+
+### Market News
+
+```{r}
+news <- market$get_news(symbols = "AAPL", limit = 5)
+news[, .(headline, source, created_at)]
+```
+
+## Account
+
+```{r}
+acct <- AlpacaAccount$new(keys = KEYS, base_url = TBASE)
+```
+
+### Account Info
+
+```{r}
+info <- acct$get_account()
+info[, .(status, equity, buying_power, cash)]
+```
+
+### Open Positions
+
+```{r}
+acct$get_positions()
+```
+
+### Portfolio History
+
+```{r}
+acct$get_portfolio_history(period = "1M", timeframe = "1D")
+```
+
+## Trading
+
+```{r}
+trading <- AlpacaTrading$new(keys = KEYS, base_url = TBASE)
+```
+
+### Place a Limit Order
+
+```{r}
+order <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "limit",
+  time_in_force = "day", qty = 1, limit_price = 150
+)
+order[, .(id, symbol, side, type, status, limit_price)]
+```
+
+### List Open Orders
+
+```{r}
+trading$get_orders(status = "open")
+```
+
+### Cancel an Order
+
+```{r}
+trading$cancel_order("order-uuid-123")
+```
+
+## Options
+
+```{r}
+opts <- AlpacaOptions$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
+```
+
+### List Contracts
+
+```{r}
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
+)
+contracts[, .(symbol, type, strike_price, expiration_date)]
+```
+
+### Options Chain
+
+```{r}
+chain <- opts$get_option_chain("AAPL", type = "call")
+chain[]
+```
+
+## Short Selling
+
+Alpaca integrates margin and short selling directly into the standard trading
+API -- no special classes needed. To short a stock, simply place a sell order
+for a symbol you don't own:
+
+```{r, eval = FALSE}
+# Short 100 shares of AAPL at market
+trading$add_order(
+  symbol = "AAPL", side = "sell", type = "market",
+  time_in_force = "day", qty = 100
+)
+
+# Close the short (buy to cover)
+acct$close_position("AAPL")
+```
+
+## Bulk Historical Data
+
+The `alpaca_backfill_bars()` function downloads historical bar data for
+multiple symbols and timeframes with CSV-based resume support:
+
+```{r, eval = FALSE}
+dt <- alpaca_backfill_bars(
+  symbols = c("AAPL", "MSFT", "TSLA"),
+  timeframes = c("1Day", "1Hour"),
+  start = "2020-01-01",
+  path = "data/bars.csv"
+)
+
+# Resume an interrupted download -- already-completed combos are skipped
+dt <- alpaca_backfill_bars(
+  symbols = c("AAPL", "MSFT", "TSLA", "GOOGL"),
+  timeframes = c("1Day", "1Hour"),
+  start = "2020-01-01",
+  path = "data/bars.csv"
+)
+```
+
+## Sample Data
+
+The package includes a bundled dataset of simulated AAPL daily bars for
+testing and demonstration:
+
+```{r}
+data(alpaca_aapl_1day_bars, package = "alpaca")
+head(alpaca_aapl_1day_bars)
+```
+
+## Async Usage
+
+All classes accept `async = TRUE`, causing methods to return promises.
+Use `coro::async()` to write sequential-looking async code:
+
+```{r, eval = FALSE}
+market_async <- AlpacaMarketData$new(async = TRUE)
+
+main <- coro::async(function() {
+  bars <- await(market_async$get_bars("AAPL", "1Day",
+                                       start = "2024-01-01", end = "2024-01-31"))
+  clock <- await(market_async$get_clock())
+
+  print(bars)
+  cat("Market open:", clock$is_open, "\n")
+})
+
+main()
+while (!later::loop_empty()) later::run_now()
+```
+
+## Available Classes
+
+| Class | Purpose |
+|-------|---------|
+| `AlpacaMarketData` | Historical bars, latest trades/quotes, snapshots, assets, calendar, clock, news, screener, corporate actions |
+| `AlpacaTrading` | Place, modify, cancel, and query orders |
+| `AlpacaAccount` | Account info, positions, portfolio history, activities, watchlists |
+| `AlpacaOptions` | Options contracts, bars, trades, quotes, snapshots, chain |
+
+Standalone function: `alpaca_backfill_bars()` -- bulk historical bar download with CSV resume.
 
 ## Citation
 

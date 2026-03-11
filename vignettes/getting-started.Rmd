@@ -10,14 +10,31 @@ vignette: >
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
+  results = "hold",
   comment = "#>"
 )
+
+box::use(
+  alpaca[
+    AlpacaMarketData, AlpacaTrading, AlpacaAccount, AlpacaOptions,
+    get_api_keys, get_base_url, get_data_base_url
+  ]
+)
+
+box::use(../tests/testthat/mock_router[mock_router])
+
+KEYS <- get_api_keys(
+  api_key = "fake-key",
+  api_secret = "fake-secret"
+)
+TBASE <- "https://paper-api.alpaca.markets"
+DBASE <- "https://data.alpaca.markets"
+
+options(httr2_mock = mock_router)
 ```
 
-This vignette will demonstrate how to use `alpaca` in **synchronous** mode.
-
-*Content will be added as API classes are implemented.*
+This vignette demonstrates how to use `alpaca` in **synchronous** mode to
+interact with the Alpaca Trading API.
 
 ## Setup
 
@@ -30,3 +47,230 @@ ALPACA_API_ENDPOINT = https://paper-api.alpaca.markets
 ```
 
 If you don't have a key, visit the [Alpaca dashboard](https://app.alpaca.markets/).
+
+> **Paper trading**: Always start with
+> `https://paper-api.alpaca.markets` to test without risking real money.
+
+```{r load}
+library(alpaca)
+
+keys <- get_api_keys(
+  api_key = "your-api-key",
+  api_secret = "your-api-secret"
+)
+```
+
+```{r keys, echo = FALSE}
+keys <- KEYS
+tbase <- TBASE
+dbase <- DBASE
+```
+
+## Market Data
+
+The `AlpacaMarketData` class provides access to historical and real-time
+stock market data.
+
+```{r market-init}
+md <- AlpacaMarketData$new()
+```
+
+```{r market-init-hidden, echo = FALSE}
+md <- AlpacaMarketData$new(keys = keys, base_url = tbase, data_base_url = dbase)
+```
+
+### Historical Bars
+
+```{r bars}
+bars <- md$get_bars("AAPL", timeframe = "1Day", start = "2024-01-01",
+                    end = "2024-01-31")
+bars[]
+```
+
+### Latest Trade
+
+```{r latest-trade}
+trade <- md$get_latest_trade("AAPL")
+trade[]
+```
+
+### Latest Quote
+
+```{r latest-quote}
+quote <- md$get_latest_quote("AAPL")
+quote[]
+```
+
+### Market Clock
+
+```{r clock}
+clock <- md$get_clock()
+clock[]
+```
+
+### Available Assets
+
+```{r assets}
+assets <- md$get_assets(status = "active", asset_class = "us_equity")
+assets[]
+```
+
+### Market Calendar
+
+```{r calendar}
+cal <- md$get_calendar(start = "2024-01-01", end = "2024-01-31")
+cal[]
+```
+
+### Market News
+
+```{r news}
+news <- md$get_news(symbols = "AAPL", limit = 5)
+news[, .(headline, source, created_at)]
+```
+
+---
+
+## Account Information
+
+The `AlpacaAccount` class gives you access to account details, positions,
+and portfolio history.
+
+```{r account-init}
+acct <- AlpacaAccount$new()
+```
+
+```{r account-init-hidden, echo = FALSE}
+acct <- AlpacaAccount$new(keys = keys, base_url = tbase)
+```
+
+### Account Info
+
+```{r account-info}
+info <- acct$get_account()
+info[, .(status, equity, buying_power, cash)]
+```
+
+### Open Positions
+
+```{r positions}
+positions <- acct$get_positions()
+positions[]
+```
+
+### Portfolio History
+
+```{r portfolio-history}
+history <- acct$get_portfolio_history(period = "1M", timeframe = "1D")
+history[]
+```
+
+### Account Activities
+
+```{r activities}
+activities <- acct$get_activities(activity_types = "FILL")
+activities[]
+```
+
+---
+
+## Trading
+
+The `AlpacaTrading` class handles order management.
+
+```{r trading-init}
+trading <- AlpacaTrading$new()
+```
+
+```{r trading-init-hidden, echo = FALSE}
+trading <- AlpacaTrading$new(keys = keys, base_url = tbase)
+```
+
+### Place a Limit Order
+
+```{r limit-order}
+order <- trading$add_order(
+  symbol = "AAPL",
+  side = "buy",
+  type = "limit",
+  time_in_force = "day",
+  qty = 1,
+  limit_price = 150
+)
+order[, .(id, symbol, side, type, status)]
+```
+
+### Check Open Orders
+
+```{r open-orders}
+open_orders <- trading$get_orders(status = "open")
+open_orders[]
+```
+
+### Cancel a Specific Order
+
+```{r cancel-order}
+trading$cancel_order("order-uuid-123")
+```
+
+### Cancel All Open Orders
+
+```{r, eval = FALSE}
+# Dangerous: cancels ALL open orders
+trading$cancel_all_orders()
+```
+
+---
+
+## Options
+
+The `AlpacaOptions` class provides access to options contracts and data.
+
+```{r options-init}
+opts <- AlpacaOptions$new()
+```
+
+```{r options-init-hidden, echo = FALSE}
+opts <- AlpacaOptions$new(keys = keys, base_url = tbase, data_base_url = dbase)
+```
+
+### Search Contracts
+
+```{r contracts}
+contracts <- opts$get_contracts(
+  underlying_symbols = "AAPL",
+  type = "call",
+  expiration_date_gte = "2024-06-01",
+  limit = 10
+)
+contracts[, .(symbol, type, strike_price, expiration_date)]
+```
+
+### Options Chain
+
+```{r option-chain}
+chain <- opts$get_option_chain("AAPL", type = "call")
+chain[]
+```
+
+---
+
+## Position Management
+
+```{r, eval = FALSE}
+# Close 50% of a position
+acct$close_position("AAPL", percentage = 50)
+
+# Close entire position
+acct$close_position("AAPL")
+
+# Close all positions (dangerous!)
+acct$close_all_positions(cancel_orders = TRUE)
+```
+
+## Next Steps
+
+- See `vignette("async-usage")` for promise-based async workflows.
+- See `vignette("margin-short-selling")` for margin and short selling.
+- Explore the [Alpaca API documentation](https://docs.alpaca.markets/) for
+  full endpoint details.

@@ -1,6 +1,6 @@
 # alpaca — Roadmap
 
-> Version 0.1.0 (unreleased) · Last updated 2026-03-09
+> Version 0.1.0 · Last updated 2026-03-11
 
 ## Naming convention
 
@@ -20,42 +20,55 @@ snake_case throughout. No API version numbers in method names.
 
 ### 1. Core infrastructure
 
-- [ ] `AlpacaBase` R6 class (auth, request helpers, async support)
-- [ ] `helpers_request.R` (request building, `then_or_now()`, response parsing)
-- [ ] `helpers_validate.R` (input validation)
-- [ ] `helpers_parse.R` (response parsing utilities)
-- [ ] `get_api_keys()` and `get_base_url()` configuration helpers
+- [x] `AlpacaBase` R6 class (auth, request helpers, async support)
+- [x] `helpers_request.R` (request building, `then_or_now()`, response parsing)
+- [x] `helpers_validate.R` (input validation)
+- [x] `helpers_parse.R` (response parsing utilities)
+- [x] `get_api_keys()` and `get_base_url()` configuration helpers
 
 ### 2. Market Data — `AlpacaMarketData` class
 
-- [ ] Bars (historical OHLCV)
-- [ ] Latest bars / quotes / trades
-- [ ] Snapshots
-- [ ] Assets
-- [ ] Calendar
-- [ ] Clock
+- [x] Bars (historical OHLCV)
+- [x] Latest bars / quotes / trades
+- [x] Snapshots
+- [x] Assets
+- [x] Calendar
+- [x] Clock
+- [x] Corporate Actions — `GET /v2/corporate_actions/announcements`
+- [x] News — `GET /v1beta1/news`
 
 ### 3. Trading — `AlpacaTrading` class
 
-- [ ] Place order (market, limit, stop, stop-limit, trailing stop)
-- [ ] Cancel order
-- [ ] Get order by ID
-- [ ] List orders
-- [ ] Modify order (replace)
+- [x] Place order (market, limit, stop, stop-limit, trailing stop)
+- [x] Cancel order
+- [x] Get order by ID
+- [x] List orders
+- [x] Modify order (replace)
 
 ### 4. Account — `AlpacaAccount` class
 
-- [ ] Account info
-- [ ] Portfolio history
-- [ ] Positions
-- [ ] Close position
-- [ ] Activities
+- [x] Account info
+- [x] Portfolio history
+- [x] Positions
+- [x] Close position
+- [x] Activities
+- [x] Watchlists — `GET/POST/PUT/DELETE /v2/watchlists`
 
 ### 5. Options — `AlpacaOptions` class
 
-- [ ] Options contracts
-- [ ] Options orders
-- [ ] Options positions
+- [x] Options contracts
+- [x] Options market data (bars, trades, quotes, snapshots)
+- [x] Options orders (via AlpacaTrading with `position_intent`)
+
+### 6. Utilities and infrastructure
+
+- [x] `utils_time.R` — `time_convert_from_alpaca()` / `time_convert_to_alpaca()`
+- [x] `impl_bars.R` — time-range segmented bar fetching
+- [x] `backfill.R` — `alpaca_backfill_bars()` with CSV-based resume
+- [x] Tests — mocked unit tests for all R6 classes and helpers
+- [x] Sample dataset — bundled AAPL daily bars (`data/alpaca_aapl_1day_bars.rda`)
+- [x] `alpaca_paginate()` — auto-pagination for cursor-based endpoints
+- [x] Margin/short-selling vignette
 
 ---
 

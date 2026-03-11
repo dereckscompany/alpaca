@@ -24,7 +24,6 @@ Imports:
     jsonlite,
     data.table,
     httr2 (>= 1.0.0),
-    digest,
     lubridate
 Suggests:
     promises,
