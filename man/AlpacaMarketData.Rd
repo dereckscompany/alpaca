@@ -862,8 +862,16 @@ Retrieves historical trade data for a symbol.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-trade columns (see \code{\link[=get_latest_trade]{get_latest_trade()}}).
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{timestamp} (POSIXct): Trade timestamp.
+\item \code{price} (numeric): Trade price.
+\item \code{size} (integer): Trade size.
+\item \code{exchange} (character): Exchange code.
+\item \code{conditions} (list): Trade conditions.
+\item \code{tape} (character): SIP tape.
+\item \code{id} (integer): Trade ID.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -909,8 +917,16 @@ Retrieves historical quote (NBBO) data for a symbol.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-quote columns (see \code{\link[=get_latest_quote]{get_latest_quote()}}).
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{timestamp} (POSIXct): Quote timestamp.
+\item \code{ask_exchange} (character): Ask exchange code.
+\item \code{ask_price} (numeric): Ask price.
+\item \code{ask_size} (integer): Ask size.
+\item \code{bid_exchange} (character): Bid exchange code.
+\item \code{bid_price} (numeric): Bid price.
+\item \code{bid_size} (integer): Bid size.
+}
 }
 }
 \if{html}{\out{<hr>}}

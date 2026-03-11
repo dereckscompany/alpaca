@@ -14,7 +14,8 @@ alpaca_build_request(
   .perform = httr2::req_perform,
   .parser = identity,
   is_async = FALSE,
-  timeout = 10
+  timeout = 10,
+  simplifyVector = FALSE
 )
 }
 \arguments{
@@ -39,6 +40,10 @@ Default \code{identity}.}
 \item{is_async}{Logical; whether \code{.perform} returns promises. Default \code{FALSE}.}
 
 \item{timeout}{Numeric; request timeout in seconds. Default \code{10}.}
+
+\item{simplifyVector}{Logical; passed to \link[httr2:resp_body_raw]{httr2::resp_body_json}. Default
+\code{FALSE}. Set to \code{TRUE} for endpoints returning parallel arrays so JSON
+nulls become NA in atomic vectors.}
 }
 \value{
 Parsed and post-processed API response data, or a promise thereof.

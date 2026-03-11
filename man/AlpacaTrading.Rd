@@ -541,7 +541,7 @@ Cancels a single open order by its UUID.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Empty \code{data.table} on success (HTTP 204), or a \code{promise} thereof.
+\code{invisible(NULL)} on success (HTTP 204), or a \code{promise} thereof.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

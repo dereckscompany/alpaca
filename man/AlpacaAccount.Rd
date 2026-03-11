@@ -739,7 +739,7 @@ Exercises an options position. Only applicable to options contracts.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Empty \code{data.table} on success (HTTP 204).
+\code{invisible(NULL)} on success (HTTP 204).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1245,7 +1245,7 @@ Permanently deletes a watchlist.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Empty \code{data.table} on success (HTTP 204).
+\code{invisible(NULL)} on success (HTTP 204).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

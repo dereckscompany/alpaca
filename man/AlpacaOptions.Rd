@@ -47,7 +47,7 @@ Contract metadata endpoints use the trading base URL.
    get_option_snapshots \tab GET /v1beta1/options/snapshots \tab data \cr
    get_option_snapshot \tab GET /v1beta1/options/snapshots/{symbol} \tab data \cr
    get_option_latest_trades \tab GET /v1beta1/options/trades/latest \tab data \cr
-   get_option_chain \tab GET /v1beta1/options/chain \tab data \cr
+   get_option_chain \tab GET /v1beta1/options/snapshots/{underlying_symbol} \tab data \cr
 }
 
 }
@@ -599,7 +599,7 @@ Retrieves the full options chain for an underlying symbol. Returns all
 available contracts with their latest market data.
 \subsection{API Endpoint}{
 
-\verb{GET https://data.alpaca.markets/v1beta1/options/chain}
+\verb{GET https://data.alpaca.markets/v1beta1/options/snapshots/\{underlying_symbol\}}
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_chain(
