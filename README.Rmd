@@ -9,28 +9,9 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   fig.align = "center",
   out.width = "100%",
-  collapse = TRUE,
+  results = "hold",
   comment = "#>"
 )
-
-box::use(
-  alpaca[
-    AlpacaMarketData, AlpacaTrading, AlpacaAccount, AlpacaOptions,
-    get_api_keys, get_base_url, get_data_base_url,
-    alpaca_backfill_bars
-  ]
-)
-
-box::use(./tests/testthat/mock_router[mock_router])
-
-KEYS <- get_api_keys(
-  api_key = "fake-key",
-  api_secret = "fake-secret"
-)
-TBASE <- "https://paper-api.alpaca.markets"
-DBASE <- "https://data.alpaca.markets"
-
-options(httr2_mock = mock_router)
 ```
 
 # alpaca
@@ -40,7 +21,7 @@ options(httr2_mock = mock_router)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-An R API wrapper for the [Alpaca](https://alpaca.markets/) trading platform. Provides R6 classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise-based) operation via httr2.
+An R API wrapper for the [Alpaca](https://alpaca.markets/) trading platform. Provides `R6` classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise based) operation via `httr2`.
 
 ## Disclaimer
 
@@ -67,6 +48,38 @@ remotes::install_github("dereckmezquita/alpaca")
 
 ## Setup
 
+```{r}
+# special mock for local build
+box::use(
+  alpaca[
+    get_api_keys,
+    get_base_url,
+    get_data_base_url
+  ],
+  ./tests/testthat/mock_router[mock_router]
+)
+
+KEYS <- get_api_keys(
+  api_key = "fake-key",
+  api_secret = "fake-secret"
+)
+
+TBASE <- "https://paper-api.alpaca.markets"
+DBASE <- "https://data.alpaca.markets"
+
+options(httr2_mock = mock_router)
+
+# normal imports
+box::use(
+  alpaca[
+    AlpacaMarketData,
+    AlpacaTrading,
+    AlpacaAccount,
+    AlpacaOptions
+  ]
+)
+```
+
 Set your API credentials as environment variables in `.Renviron`:
 
 ```bash
@@ -82,10 +95,6 @@ If you don't have a key, visit the [Alpaca dashboard](https://app.alpaca.markets
 All endpoints require authentication (even market data).
 
 ```{r}
-market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
-```
-
-```{r echo = FALSE}
 market <- AlpacaMarketData$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
 ```
 
@@ -136,10 +145,6 @@ news[, .(headline, source, created_at)]
 acct <- AlpacaAccount$new(keys = KEYS, base_url = TBASE)
 ```
 
-```{r echo = FALSE}
-acct <- AlpacaAccount$new(keys = KEYS, base_url = TBASE)
-```
-
 ### Account Info
 
 ```{r}
@@ -162,10 +167,6 @@ acct$get_portfolio_history(period = "1M", timeframe = "1D")
 ## Trading
 
 ```{r}
-trading <- AlpacaTrading$new(keys = KEYS, base_url = TBASE)
-```
-
-```{r echo = FALSE}
 trading <- AlpacaTrading$new(keys = KEYS, base_url = TBASE)
 ```
 
@@ -194,10 +195,6 @@ trading$cancel_order("order-uuid-123")
 ## Options
 
 ```{r}
-opts <- AlpacaOptions$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
-```
-
-```{r echo = FALSE}
 opts <- AlpacaOptions$new(keys = KEYS, base_url = TBASE, data_base_url = DBASE)
 ```
 
