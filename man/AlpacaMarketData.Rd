@@ -679,15 +679,16 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per trade condition. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
 \item \code{size} (integer): Trade size.
 \item \code{exchange} (character): Exchange code.
-\item \code{conditions} (list): Trade conditions.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
+\item \code{condition} (character): Trade condition code.
 }
 }
 \subsection{Examples}{
@@ -1167,15 +1168,16 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per trade condition. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
 \item \code{size} (integer): Trade size.
 \item \code{exchange} (character): Exchange code.
-\item \code{conditions} (list): Trade conditions.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
+\item \code{condition} (character): Trade condition code.
 }
 }
 }
@@ -1755,7 +1757,8 @@ without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per related symbol. Columns:
 \itemize{
 \item \code{id} (integer): Article ID.
 \item \code{headline} (character): Article headline.
@@ -1763,9 +1766,9 @@ without content.}
 \item \code{source} (character): News source.
 \item \code{summary} (character): Article summary.
 \item \code{url} (character): Article URL.
-\item \code{symbols} (list): Related symbols.
 \item \code{created_at} (character): Publication timestamp.
 \item \code{updated_at} (character): Last update timestamp.
+\item \code{symbol} (character): Related ticker symbol.
 }
 }
 \subsection{Examples}{

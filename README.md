@@ -126,9 +126,9 @@ trade <- market$get_latest_trade("AAPL")
 trade[]
 ```
 
-    #>              timestamp price  size exchange conditions   tape    id
-    #>                 <POSc> <num> <int>   <char>     <list> <char> <int>
-    #> 1: 2024-01-15 14:30:00 185.5   100        V  <list[1]>      C 12345
+    #>              timestamp price  size exchange   tape    id condition
+    #>                 <POSc> <num> <int>   <char> <char> <int>    <char>
+    #> 1: 2024-01-15 14:30:00 185.5   100        V      C 12345         @
 
 ### Latest Quote (NBBO)
 
@@ -184,6 +184,8 @@ news[, .(headline, source, created_at)]
     #>                                <char>   <char>               <char>
     #> 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
     #> 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
+    #> 3: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
+    #> 4: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
 
 ## Account
 

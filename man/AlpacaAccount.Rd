@@ -1373,8 +1373,11 @@ Verified: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-watchlist metadata and an \code{assets} list column containing the symbols.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per asset in the watchlist. Columns include watchlist
+metadata (\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and
+asset columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
+\code{asset_name}, etc.).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

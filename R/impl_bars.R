@@ -133,12 +133,19 @@ alpaca_fetch_bars <- function(
   }
 
   # Async: chain promises sequentially
+  # NOTE: local() is required here to force eager evaluation of `seg`.
+  # R closures capture variables by reference (lazy evaluation), so without
+  # local(), all iterations of the for-loop would share the same `seg` binding
+  # and every promise would resolve using the LAST segment's value.
   acc_promise <- promises::promise_resolve(list())
   for (seg in segments) {
-    acc_promise <- promises::then(acc_promise, function(acc) {
-      return(promises::then(fetch_segment(seg), function(result) {
-        return(c(acc, list(result)))
-      }))
+    local({
+      my_seg <- seg
+      acc_promise <<- promises::then(acc_promise, function(acc) {
+        return(promises::then(fetch_segment(my_seg), function(result) {
+          return(c(acc, list(result)))
+        }))
+      })
     })
   }
   return(promises::then(acc_promise, combine_results))
