@@ -69,20 +69,25 @@ test_that("get_order returns single-row data.table", {
   expect_equal(dt$id, "order-uuid-123")
 })
 
-test_that("cancel_order returns invisible(NULL) on 204", {
+test_that("cancel_order returns confirmation data.table on 204", {
   resp <- mock_no_content_response()
   httr2::local_mocked_responses(function(req) resp)
 
-  result <- new_trading()$cancel_order("order-uuid-123")
-  expect_null(result)
+  dt <- new_trading()$cancel_order("order-uuid-123")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$order_id, "order-uuid-123")
+  expect_equal(dt$status, "cancelled")
 })
 
-test_that("cancel_all_orders returns data.table", {
+test_that("cancel_all_orders returns confirmation dt when no orders", {
   resp <- mock_alpaca_response(list())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_trading()$cancel_all_orders()
   expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$status, "cancelled")
 })
 
 test_that("modify_order sends PATCH request", {

@@ -166,8 +166,11 @@ test_that("exercise_option sends POST to correct endpoint", {
     return(resp)
   })
 
-  result <- new_account()$exercise_option("AAPL240621C00200000")
+  dt <- new_account()$exercise_option("AAPL240621C00200000")
   expect_equal(captured_req$method, "POST")
   expect_true(grepl("/v2/positions/AAPL240621C00200000/exercise", captured_req$url))
-  expect_null(result)
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$symbol, "AAPL240621C00200000")
+  expect_equal(dt$status, "exercised")
 })

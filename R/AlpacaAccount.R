@@ -397,8 +397,11 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param cancel_orders Logical; if `TRUE`, cancels all open orders before
     #'   liquidating positions. Default `FALSE`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   closing order details for each position.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   When positions are closed, one row per position with full order details.
+    #'   When no open positions exist, a single confirmation row with columns:
+    #'   - `cancel_orders` (logical): Whether orders were also cancelled.
+    #'   - `status` (character): `"closed"`.
     #'
     #' @examples
     #' \dontrun{
@@ -412,7 +415,10 @@ AlpacaAccount <- R6::R6Class(
         query = list(cancel_orders = tolower(as.character(cancel_orders))),
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table()[])
+            return(data.table::data.table(
+              cancel_orders = cancel_orders,
+              status = "closed"
+            )[])
           }
           # Alpaca returns [{symbol, status, body: {order...}}, ...]
           # Unwrap body into top-level fields
@@ -439,7 +445,9 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' @param symbol_or_id Character; OCC option symbol or asset UUID.
-    #' @return Called for side effect; returns `invisible(NULL)`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
+    #'   - `symbol` (character): The exercised option symbol or asset UUID.
+    #'   - `status` (character): `"exercised"`.
     #'
     #' @examples
     #' \dontrun{
@@ -451,7 +459,12 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "POST",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) {
+          return(data.table::data.table(
+            symbol = symbol_or_id,
+            status = "exercised"
+          )[])
+        }
       ))
     },
 
@@ -806,8 +819,12 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param watchlist_id Character; watchlist UUID.
     #' @param symbol Character; ticker symbol to remove.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the updated watchlist, or empty data.table on 204.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   When the API returns the updated watchlist, a single row with watchlist details.
+    #'   On 204 No Content, a single confirmation row with columns:
+    #'   - `watchlist_id` (character): The watchlist UUID.
+    #'   - `symbol` (character): The removed ticker symbol.
+    #'   - `status` (character): `"removed"`.
     #'
     #' @examples
     #' \dontrun{
@@ -821,7 +838,11 @@ AlpacaAccount <- R6::R6Class(
         method = "DELETE",
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table()[])
+            return(data.table::data.table(
+              watchlist_id = watchlist_id,
+              symbol = symbol,
+              status = "removed"
+            )[])
           }
           as_dt_row(data)
         }
@@ -837,7 +858,9 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' @param watchlist_id Character; watchlist UUID.
-    #' @return Called for side effect; returns `invisible(NULL)`.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
+    #'   - `watchlist_id` (character): The deleted watchlist UUID.
+    #'   - `status` (character): `"deleted"`.
     #'
     #' @examples
     #' \dontrun{
@@ -849,7 +872,12 @@ AlpacaAccount <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) {
+          return(data.table::data.table(
+            watchlist_id = watchlist_id,
+            status = "deleted"
+          )[])
+        }
       ))
     }
   )

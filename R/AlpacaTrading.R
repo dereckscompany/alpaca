@@ -367,7 +367,9 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' @param order_id Character; order UUID to cancel.
-    #' @return Called for side effect; returns `invisible(NULL)`, or a `promise` thereof.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
+    #'   - `order_id` (character): The cancelled order UUID.
+    #'   - `status` (character): `"cancelled"`.
     #'
     #' @examples
     #' \dontrun{
@@ -379,7 +381,12 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         method = "DELETE",
-        .parser = function(data) return(invisible(NULL))
+        .parser = function(data) {
+          return(data.table::data.table(
+            order_id = order_id,
+            status = "cancelled"
+          )[])
+        }
       ))
     },
 
@@ -394,8 +401,10 @@ AlpacaTrading <- R6::R6Class(
     #' ### Official Documentation
     #' [Cancel All Orders](https://docs.alpaca.markets/reference/deleteallorders)
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   cancelled order details.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   When orders are cancelled, one row per order with full order details.
+    #'   When no open orders exist, a single confirmation row with columns:
+    #'   - `status` (character): `"cancelled"`.
     #'
     #' @examples
     #' \dontrun{
@@ -409,7 +418,7 @@ AlpacaTrading <- R6::R6Class(
         method = "DELETE",
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table())
+            return(data.table::data.table(status = "cancelled")[])
           }
           # Alpaca returns [{id, status, body: {order...}}, ...]
           # Unwrap body into top-level fields
