@@ -271,7 +271,7 @@ head(alpaca_aapl_1day_bars)
 All classes accept `async = TRUE`, causing methods to return promises.
 Use `coro::async()` to write sequential-looking async code:
 
-```{r, eval = FALSE}
+```{r}
 market_async <- AlpacaMarketData$new(async = TRUE)
 
 main <- coro::async(function() {
