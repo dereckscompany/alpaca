@@ -367,7 +367,7 @@ parse_news <- function(news_items) {
   if (is.null(news_items) || length(news_items) == 0) {
     return(data.table::data.table()[])
   }
-  # Extract symbols before rbindlist, then expand to long format
+  # Extract symbols and images before rbindlist
   symbols_list <- lapply(news_items, function(item) {
     syms <- item[["symbols"]]
     if (is.null(syms) || length(syms) == 0) {
@@ -375,20 +375,38 @@ parse_news <- function(news_items) {
     }
     return(as.character(unlist(syms)))
   })
-  # Remove symbols from items for clean rbindlist
-  items_no_syms <- lapply(news_items, function(item) {
+  images_list <- lapply(news_items, function(item) {
+    imgs <- item[["images"]]
+    if (is.null(imgs) || length(imgs) == 0) {
+      return(data.table::data.table(image_size = NA_character_, image_url = NA_character_))
+    }
+    data.table::data.table(
+      image_size = vapply(imgs, function(img) img$size %||% NA_character_, character(1)),
+      image_url = vapply(imgs, function(img) img$url %||% NA_character_, character(1))
+    )
+  })
+  # Remove symbols and images from items for clean rbindlist
+  items_clean <- lapply(news_items, function(item) {
     item[["symbols"]] <- NULL
+    item[["images"]] <- NULL
     return(wrap_list_fields(item))
   })
-  dt <- data.table::rbindlist(items_no_syms, fill = TRUE)
+  dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
-  # Add a row index to track which article each symbol belongs to
   dt[, .article_idx := .I]
   # Expand symbols to long format
   syms_dt <- data.table::rbindlist(lapply(seq_along(symbols_list), function(i) {
     data.table::data.table(.article_idx = i, symbol = symbols_list[[i]])
   }))
-  dt <- dt[syms_dt, on = ".article_idx"]
+  # Expand images to long format
+  imgs_dt <- data.table::rbindlist(lapply(seq_along(images_list), function(i) {
+    img_dt <- images_list[[i]]
+    img_dt[, .article_idx := i]
+    return(img_dt)
+  }))
+  # Join both expansions: one row per (article, symbol, image) combination
+  dt <- dt[syms_dt, on = ".article_idx", allow.cartesian = TRUE]
+  dt <- dt[imgs_dt, on = ".article_idx", allow.cartesian = TRUE]
   dt[, .article_idx := NULL]
   return(dt[])
 }
@@ -430,5 +448,55 @@ parse_watchlist <- function(wl) {
   # Cross-join: repeat parent row for each asset
   parent_rep <- parent[rep(1L, nrow(assets_dt)), ]
   dt <- cbind(parent_rep, assets_dt)
+  return(dt[])
+}
+
+#' Parse a Single Order Response to data.table
+#'
+#' Handles the `legs` array field: for bracket/OCO orders, expands to long
+#' format with one row per leg (prefixed `leg_`). Simple orders get one row
+#' with `leg_*` columns as NA.
+#'
+#' @param x A named list representing a single order.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_order <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(data.table::data.table()[])
+  }
+  legs <- x[["legs"]]
+  x[["legs"]] <- NULL
+  dt <- as_dt_row(x)
+  if (!is.null(legs) && is.list(legs) && length(legs) > 0) {
+    # Each leg is itself a full order object — recurse without legs to avoid nesting
+    legs_clean <- lapply(legs, function(leg) {
+      leg[["legs"]] <- NULL
+      return(leg)
+    })
+    legs_dt <- as_dt_list(legs_clean)
+    leg_names <- names(legs_dt)
+    data.table::setnames(legs_dt, leg_names, paste0("leg_", leg_names))
+    dt <- dt[rep(1L, nrow(legs_dt))]
+    dt <- cbind(dt, legs_dt)
+  }
+  return(dt[])
+}
+
+#' Parse a List of Order Responses to data.table
+#'
+#' Applies [parse_order()] to each item and row-binds.
+#'
+#' @param items A list of order named lists.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_orders <- function(items) {
+  if (is.null(items) || length(items) == 0) {
+    return(data.table::data.table()[])
+  }
+  dt <- data.table::rbindlist(lapply(items, parse_order), fill = TRUE)
   return(dt[])
 }

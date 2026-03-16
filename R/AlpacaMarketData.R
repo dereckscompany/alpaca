@@ -52,6 +52,7 @@
 #' | get_latest_trades_multi | `GET /v2/stocks/trades/latest` | data |
 #' | get_latest_quotes_multi | `GET /v2/stocks/quotes/latest` | data |
 #' | get_snapshots_multi | `GET /v2/stocks/snapshots` | data |
+#' | get_crypto_orderbook | `GET /v1beta3/crypto/\{loc\}/latest/orderbooks` | data |
 #' | get_most_actives | `GET /v1beta1/screener/stocks/most-actives` | data |
 #' | get_movers | `GET /v1beta1/screener/\{market_type\}/movers` | data |
 #'
@@ -1363,6 +1364,108 @@ AlpacaMarketData <- R6::R6Class(
           page_token = page_token
         ),
         .parser = function(data) parse_news(data$news)
+      ))
+    },
+
+    # ---- Crypto Orderbook ----
+
+    #' @description
+    #' Get Latest Crypto Orderbook
+    #'
+    #' Retrieves the latest orderbook (top of book) for a crypto symbol.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta3/crypto/{loc}/latest/orderbooks`
+    #'
+    #' ### Official Documentation
+    #' [Latest Crypto Orderbooks](https://docs.alpaca.markets/reference/cryptolatestorderbooks)
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1beta3/crypto/us/latest/orderbooks?symbols=BTC/USD'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "orderbooks": {
+    #'     "BTC/USD": {
+    #'       "t": "2024-01-15T20:00:00.123456Z",
+    #'       "b": [
+    #'         {"p": 42950.50, "s": 0.5},
+    #'         {"p": 42949.00, "s": 1.2}
+    #'       ],
+    #'       "a": [
+    #'         {"p": 42951.00, "s": 0.3},
+    #'         {"p": 42952.50, "s": 0.8}
+    #'       ]
+    #'     }
+    #'   }
+    #' }
+    #' ```
+    #'
+    #' @param symbols Character vector; crypto symbols (e.g. `"BTC/USD"`).
+    #' @param loc Character; location code, `"us"` (default).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #'   - `symbol` (character): Crypto symbol.
+    #'   - `side` (character): `"bid"` or `"ask"`.
+    #'   - `price` (numeric): Price level.
+    #'   - `size` (numeric): Quantity at this level.
+    #'   - `timestamp` (POSIXct): Orderbook timestamp.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' ob <- market$get_crypto_orderbook("BTC/USD")
+    #' print(ob)
+    #' }
+    get_crypto_orderbook = function(symbols, loc = "us") {
+      if (length(symbols) > 1) {
+        symbols <- paste(symbols, collapse = ",")
+      }
+      endpoint <- paste0("/v1beta3/crypto/", loc, "/latest/orderbooks")
+      return(private$.data_request(
+        endpoint = endpoint,
+        query = list(symbols = symbols),
+        .parser = function(data) {
+          ob_map <- data$orderbooks
+          if (is.null(ob_map) || length(ob_map) == 0) {
+            return(data.table::data.table(
+              symbol = character(),
+              side = character(),
+              price = numeric(),
+              size = numeric(),
+              timestamp = as.POSIXct(character())
+            ))
+          }
+          dts <- lapply(names(ob_map), function(sym) {
+            ob <- ob_map[[sym]]
+            ts <- rfc3339_to_datetime(ob$t)
+            rows <- list()
+            if (!is.null(ob$b) && length(ob$b) > 0) {
+              bids <- data.table::rbindlist(ob$b)
+              data.table::setnames(bids, c("p", "s"), c("price", "size"))
+              bids[, `:=`(symbol = sym, side = "bid", timestamp = ts)]
+              rows <- c(rows, list(bids))
+            }
+            if (!is.null(ob$a) && length(ob$a) > 0) {
+              asks <- data.table::rbindlist(ob$a)
+              data.table::setnames(asks, c("p", "s"), c("price", "size"))
+              asks[, `:=`(symbol = sym, side = "ask", timestamp = ts)]
+              rows <- c(rows, list(asks))
+            }
+            if (length(rows) == 0) {
+              return(data.table::data.table())
+            }
+            data.table::rbindlist(rows, fill = TRUE)
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if (nrow(dt) > 0 && "symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", "side", "price", "size", "timestamp"))
+          }
+          return(dt[])
+        }
       ))
     },
 

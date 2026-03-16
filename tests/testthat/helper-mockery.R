@@ -751,6 +751,26 @@ mock_movers_response <- function() {
   )
 }
 
+# ---- Crypto Orderbook Fixtures ----
+
+mock_crypto_orderbook_response <- function() {
+  list(
+    orderbooks = list(
+      "BTC/USD" = list(
+        t = "2024-01-15T20:00:00.123456Z",
+        b = list(
+          list(p = 42950.50, s = 0.5),
+          list(p = 42949.00, s = 1.2)
+        ),
+        a = list(
+          list(p = 42951.00, s = 0.3),
+          list(p = 42952.50, s = 0.8)
+        )
+      )
+    )
+  )
+}
+
 # ---- Option Latest Trades / Chain Fixtures ----
 
 mock_option_latest_trades_response <- function() {
