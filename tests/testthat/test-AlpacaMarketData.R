@@ -226,3 +226,39 @@ test_that("get_movers uses correct endpoint", {
   new_market()$get_movers(market_type = "stocks", top = 5)
   expect_true(grepl("screener/stocks/movers", captured_url))
 })
+
+test_that("get_crypto_orderbook returns long-format data.table", {
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 4L) # 2 bids + 2 asks
+  expect_true(all(c("symbol", "side", "price", "size", "timestamp") %in% names(dt)))
+  expect_setequal(unique(dt$side), c("bid", "ask"))
+  expect_equal(dt[side == "bid"]$price[1], 42950.50)
+  expect_equal(dt[side == "ask"]$price[1], 42951.00)
+  expect_equal(unique(dt$symbol), "BTC/USD")
+  expect_s3_class(dt$timestamp, "POSIXct")
+})
+
+test_that("get_crypto_orderbook uses correct endpoint", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_crypto_orderbook("BTC/USD", loc = "us")
+  expect_true(grepl("v1beta3/crypto/us/latest/orderbooks", captured_url))
+})
+
+test_that("get_crypto_orderbook handles empty response", {
+  resp <- mock_alpaca_response(list(orderbooks = list()))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 0L)
+})
