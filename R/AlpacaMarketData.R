@@ -1455,7 +1455,9 @@ AlpacaMarketData <- R6::R6Class(
               asks[, `:=`(symbol = sym, side = "ask", timestamp = ts)]
               rows <- c(rows, list(asks))
             }
-            if (length(rows) == 0) return(data.table::data.table())
+            if (length(rows) == 0) {
+              return(data.table::data.table())
+            }
             data.table::rbindlist(rows, fill = TRUE)
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)

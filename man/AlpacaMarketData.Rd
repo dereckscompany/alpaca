@@ -64,6 +64,7 @@ base URL. Both are configurable via constructor parameters.
    get_latest_trades_multi \tab \code{GET /v2/stocks/trades/latest} \tab data \cr
    get_latest_quotes_multi \tab \code{GET /v2/stocks/quotes/latest} \tab data \cr
    get_snapshots_multi \tab \code{GET /v2/stocks/snapshots} \tab data \cr
+   get_crypto_orderbook \tab \verb{GET /v1beta3/crypto/\\\{loc\\\}/latest/orderbooks} \tab data \cr
    get_most_actives \tab \code{GET /v1beta1/screener/stocks/most-actives} \tab data \cr
    get_movers \tab \verb{GET /v1beta1/screener/\\\{market_type\\\}/movers} \tab data \cr
 }
@@ -244,6 +245,16 @@ news <- market$get_news(symbols = "TSLA", include_content = TRUE)
 }
 
 ## ------------------------------------------------
+## Method `AlpacaMarketData$get_crypto_orderbook`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+ob <- market$get_crypto_orderbook("BTC/USD")
+print(ob)
+}
+
+## ------------------------------------------------
 ## Method `AlpacaMarketData$get_most_actives`
 ## ------------------------------------------------
 
@@ -288,6 +299,7 @@ print(movers)
 \item \href{#method-AlpacaMarketData-get_clock}{\code{AlpacaMarketData$get_clock()}}
 \item \href{#method-AlpacaMarketData-get_corporate_actions}{\code{AlpacaMarketData$get_corporate_actions()}}
 \item \href{#method-AlpacaMarketData-get_news}{\code{AlpacaMarketData$get_news()}}
+\item \href{#method-AlpacaMarketData-get_crypto_orderbook}{\code{AlpacaMarketData$get_crypto_orderbook()}}
 \item \href{#method-AlpacaMarketData-get_most_actives}{\code{AlpacaMarketData$get_most_actives()}}
 \item \href{#method-AlpacaMarketData-get_movers}{\code{AlpacaMarketData$get_movers()}}
 \item \href{#method-AlpacaMarketData-clone}{\code{AlpacaMarketData$clone()}}
@@ -1782,6 +1794,85 @@ print(news[, .(headline, source, created_at)])
 
 # News with full content
 news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_crypto_orderbook"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_crypto_orderbook}{}}}
+\subsection{Method \code{get_crypto_orderbook()}}{
+Get Latest Crypto Orderbook
+
+Retrieves the latest orderbook (top of book) for a crypto symbol.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta3/crypto/\{loc\}/latest/orderbooks}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/cryptolatestorderbooks}{Latest Crypto Orderbooks}
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta3/crypto/us/latest/orderbooks?symbols=BTC/USD'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "orderbooks": \{
+    "BTC/USD": \{
+      "t": "2024-01-15T20:00:00.123456Z",
+      "b": [
+        \{"p": 42950.50, "s": 0.5\},
+        \{"p": 42949.00, "s": 1.2\}
+      ],
+      "a": [
+        \{"p": 42951.00, "s": 0.3\},
+        \{"p": 42952.50, "s": 0.8\}
+      ]
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_crypto_orderbook(symbols, loc = "us")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; crypto symbols (e.g. \code{"BTC/USD"}).}
+
+\item{\code{loc}}{Character; location code, \code{"us"} (default).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\itemize{
+\item \code{symbol} (character): Crypto symbol.
+\item \code{side} (character): \code{"bid"} or \code{"ask"}.
+\item \code{price} (numeric): Price level.
+\item \code{size} (numeric): Quantity at this level.
+\item \code{timestamp} (POSIXct): Orderbook timestamp.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+ob <- market$get_crypto_orderbook("BTC/USD")
+print(ob)
 }
 }
 \if{html}{\out{</div>}}

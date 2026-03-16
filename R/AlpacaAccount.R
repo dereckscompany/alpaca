@@ -146,7 +146,19 @@ AlpacaAccount <- R6::R6Class(
     get_account = function() {
       return(private$.request(
         endpoint = "/v2/account",
-        .parser = as_dt_row
+        .parser = function(data) {
+          # Flatten nested configuration objects into wide prefixed columns
+          for (cfg_field in c("admin_configurations", "user_configurations")) {
+            cfg <- data[[cfg_field]]
+            if (!is.null(cfg) && is.list(cfg) && length(cfg) > 0) {
+              for (nm in names(cfg)) {
+                data[[paste0(cfg_field, "_", nm)]] <- cfg[[nm]]
+              }
+            }
+            data[[cfg_field]] <- NULL
+          }
+          return(as_dt_row(data))
+        }
       ))
     },
 

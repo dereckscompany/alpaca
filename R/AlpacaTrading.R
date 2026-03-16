@@ -228,7 +228,7 @@ AlpacaTrading <- R6::R6Class(
         endpoint = "/v2/orders",
         method = "POST",
         body = params,
-        .parser = as_dt_row
+        .parser = parse_order
       ))
     },
 
@@ -332,7 +332,7 @@ AlpacaTrading <- R6::R6Class(
           symbols = symbols,
           side = side
         ),
-        .parser = as_dt_list
+        .parser = parse_orders
       ))
     },
 
@@ -407,7 +407,7 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = endpoint,
         query = list(nested = nested),
-        .parser = as_dt_row
+        .parser = parse_order
       ))
     },
 
@@ -481,7 +481,7 @@ AlpacaTrading <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/orders:by_client_order_id",
         query = list(client_order_id = client_order_id),
-        .parser = as_dt_row
+        .parser = parse_order
       ))
     },
 
@@ -608,7 +608,7 @@ AlpacaTrading <- R6::R6Class(
           trail = trail,
           client_order_id = client_order_id
         ),
-        .parser = as_dt_row
+        .parser = parse_order
       ))
     },
 
