@@ -381,8 +381,8 @@ parse_news <- function(news_items) {
       return(data.table::data.table(image_size = NA_character_, image_url = NA_character_))
     }
     data.table::data.table(
-      image_size = vapply(imgs, function(img) img$size %||% NA_character_, character(1)),
-      image_url = vapply(imgs, function(img) img$url %||% NA_character_, character(1))
+      image_size = vapply(imgs, function(img) (if (is.null(img$size)) NA_character_ else img$size), character(1)),
+      image_url = vapply(imgs, function(img) (if (is.null(img$url)) NA_character_ else img$url), character(1))
     )
   })
   # Remove symbols and images from items for clean rbindlist
