@@ -68,7 +68,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Trading Overview](https://docs.alpaca.markets/us/docs/options-trading)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -112,7 +112,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Get Options Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -241,7 +241,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Get Option Contract by ID or Symbol](https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -302,7 +302,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Bars](https://docs.alpaca.markets/us/reference/optionbars)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -391,7 +391,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Trades](https://docs.alpaca.markets/us/reference/optiontrades)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -475,7 +475,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Latest Options Quotes](https://docs.alpaca.markets/us/reference/optionlatestquotes)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -540,7 +540,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Latest Options Trades](https://docs.alpaca.markets/us/reference/optionlatesttrades)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -603,7 +603,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Snapshots](https://docs.alpaca.markets/us/reference/optionsnapshots)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -712,7 +712,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Option Snapshot](https://docs.alpaca.markets/us/reference/optionsnapshots)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -782,7 +782,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Chain / Snapshots by Underlying](https://docs.alpaca.markets/us/reference/optionchain)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```

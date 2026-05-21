@@ -91,7 +91,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Authentication](https://docs.alpaca.markets/us/docs/getting-started)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -135,7 +135,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Historical Stock Bars](https://docs.alpaca.markets/us/reference/stockbarsingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -223,7 +223,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Multi Stock Bars](https://docs.alpaca.markets/us/reference/stockbars)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -304,7 +304,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Stock Bar](https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -361,7 +361,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -424,7 +424,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -489,7 +489,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Stock Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -538,7 +538,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Multi Bars](https://docs.alpaca.markets/us/reference/stocklatestbars-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -605,7 +605,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Multi Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -665,7 +665,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Multi Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -725,7 +725,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Multi Stock Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -803,7 +803,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Historical Stock Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -874,7 +874,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Historical Stock Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -945,7 +945,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1013,7 +1013,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Asset by ID or Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1070,7 +1070,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Calendar](https://docs.alpaca.markets/us/reference/calendar-2)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1120,7 +1120,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Clock](https://docs.alpaca.markets/us/reference/clock-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1171,7 +1171,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Corporate Actions](https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1274,7 +1274,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [News](https://docs.alpaca.markets/us/reference/news-3)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1378,7 +1378,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Most Active Stocks](https://docs.alpaca.markets/us/reference/mostactives-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
@@ -1431,7 +1431,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Top Market Movers](https://docs.alpaca.markets/us/reference/movers-1)
-    #' Verifieid: 2026-03-10
+    #' Verified: 2026-03-10
     #'
     #' ### curl
     #' ```
