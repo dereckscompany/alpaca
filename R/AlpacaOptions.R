@@ -21,8 +21,8 @@
 #' Contract metadata endpoints use the trading base URL.
 #'
 #' ### Official Documentation
-#' - [Options Contracts](https://docs.alpaca.markets/reference/optioncontracts)
-#' - [Options Market Data](https://docs.alpaca.markets/docs/options-market-data)
+#' - [Options Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
+#' - [Options Market Data](https://docs.alpaca.markets/us/docs/historical-option-data)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | Base |
@@ -67,7 +67,7 @@ AlpacaOptions <- R6::R6Class(
     #' Constructor only — no HTTP request is made.
     #'
     #' ### Official Documentation
-    #' - [Options Trading Overview](https://docs.alpaca.markets/docs/options-trading)
+    #' - [Options Trading Overview](https://docs.alpaca.markets/us/docs/options-trading)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -111,7 +111,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/options/contracts`
     #'
     #' ### Official Documentation
-    #' - [Get Options Contracts](https://docs.alpaca.markets/reference/optioncontracts)
+    #' - [Get Options Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -240,7 +240,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/options/contracts/{symbol_or_id}`
     #'
     #' ### Official Documentation
-    #' - [Get Option Contract by ID or Symbol](https://docs.alpaca.markets/reference/getoptioncontract)
+    #' - [Get Option Contract by ID or Symbol](https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -301,7 +301,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/bars`
     #'
     #' ### Official Documentation
-    #' - [Options Bars](https://docs.alpaca.markets/reference/optionbars)
+    #' - [Options Bars](https://docs.alpaca.markets/us/reference/optionbars)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -390,7 +390,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/trades`
     #'
     #' ### Official Documentation
-    #' - [Options Trades](https://docs.alpaca.markets/reference/optiontrades)
+    #' - [Options Trades](https://docs.alpaca.markets/us/reference/optiontrades)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -474,7 +474,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/quotes/latest`
     #'
     #' ### Official Documentation
-    #' - [Latest Options Quotes](https://docs.alpaca.markets/reference/optionlatestquotes)
+    #' - [Latest Options Quotes](https://docs.alpaca.markets/us/reference/optionlatestquotes)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -539,7 +539,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/trades/latest`
     #'
     #' ### Official Documentation
-    #' - [Latest Options Trades](https://docs.alpaca.markets/reference/optionlatesttrades)
+    #' - [Latest Options Trades](https://docs.alpaca.markets/us/reference/optionlatesttrades)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -602,7 +602,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/snapshots`
     #'
     #' ### Official Documentation
-    #' - [Options Snapshots](https://docs.alpaca.markets/reference/optionsnapshots)
+    #' - [Options Snapshots](https://docs.alpaca.markets/us/reference/optionsnapshots)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -711,7 +711,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/snapshots/{symbol}`
     #'
     #' ### Official Documentation
-    #' - [Option Snapshot](https://docs.alpaca.markets/reference/optionsnapshot)
+    #' - [Option Snapshot](https://docs.alpaca.markets/us/reference/optionsnapshots)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -781,7 +781,7 @@ AlpacaOptions <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/options/snapshots/{underlying_symbol}`
     #'
     #' ### Official Documentation
-    #' - [Options Chain / Snapshots by Underlying](https://docs.alpaca.markets/reference/optionchain)
+    #' - [Options Chain / Snapshots by Underlying](https://docs.alpaca.markets/us/reference/optionchain)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl

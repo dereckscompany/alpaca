@@ -39,8 +39,8 @@ base URL. Both are configurable via constructor parameters.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/docs/about-market-data-api}{Market Data API}
-\item \href{https://docs.alpaca.markets/docs/historical-stock-data-1}{Historical Stock Data}
+\item \href{https://docs.alpaca.markets/us/docs/about-market-data-api}{Market Data API}
+\item \href{https://docs.alpaca.markets/us/docs/historical-stock-data-1}{Historical Stock Data}
 }
 }
 
@@ -309,7 +309,7 @@ credentials and base URLs for subsequent method calls.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/docs/getting-started}{Authentication}
+\item \href{https://docs.alpaca.markets/us/docs/getting-started}{Authentication}
 Verifieid: 2026-03-10
 }
 }
@@ -369,7 +369,7 @@ include open, high, low, close, volume, trade count, and VWAP.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockbars}{Historical Stock Bars}
+\href{https://docs.alpaca.markets/us/reference/stockbarsingle-1}{Historical Stock Bars}
 Verifieid: 2026-03-10
 }
 
@@ -472,7 +472,7 @@ Retrieves historical bar data for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockbars-1}{Multi Stock Bars}
+\href{https://docs.alpaca.markets/us/reference/stockbars}{Multi Stock Bars}
 Verifieid: 2026-03-10
 }
 
@@ -566,7 +566,7 @@ Retrieves the most recent bar for a single symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestbar}{Latest Stock Bar}
+\href{https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1}{Latest Stock Bar}
 Verifieid: 2026-03-10
 }
 
@@ -638,7 +638,7 @@ Retrieves the most recent trade for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatesttrade}{Latest Trade}
+\href{https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1}{Latest Trade}
 Verifieid: 2026-03-10
 }
 
@@ -718,7 +718,7 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestquote}{Latest Quote}
+\href{https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1}{Latest Quote}
 Verifieid: 2026-03-10
 }
 
@@ -800,7 +800,7 @@ latest quote, minute bar, daily bar, and previous daily bar.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocksnapshot}{Stock Snapshot}
+\href{https://docs.alpaca.markets/us/reference/stocksnapshotsingle}{Stock Snapshot}
 Verifieid: 2026-03-10
 }
 
@@ -866,7 +866,7 @@ Retrieves the most recent bar for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestbars}{Latest Multi Bars}
+\href{https://docs.alpaca.markets/us/reference/stocklatestbars-1}{Latest Multi Bars}
 Verifieid: 2026-03-10
 }
 
@@ -931,7 +931,7 @@ Retrieves the most recent trade for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatesttrades}{Latest Multi Trades}
+\href{https://docs.alpaca.markets/us/reference/stocklatesttrades-1}{Latest Multi Trades}
 Verifieid: 2026-03-10
 }
 
@@ -984,7 +984,7 @@ Retrieves the most recent NBBO quote for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestquotes}{Latest Multi Quotes}
+\href{https://docs.alpaca.markets/us/reference/stocklatestquotes-1}{Latest Multi Quotes}
 Verifieid: 2026-03-10
 }
 
@@ -1037,7 +1037,7 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocksnapshots}{Multi Stock Snapshots}
+\href{https://docs.alpaca.markets/us/reference/stocksnapshots-1}{Multi Stock Snapshots}
 Verifieid: 2026-03-10
 }
 
@@ -1112,7 +1112,7 @@ Retrieves historical trade data for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocktrades}{Historical Stock Trades}
+\href{https://docs.alpaca.markets/us/reference/stocktradesingle-1}{Historical Stock Trades}
 Verifieid: 2026-03-10
 }
 
@@ -1195,7 +1195,7 @@ Retrieves historical quote (NBBO) data for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockquotes}{Historical Stock Quotes}
+\href{https://docs.alpaca.markets/us/reference/stockquotesingle-1}{Historical Stock Quotes}
 Verifieid: 2026-03-10
 }
 
@@ -1276,7 +1276,7 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-assets}{Assets}
+\href{https://docs.alpaca.markets/us/reference/get-v2-assets-1}{Assets}
 Verifieid: 2026-03-10
 }
 
@@ -1365,7 +1365,7 @@ Retrieves metadata for a single asset.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
+\href{https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
 Verifieid: 2026-03-10
 }
 
@@ -1437,7 +1437,7 @@ Includes early closure information.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-calendar}{Calendar}
+\href{https://docs.alpaca.markets/us/reference/calendar-2}{Calendar}
 Verifieid: 2026-03-10
 }
 
@@ -1507,7 +1507,7 @@ open and the next open/close times.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-clock}{Clock}
+\href{https://docs.alpaca.markets/us/reference/clock-1}{Clock}
 Verifieid: 2026-03-10
 }
 
@@ -1570,7 +1570,7 @@ need to handle position adjustments.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements}{Corporate Actions}
+\href{https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1}{Corporate Actions}
 Verifieid: 2026-03-10
 }
 
@@ -1688,7 +1688,7 @@ date range, or content. Useful for event-driven trading strategies.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/news-1}{News}
+\href{https://docs.alpaca.markets/us/reference/news-3}{News}
 Verifieid: 2026-03-10
 }
 
@@ -1803,7 +1803,7 @@ Retrieves the most active stocks by volume or trade count.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/mostactives}{Most Active Stocks}
+\href{https://docs.alpaca.markets/us/reference/mostactives-1}{Most Active Stocks}
 Verifieid: 2026-03-10
 }
 
@@ -1876,7 +1876,7 @@ Retrieves the top market movers (gainers and losers) by percentage change.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/movers}{Top Market Movers}
+\href{https://docs.alpaca.markets/us/reference/movers-1}{Top Market Movers}
 Verifieid: 2026-03-10
 }
 

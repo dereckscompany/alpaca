@@ -21,10 +21,10 @@
 #' - **Watchlists**: Create, update, and manage symbol watchlists.
 #'
 #' ### Official Documentation
-#' - [Account](https://docs.alpaca.markets/reference/getaccount-1)
-#' - [Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
-#' - [Portfolio History](https://docs.alpaca.markets/reference/getportfoliohistory)
-#' - [Account Activities](https://docs.alpaca.markets/reference/getaccountactivities)
+#' - [Account](https://docs.alpaca.markets/us/reference/getaccount-1)
+#' - [Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
+#' - [Portfolio History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
+#' - [Account Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
@@ -79,7 +79,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account`
     #'
     #' ### Official Documentation
-    #' [Get Account](https://docs.alpaca.markets/reference/getaccount-1)
+    #' [Get Account](https://docs.alpaca.markets/us/reference/getaccount-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -160,7 +160,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/configurations`
     #'
     #' ### Official Documentation
-    #' [Get Account Configurations](https://docs.alpaca.markets/reference/getaccountconfig-1)
+    #' [Get Account Configurations](https://docs.alpaca.markets/us/reference/getaccountconfig-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -215,7 +215,7 @@ AlpacaAccount <- R6::R6Class(
     #' `PATCH https://paper-api.alpaca.markets/v2/account/configurations`
     #'
     #' ### Official Documentation
-    #' [Update Account Configurations](https://docs.alpaca.markets/reference/patchaccountconfig-1)
+    #' [Update Account Configurations](https://docs.alpaca.markets/us/reference/patchaccountconfig-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -302,7 +302,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/positions`
     #'
     #' ### Official Documentation
-    #' [Get All Open Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
+    #' [Get All Open Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -371,7 +371,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/positions/{symbol_or_asset_id}`
     #'
     #' ### Official Documentation
-    #' [Get Open Position](https://docs.alpaca.markets/reference/getopenposition-1)
+    #' [Get Open Position](https://docs.alpaca.markets/us/reference/getopenposition-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -428,7 +428,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/positions/{symbol_or_asset_id}`
     #'
     #' ### Official Documentation
-    #' [Close Position](https://docs.alpaca.markets/reference/deleteposition)
+    #' [Close Position](https://docs.alpaca.markets/us/reference/deleteopenposition-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -506,7 +506,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/positions`
     #'
     #' ### Official Documentation
-    #' [Close All Positions](https://docs.alpaca.markets/reference/deleteallopenpositions)
+    #' [Close All Positions](https://docs.alpaca.markets/us/reference/deleteallopenpositions-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -597,7 +597,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' ### Official Documentation
-    #' [Exercise Option](https://docs.alpaca.markets/reference/postpositionsymboloridexercise)
+    #' [Exercise Option](https://docs.alpaca.markets/us/reference/optionexercise)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -651,7 +651,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/portfolio/history`
     #'
     #' ### Official Documentation
-    #' [Portfolio History](https://docs.alpaca.markets/reference/getportfoliohistory)
+    #' [Portfolio History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -741,7 +741,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/activities`
     #'
     #' ### Official Documentation
-    #' [Account Activities](https://docs.alpaca.markets/reference/getaccountactivities)
+    #' [Account Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -820,7 +820,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/activities/{activity_type}`
     #'
     #' ### Official Documentation
-    #' [Get Account Activities by Type](https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype)
+    #' [Get Account Activities by Type](https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -901,7 +901,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/watchlists`
     #'
     #' ### Official Documentation
-    #' [Watchlists](https://docs.alpaca.markets/reference/getwatchlists)
+    #' [Watchlists](https://docs.alpaca.markets/us/reference/getwatchlists-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -959,7 +959,7 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Get Watchlist by ID](https://docs.alpaca.markets/reference/getwatchlistbyid)
+    #' [Get Watchlist by ID](https://docs.alpaca.markets/us/reference/getwatchlistbyid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -1027,7 +1027,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/watchlists`
     #'
     #' ### Official Documentation
-    #' [Create Watchlist](https://docs.alpaca.markets/reference/postwatchlist)
+    #' [Create Watchlist](https://docs.alpaca.markets/us/reference/postwatchlist-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -1092,7 +1092,7 @@ AlpacaAccount <- R6::R6Class(
     #' `PUT https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Update Watchlist](https://docs.alpaca.markets/reference/putwatchlistbyid)
+    #' [Update Watchlist](https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -1157,7 +1157,7 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Add Symbol to Watchlist](https://docs.alpaca.markets/reference/postwatchlistbyid)
+    #' [Add Symbol to Watchlist](https://docs.alpaca.markets/us/reference/addassettowatchlist-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -1220,7 +1220,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}/{symbol}`
     #'
     #' ### Official Documentation
-    #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol)
+    #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -1281,7 +1281,7 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Delete Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyid)
+    #' [Delete Watchlist](https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl

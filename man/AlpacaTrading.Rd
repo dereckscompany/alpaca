@@ -26,7 +26,7 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/orders-4}{Orders}
+\href{https://docs.alpaca.markets/us/reference/orders-4}{Orders}
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
@@ -184,7 +184,7 @@ advanced order classes (bracket, OCO, OTO).
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postorder}{Create Order}
+\href{https://docs.alpaca.markets/us/reference/postorder}{Create Order}
 Verified: 2026-03-10
 }
 
@@ -377,7 +377,7 @@ side, and date range. Supports pagination.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getallorders}{List Orders}
+\href{https://docs.alpaca.markets/us/reference/getallorders-1}{List Orders}
 Verified: 2026-03-10
 }
 
@@ -493,7 +493,7 @@ Retrieves a single order by its UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getorderbyorderid}{Get Order}
+\href{https://docs.alpaca.markets/us/reference/getorderbyorderid-1}{Get Order}
 Verified: 2026-03-10
 }
 
@@ -586,7 +586,7 @@ order tracking in production systems.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getorderbyclientorderid}{Get Order by Client ID}
+\href{https://docs.alpaca.markets/us/reference/getorderbyclientorderid}{Get Order by Client ID}
 Verified: 2026-03-10
 }
 
@@ -677,7 +677,7 @@ is cancelled and a new order is created atomically.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/patchorder}{Replace Order}
+\href{https://docs.alpaca.markets/us/reference/patchorderbyorderid-1}{Replace Order}
 Verified: 2026-03-10
 }
 
@@ -803,7 +803,7 @@ Cancels a single open order by its UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteorderbyorderid}{Cancel Order}
+\href{https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1}{Cancel Order}
 Verified: 2026-03-10
 }
 
@@ -869,7 +869,7 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteallorders}{Cancel All Orders}
+\href{https://docs.alpaca.markets/us/reference/deleteallorders-1}{Cancel All Orders}
 Verified: 2026-03-10
 }
 

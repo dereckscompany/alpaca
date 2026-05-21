@@ -32,8 +32,8 @@ Contract metadata endpoints use the trading base URL.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optioncontracts}{Options Contracts}
-\item \href{https://docs.alpaca.markets/docs/options-market-data}{Options Market Data}
+\item \href{https://docs.alpaca.markets/us/reference/get-options-contracts}{Options Contracts}
+\item \href{https://docs.alpaca.markets/us/docs/historical-option-data}{Options Market Data}
 }
 }
 
@@ -162,7 +162,7 @@ Constructor only — no HTTP request is made.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/docs/options-trading}{Options Trading Overview}
+\item \href{https://docs.alpaca.markets/us/docs/options-trading}{Options Trading Overview}
 Verifieid: 2026-03-10
 }
 }
@@ -222,7 +222,7 @@ symbol, type, expiration date, strike price, and more.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optioncontracts}{Get Options Contracts}
+\item \href{https://docs.alpaca.markets/us/reference/get-options-contracts}{Get Options Contracts}
 Verifieid: 2026-03-10
 }
 }
@@ -360,7 +360,7 @@ Retrieves a single options contract by its OCC symbol or UUID.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/getoptioncontract}{Get Option Contract by ID or Symbol}
+\item \href{https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id}{Get Option Contract by ID or Symbol}
 Verifieid: 2026-03-10
 }
 }
@@ -437,7 +437,7 @@ Retrieves historical bar data for options contracts.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionbars}{Options Bars}
+\item \href{https://docs.alpaca.markets/us/reference/optionbars}{Options Bars}
 Verifieid: 2026-03-10
 }
 }
@@ -542,7 +542,7 @@ Retrieves historical trade data for options contracts.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optiontrades}{Options Trades}
+\item \href{https://docs.alpaca.markets/us/reference/optiontrades}{Options Trades}
 Verifieid: 2026-03-10
 }
 }
@@ -623,7 +623,7 @@ Retrieves the latest NBBO quotes for one or more options contracts.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionlatestquotes}{Latest Options Quotes}
+\item \href{https://docs.alpaca.markets/us/reference/optionlatestquotes}{Latest Options Quotes}
 Verifieid: 2026-03-10
 }
 }
@@ -685,7 +685,7 @@ Retrieves the latest trades for one or more options contracts.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionlatesttrades}{Latest Options Trades}
+\item \href{https://docs.alpaca.markets/us/reference/optionlatesttrades}{Latest Options Trades}
 Verifieid: 2026-03-10
 }
 }
@@ -745,7 +745,7 @@ the latest trade, latest quote, and implied volatility.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionsnapshots}{Options Snapshots}
+\item \href{https://docs.alpaca.markets/us/reference/optionsnapshots}{Options Snapshots}
 Verifieid: 2026-03-10
 }
 }
@@ -851,7 +851,7 @@ Retrieves a real-time snapshot for a single options contract.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionsnapshot}{Option Snapshot}
+\item \href{https://docs.alpaca.markets/us/reference/optionsnapshots}{Option Snapshot}
 Verifieid: 2026-03-10
 }
 }
@@ -939,7 +939,7 @@ available contracts with their latest market data.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/optionchain}{Options Chain / Snapshots by Underlying}
+\item \href{https://docs.alpaca.markets/us/reference/optionchain}{Options Chain / Snapshots by Underlying}
 Verifieid: 2026-03-10
 }
 }

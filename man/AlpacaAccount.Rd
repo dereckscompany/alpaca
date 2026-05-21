@@ -30,10 +30,10 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/getaccount-1}{Account}
-\item \href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Positions}
-\item \href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
-\item \href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
+\item \href{https://docs.alpaca.markets/us/reference/getaccount-1}{Account}
+\item \href{https://docs.alpaca.markets/us/reference/getallopenpositions}{Positions}
+\item \href{https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1}{Portfolio History}
+\item \href{https://docs.alpaca.markets/us/reference/getaccountactivities-2}{Account Activities}
 }
 }
 
@@ -306,7 +306,7 @@ cash, margin, and account status.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccount-1}{Get Account}
+\href{https://docs.alpaca.markets/us/reference/getaccount-1}{Get Account}
 Verified: 2026-03-10
 }
 
@@ -401,7 +401,7 @@ check behavior, trade confirmation emails, and shorting restrictions.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountconfig-1}{Get Account Configurations}
+\href{https://docs.alpaca.markets/us/reference/getaccountconfig-1}{Get Account Configurations}
 Verified: 2026-03-10
 }
 
@@ -470,7 +470,7 @@ Modifies one or more account configuration settings.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/patchaccountconfig-1}{Update Account Configurations}
+\href{https://docs.alpaca.markets/us/reference/patchaccountconfig-1}{Update Account Configurations}
 Verified: 2026-03-10
 }
 
@@ -570,7 +570,7 @@ Retrieves all currently open positions in the account.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Get All Open Positions}
+\href{https://docs.alpaca.markets/us/reference/getallopenpositions}{Get All Open Positions}
 Verified: 2026-03-10
 }
 
@@ -653,7 +653,7 @@ Retrieves a single open position by symbol or asset UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getopenposition-1}{Get Open Position}
+\href{https://docs.alpaca.markets/us/reference/getopenposition-1}{Get Open Position}
 Verified: 2026-03-10
 }
 
@@ -727,7 +727,7 @@ full position or a partial amount by quantity or percentage.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteposition}{Close Position}
+\href{https://docs.alpaca.markets/us/reference/deleteopenposition-1}{Close Position}
 Verified: 2026-03-10
 }
 
@@ -812,7 +812,7 @@ Closes all open positions. Optionally cancels all open orders first.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteallopenpositions}{Close All Positions}
+\href{https://docs.alpaca.markets/us/reference/deleteallopenpositions-1}{Close All Positions}
 Verified: 2026-03-10
 }
 
@@ -902,7 +902,7 @@ Exercises an options position. Only applicable to options contracts.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postpositionsymboloridexercise}{Exercise Option}
+\href{https://docs.alpaca.markets/us/reference/optionexercise}{Exercise Option}
 Verified: 2026-03-10
 }
 
@@ -968,7 +968,7 @@ Retrieves the portfolio value history as a time series.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
+\href{https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1}{Portfolio History}
 Verified: 2026-03-10
 }
 
@@ -1061,7 +1061,7 @@ include order fills, dividends, transfers, and other events.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
+\href{https://docs.alpaca.markets/us/reference/getaccountactivities-2}{Account Activities}
 Verified: 2026-03-10
 }
 
@@ -1155,7 +1155,7 @@ Retrieves account activities filtered to a specific type.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype}{Get Account Activities by Type}
+\href{https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1}{Get Account Activities by Type}
 Verified: 2026-03-10
 }
 
@@ -1249,7 +1249,7 @@ Retrieves all watchlists for the account.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getwatchlists}{Watchlists}
+\href{https://docs.alpaca.markets/us/reference/getwatchlists-1}{Watchlists}
 Verified: 2026-03-10
 }
 
@@ -1321,7 +1321,7 @@ Retrieves a single watchlist including its asset entries.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getwatchlistbyid}{Get Watchlist by ID}
+\href{https://docs.alpaca.markets/us/reference/getwatchlistbyid-1}{Get Watchlist by ID}
 Verified: 2026-03-10
 }
 
@@ -1406,7 +1406,7 @@ Creates a new watchlist with an optional initial set of symbols.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postwatchlist}{Create Watchlist}
+\href{https://docs.alpaca.markets/us/reference/postwatchlist-1}{Create Watchlist}
 Verified: 2026-03-10
 }
 
@@ -1489,7 +1489,7 @@ Replaces the name and/or symbols of an existing watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/putwatchlistbyid}{Update Watchlist}
+\href{https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1}{Update Watchlist}
 Verified: 2026-03-10
 }
 
@@ -1572,7 +1572,7 @@ Appends a single symbol to an existing watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postwatchlistbyid}{Add Symbol to Watchlist}
+\href{https://docs.alpaca.markets/us/reference/addassettowatchlist-1}{Add Symbol to Watchlist}
 Verified: 2026-03-10
 }
 
@@ -1652,7 +1652,7 @@ Removes a single symbol from a watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol}{Remove Symbol from Watchlist}
+\href{https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1}{Remove Symbol from Watchlist}
 Verified: 2026-03-10
 }
 
@@ -1724,7 +1724,7 @@ Permanently deletes a watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deletewatchlistbyid}{Delete Watchlist}
+\href{https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1}{Delete Watchlist}
 Verified: 2026-03-10
 }
 

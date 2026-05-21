@@ -28,8 +28,8 @@
 #' base URL. Both are configurable via constructor parameters.
 #'
 #' ### Official Documentation
-#' - [Market Data API](https://docs.alpaca.markets/docs/about-market-data-api)
-#' - [Historical Stock Data](https://docs.alpaca.markets/docs/historical-stock-data-1)
+#' - [Market Data API](https://docs.alpaca.markets/us/docs/about-market-data-api)
+#' - [Historical Stock Data](https://docs.alpaca.markets/us/docs/historical-stock-data-1)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | Base |
@@ -90,7 +90,7 @@ AlpacaMarketData <- R6::R6Class(
     #' credentials and base URLs for subsequent method calls.
     #'
     #' ### Official Documentation
-    #' - [Authentication](https://docs.alpaca.markets/docs/getting-started)
+    #' - [Authentication](https://docs.alpaca.markets/us/docs/getting-started)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -134,7 +134,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Bars](https://docs.alpaca.markets/reference/stockbars)
+    #' [Historical Stock Bars](https://docs.alpaca.markets/us/reference/stockbarsingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -222,7 +222,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/bars`
     #'
     #' ### Official Documentation
-    #' [Multi Stock Bars](https://docs.alpaca.markets/reference/stockbars-1)
+    #' [Multi Stock Bars](https://docs.alpaca.markets/us/reference/stockbars)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -303,7 +303,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Stock Bar](https://docs.alpaca.markets/reference/stocklatestbar)
+    #' [Latest Stock Bar](https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -360,7 +360,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
+    #' [Latest Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -423,7 +423,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Quote](https://docs.alpaca.markets/reference/stocklatestquote)
+    #' [Latest Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -488,7 +488,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/snapshot`
     #'
     #' ### Official Documentation
-    #' [Stock Snapshot](https://docs.alpaca.markets/reference/stocksnapshot)
+    #' [Stock Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -537,7 +537,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/bars/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Bars](https://docs.alpaca.markets/reference/stocklatestbars)
+    #' [Latest Multi Bars](https://docs.alpaca.markets/us/reference/stocklatestbars-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -604,7 +604,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Trades](https://docs.alpaca.markets/reference/stocklatesttrades)
+    #' [Latest Multi Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -664,7 +664,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Quotes](https://docs.alpaca.markets/reference/stocklatestquotes)
+    #' [Latest Multi Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -724,7 +724,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/snapshots`
     #'
     #' ### Official Documentation
-    #' [Multi Stock Snapshots](https://docs.alpaca.markets/reference/stocksnapshots)
+    #' [Multi Stock Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -802,7 +802,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Trades](https://docs.alpaca.markets/reference/stocktrades)
+    #' [Historical Stock Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -873,7 +873,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Quotes](https://docs.alpaca.markets/reference/stockquotes)
+    #' [Historical Stock Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -944,7 +944,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets`
     #'
     #' ### Official Documentation
-    #' [Assets](https://docs.alpaca.markets/reference/get-v2-assets)
+    #' [Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1012,7 +1012,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets/{symbol_or_id}`
     #'
     #' ### Official Documentation
-    #' [Asset by ID or Symbol](https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id)
+    #' [Asset by ID or Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1069,7 +1069,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/calendar`
     #'
     #' ### Official Documentation
-    #' [Calendar](https://docs.alpaca.markets/reference/get-v2-calendar)
+    #' [Calendar](https://docs.alpaca.markets/us/reference/calendar-2)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1119,7 +1119,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/clock`
     #'
     #' ### Official Documentation
-    #' [Clock](https://docs.alpaca.markets/reference/get-v2-clock)
+    #' [Clock](https://docs.alpaca.markets/us/reference/clock-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1170,7 +1170,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/corporate_actions/announcements`
     #'
     #' ### Official Documentation
-    #' [Corporate Actions](https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements)
+    #' [Corporate Actions](https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1273,7 +1273,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/news`
     #'
     #' ### Official Documentation
-    #' [News](https://docs.alpaca.markets/reference/news-1)
+    #' [News](https://docs.alpaca.markets/us/reference/news-3)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1377,7 +1377,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives`
     #'
     #' ### Official Documentation
-    #' [Most Active Stocks](https://docs.alpaca.markets/reference/mostactives)
+    #' [Most Active Stocks](https://docs.alpaca.markets/us/reference/mostactives-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl
@@ -1430,7 +1430,7 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/screener/{market_type}/movers`
     #'
     #' ### Official Documentation
-    #' [Top Market Movers](https://docs.alpaca.markets/reference/movers)
+    #' [Top Market Movers](https://docs.alpaca.markets/us/reference/movers-1)
     #' Verifieid: 2026-03-10
     #'
     #' ### curl

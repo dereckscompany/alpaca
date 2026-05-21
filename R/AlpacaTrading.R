@@ -17,7 +17,7 @@
 #' - **Query Orders**: List open, closed, or all orders with filtering.
 #'
 #' ### Official Documentation
-#' [Orders](https://docs.alpaca.markets/reference/orders-4)
+#' [Orders](https://docs.alpaca.markets/us/reference/orders-4)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
@@ -64,7 +64,7 @@ AlpacaTrading <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [Create Order](https://docs.alpaca.markets/reference/postorder)
+    #' [Create Order](https://docs.alpaca.markets/us/reference/postorder)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -244,7 +244,7 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [List Orders](https://docs.alpaca.markets/reference/getallorders)
+    #' [List Orders](https://docs.alpaca.markets/us/reference/getallorders-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -345,7 +345,7 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Get Order](https://docs.alpaca.markets/reference/getorderbyorderid)
+    #' [Get Order](https://docs.alpaca.markets/us/reference/getorderbyorderid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -421,7 +421,7 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id`
     #'
     #' ### Official Documentation
-    #' [Get Order by Client ID](https://docs.alpaca.markets/reference/getorderbyclientorderid)
+    #' [Get Order by Client ID](https://docs.alpaca.markets/us/reference/getorderbyclientorderid)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -497,7 +497,7 @@ AlpacaTrading <- R6::R6Class(
     #' `PATCH https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Replace Order](https://docs.alpaca.markets/reference/patchorder)
+    #' [Replace Order](https://docs.alpaca.markets/us/reference/patchorderbyorderid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -623,7 +623,7 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Cancel Order](https://docs.alpaca.markets/reference/deleteorderbyorderid)
+    #' [Cancel Order](https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
@@ -675,7 +675,7 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [Cancel All Orders](https://docs.alpaca.markets/reference/deleteallorders)
+    #' [Cancel All Orders](https://docs.alpaca.markets/us/reference/deleteallorders-1)
     #' Verified: 2026-03-10
     #'
     #' ### curl
