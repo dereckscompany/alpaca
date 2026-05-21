@@ -80,7 +80,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Account](https://docs.alpaca.markets/us/reference/getaccount-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -161,7 +161,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Account Configurations](https://docs.alpaca.markets/us/reference/getaccountconfig-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -216,7 +216,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Update Account Configurations](https://docs.alpaca.markets/us/reference/patchaccountconfig-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -253,9 +253,15 @@ AlpacaAccount <- R6::R6Class(
     #' @param suspend_trade Logical or NULL; if `TRUE`, suspends all trading.
     #' @param trade_confirm_email Character or NULL; `"all"`, `"none"`.
     #' @param fractional_trading Logical or NULL; enable/disable fractional trading.
-    #' @param max_margin_multiplier Character or NULL; `"1"` (no margin) or `"2"` (Reg-T).
+    #' @param max_margin_multiplier Character or NULL; `"1"`, `"2"`, or `"4"`.
     #' @param pdt_check Character or NULL; `"both"`, `"entry"`, `"exit"`.
-    #' @param max_options_trading_level Integer or NULL; options trading level (0-2).
+    #' @param max_options_trading_level Integer or NULL; options trading level
+    #'   (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
+    #'   3=Spreads/Straddles).
+    #' @param ptp_no_exception_entry Logical or NULL; if `TRUE`, accept orders
+    #'   for PTP symbols with no exception.
+    #' @param disable_overnight_trading Logical or NULL; if `TRUE`, disable
+    #'   overnight trading on the account.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   the updated configuration.
     #'
@@ -272,7 +278,9 @@ AlpacaAccount <- R6::R6Class(
       fractional_trading = NULL,
       max_margin_multiplier = NULL,
       pdt_check = NULL,
-      max_options_trading_level = NULL
+      max_options_trading_level = NULL,
+      ptp_no_exception_entry = NULL,
+      disable_overnight_trading = NULL
     ) {
       return(private$.request(
         endpoint = "/v2/account/configurations",
@@ -285,7 +293,9 @@ AlpacaAccount <- R6::R6Class(
           fractional_trading = fractional_trading,
           max_margin_multiplier = max_margin_multiplier,
           pdt_check = pdt_check,
-          max_options_trading_level = max_options_trading_level
+          max_options_trading_level = max_options_trading_level,
+          ptp_no_exception_entry = ptp_no_exception_entry,
+          disable_overnight_trading = disable_overnight_trading
         ),
         .parser = as_dt_row
       ))
@@ -303,7 +313,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get All Open Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -372,7 +382,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Open Position](https://docs.alpaca.markets/us/reference/getopenposition-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -429,7 +439,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Close Position](https://docs.alpaca.markets/us/reference/deleteopenposition-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -507,7 +517,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Close All Positions](https://docs.alpaca.markets/us/reference/deleteallopenpositions-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -598,7 +608,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Exercise Option](https://docs.alpaca.markets/us/reference/optionexercise)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -652,7 +662,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Portfolio History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -673,16 +683,17 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param period Character or NULL; time period for the history. Examples:
-    #'   `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Cannot be used with
-    #'   `date_start`/`date_end`.
+    #'   `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Mutually exclusive with
+    #'   providing both `start` and `end`.
     #' @param timeframe Character or NULL; resolution of the time series:
     #'   `"1Min"`, `"5Min"`, `"15Min"`, `"1H"`, `"1D"`.
-    #' @param date_start Character or NULL; start date (`"YYYY-MM-DD"`). Use with
-    #'   `date_end` instead of `period`.
-    #' @param date_end Character or NULL; end date (`"YYYY-MM-DD"`).
-    #' @param intraday_reporting Character or NULL; `"market_hours"` (default) or
-    #'   `"extended_hours"`.
+    #' @param start Character or NULL; start timestamp in RFC3339 format.
+    #'   Defaults to `end` minus `period`.
+    #' @param end Character or NULL; end timestamp in RFC3339 format.
+    #' @param intraday_reporting Character or NULL; `"market_hours"` (default),
+    #'   `"extended_hours"`, or `"continuous"` (for 24/7 crypto charts).
     #' @param pnl_reset Character or NULL; `"per_day"` (default) or `"no_reset"`.
+    #'   Set to `"no_reset"` for continuous crypto PnL.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `timestamp` (POSIXct): Snapshot timestamp in UTC.
     #'   - `equity` (numeric): Portfolio equity value.
@@ -698,8 +709,8 @@ AlpacaAccount <- R6::R6Class(
     get_portfolio_history = function(
       period = NULL,
       timeframe = NULL,
-      date_start = NULL,
-      date_end = NULL,
+      start = NULL,
+      end = NULL,
       intraday_reporting = NULL,
       pnl_reset = NULL
     ) {
@@ -708,8 +719,8 @@ AlpacaAccount <- R6::R6Class(
         query = list(
           period = period,
           timeframe = timeframe,
-          date_start = date_start,
-          date_end = date_end,
+          start = start,
+          end = end,
           intraday_reporting = intraday_reporting,
           pnl_reset = pnl_reset
         ),
@@ -742,7 +753,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Account Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -772,6 +783,10 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param activity_types Character or NULL; comma-separated activity types to
     #'   filter (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
+    #'   Mutually exclusive with `category`.
+    #' @param category Character or NULL; broad category filter:
+    #'   `"trade_activity"` or `"non_trade_activity"`. Mutually exclusive with
+    #'   `activity_types`.
     #' @param date Character or NULL; filter to a specific date (`"YYYY-MM-DD"`).
     #' @param until Character or NULL; only activities before this timestamp.
     #' @param after Character or NULL; only activities after this timestamp.
@@ -789,6 +804,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     get_activities = function(
       activity_types = NULL,
+      category = NULL,
       date = NULL,
       until = NULL,
       after = NULL,
@@ -800,6 +816,7 @@ AlpacaAccount <- R6::R6Class(
         endpoint = "/v2/account/activities",
         query = list(
           activity_types = activity_types,
+          category = category,
           date = date,
           until = until,
           after = after,
@@ -821,7 +838,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Account Activities by Type](https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -902,7 +919,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Watchlists](https://docs.alpaca.markets/us/reference/getwatchlists-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -960,7 +977,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Get Watchlist by ID](https://docs.alpaca.markets/us/reference/getwatchlistbyid-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1028,7 +1045,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Create Watchlist](https://docs.alpaca.markets/us/reference/postwatchlist-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1093,7 +1110,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Update Watchlist](https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1158,7 +1175,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Add Symbol to Watchlist](https://docs.alpaca.markets/us/reference/addassettowatchlist-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1221,7 +1238,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1282,7 +1299,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Delete Watchlist](https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```

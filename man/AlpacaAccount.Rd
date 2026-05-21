@@ -307,7 +307,7 @@ cash, margin, and account status.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getaccount-1}{Get Account}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -402,7 +402,7 @@ check behavior, trade confirmation emails, and shorting restrictions.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getaccountconfig-1}{Get Account Configurations}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -471,7 +471,7 @@ Modifies one or more account configuration settings.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/patchaccountconfig-1}{Update Account Configurations}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -515,7 +515,9 @@ Verified: 2026-03-10
   fractional_trading = NULL,
   max_margin_multiplier = NULL,
   pdt_check = NULL,
-  max_options_trading_level = NULL
+  max_options_trading_level = NULL,
+  ptp_no_exception_entry = NULL,
+  disable_overnight_trading = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -532,11 +534,19 @@ Verified: 2026-03-10
 
 \item{\code{fractional_trading}}{Logical or NULL; enable/disable fractional trading.}
 
-\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"} (no margin) or \code{"2"} (Reg-T).}
+\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"}, \code{"2"}, or \code{"4"}.}
 
 \item{\code{pdt_check}}{Character or NULL; \code{"both"}, \code{"entry"}, \code{"exit"}.}
 
-\item{\code{max_options_trading_level}}{Integer or NULL; options trading level (0-2).}
+\item{\code{max_options_trading_level}}{Integer or NULL; options trading level
+(0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
+3=Spreads/Straddles).}
+
+\item{\code{ptp_no_exception_entry}}{Logical or NULL; if \code{TRUE}, accept orders
+for PTP symbols with no exception.}
+
+\item{\code{disable_overnight_trading}}{Logical or NULL; if \code{TRUE}, disable
+overnight trading on the account.}
 }
 \if{html}{\out{</div>}}
 }
@@ -571,7 +581,7 @@ Retrieves all currently open positions in the account.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getallopenpositions}{Get All Open Positions}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -654,7 +664,7 @@ Retrieves a single open position by symbol or asset UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getopenposition-1}{Get Open Position}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -728,7 +738,7 @@ full position or a partial amount by quantity or percentage.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteopenposition-1}{Close Position}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -813,7 +823,7 @@ Closes all open positions. Optionally cancels all open orders first.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteallopenpositions-1}{Close All Positions}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -903,7 +913,7 @@ Exercises an options position. Only applicable to options contracts.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/optionexercise}{Exercise Option}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -969,7 +979,7 @@ Retrieves the portfolio value history as a time series.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1}{Portfolio History}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -995,8 +1005,8 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_portfolio_history(
   period = NULL,
   timeframe = NULL,
-  date_start = NULL,
-  date_end = NULL,
+  start = NULL,
+  end = NULL,
   intraday_reporting = NULL,
   pnl_reset = NULL
 )}\if{html}{\out{</div>}}
@@ -1006,21 +1016,22 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{period}}{Character or NULL; time period for the history. Examples:
-\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Cannot be used with
-\code{date_start}/\code{date_end}.}
+\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Mutually exclusive with
+providing both \code{start} and \code{end}.}
 
 \item{\code{timeframe}}{Character or NULL; resolution of the time series:
 \code{"1Min"}, \code{"5Min"}, \code{"15Min"}, \code{"1H"}, \code{"1D"}.}
 
-\item{\code{date_start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}). Use with
-\code{date_end} instead of \code{period}.}
+\item{\code{start}}{Character or NULL; start timestamp in RFC3339 format.
+Defaults to \code{end} minus \code{period}.}
 
-\item{\code{date_end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
+\item{\code{end}}{Character or NULL; end timestamp in RFC3339 format.}
 
-\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default) or
-\code{"extended_hours"}.}
+\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default),
+\code{"extended_hours"}, or \code{"continuous"} (for 24/7 crypto charts).}
 
-\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.}
+\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.
+Set to \code{"no_reset"} for continuous crypto PnL.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1062,7 +1073,7 @@ include order fills, dividends, transfers, and other events.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getaccountactivities-2}{Account Activities}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1095,6 +1106,7 @@ Verified: 2026-03-10
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities(
   activity_types = NULL,
+  category = NULL,
   date = NULL,
   until = NULL,
   after = NULL,
@@ -1108,7 +1120,12 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{activity_types}}{Character or NULL; comma-separated activity types to
-filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.}
+filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.
+Mutually exclusive with \code{category}.}
+
+\item{\code{category}}{Character or NULL; broad category filter:
+\code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
+\code{activity_types}.}
 
 \item{\code{date}}{Character or NULL; filter to a specific date (\code{"YYYY-MM-DD"}).}
 
@@ -1156,7 +1173,7 @@ Retrieves account activities filtered to a specific type.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1}{Get Account Activities by Type}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1250,7 +1267,7 @@ Retrieves all watchlists for the account.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getwatchlists-1}{Watchlists}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1322,7 +1339,7 @@ Retrieves a single watchlist including its asset entries.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getwatchlistbyid-1}{Get Watchlist by ID}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1407,7 +1424,7 @@ Creates a new watchlist with an optional initial set of symbols.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/postwatchlist-1}{Create Watchlist}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1490,7 +1507,7 @@ Replaces the name and/or symbols of an existing watchlist.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1}{Update Watchlist}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1573,7 +1590,7 @@ Appends a single symbol to an existing watchlist.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/addassettowatchlist-1}{Add Symbol to Watchlist}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1653,7 +1670,7 @@ Removes a single symbol from a watchlist.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1}{Remove Symbol from Watchlist}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1725,7 +1742,7 @@ Permanently deletes a watchlist.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1}{Delete Watchlist}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{

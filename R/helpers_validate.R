@@ -31,6 +31,10 @@
 #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
 #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
 #'   `"sell_to_open"`, `"sell_to_close"`.
+#' @param legs List or NULL; list of leg objects for multi-leg options orders
+#'   (`order_class = "mleg"`). Max 4 legs.
+#' @param advanced_instructions List or NULL; advanced routing instructions for
+#'   the Alpaca Elite Smart Router.
 #' @return Named list of validated order parameters (NULLs removed).
 #'
 #' @importFrom rlang abort arg_match0
@@ -52,18 +56,25 @@ validate_order_params <- function(
   order_class = NULL,
   take_profit = NULL,
   stop_loss = NULL,
-  position_intent = NULL
+  position_intent = NULL,
+  legs = NULL,
+  advanced_instructions = NULL
 ) {
-  # Required field validation
-  side <- tolower(side)
+  # Required field validation. mleg order_class does not require symbol/side,
+  # so only enforce on non-mleg.
+  is_mleg <- identical(order_class, "mleg")
+
+  if (!is_mleg) {
+    side <- tolower(side)
+  }
   type <- tolower(type)
   time_in_force <- tolower(time_in_force)
 
-  rlang::arg_match0(side, c("buy", "sell"))
+  if (!is_mleg) rlang::arg_match0(side, c("buy", "sell"))
   rlang::arg_match0(type, c("market", "limit", "stop", "stop_limit", "trailing_stop"))
   rlang::arg_match0(time_in_force, c("day", "gtc", "opg", "cls", "ioc", "fok"))
 
-  if (!is.character(symbol) || !nzchar(symbol)) {
+  if (!is_mleg && (!is.character(symbol) || !nzchar(symbol))) {
     rlang::abort("Parameter 'symbol' must be a non-empty character string.")
   }
 
@@ -126,8 +137,8 @@ validate_order_params <- function(
   }
 
   # Optional parameter validation
-  if (!is.null(order_class)) {
-    rlang::arg_match0(order_class, c("simple", "bracket", "oco", "oto"))
+  if (!is.null(order_class) && nzchar(order_class)) {
+    rlang::arg_match0(order_class, c("simple", "bracket", "oco", "oto", "mleg"))
   }
   if (!is.null(position_intent)) {
     rlang::arg_match0(
@@ -156,7 +167,9 @@ validate_order_params <- function(
     order_class = order_class,
     take_profit = take_profit,
     stop_loss = stop_loss,
-    position_intent = position_intent
+    position_intent = position_intent,
+    legs = legs,
+    advanced_instructions = advanced_instructions
   )
   params <- params[!vapply(params, is.null, logical(1))]
 

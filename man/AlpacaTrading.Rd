@@ -27,6 +27,7 @@ asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/orders-4}{Orders}
+Verified: 2026-05-21
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
@@ -185,7 +186,7 @@ advanced order classes (bracket, OCO, OTO).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/postorder}{Create Order}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -253,8 +254,8 @@ Verified: 2026-03-10
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$add_order(
-  symbol,
-  side,
+  symbol = NULL,
+  side = NULL,
   type,
   time_in_force,
   qty = NULL,
@@ -268,7 +269,9 @@ Verified: 2026-03-10
   order_class = NULL,
   take_profit = NULL,
   stop_loss = NULL,
-  position_intent = NULL
+  position_intent = NULL,
+  legs = NULL,
+  advanced_instructions = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -310,6 +313,12 @@ Verified: 2026-03-10
 
 \item{\code{position_intent}}{Character or NULL; \code{"buy_to_open"}, \code{"buy_to_close"},
 \code{"sell_to_open"}, \code{"sell_to_close"}.}
+
+\item{\code{legs}}{List or NULL; list of leg objects (max 4) for multi-leg
+options strategies. Required when \code{order_class = "mleg"}.}
+
+\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }
@@ -378,7 +387,7 @@ side, and date range. Supports pagination.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getallorders-1}{List Orders}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -437,7 +446,10 @@ Verified: 2026-03-10
   direction = NULL,
   nested = NULL,
   symbols = NULL,
-  side = NULL
+  side = NULL,
+  asset_class = NULL,
+  before_order_id = NULL,
+  after_order_id = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -459,6 +471,18 @@ Verified: 2026-03-10
 \item{\code{symbols}}{Character or NULL; comma-separated symbol filter.}
 
 \item{\code{side}}{Character or NULL; filter by side.}
+
+\item{\code{asset_class}}{Character or NULL; comma-separated asset classes
+(e.g., \code{"us_equity"}, \code{"us_option"}, \code{"crypto"}). With \code{"us_option"},
+\code{symbols} can filter by underlying.}
+
+\item{\code{before_order_id}}{Character or NULL; return orders submitted before
+this order ID. Mutually exclusive with \code{after_order_id}. Do not combine
+with \code{after}/\code{until}.}
+
+\item{\code{after_order_id}}{Character or NULL; return orders submitted after
+this order ID. Mutually exclusive with \code{before_order_id}. Do not
+combine with \code{after}/\code{until}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -494,7 +518,7 @@ Retrieves a single order by its UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getorderbyorderid-1}{Get Order}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -587,7 +611,7 @@ order tracking in production systems.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getorderbyclientorderid}{Get Order by Client ID}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -678,7 +702,7 @@ is cancelled and a new order is created atomically.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/patchorderbyorderid-1}{Replace Order}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -745,11 +769,13 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$modify_order(
   order_id,
   qty = NULL,
+  notional = NULL,
   time_in_force = NULL,
   limit_price = NULL,
   stop_price = NULL,
   trail = NULL,
-  client_order_id = NULL
+  client_order_id = NULL,
+  advanced_instructions = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -758,7 +784,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{order_id}}{Character; order UUID to replace.}
 
-\item{\code{qty}}{Numeric or NULL; new quantity.}
+\item{\code{qty}}{Numeric or NULL; new quantity. Mutually exclusive with \code{notional}.}
+
+\item{\code{notional}}{Numeric or NULL; new notional (dollar) amount. Only valid
+for IPO indications of interest (\code{asset_class = "ipo"}).}
 
 \item{\code{time_in_force}}{Character or NULL; new time in force.}
 
@@ -766,9 +795,12 @@ Verified: 2026-03-10
 
 \item{\code{stop_price}}{Numeric or NULL; new stop price.}
 
-\item{\code{trail}}{Numeric or NULL; new trail value.}
+\item{\code{trail}}{Numeric or NULL; new trail value (for \code{type = "trailing_stop"}).}
 
 \item{\code{client_order_id}}{Character or NULL; new client order ID.}
+
+\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }
@@ -804,7 +836,7 @@ Cancels a single open order by its UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1}{Cancel Order}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -870,7 +902,7 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteallorders-1}{Cancel All Orders}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{

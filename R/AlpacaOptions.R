@@ -68,7 +68,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Trading Overview](https://docs.alpaca.markets/us/docs/options-trading)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -112,7 +112,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Get Options Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -159,6 +159,10 @@ AlpacaOptions <- R6::R6Class(
     #' @param style Character or NULL; option style (`"american"`, `"european"`).
     #' @param limit Integer or NULL; max contracts to return (default 100, max 10000).
     #' @param page_token Character or NULL; cursor for pagination.
+    #' @param show_deliverables Logical or NULL; if `TRUE`, include the
+    #'   `deliverables` array in the response.
+    #' @param ppind Logical or NULL; filter by Penny Program Indicator. `TRUE`
+    #'   returns only contracts eligible for penny price increments.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Contract UUID.
     #'   - `symbol` (character): OCC option symbol.
@@ -200,7 +204,9 @@ AlpacaOptions <- R6::R6Class(
       root_symbol = NULL,
       style = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      show_deliverables = NULL,
+      ppind = NULL
     ) {
       if (!is.null(strike_price_gte)) {
         strike_price_gte <- as.character(strike_price_gte)
@@ -223,7 +229,9 @@ AlpacaOptions <- R6::R6Class(
           root_symbol = root_symbol,
           style = style,
           limit = limit,
-          page_token = page_token
+          page_token = page_token,
+          show_deliverables = show_deliverables,
+          ppind = ppind
         ),
         .parser = function(data) {
           as_dt_list(data$option_contracts)
@@ -241,7 +249,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Get Option Contract by ID or Symbol](https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -302,7 +310,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Bars](https://docs.alpaca.markets/us/reference/optionbars)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -347,6 +355,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max bars (1-10000, default 1000).
     #' @param page_token Character or NULL; cursor for pagination.
+    #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column and the same bar columns as stock bars.
     #'
@@ -365,7 +374,8 @@ AlpacaOptions <- R6::R6Class(
       start = NULL,
       end = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      sort = NULL
     ) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/bars",
@@ -375,7 +385,8 @@ AlpacaOptions <- R6::R6Class(
           start = start,
           end = end,
           limit = limit,
-          page_token = page_token
+          page_token = page_token,
+          sort = sort
         ),
         .parser = parse_multi_bars
       ))
@@ -391,7 +402,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Trades](https://docs.alpaca.markets/us/reference/optiontrades)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -429,6 +440,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max trades (1-10000, default 1000).
     #' @param page_token Character or NULL; cursor for pagination.
+    #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   trade columns.
     get_option_trades = function(
@@ -436,7 +448,8 @@ AlpacaOptions <- R6::R6Class(
       start = NULL,
       end = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      sort = NULL
     ) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/trades",
@@ -445,7 +458,8 @@ AlpacaOptions <- R6::R6Class(
           start = start,
           end = end,
           limit = limit,
-          page_token = page_token
+          page_token = page_token,
+          sort = sort
         ),
         .parser = function(data) {
           trades_map <- data$trades
@@ -475,7 +489,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Latest Options Quotes](https://docs.alpaca.markets/us/reference/optionlatestquotes)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -502,7 +516,8 @@ AlpacaOptions <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character; comma-separated OCC option symbols.
-    #' @param feed Character or NULL; data feed.
+    #' @param feed Character or NULL; `"opra"` (default, official OPRA feed) or
+    #'   `"indicative"` (free, delayed/modified).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   quote columns plus a `symbol` column.
     get_option_latest_quotes = function(symbols, feed = NULL) {
@@ -540,7 +555,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Latest Options Trades](https://docs.alpaca.markets/us/reference/optionlatesttrades)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -603,7 +618,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Snapshots](https://docs.alpaca.markets/us/reference/optionsnapshots)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -674,13 +689,17 @@ AlpacaOptions <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character; comma-separated OCC option symbols.
-    #' @param feed Character or NULL; data feed.
+    #' @param feed Character or NULL; `"opra"` (default) or `"indicative"`.
+    #' @param updated_since Character or NULL; only return snapshots updated at
+    #'   or after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
+    #' @param limit Integer or NULL; max snapshots (1-1000, default 100).
+    #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   flattened snapshot fields plus a `symbol` column.
-    get_option_snapshots = function(symbols, feed = NULL) {
+    get_option_snapshots = function(symbols, feed = NULL, updated_since = NULL, limit = NULL, page_token = NULL) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/snapshots",
-        query = list(symbols = symbols, feed = feed),
+        query = list(symbols = symbols, feed = feed, updated_since = updated_since, limit = limit, page_token = page_token),
         .parser = function(data) {
           snaps <- data$snapshots
           if (is.null(snaps) || length(snaps) == 0) {
@@ -712,7 +731,12 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Option Snapshot](https://docs.alpaca.markets/us/reference/optionsnapshots)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
+    #'
+    #' Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
+    #' `/v1beta1/options/snapshots/{symbol}` is the underlying-chain endpoint
+    #' (see `get_option_chain()`). For a true single-contract snapshot, prefer
+    #' `get_option_snapshots(symbols = "AAPL250620C00200000")`.
     #'
     #' ### curl
     #' ```
@@ -782,7 +806,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' - [Options Chain / Snapshots by Underlying](https://docs.alpaca.markets/us/reference/optionchain)
-    #' Verified: 2026-03-10
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -861,8 +885,10 @@ AlpacaOptions <- R6::R6Class(
     #' @param strike_price_gte Numeric or NULL; minimum strike price.
     #' @param strike_price_lte Numeric or NULL; maximum strike price.
     #' @param root_symbol Character or NULL; options root symbol.
-    #' @param feed Character or NULL; data feed.
-    #' @param limit Integer or NULL; max results. Default 100.
+    #' @param feed Character or NULL; `"opra"` (default) or `"indicative"`.
+    #' @param limit Integer or NULL; max results (1-1000, default 100).
+    #' @param updated_since Character or NULL; only snapshots updated at or
+    #'   after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   flattened snapshot fields plus a `symbol` column.
@@ -885,6 +911,7 @@ AlpacaOptions <- R6::R6Class(
       root_symbol = NULL,
       feed = NULL,
       limit = NULL,
+      updated_since = NULL,
       page_token = NULL
     ) {
       if (!is.null(strike_price_gte)) {
@@ -906,6 +933,7 @@ AlpacaOptions <- R6::R6Class(
           root_symbol = root_symbol,
           feed = feed,
           limit = limit,
+          updated_since = updated_since,
           page_token = page_token
         ),
         .parser = function(data) {

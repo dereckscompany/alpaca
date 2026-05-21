@@ -310,7 +310,7 @@ credentials and base URLs for subsequent method calls.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/docs/getting-started}{Authentication}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -370,7 +370,7 @@ include open, high, low, close, volume, trade count, and VWAP.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stockbarsingle-1}{Historical Stock Bars}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -399,7 +399,9 @@ Verified: 2026-03-10
   end = NULL,
   limit = NULL,
   adjustment = NULL,
+  asof = NULL,
   feed = NULL,
+  currency = NULL,
   sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
@@ -420,11 +422,19 @@ Verified: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
 
-\item{\code{adjustment}}{Character or NULL; price adjustment type:
-\code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}. Default \code{"raw"}.}
+\item{\code{adjustment}}{Character or NULL; price adjustment type. One or a
+comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
+\code{"spin-off"}, \code{"all"}. Default \code{"raw"}.}
+
+\item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
+identify the underlying entity when symbols have been renamed
+(e.g. FB -> META). Pass \code{"-"} to skip symbol mapping.}
 
 \item{\code{feed}}{Character or NULL; data feed source:
-\code{"iex"} (free), \code{"sip"} (paid, all exchanges).}
+\code{"sip"} (default, all US exchanges), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
+Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 
@@ -473,7 +483,7 @@ Retrieves historical bar data for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stockbars}{Multi Stock Bars}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -506,7 +516,9 @@ Verified: 2026-03-10
   end = NULL,
   limit = NULL,
   adjustment = NULL,
+  asof = NULL,
   feed = NULL,
+  currency = NULL,
   sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
@@ -525,9 +537,15 @@ Verified: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max bars per symbol (1-10000, default 1000).}
 
-\item{\code{adjustment}}{Character or NULL; \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}.}
+\item{\code{adjustment}}{Character or NULL; one or comma-separated combination
+of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
+or \code{"-"} to skip).}
+
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
@@ -567,7 +585,7 @@ Retrieves the most recent bar for a single symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1}{Latest Stock Bar}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -639,7 +657,7 @@ Retrieves the most recent trade for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1}{Latest Trade}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -666,7 +684,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -674,7 +692,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -719,7 +740,7 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1}{Latest Quote}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -748,7 +769,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -756,7 +777,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -801,7 +825,7 @@ latest quote, minute bar, daily bar, and previous daily bar.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocksnapshotsingle}{Stock Snapshot}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -823,7 +847,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshot(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -831,7 +855,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -867,7 +894,7 @@ Retrieves the most recent bar for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestbars-1}{Latest Multi Bars}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -888,7 +915,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -896,7 +923,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -932,7 +962,7 @@ Retrieves the most recent trade for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatesttrades-1}{Latest Multi Trades}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -953,7 +983,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -961,7 +991,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -985,7 +1018,7 @@ Retrieves the most recent NBBO quote for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestquotes-1}{Latest Multi Quotes}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1006,7 +1039,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1014,7 +1047,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1038,7 +1074,7 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocksnapshots-1}{Multi Stock Snapshots}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1069,7 +1105,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1077,7 +1113,10 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1113,7 +1152,7 @@ Retrieves historical trade data for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocktradesingle-1}{Historical Stock Trades}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1142,7 +1181,9 @@ Verified: 2026-03-10
   start = NULL,
   end = NULL,
   limit = NULL,
+  asof = NULL,
   feed = NULL,
+  currency = NULL,
   sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
@@ -1159,7 +1200,13 @@ Verified: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\code{"boats"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
@@ -1196,7 +1243,7 @@ Retrieves historical quote (NBBO) data for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stockquotesingle-1}{Historical Stock Quotes}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1224,7 +1271,9 @@ Verified: 2026-03-10
   start = NULL,
   end = NULL,
   limit = NULL,
+  asof = NULL,
   feed = NULL,
+  currency = NULL,
   sort = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
@@ -1241,7 +1290,13 @@ Verified: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max quotes (1-10000, default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\code{"boats"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
@@ -1277,7 +1332,7 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/get-v2-assets-1}{Assets}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1308,7 +1363,12 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(status = NULL, asset_class = NULL, exchange = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(
+  status = NULL,
+  asset_class = NULL,
+  exchange = NULL,
+  attributes = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1319,7 +1379,14 @@ Verified: 2026-03-10
 \item{\code{asset_class}}{Character or NULL; filter by class (\code{"us_equity"},
 \code{"us_option"}, \code{"crypto"}).}
 
-\item{\code{exchange}}{Character or NULL; filter by exchange.}
+\item{\code{exchange}}{Character or NULL; filter by exchange (\code{"AMEX"}, \code{"ARCA"},
+\code{"BATS"}, \code{"NYSE"}, \code{"NASDAQ"}, \code{"NYSEARCA"}, \code{"OTC"}).}
+
+\item{\code{attributes}}{Character or NULL; comma-separated attribute filters.
+Returns assets matching any of the listed attributes. Supported values:
+\code{"ptp_no_exception"}, \code{"ptp_with_exception"}, \code{"ipo"}, \code{"has_options"},
+\code{"options_late_close"}, \code{"fractional_eh_enabled"}, \code{"overnight_tradable"},
+\code{"overnight_halted"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1366,7 +1433,7 @@ Retrieves metadata for a single asset.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1437,8 +1504,8 @@ Includes early closure information.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/us/reference/calendar-2}{Calendar}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/legacycalendar}{Calendar}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1459,7 +1526,7 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL, date_type = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1468,6 +1535,10 @@ Verified: 2026-03-10
 \item{\code{start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}).}
 
 \item{\code{end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
+
+\item{\code{date_type}}{Character or NULL; one of \code{"TRADING"} or \code{"SETTLEMENT"}.
+Determines whether \code{start}/\code{end} are interpreted as trading dates
+(default) or settlement dates.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1507,8 +1578,8 @@ open and the next open/close times.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/us/reference/clock-1}{Clock}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/legacyclock}{Clock}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1571,7 +1642,13 @@ need to handle position adjustments.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1}{Corporate Actions}
-Verified: 2026-03-10
+Verified: 2026-05-21
+
+Note: as of 2026-05, the \verb{/v2/corporate_actions/announcements} endpoint is
+marked DEPRECATED by Alpaca. It still works and the wrapper still calls
+it, but Alpaca recommends migrating to the newer corporate-actions
+market-data endpoint (\verb{/v1beta1/corporate-actions}). Migration is tracked
+as a follow-up.
 }
 
 \subsection{curl}{
@@ -1689,7 +1766,7 @@ date range, or content. Useful for event-driven trading strategies.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/news-3}{News}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1804,7 +1881,7 @@ Retrieves the most active stocks by volume or trade count.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/mostactives-1}{Most Active Stocks}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1877,7 +1954,7 @@ Retrieves the top market movers (gainers and losers) by percentage change.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/movers-1}{Top Market Movers}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 
 \subsection{curl}{

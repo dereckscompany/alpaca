@@ -163,7 +163,7 @@ Constructor only — no HTTP request is made.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/docs/options-trading}{Options Trading Overview}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -223,7 +223,7 @@ symbol, type, expiration date, strike price, and more.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/get-options-contracts}{Get Options Contracts}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -273,7 +273,9 @@ Verified: 2026-03-10
   root_symbol = NULL,
   style = NULL,
   limit = NULL,
-  page_token = NULL
+  page_token = NULL,
+  show_deliverables = NULL,
+  ppind = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -304,6 +306,12 @@ symbols to filter (e.g., \code{"AAPL"} or \code{"AAPL,MSFT"}).}
 \item{\code{limit}}{Integer or NULL; max contracts to return (default 100, max 10000).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{show_deliverables}}{Logical or NULL; if \code{TRUE}, include the
+\code{deliverables} array in the response.}
+
+\item{\code{ppind}}{Logical or NULL; filter by Penny Program Indicator. \code{TRUE}
+returns only contracts eligible for penny price increments.}
 }
 \if{html}{\out{</div>}}
 }
@@ -361,7 +369,7 @@ Retrieves a single options contract by its OCC symbol or UUID.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id}{Get Option Contract by ID or Symbol}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -438,7 +446,7 @@ Retrieves historical bar data for options contracts.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionbars}{Options Bars}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -487,7 +495,8 @@ Verified: 2026-03-10
   start = NULL,
   end = NULL,
   limit = NULL,
-  page_token = NULL
+  page_token = NULL,
+  sort = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -505,6 +514,8 @@ Verified: 2026-03-10
 \item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -543,7 +554,7 @@ Retrieves historical trade data for options contracts.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optiontrades}{Options Trades}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -585,7 +596,8 @@ Verified: 2026-03-10
   start = NULL,
   end = NULL,
   limit = NULL,
-  page_token = NULL
+  page_token = NULL,
+  sort = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -601,6 +613,8 @@ Verified: 2026-03-10
 \item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -624,7 +638,7 @@ Retrieves the latest NBBO quotes for one or more options contracts.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionlatestquotes}{Latest Options Quotes}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -662,7 +676,8 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character; comma-separated OCC option symbols.}
 
-\item{\code{feed}}{Character or NULL; data feed.}
+\item{\code{feed}}{Character or NULL; \code{"opra"} (default, official OPRA feed) or
+\code{"indicative"} (free, delayed/modified).}
 }
 \if{html}{\out{</div>}}
 }
@@ -686,7 +701,7 @@ Retrieves the latest trades for one or more options contracts.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionlatesttrades}{Latest Options Trades}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -746,7 +761,7 @@ the latest trade, latest quote, and implied volatility.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionsnapshots}{Options Snapshots}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -820,7 +835,13 @@ Verified: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshots(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaOptions$get_option_snapshots(
+  symbols,
+  feed = NULL,
+  updated_since = NULL,
+  limit = NULL,
+  page_token = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -828,7 +849,14 @@ Verified: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character; comma-separated OCC option symbols.}
 
-\item{\code{feed}}{Character or NULL; data feed.}
+\item{\code{feed}}{Character or NULL; \code{"opra"} (default) or \code{"indicative"}.}
+
+\item{\code{updated_since}}{Character or NULL; only return snapshots updated at
+or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
+
+\item{\code{limit}}{Integer or NULL; max snapshots (1-1000, default 100).}
+
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
@@ -852,8 +880,13 @@ Retrieves a real-time snapshot for a single options contract.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionsnapshots}{Option Snapshot}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
+
+Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
+\verb{/v1beta1/options/snapshots/\{symbol\}} is the underlying-chain endpoint
+(see \code{get_option_chain()}). For a true single-contract snapshot, prefer
+\code{get_option_snapshots(symbols = "AAPL250620C00200000")}.
 }
 
 \subsection{curl}{
@@ -940,7 +973,7 @@ available contracts with their latest market data.
 \subsection{Official Documentation}{
 \itemize{
 \item \href{https://docs.alpaca.markets/us/reference/optionchain}{Options Chain / Snapshots by Underlying}
-Verified: 2026-03-10
+Verified: 2026-05-21
 }
 }
 
@@ -1026,6 +1059,7 @@ Verified: 2026-03-10
   root_symbol = NULL,
   feed = NULL,
   limit = NULL,
+  updated_since = NULL,
   page_token = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -1049,9 +1083,12 @@ Verified: 2026-03-10
 
 \item{\code{root_symbol}}{Character or NULL; options root symbol.}
 
-\item{\code{feed}}{Character or NULL; data feed.}
+\item{\code{feed}}{Character or NULL; \code{"opra"} (default) or \code{"indicative"}.}
 
-\item{\code{limit}}{Integer or NULL; max results. Default 100.}
+\item{\code{limit}}{Integer or NULL; max results (1-1000, default 100).}
+
+\item{\code{updated_since}}{Character or NULL; only snapshots updated at or
+after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
