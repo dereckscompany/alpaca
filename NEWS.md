@@ -79,6 +79,17 @@ timezone lookup. A `TODO(v3)` marker sits next to the
 `ALPACA_EXCHANGE_TZ` constant in `R/helpers_parse.R` so a future
 migration is hard to miss.
 
+## Internal: date / time helpers chokepoint (developer note)
+
+`R/helpers_parse.R` now carries a top-of-file banner listing the five
+date / time helpers (`rfc3339_to_datetime`, `parse_timestamp_cols`,
+`parse_date_cols`, `combine_et_datetime`, `hhmm_to_hh_mm`) with a
+when-to-use-which guide. The `rfc3339_to_datetime()` roxygen also
+explains why it exists as a thin wrapper around `lubridate::as_datetime`
+(NULL / all-NA short-circuit, single chokepoint for any future change
+of parser). Future contributors should route all RFC-3339 / pure-date
+parsing through these helpers rather than calling `lubridate` directly.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

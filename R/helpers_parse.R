@@ -87,7 +87,34 @@ as_dt_list <- function(items) {
   return(dt[])
 }
 
+# ----------------------------------------------------------------------
+# Date / time conversion helpers
+# ----------------------------------------------------------------------
+# All RFC-3339 / `YYYY-MM-DD` parsing across the package funnels through
+# these small helpers so the behaviour is consistent and there's a single
+# chokepoint if we ever need to swap the underlying parser.
+#
+#   rfc3339_to_datetime(x)         scalar/vector  ->  POSIXct (UTC)
+#   parse_timestamp_cols(dt, cols) data.table     ->  POSIXct in-place
+#   parse_date_cols(dt, cols)      data.table     ->  Date in-place
+#   combine_et_datetime(date, t)   date + HH:MM   ->  POSIXct (America/New_York)
+#   hhmm_to_hh_mm(x)               "HHMM"         ->  "HH:MM"
+#
+# When to use which:
+#   * Single value or ad-hoc one-off  -> rfc3339_to_datetime()
+#   * Column(s) on a data.table       -> parse_timestamp_cols / parse_date_cols
+#   * Naive market times (calendar)   -> combine_et_datetime + hhmm_to_hh_mm
+#
+# Why rfc3339_to_datetime() exists vs. calling lubridate::as_datetime
+# directly: it short-circuits NULL and all-NA input to NA_POSIXct_,
+# avoiding lubridate's length-0 / warning behaviour on those inputs.
+
 #' Parse an RFC-3339 Timestamp to POSIXct
+#'
+#' Thin wrapper around [lubridate::as_datetime()] with NULL / all-NA
+#' input short-circuited to `NA_POSIXct_`. Prefer this over calling
+#' `lubridate::as_datetime()` directly so the package has one chokepoint
+#' for instant parsing.
 #'
 #' @param x Character; RFC-3339 timestamp string (e.g., `"2024-01-15T14:30:00Z"`).
 #' @return POSIXct in UTC, or NA if `x` is NULL/NA.
