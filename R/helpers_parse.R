@@ -667,14 +667,14 @@ parse_watchlist <- function(wl) {
   parse_timestamp_cols(parent, c("created_at", "updated_at"))
   if (is.null(assets) || length(assets) == 0) {
     # No assets: return one row with NA asset columns
-    parent[, asset_id := NA_character_] # nolint: object_usage_linter.
-    parent[, asset_symbol := NA_character_] # nolint: object_usage_linter.
-    parent[, asset_name := NA_character_] # nolint: object_usage_linter.
+    parent[, asset_id := NA_character_]
+    parent[, asset_symbol := NA_character_]
+    parent[, asset_name := NA_character_]
     # `asset_attributes` exists on every populated watchlist row (as a
     # `;`-collapsed character or NA). Include it on the empty row too so
     # the schema is stable across populated / empty watchlists, matching
     # the documented @return contract.
-    parent[, asset_attributes := NA_character_] # nolint: object_usage_linter.
+    parent[, asset_attributes := NA_character_]
     return(parent[])
   }
   # Collapse each asset's `attributes` string array to a scalar character
@@ -868,7 +868,7 @@ parse_contract <- function(x) {
   deliv_dt <- data.table::rbindlist(delivs, fill = TRUE)
   data.table::setnames(deliv_dt, to_snake_case(names(deliv_dt)))
   data.table::setnames(deliv_dt, paste0("deliverable_", names(deliv_dt)))
-  deliv_dt[, deliverable_index := seq_len(.N)] # nolint: object_usage_linter.
+  deliv_dt[, deliverable_index := seq_len(.N)]
   contract_rep <- contract_row[rep(1L, nrow(deliv_dt)), ]
   return(cbind(contract_rep, deliv_dt)[])
 }
@@ -930,8 +930,8 @@ parse_order <- function(x) {
 
   parent_dt <- as_dt_row(x)
   if (nrow(parent_dt) > 0L) {
-    parent_dt[, leg_index := NA_integer_] # nolint: object_usage_linter.
-    parent_dt[, parent_order_id := NA_character_] # nolint: object_usage_linter.
+    parent_dt[, leg_index := NA_integer_]
+    parent_dt[, parent_order_id := NA_character_]
   }
 
   if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
@@ -947,8 +947,8 @@ parse_order <- function(x) {
   })
   legs_dt <- as_dt_list(legs_clean)
   if (nrow(legs_dt) > 0L) {
-    legs_dt[, leg_index := seq_len(.N)] # nolint: object_usage_linter.
-    legs_dt[, parent_order_id := parent_id] # nolint: object_usage_linter.
+    legs_dt[, leg_index := seq_len(.N)]
+    legs_dt[, parent_order_id := parent_id]
   }
   out <- data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)
   parse_timestamp_cols(out, ORDER_TIMESTAMP_COLS)
