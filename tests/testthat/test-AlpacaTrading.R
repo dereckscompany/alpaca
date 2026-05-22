@@ -98,6 +98,10 @@ test_that("get_orders rbinds simple + bracket orders into a single flat table", 
   expect_equal(nrow(dt), 4L)
   expect_equal(sum(is.na(dt$parent_order_id)), 2L) # simple + bracket-parent
   expect_equal(sum(!is.na(dt$parent_order_id)), 2L) # 2 legs
+  # Timestamp fields must be POSIXct on parent rows AND on leg rows
+  # (parse_order applies the conversion after rbinding parent+legs).
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
 })
 
 test_that("parse_order returns no list columns even with legs", {
@@ -164,6 +168,21 @@ test_that("cancel_all_orders returns confirmation dt when no orders", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
   expect_equal(dt$status, "cancelled")
+})
+
+test_that("cancel_all_orders parses order timestamps after unwrapping body", {
+  # Live shape: [{id, status, body: {order...}}, ...]
+  resp <- mock_alpaca_response(list(
+    list(id = "order-uuid-123", status = 200, body = mock_order_response())
+  ))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$cancel_all_orders()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  # Order timestamps unwrapped from `body` must be POSIXct.
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
 })
 
 test_that("modify_order sends PATCH request", {

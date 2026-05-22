@@ -369,7 +369,7 @@ Verified: 2026-05-21
 \item \code{trading_blocked} (logical): Whether trading is blocked.
 \item \code{daytrade_count} (integer): Number of day trades in the last 5 days.
 \item \code{daytrading_buying_power} (character): Day trading buying power.
-\item \code{created_at} (character): Account creation timestamp.
+\item \code{created_at} (POSIXct, UTC): Account creation timestamp.
 }
 }
 \subsection{Examples}{
@@ -1316,8 +1316,8 @@ Verified: 2026-05-21
 \item \code{id} (character): Watchlist UUID.
 \item \code{account_id} (character): Account UUID.
 \item \code{name} (character): Watchlist name.
-\item \code{created_at} (character): Creation timestamp.
-\item \code{updated_at} (character): Last update timestamp.
+\item \code{created_at} (POSIXct, UTC): Creation timestamp.
+\item \code{updated_at} (POSIXct, UTC): Last update timestamp.
 }
 }
 \subsection{Examples}{

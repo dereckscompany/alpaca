@@ -22,6 +22,9 @@ test_that("get_account returns data.table with account fields", {
   expect_equal(dt$equity, "100000")
   expect_equal(dt$buying_power, "400000")
   expect_true("pattern_day_trader" %in% names(dt))
+  # created_at must parse to POSIXct (UTC), not character.
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_equal(attr(dt$created_at, "tzone"), "UTC")
 })
 
 test_that("get_account flattens admin_configurations / user_configurations into wide cols (no list cols)", {
@@ -133,9 +136,30 @@ test_that("close_position sends DELETE request", {
     return(resp)
   })
 
-  new_account()$close_position("AAPL")
+  dt <- new_account()$close_position("AAPL")
   expect_equal(captured_req$method, "DELETE")
   expect_true(grepl("/v2/positions/AAPL", captured_req$url))
+  # close_position returns an order record — its timestamps must be POSIXct,
+  # not character. This path bypasses parse_order() (it uses a custom .parser
+  # because the response shape is different), so it needs an explicit
+  # parse_timestamp_cols() call.
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
+})
+
+test_that("close_all_positions parses order timestamps after unwrapping", {
+  # Live response shape: [{symbol, status, body: {order ...}}, ...]
+  resp <- mock_alpaca_response(list(
+    list(symbol = "AAPL", status = 200, body = mock_order_response())
+  ))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_account()$close_all_positions()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  # Order timestamps unwrapped from `body` must be POSIXct.
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
 })
 
 test_that("close_position rejects both qty and percentage", {
@@ -168,13 +192,16 @@ test_that("get_portfolio_history returns data.table with correct columns", {
   expect_s3_class(dt$timestamp, "POSIXct")
 })
 
-test_that("get_activities returns data.table", {
+test_that("get_activities returns data.table with transaction_time POSIXct", {
   resp <- mock_alpaca_response(mock_activities_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_account()$get_activities()
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
+  if ("transaction_time" %in% names(dt)) {
+    expect_true(inherits(dt$transaction_time, "POSIXct"))
+  }
 })
 
 test_that("get_activities_by_type uses correct endpoint", {

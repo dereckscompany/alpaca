@@ -1441,8 +1441,8 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `source` (character): News source.
     #'   - `summary` (character): Article summary.
     #'   - `url` (character): Article URL.
-    #'   - `created_at` (character): Publication timestamp.
-    #'   - `updated_at` (character): Last update timestamp.
+    #'   - `created_at` (POSIXct, UTC): Publication timestamp.
+    #'   - `updated_at` (POSIXct, UTC): Last update timestamp.
     #'   - `symbols` (character): Semicolon-separated related tickers, e.g.
     #'     `"AAPL;MSFT"`. Filter with `dt[grepl("AAPL", symbols)]`; recover
     #'     the original vector via

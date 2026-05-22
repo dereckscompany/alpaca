@@ -344,7 +344,10 @@ for the parent + leg layout. Columns:
 \item \code{filled_avg_price} (character): Average fill price.
 \item \code{limit_price} (character): Limit price (if set).
 \item \code{stop_price} (character): Stop price (if set).
-\item \code{created_at} (character): Order creation timestamp.
+\item \code{created_at} (POSIXct, UTC): Order creation timestamp. Other
+order timestamps — \code{updated_at}, \code{submitted_at}, \code{filled_at},
+\code{expired_at}, \code{canceled_at}, \code{failed_at}, \code{replaced_at} —
+are likewise parsed to POSIXct (UTC) when present.
 \item \code{leg_index} (integer): \code{NA} on the parent row; \verb{1..N} on each leg.
 \item \code{parent_order_id} (character): \code{NA} on the parent row; the parent's
 \code{id} on each leg. Use \code{dt[is.na(parent_order_id)]} to keep just

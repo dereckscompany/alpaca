@@ -49,6 +49,36 @@ test_that("rfc3339_to_datetime returns NA for NULL input", {
   expect_true(is.na(result))
 })
 
+test_that("parse_timestamp_cols converts present columns to POSIXct (UTC)", {
+  dt <- data.table::data.table(
+    id = c("a", "b"),
+    created_at = c("2024-01-15T14:30:00Z", "2024-01-16T09:30:00Z"),
+    other = c(1, 2)
+  )
+  parse_timestamp_cols(dt, c("created_at", "updated_at"))
+  expect_s3_class(dt$created_at, "POSIXct")
+  expect_equal(attr(dt$created_at, "tzone"), "UTC")
+  expect_true(is.numeric(dt$other))
+  expect_false("updated_at" %in% names(dt))
+})
+
+test_that("parse_timestamp_cols is a no-op on a 0-row data.table", {
+  dt <- data.table::data.table(created_at = character())
+  parse_timestamp_cols(dt, "created_at")
+  expect_equal(nrow(dt), 0L)
+  expect_true("created_at" %in% names(dt))
+})
+
+test_that("parse_timestamp_cols preserves NA values inside a real column", {
+  dt <- data.table::data.table(
+    submitted_at = c("2024-01-15T14:30:00Z", NA_character_)
+  )
+  parse_timestamp_cols(dt, "submitted_at")
+  expect_s3_class(dt$submitted_at, "POSIXct")
+  expect_false(is.na(dt$submitted_at[1]))
+  expect_true(is.na(dt$submitted_at[2]))
+})
+
 test_that("parse_date_cols converts present columns to Date", {
   dt <- data.table::data.table(
     id = c("a", "b"),
@@ -59,7 +89,6 @@ test_that("parse_date_cols converts present columns to Date", {
   expect_s3_class(dt$ex_date, "Date")
   expect_equal(format(dt$ex_date), c("2024-02-09", "2024-06-10"))
   expect_true(is.numeric(dt$other))
-  # Missing column silently skipped.
   expect_false("record_date" %in% names(dt))
 })
 

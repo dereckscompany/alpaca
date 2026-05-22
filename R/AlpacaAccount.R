@@ -134,7 +134,7 @@ AlpacaAccount <- R6::R6Class(
     #'   - `trading_blocked` (logical): Whether trading is blocked.
     #'   - `daytrade_count` (integer): Number of day trades in the last 5 days.
     #'   - `daytrading_buying_power` (character): Day trading buying power.
-    #'   - `created_at` (character): Account creation timestamp.
+    #'   - `created_at` (POSIXct, UTC): Account creation timestamp.
     #'
     #' @examples
     #' \dontrun{
@@ -157,7 +157,9 @@ AlpacaAccount <- R6::R6Class(
             }
             data[[cfg_field]] <- NULL
           }
-          return(as_dt_row(data))
+          dt <- as_dt_row(data)
+          parse_timestamp_cols(dt, "created_at")
+          return(dt)
         }
       ))
     },
@@ -515,7 +517,11 @@ AlpacaAccount <- R6::R6Class(
         endpoint = endpoint,
         method = "DELETE",
         query = list(qty = qty, percentage = percentage),
-        .parser = as_dt_row
+        .parser = function(data) {
+          dt <- as_dt_row(data)
+          parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
+          return(dt)
+        }
       ))
     },
 
@@ -605,7 +611,9 @@ AlpacaAccount <- R6::R6Class(
               return(item)
             }
           })
-          return(as_dt_list(unwrapped))
+          dt <- as_dt_list(unwrapped)
+          parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
+          return(dt)
         }
       ))
     },
@@ -879,7 +887,11 @@ AlpacaAccount <- R6::R6Class(
           page_token = page_token,
           category = category
         ),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          parse_timestamp_cols(dt, "transaction_time")
+          return(dt)
+        }
       ))
     },
 
@@ -958,7 +970,11 @@ AlpacaAccount <- R6::R6Class(
           page_size = page_size,
           page_token = page_token
         ),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          parse_timestamp_cols(dt, "transaction_time")
+          return(dt)
+        }
       ))
     },
 
@@ -1006,8 +1022,8 @@ AlpacaAccount <- R6::R6Class(
     #'   - `id` (character): Watchlist UUID.
     #'   - `account_id` (character): Account UUID.
     #'   - `name` (character): Watchlist name.
-    #'   - `created_at` (character): Creation timestamp.
-    #'   - `updated_at` (character): Last update timestamp.
+    #'   - `created_at` (POSIXct, UTC): Creation timestamp.
+    #'   - `updated_at` (POSIXct, UTC): Last update timestamp.
     #'
     #' @examples
     #' \dontrun{
@@ -1018,7 +1034,11 @@ AlpacaAccount <- R6::R6Class(
     get_watchlists = function() {
       return(private$.request(
         endpoint = "/v2/watchlists",
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          parse_timestamp_cols(dt, c("created_at", "updated_at"))
+          return(dt)
+        }
       ))
     },
 
