@@ -228,3 +228,118 @@ test_that("validate_order_params removes NULLs from output", {
   )
   expect_false(any(vapply(params, is.null, logical(1))))
 })
+
+# ---- mleg (multi-leg options) order class -----------------------------------
+
+test_that("validate_order_params accepts mleg orders without top-level symbol/side", {
+  legs <- list(
+    list(symbol = "AAPL250620C00200000", side = "buy", ratio_qty = "1", position_intent = "buy_to_open"),
+    list(symbol = "AAPL250620C00210000", side = "sell", ratio_qty = "1", position_intent = "sell_to_open")
+  )
+  params <- validate_order_params(
+    type = "limit",
+    time_in_force = "day",
+    qty = 1,
+    limit_price = 0.5,
+    order_class = "mleg",
+    legs = legs
+  )
+  expect_equal(params$order_class, "mleg")
+  expect_equal(length(params$legs), 2L)
+  expect_null(params$symbol)
+  expect_null(params$side)
+})
+
+test_that("validate_order_params rejects mleg orders without legs", {
+  expect_error(
+    validate_order_params(
+      type = "limit",
+      time_in_force = "day",
+      qty = 1,
+      limit_price = 0.5,
+      order_class = "mleg"
+    ),
+    "legs.*required"
+  )
+})
+
+test_that("validate_order_params rejects mleg orders with more than 4 legs", {
+  five_legs <- replicate(5, list(symbol = "X", side = "buy", ratio_qty = "1"), simplify = FALSE)
+  expect_error(
+    validate_order_params(
+      type = "limit",
+      time_in_force = "day",
+      qty = 1,
+      limit_price = 0.5,
+      order_class = "mleg",
+      legs = five_legs
+    ),
+    "at most 4"
+  )
+})
+
+test_that("validate_order_params normalises order_class case", {
+  legs <- list(list(symbol = "X", side = "buy", ratio_qty = "1"))
+  params <- validate_order_params(
+    type = "limit",
+    time_in_force = "day",
+    qty = 1,
+    limit_price = 0.5,
+    order_class = "MLEG",
+    legs = legs
+  )
+  expect_equal(params$order_class, "mleg")
+})
+
+test_that("validate_order_params treats empty order_class as NULL", {
+  params <- validate_order_params(
+    symbol = "AAPL",
+    side = "buy",
+    type = "market",
+    time_in_force = "day",
+    qty = 1,
+    order_class = ""
+  )
+  expect_null(params$order_class)
+})
+
+test_that("validate_order_params passes advanced_instructions through", {
+  ai <- list(routing = "elite")
+  params <- validate_order_params(
+    symbol = "AAPL",
+    side = "buy",
+    type = "market",
+    time_in_force = "day",
+    qty = 1,
+    advanced_instructions = ai
+  )
+  expect_equal(params$advanced_instructions, ai)
+})
+
+# ---- non-mleg argument errors -----------------------------------------------
+
+test_that("validate_order_params rejects non-mleg order with NULL side", {
+  expect_error(
+    validate_order_params(
+      symbol = "AAPL",
+      side = NULL,
+      type = "market",
+      time_in_force = "day",
+      qty = 1
+    ),
+    "side.*buy.*sell"
+  )
+})
+
+test_that("validate_order_params rejects non-mleg order with NULL symbol", {
+  expect_error(
+    validate_order_params(
+      symbol = NULL,
+      side = "buy",
+      type = "market",
+      time_in_force = "day",
+      qty = 1
+    ),
+    "symbol.*non-empty"
+  )
+})

@@ -30,10 +30,10 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/reference/getaccount-1}{Account}
-\item \href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Positions}
-\item \href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
-\item \href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
+\item \href{https://docs.alpaca.markets/us/reference/getaccount-1}{Account}
+\item \href{https://docs.alpaca.markets/us/reference/getallopenpositions}{Positions}
+\item \href{https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1}{Portfolio History}
+\item \href{https://docs.alpaca.markets/us/reference/getaccountactivities-2}{Account Activities}
 }
 }
 
@@ -306,8 +306,8 @@ cash, margin, and account status.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccount-1}{Get Account}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getaccount-1}{Get Account}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -393,7 +393,7 @@ cat("Buying power:", info$buying_power, "\n")
 Get Account Configurations
 
 Retrieves the current account configuration settings including DTBP
-check behavior, trade confirmation emails, and shorting restrictions.
+check behaviour, trade confirmation emails, and shorting restrictions.
 \subsection{API Endpoint}{
 
 \verb{GET https://paper-api.alpaca.markets/v2/account/configurations}
@@ -401,8 +401,8 @@ check behavior, trade confirmation emails, and shorting restrictions.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountconfig-1}{Get Account Configurations}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getaccountconfig-1}{Get Account Configurations}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -470,8 +470,8 @@ Modifies one or more account configuration settings.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/patchaccountconfig-1}{Update Account Configurations}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/patchaccountconfig-1}{Update Account Configurations}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -515,7 +515,9 @@ Verified: 2026-03-10
   fractional_trading = NULL,
   max_margin_multiplier = NULL,
   pdt_check = NULL,
-  max_options_trading_level = NULL
+  max_options_trading_level = NULL,
+  ptp_no_exception_entry = NULL,
+  disable_overnight_trading = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -532,11 +534,19 @@ Verified: 2026-03-10
 
 \item{\code{fractional_trading}}{Logical or NULL; enable/disable fractional trading.}
 
-\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"} (no margin) or \code{"2"} (Reg-T).}
+\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"}, \code{"2"}, or \code{"4"}.}
 
 \item{\code{pdt_check}}{Character or NULL; \code{"both"}, \code{"entry"}, \code{"exit"}.}
 
-\item{\code{max_options_trading_level}}{Integer or NULL; options trading level (0-2).}
+\item{\code{max_options_trading_level}}{Integer or NULL; options trading level
+(0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
+3=Spreads/Straddles).}
+
+\item{\code{ptp_no_exception_entry}}{Logical or NULL; if \code{TRUE}, accept orders
+for PTP symbols with no exception.}
+
+\item{\code{disable_overnight_trading}}{Logical or NULL; if \code{TRUE}, disable
+overnight trading on the account.}
 }
 \if{html}{\out{</div>}}
 }
@@ -570,8 +580,8 @@ Retrieves all currently open positions in the account.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getallopenpositions-1}{Get All Open Positions}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getallopenpositions}{Get All Open Positions}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -653,8 +663,8 @@ Retrieves a single open position by symbol or asset UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getopenposition-1}{Get Open Position}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getopenposition-1}{Get Open Position}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -727,8 +737,8 @@ full position or a partial amount by quantity or percentage.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteposition}{Close Position}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/deleteopenposition-1}{Close Position}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -812,8 +822,8 @@ Closes all open positions. Optionally cancels all open orders first.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteallopenpositions}{Close All Positions}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/deleteallopenpositions-1}{Close All Positions}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -902,8 +912,8 @@ Exercises an options position. Only applicable to options contracts.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postpositionsymboloridexercise}{Exercise Option}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/optionexercise}{Exercise Option}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -968,8 +978,8 @@ Retrieves the portfolio value history as a time series.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getportfoliohistory}{Portfolio History}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1}{Portfolio History}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -995,10 +1005,12 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_portfolio_history(
   period = NULL,
   timeframe = NULL,
-  date_start = NULL,
-  date_end = NULL,
+  start = NULL,
+  end = NULL,
   intraday_reporting = NULL,
-  pnl_reset = NULL
+  pnl_reset = NULL,
+  date_start = NULL,
+  date_end = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1006,21 +1018,29 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{period}}{Character or NULL; time period for the history. Examples:
-\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Cannot be used with
-\code{date_start}/\code{date_end}.}
+\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Mutually exclusive with
+providing both \code{start} and \code{end}.}
 
 \item{\code{timeframe}}{Character or NULL; resolution of the time series:
 \code{"1Min"}, \code{"5Min"}, \code{"15Min"}, \code{"1H"}, \code{"1D"}.}
 
-\item{\code{date_start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}). Use with
-\code{date_end} instead of \code{period}.}
+\item{\code{start}}{Character or NULL; start timestamp in RFC3339 format.
+Defaults to \code{end} minus \code{period}.}
 
-\item{\code{date_end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
+\item{\code{end}}{Character or NULL; end timestamp in RFC3339 format.}
 
-\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default) or
-\code{"extended_hours"}.}
+\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default),
+\code{"extended_hours"}, or \code{"continuous"} (for 24/7 crypto charts).}
 
-\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.}
+\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.
+Set to \code{"no_reset"} for continuous crypto PnL.}
+
+\item{\code{date_start}}{Deprecated alias for \code{start}. Earlier releases used
+this name but it was silently ignored by the API. Now forwarded to
+\code{start} with a deprecation warning. Will be removed in a future
+release.}
+
+\item{\code{date_end}}{Deprecated alias for \code{end}. Same notes as \code{date_start}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1061,8 +1081,8 @@ include order fills, dividends, transfers, and other events.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountactivities}{Account Activities}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getaccountactivities-2}{Account Activities}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1100,7 +1120,8 @@ Verified: 2026-03-10
   after = NULL,
   direction = NULL,
   page_size = NULL,
-  page_token = NULL
+  page_token = NULL,
+  category = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1108,7 +1129,8 @@ Verified: 2026-03-10
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{activity_types}}{Character or NULL; comma-separated activity types to
-filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.}
+filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.
+Mutually exclusive with \code{category}.}
 
 \item{\code{date}}{Character or NULL; filter to a specific date (\code{"YYYY-MM-DD"}).}
 
@@ -1121,6 +1143,10 @@ filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for 
 \item{\code{page_size}}{Integer or NULL; max results per page (default 100, max 100).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{category}}{Character or NULL; broad category filter:
+\code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
+\code{activity_types}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1155,8 +1181,8 @@ Retrieves account activities filtered to a specific type.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype}{Get Account Activities by Type}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1}{Get Account Activities by Type}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1249,8 +1275,8 @@ Retrieves all watchlists for the account.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getwatchlists}{Watchlists}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getwatchlists-1}{Watchlists}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1321,8 +1347,8 @@ Retrieves a single watchlist including its asset entries.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getwatchlistbyid}{Get Watchlist by ID}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getwatchlistbyid-1}{Get Watchlist by ID}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1406,8 +1432,8 @@ Creates a new watchlist with an optional initial set of symbols.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postwatchlist}{Create Watchlist}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/postwatchlist-1}{Create Watchlist}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1489,8 +1515,8 @@ Replaces the name and/or symbols of an existing watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/putwatchlistbyid}{Update Watchlist}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1}{Update Watchlist}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1572,8 +1598,8 @@ Appends a single symbol to an existing watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postwatchlistbyid}{Add Symbol to Watchlist}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/addassettowatchlist-1}{Add Symbol to Watchlist}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1652,8 +1678,8 @@ Removes a single symbol from a watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol}{Remove Symbol from Watchlist}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1}{Remove Symbol from Watchlist}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1724,8 +1750,8 @@ Permanently deletes a watchlist.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deletewatchlistbyid}{Delete Watchlist}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1}{Delete Watchlist}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{

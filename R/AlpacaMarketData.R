@@ -28,8 +28,8 @@
 #' base URL. Both are configurable via constructor parameters.
 #'
 #' ### Official Documentation
-#' - [Market Data API](https://docs.alpaca.markets/docs/about-market-data-api)
-#' - [Historical Stock Data](https://docs.alpaca.markets/docs/historical-stock-data-1)
+#' - [Market Data API](https://docs.alpaca.markets/us/docs/about-market-data-api)
+#' - [Historical Stock Data](https://docs.alpaca.markets/us/docs/historical-stock-data-1)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | Base |
@@ -90,8 +90,8 @@ AlpacaMarketData <- R6::R6Class(
     #' credentials and base URLs for subsequent method calls.
     #'
     #' ### Official Documentation
-    #' - [Authentication](https://docs.alpaca.markets/docs/getting-started)
-    #' Verifieid: 2026-03-10
+    #' - [Authentication](https://docs.alpaca.markets/us/docs/getting-started)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -134,8 +134,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Bars](https://docs.alpaca.markets/reference/stockbars)
-    #' Verifieid: 2026-03-10
+    #' [Historical Stock Bars](https://docs.alpaca.markets/us/reference/stockbarsingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -161,10 +161,16 @@ AlpacaMarketData <- R6::R6Class(
     #' @param start Character or NULL; start date/time (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max bars (1-10000, default 1000).
-    #' @param adjustment Character or NULL; price adjustment type:
-    #'   `"raw"`, `"split"`, `"dividend"`, `"all"`. Default `"raw"`.
+    #' @param adjustment Character or NULL; price adjustment type. One or a
+    #'   comma-separated combination of: `"raw"`, `"split"`, `"dividend"`,
+    #'   `"spin-off"`, `"all"`. Default `"raw"`.
+    #' @param asof Character or NULL; as-of date (`"YYYY-MM-DD"`) used to
+    #'   identify the underlying entity when symbols have been renamed
+    #'   (e.g. FB -> META). Pass `"-"` to skip symbol mapping.
     #' @param feed Character or NULL; data feed source:
-    #'   `"iex"` (free), `"sip"` (paid, all exchanges).
+    #'   `"sip"` (default, all US exchanges), `"iex"`, `"otc"`, `"boats"`.
+    #' @param currency Character or NULL; ISO 4217 currency for returned prices.
+    #'   Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
@@ -192,7 +198,9 @@ AlpacaMarketData <- R6::R6Class(
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/bars")
       return(private$.data_request(
@@ -205,7 +213,9 @@ AlpacaMarketData <- R6::R6Class(
           adjustment = adjustment,
           feed = feed,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) {
           parse_bars(data$bars)
@@ -222,8 +232,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/bars`
     #'
     #' ### Official Documentation
-    #' [Multi Stock Bars](https://docs.alpaca.markets/reference/stockbars-1)
-    #' Verifieid: 2026-03-10
+    #' [Multi Stock Bars](https://docs.alpaca.markets/us/reference/stockbars)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -251,8 +261,12 @@ AlpacaMarketData <- R6::R6Class(
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max bars per symbol (1-10000, default 1000).
-    #' @param adjustment Character or NULL; `"raw"`, `"split"`, `"dividend"`, `"all"`.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param adjustment Character or NULL; one or comma-separated combination
+    #'   of `"raw"`, `"split"`, `"dividend"`, `"spin-off"`, `"all"`.
+    #' @param asof Character or NULL; as-of date for symbol mapping (`"YYYY-MM-DD"`
+    #'   or `"-"` to skip).
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`, `"boats"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
@@ -273,7 +287,9 @@ AlpacaMarketData <- R6::R6Class(
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       return(private$.data_request(
         endpoint = "/v2/stocks/bars",
@@ -286,7 +302,9 @@ AlpacaMarketData <- R6::R6Class(
           adjustment = adjustment,
           feed = feed,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = parse_multi_bars
       ))
@@ -303,8 +321,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/bars/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Stock Bar](https://docs.alpaca.markets/reference/stocklatestbar)
-    #' Verifieid: 2026-03-10
+    #' [Latest Stock Bar](https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -360,8 +378,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
-    #' Verifieid: 2026-03-10
+    #' [Latest Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -386,7 +404,9 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
     #'   format with one row per trade condition. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
@@ -403,11 +423,11 @@ AlpacaMarketData <- R6::R6Class(
     #' trade <- market$get_latest_trade("AAPL")
     #' print(trade)
     #' }
-    get_latest_trade = function(symbol, feed = NULL) {
+    get_latest_trade = function(symbol, feed = NULL, currency = NULL) {
       endpoint <- paste0("/v2/stocks/", symbol, "/trades/latest")
       return(private$.data_request(
         endpoint = endpoint,
-        query = list(feed = feed),
+        query = list(feed = feed, currency = currency),
         .parser = function(data) {
           parse_trades(list(data$trade))
         }
@@ -423,8 +443,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Quote](https://docs.alpaca.markets/reference/stocklatestquote)
-    #' Verifieid: 2026-03-10
+    #' [Latest Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -451,7 +471,9 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
@@ -467,11 +489,11 @@ AlpacaMarketData <- R6::R6Class(
     #' quote <- market$get_latest_quote("AAPL")
     #' print(quote)
     #' }
-    get_latest_quote = function(symbol, feed = NULL) {
+    get_latest_quote = function(symbol, feed = NULL, currency = NULL) {
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes/latest")
       return(private$.data_request(
         endpoint = endpoint,
-        query = list(feed = feed),
+        query = list(feed = feed, currency = currency),
         .parser = function(data) {
           parse_quotes(list(data$quote))
         }
@@ -488,8 +510,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/snapshot`
     #'
     #' ### Official Documentation
-    #' [Stock Snapshot](https://docs.alpaca.markets/reference/stocksnapshot)
-    #' Verifieid: 2026-03-10
+    #' [Stock Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -509,7 +531,9 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   flattened snapshot fields (prefixed by section name).
     #'
@@ -519,11 +543,11 @@ AlpacaMarketData <- R6::R6Class(
     #' snap <- market$get_snapshot("AAPL")
     #' print(snap)
     #' }
-    get_snapshot = function(symbol, feed = NULL) {
+    get_snapshot = function(symbol, feed = NULL, currency = NULL) {
       endpoint <- paste0("/v2/stocks/", symbol, "/snapshot")
       return(private$.data_request(
         endpoint = endpoint,
-        query = list(feed = feed),
+        query = list(feed = feed, currency = currency),
         .parser = parse_snapshot
       ))
     },
@@ -537,8 +561,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/bars/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Bars](https://docs.alpaca.markets/reference/stocklatestbars)
-    #' Verifieid: 2026-03-10
+    #' [Latest Multi Bars](https://docs.alpaca.markets/us/reference/stocklatestbars-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -557,7 +581,9 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column and the same columns as `get_bars()`.
     #'
@@ -567,12 +593,13 @@ AlpacaMarketData <- R6::R6Class(
     #' bars <- market$get_latest_bars_multi(c("AAPL", "MSFT"))
     #' print(bars)
     #' }
-    get_latest_bars_multi = function(symbols, feed = NULL) {
+    get_latest_bars_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/bars/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
-          feed = feed
+          feed = feed,
+          currency = currency
         ),
         .parser = function(data) {
           bars_map <- data$bars
@@ -604,8 +631,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Trades](https://docs.alpaca.markets/reference/stocklatesttrades)
-    #' Verifieid: 2026-03-10
+    #' [Latest Multi Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -624,15 +651,18 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column and trade columns.
-    get_latest_trades_multi = function(symbols, feed = NULL) {
+    get_latest_trades_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/trades/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
-          feed = feed
+          feed = feed,
+          currency = currency
         ),
         .parser = function(data) {
           trades_map <- data$trades
@@ -664,8 +694,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Quotes](https://docs.alpaca.markets/reference/stocklatestquotes)
-    #' Verifieid: 2026-03-10
+    #' [Latest Multi Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -684,15 +714,18 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column and quote columns.
-    get_latest_quotes_multi = function(symbols, feed = NULL) {
+    get_latest_quotes_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/quotes/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
-          feed = feed
+          feed = feed,
+          currency = currency
         ),
         .parser = function(data) {
           quotes_map <- data$quotes
@@ -724,8 +757,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/snapshots`
     #'
     #' ### Official Documentation
-    #' [Multi Stock Snapshots](https://docs.alpaca.markets/reference/stocksnapshots)
-    #' Verifieid: 2026-03-10
+    #' [Multi Stock Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -754,7 +787,9 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
+    #'   `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column and flattened snapshot fields.
     #'
@@ -764,12 +799,13 @@ AlpacaMarketData <- R6::R6Class(
     #' snaps <- market$get_snapshots_multi(c("AAPL", "MSFT", "GOOGL"))
     #' print(snaps)
     #' }
-    get_snapshots_multi = function(symbols, feed = NULL) {
+    get_snapshots_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/snapshots",
         query = list(
           symbols = paste(symbols, collapse = ","),
-          feed = feed
+          feed = feed,
+          currency = currency
         ),
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
@@ -802,8 +838,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Trades](https://docs.alpaca.markets/reference/stocktrades)
-    #' Verifieid: 2026-03-10
+    #' [Historical Stock Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -828,7 +864,11 @@ AlpacaMarketData <- R6::R6Class(
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max trades (1-10000, default 1000).
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param asof Character or NULL; as-of date for symbol mapping
+    #'   (`"YYYY-MM-DD"` or `"-"` to skip).
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`,
+    #'   `"boats"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
@@ -847,7 +887,9 @@ AlpacaMarketData <- R6::R6Class(
       limit = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/trades")
       return(private$.data_request(
@@ -858,7 +900,9 @@ AlpacaMarketData <- R6::R6Class(
           limit = limit,
           feed = feed,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) parse_trades(data$trades)
       ))
@@ -873,8 +917,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Quotes](https://docs.alpaca.markets/reference/stockquotes)
-    #' Verifieid: 2026-03-10
+    #' [Historical Stock Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -898,7 +942,11 @@ AlpacaMarketData <- R6::R6Class(
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
     #' @param limit Integer or NULL; max quotes (1-10000, default 1000).
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
+    #' @param asof Character or NULL; as-of date for symbol mapping
+    #'   (`"YYYY-MM-DD"` or `"-"` to skip).
+    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`,
+    #'   `"boats"`.
+    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
@@ -916,7 +964,9 @@ AlpacaMarketData <- R6::R6Class(
       limit = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes")
       return(private$.data_request(
@@ -927,7 +977,9 @@ AlpacaMarketData <- R6::R6Class(
           limit = limit,
           feed = feed,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) parse_quotes(data$quotes)
       ))
@@ -944,8 +996,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets`
     #'
     #' ### Official Documentation
-    #' [Assets](https://docs.alpaca.markets/reference/get-v2-assets)
-    #' Verifieid: 2026-03-10
+    #' [Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -976,7 +1028,13 @@ AlpacaMarketData <- R6::R6Class(
     #' @param status Character or NULL; filter by status (`"active"`, `"inactive"`).
     #' @param asset_class Character or NULL; filter by class (`"us_equity"`,
     #'   `"us_option"`, `"crypto"`).
-    #' @param exchange Character or NULL; filter by exchange.
+    #' @param exchange Character or NULL; filter by exchange (`"AMEX"`, `"ARCA"`,
+    #'   `"BATS"`, `"NYSE"`, `"NASDAQ"`, `"NYSEARCA"`, `"OTC"`).
+    #' @param attributes Character or NULL; comma-separated attribute filters.
+    #'   Returns assets matching any of the listed attributes. Supported values:
+    #'   `"ptp_no_exception"`, `"ptp_with_exception"`, `"ipo"`, `"has_options"`,
+    #'   `"options_late_close"`, `"fractional_eh_enabled"`, `"overnight_tradable"`,
+    #'   `"overnight_halted"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Asset UUID.
     #'   - `class` (character): Asset class.
@@ -995,10 +1053,10 @@ AlpacaMarketData <- R6::R6Class(
     #' assets <- market$get_assets(status = "active", asset_class = "us_equity")
     #' print(assets[1:5, .(symbol, name, exchange, tradable)])
     #' }
-    get_assets = function(status = NULL, asset_class = NULL, exchange = NULL) {
+    get_assets = function(status = NULL, asset_class = NULL, exchange = NULL, attributes = NULL) {
       return(private$.request(
         endpoint = "/v2/assets",
-        query = list(status = status, asset_class = asset_class, exchange = exchange),
+        query = list(status = status, asset_class = asset_class, exchange = exchange, attributes = attributes),
         .parser = as_dt_list
       ))
     },
@@ -1012,8 +1070,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets/{symbol_or_id}`
     #'
     #' ### Official Documentation
-    #' [Asset by ID or Symbol](https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id)
-    #' Verifieid: 2026-03-10
+    #' [Asset by ID or Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1069,8 +1127,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/calendar`
     #'
     #' ### Official Documentation
-    #' [Calendar](https://docs.alpaca.markets/reference/get-v2-calendar)
-    #' Verifieid: 2026-03-10
+    #' [Calendar](https://docs.alpaca.markets/us/reference/legacycalendar)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1090,6 +1148,9 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param start Character or NULL; start date (`"YYYY-MM-DD"`).
     #' @param end Character or NULL; end date (`"YYYY-MM-DD"`).
+    #' @param date_type Character or NULL; one of `"TRADING"` or `"SETTLEMENT"`.
+    #'   Determines whether `start`/`end` are interpreted as trading dates
+    #'   (default) or settlement dates.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `date` (character): Trading date.
     #'   - `open` (character): Market open time (ET).
@@ -1101,10 +1162,13 @@ AlpacaMarketData <- R6::R6Class(
     #' cal <- market$get_calendar(start = "2024-01-01", end = "2024-01-31")
     #' print(cal)
     #' }
-    get_calendar = function(start = NULL, end = NULL) {
+    get_calendar = function(start = NULL, end = NULL, date_type = NULL) {
+      if (!is.null(date_type)) {
+        rlang::arg_match0(date_type, c("TRADING", "SETTLEMENT"))
+      }
       return(private$.request(
         endpoint = "/v2/calendar",
-        query = list(start = start, end = end),
+        query = list(start = start, end = end, date_type = date_type),
         .parser = as_dt_list
       ))
     },
@@ -1119,8 +1183,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/clock`
     #'
     #' ### Official Documentation
-    #' [Clock](https://docs.alpaca.markets/reference/get-v2-clock)
-    #' Verifieid: 2026-03-10
+    #' [Clock](https://docs.alpaca.markets/us/reference/legacyclock)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1170,8 +1234,14 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/corporate_actions/announcements`
     #'
     #' ### Official Documentation
-    #' [Corporate Actions](https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements)
-    #' Verifieid: 2026-03-10
+    #' [Corporate Actions](https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1)
+    #' Verified: 2026-05-21
+    #'
+    #' Note: as of 2026-05, the `/v2/corporate_actions/announcements` endpoint is
+    #' marked DEPRECATED by Alpaca. It still works and the wrapper still calls
+    #' it, but Alpaca recommends migrating to the newer corporate-actions
+    #' market-data endpoint (`/v1beta1/corporate-actions`). Migration is tracked
+    #' as a follow-up.
     #'
     #' ### curl
     #' ```
@@ -1247,6 +1317,16 @@ AlpacaMarketData <- R6::R6Class(
       cusip = NULL,
       date_type = NULL
     ) {
+      rlang::warn(
+        paste0(
+          "`get_corporate_actions()` wraps `/v2/corporate_actions/announcements`, ",
+          "which Alpaca has flagged DEPRECATED in favour of the newer ",
+          "`/v1beta1/corporate-actions` market-data endpoint. The wrapper still ",
+          "works today but migration is recommended."
+        ),
+        .frequency = "regularly",
+        .frequency_id = "get_corporate_actions_deprecated"
+      )
       return(private$.request(
         endpoint = "/v2/corporate_actions/announcements",
         query = list(
@@ -1273,8 +1353,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/news`
     #'
     #' ### Official Documentation
-    #' [News](https://docs.alpaca.markets/reference/news-1)
-    #' Verifieid: 2026-03-10
+    #' [News](https://docs.alpaca.markets/us/reference/news-3)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1377,8 +1457,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives`
     #'
     #' ### Official Documentation
-    #' [Most Active Stocks](https://docs.alpaca.markets/reference/mostactives)
-    #' Verifieid: 2026-03-10
+    #' [Most Active Stocks](https://docs.alpaca.markets/us/reference/mostactives-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1430,8 +1510,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/screener/{market_type}/movers`
     #'
     #' ### Official Documentation
-    #' [Top Market Movers](https://docs.alpaca.markets/reference/movers)
-    #' Verifieid: 2026-03-10
+    #' [Top Market Movers](https://docs.alpaca.markets/us/reference/movers-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
