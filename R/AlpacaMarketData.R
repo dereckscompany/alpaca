@@ -361,8 +361,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
-    #' Verifieid: 2026-03-10
+    #' [Latest Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -388,15 +388,20 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade** (a single row for this single-trade method).
+    #'   Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`. Recover
+    #'     the original vector with
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     the trade carries no condition codes.
     #'
     #' @examples
     #' \dontrun{
@@ -605,8 +610,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/trades/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Trades](https://docs.alpaca.markets/reference/stocklatesttrades)
-    #' Verifieid: 2026-03-10
+    #' [Latest Multi Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -803,8 +808,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/trades`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Trades](https://docs.alpaca.markets/reference/stocktrades)
-    #' Verifieid: 2026-03-10
+    #' [Historical Stock Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -832,15 +837,16 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade**. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`.
     get_trades = function(
       symbol,
       start = NULL,

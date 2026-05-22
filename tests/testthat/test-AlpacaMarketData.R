@@ -36,17 +36,55 @@ test_that("get_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trade returns long-format data.table with condition column", {
+test_that("get_latest_trade returns one row with conditions as `;`-joined character", {
   resp <- mock_alpaca_response(mock_trade_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trade("AAPL")
   expect_s3_class(dt, "data.table")
-  # Mock trade has 1 condition ["@"], so 1 row
+  # Policy: one trade = one row regardless of how many conditions it carries.
   expect_equal(nrow(dt), 1L)
-  expect_true(all(c("timestamp", "price", "size", "condition") %in% names(dt)))
-  expect_false("conditions" %in% names(dt))
-  expect_equal(dt$condition[1], "@")
+  expect_true(all(c("timestamp", "price", "size", "conditions") %in% names(dt)))
+  expect_false("condition" %in% names(dt))
+  expect_true(is.character(dt$conditions))
+  expect_false(is.list(dt$conditions))
+  # Mock fixture has a single "@" condition; multi-condition path covered
+  # by `parse_trades collapses multiple condition codes` below.
+  expect_equal(dt$conditions[1], "@")
+})
+
+test_that("parse_trades collapses multiple condition codes with `;`", {
+  # Build a trade fixture with two condition codes inline (the canonical
+  # multi-condition Alpaca shape, e.g. ["@", "T"] from a live latest trade).
+  trades <- list(list(
+    t = "2024-01-15T20:00:00Z",
+    x = "V",
+    p = 185.64,
+    s = 100L,
+    c = list("@", "T"),
+    i = 12345L,
+    z = "C"
+  ))
+  dt <- parse_trades(trades)
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$conditions, "@;T")
+  # Round-trip back to the original vector.
+  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]],
+               c("@", "T"))
+})
+
+test_that("parse_trades handles a trade with no condition codes as NA", {
+  trades <- list(list(
+    t = "2024-01-15T20:00:00Z",
+    x = "V",
+    p = 185.64,
+    s = 100L,
+    i = 12345L,
+    z = "C"
+  ))
+  dt <- parse_trades(trades)
+  expect_equal(nrow(dt), 1L)
+  expect_true(is.na(dt$conditions))
 })
 
 test_that("get_latest_quote returns single-row data.table", {
@@ -183,19 +221,20 @@ test_that("get_latest_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trades_multi returns long-format data.table with condition column", {
+test_that("get_latest_trades_multi returns one row per symbol with conditions collapsed", {
   resp <- mock_alpaca_response(mock_latest_trades_multi_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trades_multi(c("AAPL", "MSFT"))
   expect_s3_class(dt, "data.table")
-  # Each mock trade has 1 condition, so 2 trades * 1 condition = 2 rows
+  # Policy: one symbol = one row (one latest trade each).
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
   expect_true("price" %in% names(dt))
-  expect_true("condition" %in% names(dt))
-  expect_false("conditions" %in% names(dt))
+  expect_true("conditions" %in% names(dt))
+  expect_false("condition" %in% names(dt))
+  expect_false(is.list(dt$conditions))
 })
 
 test_that("get_latest_quotes_multi returns data.table with symbol column", {

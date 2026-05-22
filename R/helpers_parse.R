@@ -167,17 +167,21 @@ parse_multi_bars <- function(data) {
   return(data.table::rbindlist(dts, fill = TRUE)[])
 }
 
-#' Parse Alpaca Trade Data to data.table (Long Format)
+#' Parse Alpaca Trade Data to data.table (One Row Per Trade)
 #'
 #' Converts a list of trade objects (with short field names) into a tidy
-#' [data.table::data.table] with descriptive column names. Trade conditions
-#' are expanded to long format: one row per condition, with parent trade
-#' fields repeated. Trades with no conditions get a single row with
-#' `condition = NA`.
+#' [data.table::data.table] with descriptive column names. Each trade is
+#' a single row; the `c` condition-code array is collapsed to a
+#' semicolon-separated `conditions` character column (e.g. `"@;T"`).
+#'
+#' Recover the original codes with
+#' `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. Filter with
+#' `dt[grepl("T", conditions)]`. Trades with no condition codes get
+#' `conditions = NA`.
 #'
 #' @param trades A list of trade objects from the Alpaca API.
 #' @return A [data.table::data.table] with columns: `timestamp`, `price`,
-#'   `size`, `exchange`, `condition`, `tape`, `id`.
+#'   `size`, `exchange`, `conditions`, `tape`, `id`.
 #'
 #' @keywords internal
 #' @noRd
@@ -185,20 +189,17 @@ parse_trades <- function(trades) {
   if (is.null(trades) || length(trades) == 0) {
     return(data.table::data.table()[])
   }
-  # Extract conditions before rbindlist, then expand to long format
-  conditions_list <- lapply(trades, function(tr) {
-    conds <- tr[["c"]]
-    if (is.null(conds) || length(conds) == 0) {
-      return(NA_character_)
+  # Collapse the `c` condition-code array on each trade so one trade
+  # remains one row. We rename `c` to `conditions` first so the helper
+  # finds the field by its semantic name.
+  trades_clean <- lapply(trades, function(tr) {
+    if (!is.null(tr[["c"]])) {
+      tr[["conditions"]] <- tr[["c"]]
+      tr[["c"]] <- NULL
     }
-    return(as.character(unlist(conds)))
+    collapse_string_array_fields(tr, "conditions")
   })
-  # Remove conditions from trades for clean rbindlist
-  trades_no_conds <- lapply(trades, function(tr) {
-    tr[["c"]] <- NULL
-    return(tr)
-  })
-  dt <- data.table::rbindlist(trades_no_conds, fill = TRUE)
+  dt <- data.table::rbindlist(trades_clean, fill = TRUE)
   name_map <- c(
     t = "timestamp",
     p = "price",
@@ -215,14 +216,6 @@ parse_trades <- function(trades) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
-  # Add a row index to track which trade each condition belongs to
-  dt[, .trade_idx := .I]
-  # Expand conditions to long format
-  conds_dt <- data.table::rbindlist(lapply(seq_along(conditions_list), function(i) {
-    data.table::data.table(.trade_idx = i, condition = conditions_list[[i]])
-  }))
-  dt <- dt[conds_dt, on = ".trade_idx"]
-  dt[, .trade_idx := NULL]
   return(dt[])
 }
 
