@@ -155,6 +155,41 @@ parse_date_cols <- function(dt, cols) {
   return(invisible(dt))
 }
 
+# Exchange timezone used by Alpaca for naive market times (open/close,
+# session_open/session_close on /v2/calendar). Alpaca documents these
+# as ET; the named tz handles DST transitions automatically.
+ALPACA_EXCHANGE_TZ <- "America/New_York"
+
+#' Combine a YYYY-MM-DD Date String with a HH:MM Time String
+#'
+#' @param date Character; ISO date string.
+#' @param time Character; `"HH:MM"` clock time.
+#' @return POSIXct in `America/New_York`, or NA where inputs are NA.
+#'
+#' @keywords internal
+#' @noRd
+combine_et_datetime <- function(date, time) {
+  joined <- ifelse(is.na(date) | is.na(time), NA_character_,
+                   paste(date, time))
+  return(lubridate::ymd_hm(joined, tz = ALPACA_EXCHANGE_TZ, quiet = TRUE))
+}
+
+#' Insert a Colon into a HHMM Time String
+#'
+#' Alpaca's `session_open`/`session_close` fields are encoded as `"HHMM"`
+#' (no separator), unlike `open`/`close` which use `"HH:MM"`.
+#'
+#' @param x Character; `"HHMM"` strings.
+#' @return Character; `"HH:MM"` strings, NA-preserving.
+#'
+#' @keywords internal
+#' @noRd
+hhmm_to_hh_mm <- function(x) {
+  out <- ifelse(is.na(x) | nchar(x) != 4L, NA_character_,
+                paste0(substr(x, 1L, 2L), ":", substr(x, 3L, 4L)))
+  return(out)
+}
+
 #' Parse Alpaca Bar Data to data.table
 #'
 #' Converts a list of bar objects (with short field names `t`, `o`, `h`, `l`,

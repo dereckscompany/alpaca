@@ -1580,10 +1580,17 @@ Determines whether \code{start}/\code{end} are interpreted as trading dates
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{date} (character): Trading date.
-\item \code{open} (character): Market open time (ET).
-\item \code{close} (character): Market close time (ET).
+\item \code{date} (Date): Trading date.
+\item \code{open} (POSIXct, \code{America/New_York}): Regular-hours market open.
+\item \code{close} (POSIXct, \code{America/New_York}): Regular-hours market close.
+\item \code{session_open} (POSIXct, \code{America/New_York}): Extended-hours session open.
+\item \code{session_close} (POSIXct, \code{America/New_York}): Extended-hours session close.
+\item \code{settlement_date} (Date): Settlement date for trades executed on \code{date}.
 }
+
+Alpaca's API returns market times without an offset; per the
+Alpaca docs they are Eastern Time. We localise to
+\code{America/New_York} (the named tz handles DST automatically).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1641,11 +1648,16 @@ Verified: 2026-05-21
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{timestamp} (character): Current server timestamp.
+\item \code{timestamp} (POSIXct, \code{America/New_York}): Current server timestamp.
 \item \code{is_open} (logical): Whether the market is currently open.
-\item \code{next_open} (character): Next market open time.
-\item \code{next_close} (character): Next market close time.
+\item \code{next_open} (POSIXct, \code{America/New_York}): Next market open time.
+\item \code{next_close} (POSIXct, \code{America/New_York}): Next market close time.
 }
+
+The Alpaca clock endpoint returns ISO-8601 timestamps with an
+explicit offset; we parse the instant exactly and display it in
+\code{America/New_York} for consistency with \code{get_calendar()}. Use
+\code{lubridate::with_tz()} to view in another timezone.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
