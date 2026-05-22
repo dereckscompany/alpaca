@@ -1881,8 +1881,8 @@ without content.}
 \item \code{source} (character): News source.
 \item \code{summary} (character): Article summary.
 \item \code{url} (character): Article URL.
-\item \code{created_at} (character): Publication timestamp.
-\item \code{updated_at} (character): Last update timestamp.
+\item \code{created_at} (POSIXct, UTC): Publication timestamp.
+\item \code{updated_at} (POSIXct, UTC): Last update timestamp.
 \item \code{symbols} (character): Semicolon-separated related tickers, e.g.
 \code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]}; recover
 the original vector via

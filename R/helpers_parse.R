@@ -102,6 +102,32 @@ rfc3339_to_datetime <- function(x) {
   return(lubridate::as_datetime(x))
 }
 
+#' Convert Named Character Columns of a data.table to POSIXct
+#'
+#' Walks the given column names; for each that exists in `dt`, replaces
+#' it in place with the result of `rfc3339_to_datetime()`. Columns that
+#' do not exist are silently skipped — endpoints frequently omit
+#' optional timestamps (e.g. `filled_at` on an unfilled order), and we
+#' want the parser to handle the present subset without erroring.
+#'
+#' @param dt A [data.table::data.table].
+#' @param cols Character; candidate column names to convert.
+#' @return `dt`, modified by reference and returned invisibly.
+#'
+#' @keywords internal
+#' @noRd
+parse_timestamp_cols <- function(dt, cols) {
+  if (nrow(dt) == 0L) {
+    return(invisible(dt))
+  }
+  for (col in cols) {
+    if (col %in% names(dt)) {
+      dt[, (col) := rfc3339_to_datetime(get(col))]
+    }
+  }
+  return(invisible(dt))
+}
+
 #' Convert Named Character Columns of a data.table to Date
 #'
 #' Walks the given column names; for each that exists in `dt`, parses
@@ -437,6 +463,13 @@ parse_snapshot <- function(snapshot) {
     data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
+  parse_timestamp_cols(dt, c(
+    "latest_trade_timestamp",
+    "latest_quote_timestamp",
+    "minute_bar_timestamp",
+    "daily_bar_timestamp",
+    "prev_daily_bar_timestamp"
+  ))
   return(dt[])
 }
 
@@ -534,6 +567,7 @@ parse_news <- function(news_items) {
 
   dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
+  parse_timestamp_cols(dt, c("created_at", "updated_at"))
   return(dt[])
 }
 
@@ -562,6 +596,7 @@ parse_watchlist <- function(wl) {
   wl[["assets"]] <- NULL
   # Build the parent watchlist row
   parent <- as_dt_row(wl)
+  parse_timestamp_cols(parent, c("created_at", "updated_at"))
   if (is.null(assets) || length(assets) == 0) {
     # No assets: return one row with NA asset columns
     parent[, asset_id := NA_character_]
@@ -829,6 +864,7 @@ parse_order <- function(x) {
   }
 
   if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
+    parse_timestamp_cols(parent_dt, ORDER_TIMESTAMP_COLS)
     return(parent_dt[])
   }
 
@@ -843,8 +879,19 @@ parse_order <- function(x) {
     legs_dt[, leg_index := seq_len(.N)]
     legs_dt[, parent_order_id := parent_id]
   }
-  return(data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)[])
+  out <- data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)
+  parse_timestamp_cols(out, ORDER_TIMESTAMP_COLS)
+  return(out[])
 }
+
+# All timestamp fields Alpaca emits on an order record. Optional fields
+# (filled_at, canceled_at, ...) are NA on records that never reached
+# that state; parse_timestamp_cols() skips missing columns.
+ORDER_TIMESTAMP_COLS <- c(
+  "created_at", "updated_at", "submitted_at",
+  "filled_at", "expired_at", "canceled_at",
+  "failed_at", "replaced_at"
+)
 
 #' Parse a List of Order Responses to data.table
 #'

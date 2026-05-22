@@ -23,6 +23,32 @@ Adds a small shared `parse_date_cols(dt, cols)` helper that walks
 candidate column names and parses `"YYYY-MM-DD"` strings to `Date`
 in place; columns absent from `dt` are silently skipped.
 
+## Timestamp fields are now POSIXct (breaking)
+
+All RFC-3339 timestamp fields returned by the API are now parsed to
+`POSIXct` (UTC) instead of character. Previously some endpoints (bars,
+trades, quotes) already did this; the remaining ones did not. Now
+covered:
+
+- **Orders** (`AlpacaTrading$get_orders()`, `$get_order()`,
+  `$submit_order()`, etc.): `created_at`, `updated_at`,
+  `submitted_at`, `filled_at`, `expired_at`, `canceled_at`,
+  `failed_at`, `replaced_at`.
+- **Account** (`AlpacaAccount$get_account()`): `created_at`.
+- **Watchlists** (`$get_watchlists()`, `$get_watchlist()`, etc.):
+  `created_at`, `updated_at`.
+- **Activities** (`$get_activities()`, `$get_activities_by_type()`):
+  `transaction_time`.
+- **News** (`AlpacaMarketData$get_news()`): `created_at`,
+  `updated_at`.
+- **Snapshots** (`$get_snapshot()`, `$get_snapshots_multi()`): all
+  five nested `*_timestamp` fields. Previously renamed but left as
+  character — now parsed consistently with the standalone
+  bar/trade/quote endpoints.
+
+Use `lubridate::with_tz()` to view in any other timezone; the
+underlying instant is preserved.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

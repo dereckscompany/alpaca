@@ -173,7 +173,10 @@ AlpacaTrading <- R6::R6Class(
     #'   - `filled_avg_price` (character): Average fill price.
     #'   - `limit_price` (character): Limit price (if set).
     #'   - `stop_price` (character): Stop price (if set).
-    #'   - `created_at` (character): Order creation timestamp.
+    #'   - `created_at` (POSIXct, UTC): Order creation timestamp. Other
+    #'     order timestamps — `updated_at`, `submitted_at`, `filled_at`,
+    #'     `expired_at`, `canceled_at`, `failed_at`, `replaced_at` —
+    #'     are likewise parsed to POSIXct (UTC) when present.
     #'   - `leg_index` (integer): `NA` on the parent row; `1..N` on each leg.
     #'   - `parent_order_id` (character): `NA` on the parent row; the parent's
     #'     `id` on each leg. Use `dt[is.na(parent_order_id)]` to keep just
