@@ -1281,8 +1281,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v1beta1/news`
     #'
     #' ### Official Documentation
-    #' [News](https://docs.alpaca.markets/reference/news-1)
-    #' Verifieid: 2026-03-10
+    #' [News](https://docs.alpaca.markets/us/reference/news-3)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -1321,8 +1321,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
     #'   without content.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per related symbol. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per article**. Columns:
     #'   - `id` (integer): Article ID.
     #'   - `headline` (character): Article headline.
     #'   - `author` (character): Author name.
@@ -1331,7 +1331,20 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `url` (character): Article URL.
     #'   - `created_at` (character): Publication timestamp.
     #'   - `updated_at` (character): Last update timestamp.
-    #'   - `symbol` (character): Related ticker symbol.
+    #'   - `symbols` (character): Semicolon-separated related tickers, e.g.
+    #'     `"AAPL;MSFT"`. Filter with `dt[grepl("AAPL", symbols)]` or recover
+    #'     the original vector with
+    #'     `strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]`.
+    #'   - `image_sizes` (character): Semicolon-separated image size labels
+    #'     (e.g. `"large;small;thumb"`) parallel to `image_urls`. `NA` when
+    #'     the article has no images.
+    #'   - `image_urls` (character): Semicolon-separated image URLs. Literal
+    #'     `;` characters that appear inside individual URLs are percent-
+    #'     encoded as `%3B` before joining. Recover the original URLs with:
+    #'     ```r
+    #'     urls <- strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]]
+    #'     urls <- vapply(urls, URLdecode, character(1))
+    #'     ```
     #'
     #' @examples
     #' \dontrun{

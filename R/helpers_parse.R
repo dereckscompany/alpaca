@@ -352,14 +352,28 @@ parse_snapshot <- function(snapshot) {
   return(dt[])
 }
 
-#' Parse Alpaca News Response to Long-Format data.table
+#' Parse Alpaca News Response to data.table (One Row Per Article)
 #'
-#' Expands the `symbols` array field so that each news article is represented
-#' by one row per related symbol. Articles with no symbols get a single row
-#' with `symbol = NA`.
+#' Per the package's "one entity = one row" policy, news articles are the
+#' entity. The two nested arrays (`symbols` and `images`) become collapsed
+#' character columns rather than exploding the row count.
+#'
+#' Concretely, the returned `data.table` has:
+#'   - `symbols` (character): semicolon-separated related tickers, e.g.
+#'     `"AAPL;MSFT;GOOGL"`. Recover with
+#'     `strsplit(news$symbols, ";", fixed = TRUE)`.
+#'   - `image_sizes` (character): semicolon-separated size labels (e.g.
+#'     `"large;small"`) parallel to `image_urls`.
+#'   - `image_urls` (character): semicolon-separated URLs. Any literal `;`
+#'     inside a URL is percent-encoded to `%3B` before joining, so users
+#'     can do `vapply(strsplit(news$image_urls, ";", fixed = TRUE)[[1]],
+#'     URLdecode, character(1))` to recover the original URLs.
+#'
+#' Articles with no symbols and/or no images keep the article row, with
+#' the missing fields set to `NA`.
 #'
 #' @param news_items A list of news article objects from the Alpaca API.
-#' @return A [data.table::data.table] in long format with a `symbol` column.
+#' @return A [data.table::data.table] with one row per article.
 #'
 #' @keywords internal
 #' @noRd
@@ -367,47 +381,38 @@ parse_news <- function(news_items) {
   if (is.null(news_items) || length(news_items) == 0) {
     return(data.table::data.table()[])
   }
-  # Extract symbols and images before rbindlist
-  symbols_list <- lapply(news_items, function(item) {
-    syms <- item[["symbols"]]
-    if (is.null(syms) || length(syms) == 0) {
-      return(NA_character_)
-    }
-    return(as.character(unlist(syms)))
-  })
-  images_list <- lapply(news_items, function(item) {
-    imgs <- item[["images"]]
-    if (is.null(imgs) || length(imgs) == 0) {
-      return(data.table::data.table(image_size = NA_character_, image_url = NA_character_))
-    }
-    data.table::data.table(
-      image_size = vapply(imgs, function(img) (if (is.null(img$size)) NA_character_ else img$size), character(1)),
-      image_url = vapply(imgs, function(img) (if (is.null(img$url)) NA_character_ else img$url), character(1))
-    )
-  })
-  # Remove symbols and images from items for clean rbindlist
+  # Walk each article, collapse the two nested arrays into scalar character
+  # fields, then drop the originals so rbindlist sees a flat record.
   items_clean <- lapply(news_items, function(item) {
-    item[["symbols"]] <- NULL
+    # symbols: plain string array -> `;`-joined
+    item <- collapse_string_array_fields(item, "symbols")
+
+    # images: array of {size, url} objects -> two parallel `;`-joined cols.
+    # URL values may legally contain `;`, so percent-encode just that
+    # character before joining; users recover via URLdecode().
+    imgs <- item[["images"]]
+    if (is.null(imgs) || length(imgs) == 0L) {
+      item$image_sizes <- NA_character_
+      item$image_urls  <- NA_character_
+    } else {
+      sizes <- vapply(imgs, function(img) {
+        if (is.null(img$size)) NA_character_ else as.character(img$size)
+      }, character(1))
+      urls <- vapply(imgs, function(img) {
+        if (is.null(img$url)) NA_character_ else as.character(img$url)
+      }, character(1))
+      urls_safe <- vapply(urls, function(u) {
+        if (is.na(u)) NA_character_ else gsub(";", "%3B", u, fixed = TRUE)
+      }, character(1))
+      item$image_sizes <- paste(sizes, collapse = ";")
+      item$image_urls  <- paste(urls_safe, collapse = ";")
+    }
     item[["images"]] <- NULL
-    return(wrap_list_fields(item))
+    return(item)
   })
+
   dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
-  dt[, .article_idx := .I]
-  # Expand symbols to long format
-  syms_dt <- data.table::rbindlist(lapply(seq_along(symbols_list), function(i) {
-    data.table::data.table(.article_idx = i, symbol = symbols_list[[i]])
-  }))
-  # Expand images to long format
-  imgs_dt <- data.table::rbindlist(lapply(seq_along(images_list), function(i) {
-    img_dt <- images_list[[i]]
-    img_dt[, .article_idx := i]
-    return(img_dt)
-  }))
-  # Join both expansions: one row per (article, symbol, image) combination
-  dt <- dt[syms_dt, on = ".article_idx", allow.cartesian = TRUE]
-  dt <- dt[imgs_dt, on = ".article_idx", allow.cartesian = TRUE]
-  dt[, .article_idx := NULL]
   return(dt[])
 }
 
@@ -506,7 +511,14 @@ parse_watchlist <- function(wl) {
 collapse_string_array_fields <- function(x, fields) {
   for (nm in fields) {
     val <- x[[nm]]
-    if (is.null(val) || length(val) == 0L) next
+    # Empty / missing -> NA_character_ rather than `list()`. This unifies
+    # the column type so downstream `data.table::rbindlist()` builds a
+    # character column instead of falling back to a list column when some
+    # records have arrays and others don't.
+    if (is.null(val) || length(val) == 0L) {
+      x[[nm]] <- NA_character_
+      next
+    }
     if (is.list(val)) {
       val <- unlist(val, use.names = FALSE)
     }

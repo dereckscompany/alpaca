@@ -490,6 +490,7 @@ mock_corporate_actions_response <- function() {
 mock_news_response <- function() {
   list(
     news = list(
+      # Article 1: 1 symbol, 1 image (regular case)
       list(
         id = 12345L,
         headline = "Apple Reports Record Q1 Earnings",
@@ -499,8 +500,13 @@ mock_news_response <- function() {
         url = "https://example.com/article/12345",
         symbols = list("AAPL"),
         created_at = "2024-01-25T18:30:00Z",
-        updated_at = "2024-01-25T18:30:00Z"
+        updated_at = "2024-01-25T18:30:00Z",
+        images = list(
+          list(size = "large", url = "https://cdn.example.com/12345-large.jpg")
+        )
       ),
+      # Article 2: 3 symbols, 2 images (would have been 3x2=6 rows under the
+      # old cartesian bug; should be exactly 1 row now)
       list(
         id = 12346L,
         headline = "Tech Sector Rallies on AI Optimism",
@@ -510,7 +516,40 @@ mock_news_response <- function() {
         url = "https://example.com/article/12346",
         symbols = list("AAPL", "MSFT", "NVDA"),
         created_at = "2024-01-25T16:00:00Z",
-        updated_at = "2024-01-25T16:00:00Z"
+        updated_at = "2024-01-25T16:00:00Z",
+        images = list(
+          list(size = "large", url = "https://cdn.example.com/12346-large.jpg"),
+          list(size = "thumb", url = "https://cdn.example.com/12346-thumb.jpg")
+        )
+      ),
+      # Article 3: no symbols, no images (empty-array edge case)
+      list(
+        id = 12347L,
+        headline = "Some Generic Markets Headline",
+        author = "Anon",
+        source = "wire",
+        summary = "A market-wide story without specific tickers.",
+        url = "https://example.com/article/12347",
+        symbols = list(),
+        created_at = "2024-01-25T15:00:00Z",
+        updated_at = "2024-01-25T15:00:00Z",
+        images = list()
+      ),
+      # Article 4: URL with a literal `;` to exercise the percent-encode path
+      list(
+        id = 12348L,
+        headline = "URL with semicolons",
+        author = "Edge",
+        source = "test",
+        summary = "Article whose image URL contains a `;` query separator.",
+        url = "https://example.com/article/12348",
+        symbols = list("TSLA"),
+        created_at = "2024-01-25T14:00:00Z",
+        updated_at = "2024-01-25T14:00:00Z",
+        images = list(
+          list(size = "large",
+               url = "https://cdn.example.com/12348.jpg?w=2048;h=1536")
+        )
       )
     ),
     next_page_token = NULL
