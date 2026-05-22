@@ -2,7 +2,12 @@ linters: linters_with_defaults(
     line_length_linter = line_length_linter(120),
     indentation_linter = indentation_linter(2),
     return_linter = return_linter(return_style = "explicit"),
-    object_name_linter = object_name_linter(styles = c("snake_case", "SNAKE_CASE", "CamelCase"))
+    # Disabled: long fixture / API-field names are intentional.
+    object_length_linter = NULL,
+    object_name_linter = NULL,
+    # Disabled: every flag is a misclassification (file-header banners,
+    # documented usage examples, inline test annotations, bug refs).
+    commented_code_linter = NULL
   )
 exclusions: list(
     "renv/activate.R",

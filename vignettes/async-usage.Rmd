@@ -200,15 +200,13 @@ md <- AlpacaMarketData$new(async = TRUE)
 md$get_bars(
   symbol = "INVALID_SYMBOL",
   timeframe = "1Day"
-) %...>%
-  function(data) {
-    cat("Got", nrow(data), "bars\n")
-    return(invisible(NULL))
-  } %...!%
-  function(err) {
-    cat("Error:", conditionMessage(err), "\n")
-    return(invisible(NULL))
-  }
+) %...>% (function(data) {
+  cat("Got", nrow(data), "bars\n")
+  return(invisible(NULL))
+}) %...!% (function(err) {
+  cat("Error:", conditionMessage(err), "\n")
+  return(invisible(NULL))
+})
 
 while (!later::loop_empty()) {
   later::run_now()

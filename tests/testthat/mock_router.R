@@ -168,7 +168,7 @@ mock_router <- function(req) {
       if (inherits(fixture_data, "httr2_response")) {
         return(fixture_data)
       }
-      return(mock_alpaca_response(fixture_data))
+      return(mock_alpaca_response(fixture_data)) # nolint: object_usage_linter.
     }
   }
 
