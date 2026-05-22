@@ -1023,7 +1023,9 @@ Verified: 2026-05-22
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and trade columns.
+leading \code{symbol} column and the same per-trade columns as
+\code{get_latest_trade()}: \code{timestamp}, \code{price}, \code{size}, \code{exchange},
+\code{conditions} (\verb{;}-collapsed), \code{tape}, \code{id}. One row per symbol.
 }
 }
 \if{html}{\out{<hr>}}

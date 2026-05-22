@@ -539,8 +539,19 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and the same bar columns as stock bars.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per bar} and a leading \code{symbol} column. Bar columns mirror
+the equity \code{get_bars()} output:
+\itemize{
+\item \code{timestamp} (POSIXct): Bar start timestamp.
+\item \code{open} (numeric): Opening price.
+\item \code{high} (numeric): High price.
+\item \code{low} (numeric): Low price.
+\item \code{close} (numeric): Closing price.
+\item \code{volume} (integer): Contracts traded.
+\item \code{trade_count} (integer): Number of trades in the bar.
+\item \code{vwap} (numeric): Volume-weighted average price.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -639,7 +650,18 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-trade columns.
+\strong{one row per trade} and a leading \code{symbol} column. Columns:
+\itemize{
+\item \code{timestamp} (POSIXct): Trade timestamp.
+\item \code{price} (numeric): Trade price.
+\item \code{size} (integer): Trade size (contracts).
+\item \code{exchange} (character): Exchange code.
+\item \code{conditions} (character): \verb{;}-separated trade condition codes,
+or a single-character code for option trades. \code{NA} when no
+conditions were reported.
+\item \code{tape} (character): Tape identifier.
+\item \code{id} (integer): Trade ID.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -702,7 +724,15 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-quote columns plus a \code{symbol} column.
+\strong{one row per contract} and a leading \code{symbol} column. Columns:
+\itemize{
+\item \code{timestamp} (POSIXct): Quote timestamp.
+\item \code{ask_exchange}, \code{ask_price}, \code{ask_size}.
+\item \code{bid_exchange}, \code{bid_price}, \code{bid_size}.
+\item \code{conditions} (character): \verb{;}-separated quote condition codes,
+or a single-character code for option quotes. \code{NA} when no
+conditions were reported.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -761,7 +791,18 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-trade columns plus a \code{symbol} column.
+\strong{one row per contract} and a leading \code{symbol} column. Columns:
+\itemize{
+\item \code{timestamp} (POSIXct): Trade timestamp.
+\item \code{price} (numeric): Trade price.
+\item \code{size} (integer): Trade size (contracts).
+\item \code{exchange} (character): Exchange code.
+\item \code{conditions} (character): \verb{;}-separated trade condition codes,
+or a single-character code for option trades. \code{NA} when no
+conditions were reported.
+\item \code{tape} (character): Tape identifier.
+\item \code{id} (integer): Trade ID.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -889,12 +930,17 @@ with \strong{one row per contract}. Columns:
 \code{get_snapshot()} for the per-field listing. \code{latest_trade_t}
 etc. are expanded to \code{latest_trade_timestamp} etc.;
 \code{latest_trade_conditions} and \code{latest_quote_conditions} are
-\verb{;}-collapsed character columns.
-\item \code{implied_volatility} (numeric): Top-level implied volatility
-when present in the snapshot.
+character columns (\verb{;}-collapsed when Alpaca returns multiple
+codes, single code otherwise, \code{NA} when absent).
+\item \code{implied_volatility} (numeric, optional): Top-level implied
+volatility. Alpaca returns this only when the account's
+options data subscription includes greeks/IV — on the default
+paper-trading \code{indicative} feed without a subscription the
+column is absent. Use \code{if ("implied_volatility" \%in\% names(dt)) ...} if you need to handle both shapes.
 \item \code{greeks_delta}, \code{greeks_gamma}, \code{greeks_theta},
-\code{greeks_vega}, \code{greeks_rho} (numeric): The fixed-schema
-\code{greeks} object flattened to wide columns.
+\code{greeks_vega}, \code{greeks_rho} (numeric, optional): The
+fixed-schema \code{greeks} object flattened to wide columns. Same
+subscription-gating as \code{implied_volatility}.
 }
 }
 }
@@ -1132,9 +1178,13 @@ after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 with \strong{one row per contract in the chain}. Columns mirror
 \code{get_option_snapshots()}: a \code{symbol} key, the flattened
 \verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} /
-\verb{daily_bar_*} / \verb{prev_daily_bar_*} blocks, plus
-\code{implied_volatility} and the \code{greeks_delta}, \code{greeks_gamma},
-\code{greeks_theta}, \code{greeks_vega}, \code{greeks_rho} columns.
+\verb{daily_bar_*} / \verb{prev_daily_bar_*} blocks (including
+\code{latest_trade_conditions} / \code{latest_quote_conditions}), and —
+when the account's options data subscription includes them —
+the optional \code{implied_volatility} and \code{greeks_delta} /
+\code{greeks_gamma} / \code{greeks_theta} / \code{greeks_vega} / \code{greeks_rho}
+columns. The greeks/IV columns are absent for the default
+paper-trading \code{indicative} feed without a subscription.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

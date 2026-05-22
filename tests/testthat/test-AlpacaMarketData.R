@@ -61,13 +61,21 @@ test_that("get_latest_quote returns single-row data.table", {
   expect_true(all(c("timestamp", "ask_price", "bid_price") %in% names(dt)))
 })
 
-test_that("get_snapshot returns flattened data.table", {
+test_that("get_snapshot returns flattened data.table with always-present conditions cols", {
   resp <- mock_alpaca_response(mock_snapshot_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_snapshot("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
+  # `latest_trade_conditions` / `latest_quote_conditions` always exist
+  # when their parent section is present.
+  expect_true(all(c("latest_trade_conditions", "latest_quote_conditions") %in% names(dt)))
+  expect_equal(dt$latest_trade_conditions, "@;T")
+  expect_equal(dt$latest_quote_conditions, "R")
+  # Bar `*_close` columns are scalar numbers (not "conditions").
+  expect_true(is.numeric(dt$minute_bar_close))
+  expect_equal(dt$minute_bar_close, 185.50)
 })
 
 test_that("get_assets returns data.table", {
@@ -181,6 +189,14 @@ test_that("get_snapshots_multi returns data.table with symbol column", {
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
+
+  # Schema stability: conditions columns must exist on every row, even
+  # when one symbol's snapshot omits the `c` field on a section.
+  expect_true(all(c("latest_trade_conditions", "latest_quote_conditions") %in% names(dt)))
+  expect_equal(dt[symbol == "AAPL"]$latest_trade_conditions, "@;T")
+  expect_equal(dt[symbol == "AAPL"]$latest_quote_conditions, "R")
+  expect_true(is.na(dt[symbol == "MSFT"]$latest_trade_conditions))
+  expect_true(is.na(dt[symbol == "MSFT"]$latest_quote_conditions))
 })
 
 test_that("get_most_actives returns data.table", {

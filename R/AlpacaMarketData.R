@@ -667,7 +667,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and trade columns.
+    #'   leading `symbol` column and the same per-trade columns as
+    #'   `get_latest_trade()`: `timestamp`, `price`, `size`, `exchange`,
+    #'   `conditions` (`;`-collapsed), `tape`, `id`. One row per symbol.
     get_latest_trades_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/trades/latest",

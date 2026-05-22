@@ -154,6 +154,15 @@ test_that("get_option_chain returns data.table with symbol column", {
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
   expect_equal(names(dt)[1], "symbol")
+
+  # Schema stability: latest_*_conditions cols always exist when the
+  # parent section exists. First contract has scalar codes ("g", "A");
+  # second contract omits `c` and must come back as NA.
+  expect_true(all(c("latest_trade_conditions", "latest_quote_conditions") %in% names(dt)))
+  expect_equal(dt[symbol == "AAPL240621C00200000"]$latest_trade_conditions, "g")
+  expect_equal(dt[symbol == "AAPL240621C00200000"]$latest_quote_conditions, "A")
+  expect_true(is.na(dt[symbol == "AAPL240621C00210000"]$latest_trade_conditions))
+  expect_true(is.na(dt[symbol == "AAPL240621C00210000"]$latest_quote_conditions))
 })
 
 test_that("get_option_chain preserves impliedVolatility and greeks_*", {

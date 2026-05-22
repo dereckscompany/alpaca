@@ -885,10 +885,14 @@ mock_latest_quotes_multi_response <- function() {
 }
 
 mock_snapshots_multi_response <- function() {
+  # AAPL has conditions arrays on latestTrade and latestQuote; MSFT
+  # below omits them entirely. The parser must emit
+  # latest_trade_conditions / latest_quote_conditions on BOTH rows
+  # (NA for MSFT) so the schema is stable.
   list(
     AAPL = list(
-      latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L),
-      latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L),
+      latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L, c = list("@", "T")),
+      latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L, c = list("R")),
       minuteBar = list(
         t = "2024-01-15T14:30:00Z",
         o = 185.40,
@@ -1020,11 +1024,15 @@ mock_option_latest_trades_response <- function() {
 }
 
 mock_option_chain_response <- function() {
+  # Mirror the live shape on options snapshots: condition codes appear
+  # as scalar characters (e.g. "g", "A"), not arrays. The first
+  # contract has both conditions; the second omits them so we exercise
+  # the always-emit-NA branch on the chain path.
   list(
     snapshots = list(
       AAPL240621C00200000 = list(
-        latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L),
-        latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 5.60, bp = 5.40, "as" = 50L, bs = 40L)
+        latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L, c = "g"),
+        latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 5.60, bp = 5.40, "as" = 50L, bs = 40L, c = "A")
       ),
       AAPL240621C00210000 = list(
         latestTrade = list(t = "2024-06-15T14:30:00Z", p = 3.20, s = 5L),
