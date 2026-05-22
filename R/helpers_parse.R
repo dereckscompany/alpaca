@@ -233,9 +233,7 @@ parse_bars <- function(bars) {
     data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  if ("timestamp" %in% names(dt)) {
-    dt[, timestamp := rfc3339_to_datetime(timestamp)]
-  }
+  parse_timestamp_cols(dt, "timestamp")
   return(dt[])
 }
 
@@ -312,9 +310,7 @@ parse_trades <- function(trades) {
     data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  if ("timestamp" %in% names(dt)) {
-    dt[, timestamp := rfc3339_to_datetime(timestamp)]
-  }
+  parse_timestamp_cols(dt, "timestamp")
   return(dt[])
 }
 
@@ -366,9 +362,7 @@ parse_quotes <- function(quotes) {
     data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  if ("timestamp" %in% names(dt)) {
-    dt[, timestamp := rfc3339_to_datetime(timestamp)]
-  }
+  parse_timestamp_cols(dt, "timestamp")
   return(dt[])
 }
 
