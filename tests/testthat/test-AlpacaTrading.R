@@ -170,6 +170,21 @@ test_that("cancel_all_orders returns confirmation dt when no orders", {
   expect_equal(dt$status, "cancelled")
 })
 
+test_that("cancel_all_orders parses order timestamps after unwrapping body", {
+  # Live shape: [{id, status, body: {order...}}, ...]
+  resp <- mock_alpaca_response(list(
+    list(id = "order-uuid-123", status = 200, body = mock_order_response())
+  ))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$cancel_all_orders()
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 1L)
+  # Order timestamps unwrapped from `body` must be POSIXct.
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
+})
+
 test_that("modify_order sends PATCH request", {
   captured_req <- NULL
   resp <- mock_alpaca_response(mock_order_response())

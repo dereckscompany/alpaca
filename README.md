@@ -43,13 +43,16 @@ transformations applied:
     self-describing. The full mapping per endpoint is documented in the
     method-level `@return` blocks.
 
-2.  **Timestamps to POSIXct where the field is clearly a market-data
-    timestamp** – Numeric epoch fields and obvious RFC-3339 fields on
-    market-data endpoints (bars, trades, quotes, snapshots, orderbook)
-    are converted to `POSIXct` under their snake_case name. Some textual
-    `created_at` / `updated_at` fields on lower-level endpoints (notably
-    news articles) are left as `character` strings; see the relevant
-    `@return` for the exact type per column.
+2.  **All RFC-3339 timestamps are `POSIXct`** – Every timestamp the
+    Alpaca API emits in RFC-3339 form is parsed for you, regardless of
+    endpoint: bars, trades, quotes, snapshots (incl. the five nested
+    `*_timestamp` fields), orderbooks, news (`created_at`,
+    `updated_at`), orders (`created_at`, `updated_at`, `submitted_at`,
+    `filled_at`, `expired_at`, `canceled_at`, `failed_at`,
+    `replaced_at`), account `created_at`, watchlist
+    `created_at` / `updated_at`, and activities `transaction_time`.
+    POSIXct columns are displayed in UTC by default. See each method's
+    `@return` for the per-column types.
 
 3.  **One entity = one row, no list columns** – For every endpoint
     normalised under the shape policy (see *Data-shape conventions*

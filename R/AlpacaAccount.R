@@ -517,7 +517,11 @@ AlpacaAccount <- R6::R6Class(
         endpoint = endpoint,
         method = "DELETE",
         query = list(qty = qty, percentage = percentage),
-        .parser = as_dt_row
+        .parser = function(data) {
+          dt <- as_dt_row(data)
+          parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
+          return(dt)
+        }
       ))
     },
 
@@ -607,7 +611,9 @@ AlpacaAccount <- R6::R6Class(
               return(item)
             }
           })
-          return(as_dt_list(unwrapped))
+          dt <- as_dt_list(unwrapped)
+          parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
+          return(dt)
         }
       ))
     },
