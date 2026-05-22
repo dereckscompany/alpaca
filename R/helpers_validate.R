@@ -14,8 +14,11 @@
 #' - **Stop-limit orders**: require `qty`, `stop_price`, and `limit_price`.
 #' - **Trailing stop orders**: require `qty` and either `trail_price` or `trail_percent`.
 #'
-#' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
-#' @param side Character; `"buy"` or `"sell"`.
+#' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
+#'   for all order classes except `"mleg"` (multi-leg options), where each
+#'   leg carries its own symbol.
+#' @param side Character or NULL; `"buy"` or `"sell"`. Required for all order
+#'   classes except `"mleg"`, where each leg carries its own side.
 #' @param type Character; order type.
 #' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
 #' @param qty Numeric or NULL; number of shares.
@@ -26,19 +29,25 @@
 #' @param trail_percent Numeric or NULL; trailing stop percentage offset.
 #' @param extended_hours Logical or NULL; allow pre/post market.
 #' @param client_order_id Character or NULL; unique client order ID (max 128 chars).
-#' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`, `"oto"`.
+#' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`,
+#'   `"oto"`, or `"mleg"` (multi-leg options). Case-insensitive; empty string
+#'   is treated as NULL.
 #' @param take_profit List or NULL; `list(limit_price = ...)` for bracket orders.
 #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
 #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
 #'   `"sell_to_open"`, `"sell_to_close"`.
+#' @param legs List or NULL; list of leg objects for multi-leg options orders
+#'   (`order_class = "mleg"`). Max 4 legs.
+#' @param advanced_instructions List or NULL; advanced routing instructions for
+#'   the Alpaca Elite Smart Router.
 #' @return Named list of validated order parameters (NULLs removed).
 #'
 #' @importFrom rlang abort arg_match0
 #' @keywords internal
 #' @noRd
 validate_order_params <- function(
-  symbol,
-  side,
+  symbol = NULL,
+  side = NULL,
   type,
   time_in_force,
   qty = NULL,
@@ -52,20 +61,63 @@ validate_order_params <- function(
   order_class = NULL,
   take_profit = NULL,
   stop_loss = NULL,
-  position_intent = NULL
+  position_intent = NULL,
+  legs = NULL,
+  advanced_instructions = NULL
 ) {
-  # Required field validation
-  side <- tolower(side)
+  # Normalise order_class first: empty string is equivalent to NULL, and
+  # match case-insensitively so callers don't have to remember the casing.
+  if (!is.null(order_class)) {
+    if (!is.character(order_class) || length(order_class) != 1L) {
+      rlang::abort("Parameter 'order_class' must be a single character string.")
+    }
+    if (identical(order_class, "")) {
+      order_class <- NULL
+    } else {
+      order_class <- tolower(order_class)
+    }
+  }
+  is_mleg <- identical(order_class, "mleg")
+
   type <- tolower(type)
   time_in_force <- tolower(time_in_force)
 
-  rlang::arg_match0(side, c("buy", "sell"))
+  if (!is_mleg) {
+    # Non-mleg orders require both symbol and side. mleg orders carry these
+    # on each leg, so the top-level fields are optional.
+    if (is.null(symbol) || !is.character(symbol) || !nzchar(symbol)) {
+      rlang::abort("Parameter 'symbol' must be a non-empty character string (omit only for `order_class = \"mleg\"`).")
+    }
+    if (is.null(side) || !is.character(side) || !nzchar(side)) {
+      rlang::abort("Parameter 'side' must be 'buy' or 'sell' (omit only for `order_class = \"mleg\"`).")
+    }
+    side <- tolower(side)
+    rlang::arg_match0(side, c("buy", "sell"))
+  } else {
+    # mleg orders require legs (each leg carries its own symbol/side/qty).
+    if (is.null(legs) || length(legs) == 0L) {
+      rlang::abort("`legs` is required for `order_class = \"mleg\"` (provide a list of leg objects).")
+    }
+    if (length(legs) > 4L) {
+      rlang::abort(paste0("`legs` may contain at most 4 entries (got ", length(legs), ")."))
+    }
+    if (!is.list(legs)) {
+      rlang::abort("`legs` must be a list of leg objects (each itself a list).")
+    }
+    bad <- which(!vapply(legs, function(leg) {
+      is.list(leg) &&
+        all(c("symbol", "side", "ratio_qty") %in% names(leg))
+    }, logical(1)))
+    if (length(bad) > 0L) {
+      rlang::abort(paste0(
+        "Each entry in `legs` must be a list with at least `symbol`, `side`, ",
+        "and `ratio_qty` fields. Offending leg position(s): ",
+        paste(bad, collapse = ", "), "."
+      ))
+    }
+  }
   rlang::arg_match0(type, c("market", "limit", "stop", "stop_limit", "trailing_stop"))
   rlang::arg_match0(time_in_force, c("day", "gtc", "opg", "cls", "ioc", "fok"))
-
-  if (!is.character(symbol) || !nzchar(symbol)) {
-    rlang::abort("Parameter 'symbol' must be a non-empty character string.")
-  }
 
   # Convert numerics to character for the API
   if (!is.null(qty)) {
@@ -126,8 +178,8 @@ validate_order_params <- function(
   }
 
   # Optional parameter validation
-  if (!is.null(order_class)) {
-    rlang::arg_match0(order_class, c("simple", "bracket", "oco", "oto"))
+  if (!is.null(order_class) && nzchar(order_class)) {
+    rlang::arg_match0(order_class, c("simple", "bracket", "oco", "oto", "mleg"))
   }
   if (!is.null(position_intent)) {
     rlang::arg_match0(
@@ -156,7 +208,9 @@ validate_order_params <- function(
     order_class = order_class,
     take_profit = take_profit,
     stop_loss = stop_loss,
-    position_intent = position_intent
+    position_intent = position_intent,
+    legs = legs,
+    advanced_instructions = advanced_instructions
   )
   params <- params[!vapply(params, is.null, logical(1))]
 

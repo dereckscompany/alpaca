@@ -26,7 +26,8 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/orders-4}{Orders}
+\href{https://docs.alpaca.markets/us/reference/orders-4}{Orders}
+Verified: 2026-05-22
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
@@ -253,8 +254,8 @@ Verified: 2026-05-22
 }
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$add_order(
-  symbol,
-  side,
+  symbol = NULL,
+  side = NULL,
   type,
   time_in_force,
   qty = NULL,
@@ -268,16 +269,21 @@ Verified: 2026-05-22
   order_class = NULL,
   take_profit = NULL,
   stop_loss = NULL,
-  position_intent = NULL
+  position_intent = NULL,
+  legs = NULL,
+  advanced_instructions = NULL
 )}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character or NULL; ticker symbol (e.g., \code{"AAPL"}). Required
+for all order classes except \code{"mleg"} (multi-leg options), where each
+leg carries its own symbol.}
 
-\item{\code{side}}{Character; \code{"buy"} or \code{"sell"}.}
+\item{\code{side}}{Character or NULL; \code{"buy"} or \code{"sell"}. Required for all
+order classes except \code{"mleg"}, where each leg carries its own side.}
 
 \item{\code{type}}{Character; order type: \code{"market"}, \code{"limit"}, \code{"stop"},
 \code{"stop_limit"}, \code{"trailing_stop"}.}
@@ -310,39 +316,22 @@ Verified: 2026-05-22
 
 \item{\code{position_intent}}{Character or NULL; \code{"buy_to_open"}, \code{"buy_to_close"},
 \code{"sell_to_open"}, \code{"sell_to_close"}.}
+
+\item{\code{legs}}{List or NULL; list of leg objects (max 4) for multi-leg
+options strategies. Required when \code{order_class = "mleg"}.}
+
+\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
-\strong{One row per order, plus one row per leg for multi-leg orders.}
-A simple order returns one row. A bracket / OCO / OTO returns one
-parent row and one row for each leg. The two columns below tell
-parents apart from legs:
-\itemize{
-\item \code{leg_index} (integer): \code{NA} for the parent row; \verb{1, 2, ...} for
-each leg in submission order.
-\item \code{parent_order_id} (character): \code{NA} for the parent row; the
-parent's \code{id} for each leg row.
-}
-
-Useful query patterns:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Just the parent orders (filter out legs):
-dt[is.na(parent_order_id)]
-# All legs of one specific bracket:
-dt[parent_order_id == "<parent-uuid>"]
-}\if{html}{\out{</div>}}
-
-Other columns (present on every row — each leg has its own values
-independent of the parent's):
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
 \item \code{id} (character): Order UUID.
 \item \code{client_order_id} (character): Client order ID.
 \item \code{symbol} (character): Ticker symbol.
-\item \code{side} (character): \code{"buy"} or \code{"sell"} (often differs between a
-parent and its legs — e.g. a bracket parent's \code{buy} leg has
-\code{sell} take-profit and stop-loss legs).
+\item \code{side} (character): \code{"buy"} or \code{"sell"}.
 \item \code{type} (character): Order type.
 \item \code{time_in_force} (character): Time in force.
 \item \code{status} (character): Order status (e.g., \code{"accepted"}, \code{"new"}, \code{"filled"}).
@@ -460,7 +449,10 @@ Verified: 2026-05-22
   direction = NULL,
   nested = NULL,
   symbols = NULL,
-  side = NULL
+  side = NULL,
+  asset_class = NULL,
+  before_order_id = NULL,
+  after_order_id = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -482,6 +474,18 @@ Verified: 2026-05-22
 \item{\code{symbols}}{Character or NULL; comma-separated symbol filter.}
 
 \item{\code{side}}{Character or NULL; filter by side.}
+
+\item{\code{asset_class}}{Character or NULL; comma-separated asset classes
+(e.g., \code{"us_equity"}, \code{"us_option"}, \code{"crypto"}). With \code{"us_option"},
+\code{symbols} can filter by underlying.}
+
+\item{\code{before_order_id}}{Character or NULL; return orders submitted before
+this order ID. Mutually exclusive with \code{after_order_id}. Do not combine
+with \code{after}/\code{until}.}
+
+\item{\code{after_order_id}}{Character or NULL; return orders submitted after
+this order ID. Mutually exclusive with \code{before_order_id}. Do not
+combine with \code{after}/\code{until}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -772,7 +776,9 @@ Verified: 2026-05-22
   limit_price = NULL,
   stop_price = NULL,
   trail = NULL,
-  client_order_id = NULL
+  client_order_id = NULL,
+  notional = NULL,
+  advanced_instructions = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -781,7 +787,7 @@ Verified: 2026-05-22
 \describe{
 \item{\code{order_id}}{Character; order UUID to replace.}
 
-\item{\code{qty}}{Numeric or NULL; new quantity.}
+\item{\code{qty}}{Numeric or NULL; new quantity. Mutually exclusive with \code{notional}.}
 
 \item{\code{time_in_force}}{Character or NULL; new time in force.}
 
@@ -789,9 +795,15 @@ Verified: 2026-05-22
 
 \item{\code{stop_price}}{Numeric or NULL; new stop price.}
 
-\item{\code{trail}}{Numeric or NULL; new trail value.}
+\item{\code{trail}}{Numeric or NULL; new trail value (for \code{type = "trailing_stop"}).}
 
 \item{\code{client_order_id}}{Character or NULL; new client order ID.}
+
+\item{\code{notional}}{Numeric or NULL; new notional (dollar) amount. Only valid
+for IPO indications of interest (\code{asset_class = "ipo"}).}
+
+\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }

@@ -46,6 +46,44 @@ test_that("get_position returns single-row data.table", {
   expect_equal(dt$symbol, "AAPL")
 })
 
+test_that("get_portfolio_history rejects providing all of period, start, end", {
+  expect_error(
+    new_account()$get_portfolio_history(
+      period = "1M", start = "2026-01-01", end = "2026-02-01"
+    ),
+    "Only two of"
+  )
+})
+
+test_that("get_portfolio_history warns and forwards deprecated date_start/date_end", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(
+    list(timestamp = list(), equity = list(), profit_loss = list(), profit_loss_pct = list())
+  )
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  expect_warning(
+    new_account()$get_portfolio_history(
+      date_start = "2026-01-01", date_end = "2026-02-01"
+    ),
+    "date_start.*deprecated"
+  )
+  expect_true(grepl("start=2026-01-01", captured_url))
+  expect_true(grepl("end=2026-02-01", captured_url))
+})
+
+test_that("get_activities rejects both activity_types and category", {
+  expect_error(
+    new_account()$get_activities(
+      activity_types = "FILL", category = "trade_activity"
+    ),
+    "mutually exclusive"
+  )
+})
+
 test_that("get_position uses correct endpoint", {
   captured_url <- NULL
   resp <- mock_alpaca_response(mock_positions_response()[[1]])

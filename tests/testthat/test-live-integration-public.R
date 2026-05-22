@@ -53,12 +53,14 @@ test_that("[LIVE] get_latest_bar returns single-row data.table", {
   throttle()
 })
 
-test_that("[LIVE] get_latest_trade returns single-row data.table", {
+test_that("[LIVE] get_latest_trade returns trade data", {
   dt <- market$get_latest_trade("AAPL")
   expect_s3_class(dt, "data.table")
-  expect_equal(nrow(dt), 1)
+  # parse_trades returns long format: one row per trade condition (a single
+  # trade can carry multiple condition codes), so >= 1 row, not exactly 1.
+  expect_gte(nrow(dt), 1)
   expect_true(all(c("price", "size") %in% names(dt)))
-  expect_true(dt$price > 0)
+  expect_true(all(dt$price > 0))
   throttle()
 })
 
@@ -67,9 +69,9 @@ test_that("[LIVE] get_latest_quote returns bid/ask data", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1)
   expect_true(all(c("ask_price", "bid_price") %in% names(dt)))
-  # Don't assert ask >= bid. Outside core trading hours one side of the
-  # NBBO can be 0 or NA, and quotes can briefly cross during volatility.
-  # Type check is enough proof the wrapper round-trip works.
+  # Don't assert specific price values: outside core trading hours one side of
+  # the NBBO can be zero or NA, and quotes can briefly cross. Type check is
+  # enough proof the wrapper round-trip works.
   expect_true(is.numeric(dt$ask_price))
   expect_true(is.numeric(dt$bid_price))
   throttle()

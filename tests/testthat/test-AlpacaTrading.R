@@ -201,3 +201,59 @@ test_that("get_order_by_client_id uses correct endpoint", {
   expect_true(grepl("orders:by_client_order_id", captured_url))
   expect_true(grepl("client_order_id=my-client-id", captured_url))
 })
+
+# ---- argument validation: mutual exclusion errors --------------------------
+
+test_that("modify_order rejects both qty and notional", {
+  expect_error(
+    new_trading()$modify_order("order-uuid-123", qty = 1, notional = 100),
+    "mutually exclusive"
+  )
+})
+
+test_that("get_orders rejects both before_order_id and after_order_id", {
+  expect_error(
+    new_trading()$get_orders(
+      before_order_id = "a", after_order_id = "b"
+    ),
+    "mutually exclusive"
+  )
+})
+
+test_that("get_orders rejects mixing order-ID and timestamp pagination", {
+  expect_error(
+    new_trading()$get_orders(
+      before_order_id = "a", after = "2026-01-01"
+    ),
+    "cannot be combined"
+  )
+  expect_error(
+    new_trading()$get_orders(
+      after_order_id = "b", until = "2026-01-01"
+    ),
+    "cannot be combined"
+  )
+})
+
+test_that("add_order accepts mleg orders without symbol/side", {
+  # Pure validation test — confirms the mleg path doesn't abort. The wire
+  # format (legs serialised into the request body) is covered indirectly
+  # via validate_order_params() tests in test-helpers_validate.R.
+  resp <- mock_alpaca_response(mock_order_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  legs <- list(
+    list(symbol = "AAPL250620C00200000", side = "buy", ratio_qty = "1"),
+    list(symbol = "AAPL250620C00210000", side = "sell", ratio_qty = "1")
+  )
+  expect_no_error(
+    new_trading()$add_order(
+      type = "limit",
+      time_in_force = "day",
+      qty = 1,
+      limit_price = 0.5,
+      order_class = "mleg",
+      legs = legs
+    )
+  )
+})

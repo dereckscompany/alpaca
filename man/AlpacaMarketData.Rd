@@ -39,8 +39,8 @@ base URL. Both are configurable via constructor parameters.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/docs/about-market-data-api}{Market Data API}
-\item \href{https://docs.alpaca.markets/docs/historical-stock-data-1}{Historical Stock Data}
+\item \href{https://docs.alpaca.markets/us/docs/about-market-data-api}{Market Data API}
+\item \href{https://docs.alpaca.markets/us/docs/historical-stock-data-1}{Historical Stock Data}
 }
 }
 
@@ -64,7 +64,6 @@ base URL. Both are configurable via constructor parameters.
    get_latest_trades_multi \tab \code{GET /v2/stocks/trades/latest} \tab data \cr
    get_latest_quotes_multi \tab \code{GET /v2/stocks/quotes/latest} \tab data \cr
    get_snapshots_multi \tab \code{GET /v2/stocks/snapshots} \tab data \cr
-   get_crypto_orderbook \tab \verb{GET /v1beta3/crypto/\\\{loc\\\}/latest/orderbooks} \tab data \cr
    get_most_actives \tab \code{GET /v1beta1/screener/stocks/most-actives} \tab data \cr
    get_movers \tab \verb{GET /v1beta1/screener/\\\{market_type\\\}/movers} \tab data \cr
 }
@@ -321,8 +320,8 @@ credentials and base URLs for subsequent method calls.
 
 \subsection{Official Documentation}{
 \itemize{
-\item \href{https://docs.alpaca.markets/docs/getting-started}{Authentication}
-Verifieid: 2026-03-10
+\item \href{https://docs.alpaca.markets/us/docs/getting-started}{Authentication}
+Verified: 2026-05-21
 }
 }
 
@@ -381,8 +380,8 @@ include open, high, low, close, volume, trade count, and VWAP.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockbars}{Historical Stock Bars}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stockbarsingle-1}{Historical Stock Bars}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -413,7 +412,9 @@ Verifieid: 2026-03-10
   adjustment = NULL,
   feed = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -432,15 +433,23 @@ Verifieid: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
 
-\item{\code{adjustment}}{Character or NULL; price adjustment type:
-\code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}. Default \code{"raw"}.}
+\item{\code{adjustment}}{Character or NULL; price adjustment type. One or a
+comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
+\code{"spin-off"}, \code{"all"}. Default \code{"raw"}.}
 
 \item{\code{feed}}{Character or NULL; data feed source:
-\code{"iex"} (free), \code{"sip"} (paid, all exchanges).}
+\code{"sip"} (default, all US exchanges), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
+identify the underlying entity when symbols have been renamed
+(e.g. FB -> META). Pass \code{"-"} to skip symbol mapping.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
+Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -484,8 +493,8 @@ Retrieves historical bar data for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockbars-1}{Multi Stock Bars}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stockbars}{Multi Stock Bars}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -520,7 +529,9 @@ Verifieid: 2026-03-10
   adjustment = NULL,
   feed = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -537,13 +548,19 @@ Verifieid: 2026-03-10
 
 \item{\code{limit}}{Integer or NULL; max bars per symbol (1-10000, default 1000).}
 
-\item{\code{adjustment}}{Character or NULL; \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"all"}.}
+\item{\code{adjustment}}{Character or NULL; one or comma-separated combination
+of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
+or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -578,8 +595,8 @@ Retrieves the most recent bar for a single symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestbar}{Latest Stock Bar}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1}{Latest Stock Bar}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -678,7 +695,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trade(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -686,14 +703,16 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per trade} (a single row for this single-trade method).
-Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per trade condition. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -701,11 +720,7 @@ Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{conditions} (character): Semicolon-separated condition codes
-(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}. Recover
-the original vector with
-\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
-the trade carries no condition codes.
+\item \code{condition} (character): Trade condition code.
 }
 }
 \subsection{Examples}{
@@ -765,7 +780,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quote(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -773,14 +788,15 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per quote} (a single row for this single-quote method).
-Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -789,9 +805,6 @@ Columns:
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
-\item \code{conditions} (character): Semicolon-separated condition codes
-(e.g. \code{"R"} or \code{"R;A"}). Filter with \code{dt[grepl("R", conditions)]}.
-\code{NA} when the quote carries no condition codes.
 }
 }
 \subsection{Examples}{
@@ -845,7 +858,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshot(symbol, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshot(symbol, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -853,25 +866,16 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbol}}{Character; ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row} containing the flattened snapshot. Each nested section
-is unrolled into prefixed columns:
-\itemize{
-\item \verb{latest_trade_*} — latest trade fields (timestamp, price, size,
-exchange, id, tape, ...) plus
-\code{latest_trade_conditions} (character, \verb{;}-joined trade condition
-codes, e.g. \code{"@;T"}).
-\item \verb{latest_quote_*} — bid/ask fields plus
-\code{latest_quote_conditions} (character, \verb{;}-joined quote condition
-codes).
-\item \verb{minute_bar_*}, \verb{daily_bar_*}, \verb{prev_daily_bar_*} — OHLCV bar
-fields.
-}
+flattened snapshot fields (prefixed by section name).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -900,8 +904,8 @@ Retrieves the most recent bar for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestbars}{Latest Multi Bars}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatestbars-1}{Latest Multi Bars}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -922,7 +926,7 @@ Verifieid: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -930,7 +934,10 @@ Verifieid: 2026-03-10
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -987,7 +994,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -995,7 +1002,10 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1040,7 +1050,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1048,15 +1058,16 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per symbol} (the latest quote for each). Columns include
-\code{symbol} plus the quote fields documented on \code{get_latest_quote()},
-including a \verb{;}-separated \code{conditions} character column.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and quote columns.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1105,7 +1116,7 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL, currency = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1113,16 +1124,16 @@ Verified: 2026-05-22
 \describe{
 \item{\code{symbols}}{Character vector; ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
+\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per symbol}. Columns are the same flattened snapshot
-fields as \code{get_snapshot()} plus a leading \code{symbol} column.
-\code{latest_trade_conditions} and \code{latest_quote_conditions} are
-\verb{;}-joined character columns.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
+\code{symbol} column and flattened snapshot fields.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1183,7 +1194,9 @@ Verified: 2026-05-22
   limit = NULL,
   feed = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1198,17 +1211,23 @@ Verified: 2026-05-22
 
 \item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\code{"boats"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per trade}. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per trade condition. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -1216,8 +1235,7 @@ Verified: 2026-05-22
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{conditions} (character): Semicolon-separated condition codes
-(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}.
+\item \code{condition} (character): Trade condition code.
 }
 }
 }
@@ -1266,7 +1284,9 @@ Verified: 2026-05-22
   limit = NULL,
   feed = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1281,17 +1301,22 @@ Verified: 2026-05-22
 
 \item{\code{limit}}{Integer or NULL; max quotes (1-10000, default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\code{"boats"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per quote}. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -1299,11 +1324,6 @@ Verified: 2026-05-22
 \item \code{ask_size} (integer): Ask size.
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
-\item \code{conditions} (character): Semicolon-separated condition codes.
-Filter with \code{dt[grepl("R", conditions)]}; recover the original
-character vector with
-\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
-the quote carries no condition codes.
 \item \code{bid_size} (integer): Bid size.
 }
 }
@@ -1354,7 +1374,12 @@ Verified: 2026-05-22
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(status = NULL, asset_class = NULL, exchange = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_assets(
+  status = NULL,
+  asset_class = NULL,
+  exchange = NULL,
+  attributes = NULL
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1365,7 +1390,14 @@ Verified: 2026-05-22
 \item{\code{asset_class}}{Character or NULL; filter by class (\code{"us_equity"},
 \code{"us_option"}, \code{"crypto"}).}
 
-\item{\code{exchange}}{Character or NULL; filter by exchange.}
+\item{\code{exchange}}{Character or NULL; filter by exchange (\code{"AMEX"}, \code{"ARCA"},
+\code{"BATS"}, \code{"NYSE"}, \code{"NASDAQ"}, \code{"NYSEARCA"}, \code{"OTC"}).}
+
+\item{\code{attributes}}{Character or NULL; comma-separated attribute filters.
+Returns assets matching any of the listed attributes. Supported values:
+\code{"ptp_no_exception"}, \code{"ptp_with_exception"}, \code{"ipo"}, \code{"has_options"},
+\code{"options_late_close"}, \code{"fractional_eh_enabled"}, \code{"overnight_tradable"},
+\code{"overnight_halted"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1382,13 +1414,6 @@ Verified: 2026-05-22
 \item \code{marginable} (logical): Whether margin is available.
 \item \code{shortable} (logical): Whether short selling is available.
 \item \code{fractionable} (logical): Whether fractional shares are available.
-\item \code{attributes} (character): Semicolon-separated attribute flags, e.g.
-\code{"fractional_eh_enabled;has_options;overnight_tradable"}. Filter
-with \code{dt[grepl("has_options", attributes)]}. Semicolon is used as
-the separator so values that may contain commas (URLs in other
-endpoints) join safely; the convention is consistent across the
-package. Recover the original character vector via
-\code{strsplit(dt$attributes, ";", fixed = TRUE)[[1]]}.
 }
 }
 \subsection{Examples}{
@@ -1490,8 +1515,8 @@ Includes early closure information.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-calendar}{Calendar}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/legacycalendar}{Calendar}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1512,7 +1537,7 @@ Verifieid: 2026-03-10
 }\if{html}{\out{</div>}}
 }
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_calendar(start = NULL, end = NULL, date_type = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -1521,6 +1546,10 @@ Verifieid: 2026-03-10
 \item{\code{start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}).}
 
 \item{\code{end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
+
+\item{\code{date_type}}{Character or NULL; one of \code{"TRADING"} or \code{"SETTLEMENT"}.
+Determines whether \code{start}/\code{end} are interpreted as trading dates
+(default) or settlement dates.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1560,8 +1589,8 @@ open and the next open/close times.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-clock}{Clock}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/legacyclock}{Clock}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -1623,8 +1652,14 @@ need to handle position adjustments.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements}{Corporate Actions}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1}{Corporate Actions}
+Verified: 2026-05-21
+
+Note: as of 2026-05, the \verb{/v2/corporate_actions/announcements} endpoint is
+marked DEPRECATED by Alpaca. It still works and the wrapper still calls
+it, but Alpaca recommends migrating to the newer corporate-actions
+market-data endpoint (\verb{/v1beta1/corporate-actions}). Migration is tracked
+as a follow-up.
 }
 
 \subsection{curl}{
@@ -1810,8 +1845,8 @@ without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per article}. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
+format with one row per related symbol. Columns:
 \itemize{
 \item \code{id} (integer): Article ID.
 \item \code{headline} (character): Article headline.
@@ -1821,20 +1856,7 @@ without content.}
 \item \code{url} (character): Article URL.
 \item \code{created_at} (character): Publication timestamp.
 \item \code{updated_at} (character): Last update timestamp.
-\item \code{symbols} (character): Semicolon-separated related tickers, e.g.
-\code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]} or recover
-the original vector with
-\code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
-\item \code{image_sizes} (character): Semicolon-separated image size labels
-(e.g. \code{"large;small;thumb"}) parallel to \code{image_urls}. \code{NA} when
-the article has no images.
-\item \code{image_urls} (character): Semicolon-separated image URLs. Literal
-\verb{;} characters that appear inside individual URLs are percent-
-encoded as \verb{\%3B} before joining. Recover the original URLs with:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{urls <- strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]]
-urls <- vapply(urls, URLdecode, character(1))
-}\if{html}{\out{</div>}}
+\item \code{symbol} (character): Related ticker symbol.
 }
 }
 \subsection{Examples}{
@@ -1869,7 +1891,8 @@ Retrieves the latest orderbook (top of book) for a crypto symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/cryptolatestorderbooks}{Latest Crypto Orderbooks}
+\href{https://docs.alpaca.markets/us/reference/cryptolatestorderbooks-1}{Latest Crypto Orderbooks}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1912,7 +1935,8 @@ Retrieves the latest orderbook (top of book) for a crypto symbol.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+one row per \verb{(side, price-level)}. Columns:
 \itemize{
 \item \code{symbol} (character): Crypto symbol.
 \item \code{side} (character): \code{"bid"} or \code{"ask"}.
@@ -1948,8 +1972,8 @@ Retrieves the most active stocks by volume or trade count.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/mostactives}{Most Active Stocks}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/mostactives-1}{Most Active Stocks}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{
@@ -2021,8 +2045,8 @@ Retrieves the top market movers (gainers and losers) by percentage change.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/movers}{Top Market Movers}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/movers-1}{Top Market Movers}
+Verified: 2026-05-21
 }
 
 \subsection{curl}{

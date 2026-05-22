@@ -21,10 +21,10 @@
 #' - **Watchlists**: Create, update, and manage symbol watchlists.
 #'
 #' ### Official Documentation
-#' - [Account](https://docs.alpaca.markets/reference/getaccount-1)
-#' - [Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
-#' - [Portfolio History](https://docs.alpaca.markets/reference/getportfoliohistory)
-#' - [Account Activities](https://docs.alpaca.markets/reference/getaccountactivities)
+#' - [Account](https://docs.alpaca.markets/us/reference/getaccount-1)
+#' - [Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
+#' - [Portfolio History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
+#' - [Account Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
@@ -79,8 +79,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account`
     #'
     #' ### Official Documentation
-    #' [Get Account](https://docs.alpaca.markets/reference/getaccount-1)
-    #' Verified: 2026-03-10
+    #' [Get Account](https://docs.alpaca.markets/us/reference/getaccount-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -166,14 +166,14 @@ AlpacaAccount <- R6::R6Class(
     #' Get Account Configurations
     #'
     #' Retrieves the current account configuration settings including DTBP
-    #' check behavior, trade confirmation emails, and shorting restrictions.
+    #' check behaviour, trade confirmation emails, and shorting restrictions.
     #'
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/account/configurations`
     #'
     #' ### Official Documentation
-    #' [Get Account Configurations](https://docs.alpaca.markets/reference/getaccountconfig-1)
-    #' Verified: 2026-03-10
+    #' [Get Account Configurations](https://docs.alpaca.markets/us/reference/getaccountconfig-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -227,8 +227,8 @@ AlpacaAccount <- R6::R6Class(
     #' `PATCH https://paper-api.alpaca.markets/v2/account/configurations`
     #'
     #' ### Official Documentation
-    #' [Update Account Configurations](https://docs.alpaca.markets/reference/patchaccountconfig-1)
-    #' Verified: 2026-03-10
+    #' [Update Account Configurations](https://docs.alpaca.markets/us/reference/patchaccountconfig-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -265,9 +265,15 @@ AlpacaAccount <- R6::R6Class(
     #' @param suspend_trade Logical or NULL; if `TRUE`, suspends all trading.
     #' @param trade_confirm_email Character or NULL; `"all"`, `"none"`.
     #' @param fractional_trading Logical or NULL; enable/disable fractional trading.
-    #' @param max_margin_multiplier Character or NULL; `"1"` (no margin) or `"2"` (Reg-T).
+    #' @param max_margin_multiplier Character or NULL; `"1"`, `"2"`, or `"4"`.
     #' @param pdt_check Character or NULL; `"both"`, `"entry"`, `"exit"`.
-    #' @param max_options_trading_level Integer or NULL; options trading level (0-2).
+    #' @param max_options_trading_level Integer or NULL; options trading level
+    #'   (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
+    #'   3=Spreads/Straddles).
+    #' @param ptp_no_exception_entry Logical or NULL; if `TRUE`, accept orders
+    #'   for PTP symbols with no exception.
+    #' @param disable_overnight_trading Logical or NULL; if `TRUE`, disable
+    #'   overnight trading on the account.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   the updated configuration.
     #'
@@ -284,7 +290,9 @@ AlpacaAccount <- R6::R6Class(
       fractional_trading = NULL,
       max_margin_multiplier = NULL,
       pdt_check = NULL,
-      max_options_trading_level = NULL
+      max_options_trading_level = NULL,
+      ptp_no_exception_entry = NULL,
+      disable_overnight_trading = NULL
     ) {
       return(private$.request(
         endpoint = "/v2/account/configurations",
@@ -297,7 +305,9 @@ AlpacaAccount <- R6::R6Class(
           fractional_trading = fractional_trading,
           max_margin_multiplier = max_margin_multiplier,
           pdt_check = pdt_check,
-          max_options_trading_level = max_options_trading_level
+          max_options_trading_level = max_options_trading_level,
+          ptp_no_exception_entry = ptp_no_exception_entry,
+          disable_overnight_trading = disable_overnight_trading
         ),
         .parser = as_dt_row
       ))
@@ -314,8 +324,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/positions`
     #'
     #' ### Official Documentation
-    #' [Get All Open Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
-    #' Verified: 2026-03-10
+    #' [Get All Open Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -383,8 +393,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/positions/{symbol_or_asset_id}`
     #'
     #' ### Official Documentation
-    #' [Get Open Position](https://docs.alpaca.markets/reference/getopenposition-1)
-    #' Verified: 2026-03-10
+    #' [Get Open Position](https://docs.alpaca.markets/us/reference/getopenposition-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -440,8 +450,8 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/positions/{symbol_or_asset_id}`
     #'
     #' ### Official Documentation
-    #' [Close Position](https://docs.alpaca.markets/reference/deleteposition)
-    #' Verified: 2026-03-10
+    #' [Close Position](https://docs.alpaca.markets/us/reference/deleteopenposition-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -518,8 +528,8 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/positions`
     #'
     #' ### Official Documentation
-    #' [Close All Positions](https://docs.alpaca.markets/reference/deleteallopenpositions)
-    #' Verified: 2026-03-10
+    #' [Close All Positions](https://docs.alpaca.markets/us/reference/deleteallopenpositions-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -609,8 +619,8 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/positions/{symbol_or_id}/exercise`
     #'
     #' ### Official Documentation
-    #' [Exercise Option](https://docs.alpaca.markets/reference/postpositionsymboloridexercise)
-    #' Verified: 2026-03-10
+    #' [Exercise Option](https://docs.alpaca.markets/us/reference/optionexercise)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -663,8 +673,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/portfolio/history`
     #'
     #' ### Official Documentation
-    #' [Portfolio History](https://docs.alpaca.markets/reference/getportfoliohistory)
-    #' Verified: 2026-03-10
+    #' [Portfolio History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -685,16 +695,22 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param period Character or NULL; time period for the history. Examples:
-    #'   `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Cannot be used with
-    #'   `date_start`/`date_end`.
+    #'   `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Mutually exclusive with
+    #'   providing both `start` and `end`.
     #' @param timeframe Character or NULL; resolution of the time series:
     #'   `"1Min"`, `"5Min"`, `"15Min"`, `"1H"`, `"1D"`.
-    #' @param date_start Character or NULL; start date (`"YYYY-MM-DD"`). Use with
-    #'   `date_end` instead of `period`.
-    #' @param date_end Character or NULL; end date (`"YYYY-MM-DD"`).
-    #' @param intraday_reporting Character or NULL; `"market_hours"` (default) or
-    #'   `"extended_hours"`.
+    #' @param start Character or NULL; start timestamp in RFC3339 format.
+    #'   Defaults to `end` minus `period`.
+    #' @param end Character or NULL; end timestamp in RFC3339 format.
+    #' @param intraday_reporting Character or NULL; `"market_hours"` (default),
+    #'   `"extended_hours"`, or `"continuous"` (for 24/7 crypto charts).
     #' @param pnl_reset Character or NULL; `"per_day"` (default) or `"no_reset"`.
+    #'   Set to `"no_reset"` for continuous crypto PnL.
+    #' @param date_start Deprecated alias for `start`. Earlier releases used
+    #'   this name but it was silently ignored by the API. Now forwarded to
+    #'   `start` with a deprecation warning. Will be removed in a future
+    #'   release.
+    #' @param date_end Deprecated alias for `end`. Same notes as `date_start`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `timestamp` (POSIXct): Snapshot timestamp in UTC.
     #'   - `equity` (numeric): Portfolio equity value.
@@ -710,18 +726,47 @@ AlpacaAccount <- R6::R6Class(
     get_portfolio_history = function(
       period = NULL,
       timeframe = NULL,
-      date_start = NULL,
-      date_end = NULL,
+      start = NULL,
+      end = NULL,
       intraday_reporting = NULL,
-      pnl_reset = NULL
+      pnl_reset = NULL,
+      date_start = NULL,
+      date_end = NULL
     ) {
+      # Deprecated aliases — forward to the new names with a once-per-session
+      # warning so a tight loop doesn't spam stderr.
+      if (!is.null(date_start)) {
+        rlang::warn(
+          "`date_start` is deprecated as of alpaca 0.1.0; use `start` instead. Forwarding the value.",
+          .frequency = "regularly",
+          .frequency_id = "get_portfolio_history_date_start_deprecated"
+        )
+        if (is.null(start)) start <- date_start
+      }
+      if (!is.null(date_end)) {
+        rlang::warn(
+          "`date_end` is deprecated as of alpaca 0.1.0; use `end` instead. Forwarding the value.",
+          .frequency = "regularly",
+          .frequency_id = "get_portfolio_history_date_end_deprecated"
+        )
+        if (is.null(end)) end <- date_end
+      }
+      if (!is.null(period) && !is.null(start) && !is.null(end)) {
+        rlang::abort("Only two of `start`, `end`, and `period` may be supplied at once.")
+      }
+      if (!is.null(intraday_reporting)) {
+        rlang::arg_match0(intraday_reporting, c("market_hours", "extended_hours", "continuous"))
+      }
+      if (!is.null(pnl_reset)) {
+        rlang::arg_match0(pnl_reset, c("per_day", "no_reset"))
+      }
       return(private$.request(
         endpoint = "/v2/account/portfolio/history",
         query = list(
           period = period,
           timeframe = timeframe,
-          date_start = date_start,
-          date_end = date_end,
+          start = start,
+          end = end,
           intraday_reporting = intraday_reporting,
           pnl_reset = pnl_reset
         ),
@@ -753,8 +798,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/activities`
     #'
     #' ### Official Documentation
-    #' [Account Activities](https://docs.alpaca.markets/reference/getaccountactivities)
-    #' Verified: 2026-03-10
+    #' [Account Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -784,6 +829,10 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param activity_types Character or NULL; comma-separated activity types to
     #'   filter (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
+    #'   Mutually exclusive with `category`.
+    #' @param category Character or NULL; broad category filter:
+    #'   `"trade_activity"` or `"non_trade_activity"`. Mutually exclusive with
+    #'   `activity_types`.
     #' @param date Character or NULL; filter to a specific date (`"YYYY-MM-DD"`).
     #' @param until Character or NULL; only activities before this timestamp.
     #' @param after Character or NULL; only activities after this timestamp.
@@ -806,8 +855,18 @@ AlpacaAccount <- R6::R6Class(
       after = NULL,
       direction = NULL,
       page_size = NULL,
-      page_token = NULL
+      page_token = NULL,
+      category = NULL
     ) {
+      if (!is.null(activity_types) && !is.null(category)) {
+        rlang::abort("`activity_types` and `category` are mutually exclusive.")
+      }
+      if (!is.null(category)) {
+        rlang::arg_match0(category, c("trade_activity", "non_trade_activity"))
+      }
+      if (!is.null(direction)) {
+        rlang::arg_match0(direction, c("asc", "desc"))
+      }
       return(private$.request(
         endpoint = "/v2/account/activities",
         query = list(
@@ -817,7 +876,8 @@ AlpacaAccount <- R6::R6Class(
           after = after,
           direction = direction,
           page_size = page_size,
-          page_token = page_token
+          page_token = page_token,
+          category = category
         ),
         .parser = as_dt_list
       ))
@@ -832,8 +892,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/account/activities/{activity_type}`
     #'
     #' ### Official Documentation
-    #' [Get Account Activities by Type](https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype)
-    #' Verified: 2026-03-10
+    #' [Get Account Activities by Type](https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -913,8 +973,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/watchlists`
     #'
     #' ### Official Documentation
-    #' [Watchlists](https://docs.alpaca.markets/reference/getwatchlists)
-    #' Verified: 2026-03-10
+    #' [Watchlists](https://docs.alpaca.markets/us/reference/getwatchlists-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -971,8 +1031,8 @@ AlpacaAccount <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Get Watchlist by ID](https://docs.alpaca.markets/reference/getwatchlistbyid)
-    #' Verified: 2026-03-10
+    #' [Get Watchlist by ID](https://docs.alpaca.markets/us/reference/getwatchlistbyid-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1039,8 +1099,8 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/watchlists`
     #'
     #' ### Official Documentation
-    #' [Create Watchlist](https://docs.alpaca.markets/reference/postwatchlist)
-    #' Verified: 2026-03-10
+    #' [Create Watchlist](https://docs.alpaca.markets/us/reference/postwatchlist-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1104,8 +1164,8 @@ AlpacaAccount <- R6::R6Class(
     #' `PUT https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Update Watchlist](https://docs.alpaca.markets/reference/putwatchlistbyid)
-    #' Verified: 2026-03-10
+    #' [Update Watchlist](https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1169,8 +1229,8 @@ AlpacaAccount <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Add Symbol to Watchlist](https://docs.alpaca.markets/reference/postwatchlistbyid)
-    #' Verified: 2026-03-10
+    #' [Add Symbol to Watchlist](https://docs.alpaca.markets/us/reference/addassettowatchlist-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1232,8 +1292,8 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}/{symbol}`
     #'
     #' ### Official Documentation
-    #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol)
-    #' Verified: 2026-03-10
+    #' [Remove Symbol from Watchlist](https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```
@@ -1293,8 +1353,8 @@ AlpacaAccount <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/watchlists/{watchlist_id}`
     #'
     #' ### Official Documentation
-    #' [Delete Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyid)
-    #' Verified: 2026-03-10
+    #' [Delete Watchlist](https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1)
+    #' Verified: 2026-05-21
     #'
     #' ### curl
     #' ```

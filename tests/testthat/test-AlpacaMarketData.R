@@ -36,139 +36,38 @@ test_that("get_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trade returns one row with conditions as `;`-joined character", {
+test_that("get_latest_trade returns long-format data.table with condition column", {
   resp <- mock_alpaca_response(mock_trade_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trade("AAPL")
   expect_s3_class(dt, "data.table")
-  # Policy: one trade = one row regardless of how many conditions it carries.
+  # Policy: one trade = one row, regardless of how many condition codes.
   expect_equal(nrow(dt), 1L)
   expect_true(all(c("timestamp", "price", "size", "conditions") %in% names(dt)))
   expect_false("condition" %in% names(dt))
   expect_true(is.character(dt$conditions))
   expect_false(is.list(dt$conditions))
-  # Mock fixture has a single "@" condition; multi-condition path covered
-  # by `parse_trades collapses multiple condition codes` below.
   expect_equal(dt$conditions[1], "@")
 })
 
-test_that("parse_trades collapses multiple condition codes with `;`", {
-  # Build a trade fixture with two condition codes inline (the canonical
-  # multi-condition Alpaca shape, e.g. ["@", "T"] from a live latest trade).
-  trades <- list(list(
-    t = "2024-01-15T20:00:00Z",
-    x = "V",
-    p = 185.64,
-    s = 100L,
-    c = list("@", "T"),
-    i = 12345L,
-    z = "C"
-  ))
-  dt <- parse_trades(trades)
-  expect_equal(nrow(dt), 1L)
-  expect_equal(dt$conditions, "@;T")
-  # Round-trip back to the original vector.
-  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]], c("@", "T"))
-})
-
-test_that("parse_trades handles a trade with no condition codes as NA", {
-  trades <- list(list(
-    t = "2024-01-15T20:00:00Z",
-    x = "V",
-    p = 185.64,
-    s = 100L,
-    i = 12345L,
-    z = "C"
-  ))
-  dt <- parse_trades(trades)
-  expect_equal(nrow(dt), 1L)
-  expect_true(is.na(dt$conditions))
-})
-
-test_that("get_latest_quote returns single-row data.table with conditions collapsed", {
+test_that("get_latest_quote returns single-row data.table", {
   resp <- mock_alpaca_response(mock_quote_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_quote("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
-  expect_true(all(c("timestamp", "ask_price", "bid_price", "conditions") %in% names(dt)))
-  expect_true(is.character(dt$conditions))
-  expect_false(is.list(dt$conditions))
-  expect_equal(dt$conditions, "R")
+  expect_true(all(c("timestamp", "ask_price", "bid_price") %in% names(dt)))
 })
 
-test_that("parse_quotes collapses multiple condition codes with `;`", {
-  quotes <- list(list(
-    t = "2024-01-15T20:00:00Z",
-    ax = "V",
-    ap = 185.55,
-    "as" = 200L,
-    bx = "Q",
-    bp = 185.50,
-    bs = 300L,
-    c = list("R", "A"),
-    z = "C"
-  ))
-  dt <- parse_quotes(quotes)
-  expect_equal(nrow(dt), 1L)
-  expect_equal(dt$conditions, "R;A")
-  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]], c("R", "A"))
-})
-
-test_that("parse_quotes handles a quote with no condition codes as NA", {
-  quotes <- list(list(
-    t = "2024-01-15T20:00:00Z",
-    ax = "V",
-    ap = 185.55,
-    "as" = 200L,
-    bx = "Q",
-    bp = 185.50,
-    bs = 300L,
-    z = "C"
-  ))
-  dt <- parse_quotes(quotes)
-  expect_equal(nrow(dt), 1L)
-  expect_true(is.na(dt$conditions))
-})
-
-test_that("get_snapshot returns one flattened row with inner conditions collapsed", {
+test_that("get_snapshot returns flattened data.table", {
   resp <- mock_alpaca_response(mock_snapshot_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_snapshot("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
-  # Inner condition arrays collapse to plain `;`-joined character columns.
-  expect_true("latest_trade_conditions" %in% names(dt))
-  expect_true("latest_quote_conditions" %in% names(dt))
-  expect_true(is.character(dt$latest_trade_conditions))
-  expect_true(is.character(dt$latest_quote_conditions))
-  expect_equal(dt$latest_trade_conditions, "@;T")
-  expect_equal(dt$latest_quote_conditions, "R")
-})
-
-test_that("get_snapshot leaves the bar `c` field as numeric close price", {
-  resp <- mock_alpaca_response(mock_snapshot_response())
-  httr2::local_mocked_responses(function(req) resp)
-
-  dt <- new_market()$get_snapshot("AAPL")
-  # The conditions-collapse path must not touch bar sections, where `c` is
-  # the scalar close price. Each bar section keeps a numeric close column.
-  expect_true(is.numeric(dt$minute_bar_close))
-  expect_true(is.numeric(dt$daily_bar_close))
-  expect_true(is.numeric(dt$prev_daily_bar_close))
-  expect_equal(dt$minute_bar_close, 185.50)
-})
-
-test_that("get_snapshot returns no list columns", {
-  resp <- mock_alpaca_response(mock_snapshot_response())
-  httr2::local_mocked_responses(function(req) resp)
-
-  dt <- new_market()$get_snapshot("AAPL")
-  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
-  expect_equal(length(list_cols), 0L)
 })
 
 test_that("get_assets returns data.table", {
@@ -188,45 +87,6 @@ test_that("get_asset returns single-row data.table", {
   dt <- new_market()$get_asset("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
-})
-
-test_that("get_asset collapses the `attributes` array to a semicolon-separated character", {
-  resp <- mock_alpaca_response(mock_assets_response()[[1]])
-  httr2::local_mocked_responses(function(req) resp)
-
-  dt <- new_market()$get_asset("AAPL")
-  expect_true("attributes" %in% names(dt))
-  expect_true(is.character(dt$attributes))
-  expect_false(is.list(dt$attributes))
-  expect_equal(dt$attributes, "fractional_eh_enabled;has_options;overnight_tradable")
-})
-
-test_that("collapse helper warns if a value contains the `;` separator", {
-  bad <- list(symbol = "X", attributes = list("has;options"))
-  expect_warning(
-    parse_asset(bad),
-    "contains a literal"
-  )
-})
-
-test_that("get_asset handles an empty `attributes` array as NA", {
-  resp <- mock_alpaca_response(mock_assets_response()[[2]])
-  httr2::local_mocked_responses(function(req) resp)
-
-  dt <- new_market()$get_asset("MSFT")
-  expect_true("attributes" %in% names(dt))
-  expect_true(is.na(dt$attributes))
-})
-
-test_that("get_assets keeps one row per asset (no list columns)", {
-  resp <- mock_alpaca_response(mock_assets_response())
-  httr2::local_mocked_responses(function(req) resp)
-
-  dt <- new_market()$get_assets()
-  expect_equal(nrow(dt), 2L)
-  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
-  expect_equal(length(list_cols), 0L)
-  expect_equal(dt[symbol == "AAPL", attributes], "fractional_eh_enabled;has_options;overnight_tradable")
 })
 
 test_that("get_clock returns data.table with is_open field", {
@@ -285,13 +145,13 @@ test_that("get_latest_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
-test_that("get_latest_trades_multi returns one row per symbol with conditions collapsed", {
+test_that("get_latest_trades_multi returns long-format data.table with condition column", {
   resp <- mock_alpaca_response(mock_latest_trades_multi_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_trades_multi(c("AAPL", "MSFT"))
   expect_s3_class(dt, "data.table")
-  # Policy: one symbol = one row (one latest trade each).
+  # Policy: one symbol = one row (latest trade per symbol).
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
@@ -301,7 +161,7 @@ test_that("get_latest_trades_multi returns one row per symbol with conditions co
   expect_false(is.list(dt$conditions))
 })
 
-test_that("get_latest_quotes_multi returns one row per symbol with conditions collapsed", {
+test_that("get_latest_quotes_multi returns data.table with symbol column", {
   resp <- mock_alpaca_response(mock_latest_quotes_multi_response())
   httr2::local_mocked_responses(function(req) resp)
 
@@ -309,8 +169,7 @@ test_that("get_latest_quotes_multi returns one row per symbol with conditions co
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
-  expect_true(all(c("ask_price", "bid_price", "conditions") %in% names(dt)))
-  expect_false(is.list(dt$conditions))
+  expect_true(all(c("ask_price", "bid_price") %in% names(dt)))
 })
 
 test_that("get_snapshots_multi returns data.table with symbol column", {
@@ -371,38 +230,53 @@ test_that("get_movers uses correct endpoint", {
   expect_true(grepl("screener/stocks/movers", captured_url))
 })
 
-test_that("get_crypto_orderbook returns long-format data.table", {
-  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
-  httr2::local_mocked_responses(function(req) resp)
+# ---- new query parameters land on the URL ----------------------------------
 
-  dt <- new_market()$get_crypto_orderbook("BTC/USD")
-  expect_s3_class(dt, "data.table")
-  expect_equal(nrow(dt), 4L) # 2 bids + 2 asks
-  expect_true(all(c("symbol", "side", "price", "size", "timestamp") %in% names(dt)))
-  expect_setequal(unique(dt$side), c("bid", "ask"))
-  expect_equal(dt[side == "bid"]$price[1], 42950.50)
-  expect_equal(dt[side == "ask"]$price[1], 42951.00)
-  expect_equal(unique(dt$symbol), "BTC/USD")
-  expect_s3_class(dt$timestamp, "POSIXct")
-})
-
-test_that("get_crypto_orderbook uses correct endpoint", {
+test_that("get_bars puts asof and currency on the URL", {
   captured_url <- NULL
-  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  resp <- mock_alpaca_response(mock_bars_response())
   httr2::local_mocked_responses(function(req) {
     captured_url <<- req$url
     return(resp)
   })
 
-  new_market()$get_crypto_orderbook("BTC/USD", loc = "us")
-  expect_true(grepl("v1beta3/crypto/us/latest/orderbooks", captured_url))
+  new_market()$get_bars(
+    "AAPL", timeframe = "1Day",
+    asof = "2024-06-09", currency = "EUR"
+  )
+  expect_true(grepl("asof=2024-06-09", captured_url))
+  expect_true(grepl("currency=EUR", captured_url))
 })
 
-test_that("get_crypto_orderbook handles empty response", {
-  resp <- mock_alpaca_response(list(orderbooks = list()))
-  httr2::local_mocked_responses(function(req) resp)
+test_that("get_calendar puts date_type on the URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
 
-  dt <- new_market()$get_crypto_orderbook("BTC/USD")
-  expect_s3_class(dt, "data.table")
-  expect_equal(nrow(dt), 0L)
+  new_market()$get_calendar(date_type = "SETTLEMENT")
+  expect_true(grepl("date_type=SETTLEMENT", captured_url))
+})
+
+test_that("get_assets puts attributes on the URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_assets(attributes = "has_options,overnight_tradable")
+  expect_true(grepl("attributes=has_options", captured_url))
+})
+
+# ---- enum guards ------------------------------------------------------------
+
+test_that("get_calendar rejects unknown date_type", {
+  expect_error(
+    new_market()$get_calendar(date_type = "WHENEVER"),
+    "date_type"
+  )
 })

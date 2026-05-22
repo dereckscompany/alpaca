@@ -17,7 +17,8 @@
 #' - **Query Orders**: List open, closed, or all orders with filtering.
 #'
 #' ### Official Documentation
-#' [Orders](https://docs.alpaca.markets/reference/orders-4)
+#' [Orders](https://docs.alpaca.markets/us/reference/orders-4)
+#' Verified: 2026-05-22
 #'
 #' ### Endpoints Covered
 #' | Method | Endpoint | HTTP |
@@ -128,8 +129,11 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
-    #' @param side Character; `"buy"` or `"sell"`.
+    #' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
+    #'   for all order classes except `"mleg"` (multi-leg options), where each
+    #'   leg carries its own symbol.
+    #' @param side Character or NULL; `"buy"` or `"sell"`. Required for all
+    #'   order classes except `"mleg"`, where each leg carries its own side.
     #' @param type Character; order type: `"market"`, `"limit"`, `"stop"`,
     #'   `"stop_limit"`, `"trailing_stop"`.
     #' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
@@ -148,32 +152,15 @@ AlpacaTrading <- R6::R6Class(
     #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
     #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
     #'   `"sell_to_open"`, `"sell_to_close"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
-    #'   **One row per order, plus one row per leg for multi-leg orders.**
-    #'   A simple order returns one row. A bracket / OCO / OTO returns one
-    #'   parent row and one row for each leg. The two columns below tell
-    #'   parents apart from legs:
-    #'   - `leg_index` (integer): `NA` for the parent row; `1, 2, ...` for
-    #'     each leg in submission order.
-    #'   - `parent_order_id` (character): `NA` for the parent row; the
-    #'     parent's `id` for each leg row.
-    #'
-    #'   Useful query patterns:
-    #'   ```r
-    #'   # Just the parent orders (filter out legs):
-    #'   dt[is.na(parent_order_id)]
-    #'   # All legs of one specific bracket:
-    #'   dt[parent_order_id == "<parent-uuid>"]
-    #'   ```
-    #'
-    #'   Other columns (present on every row — each leg has its own values
-    #'   independent of the parent's):
+    #' @param legs List or NULL; list of leg objects (max 4) for multi-leg
+    #'   options strategies. Required when `order_class = "mleg"`.
+    #' @param advanced_instructions List or NULL; routing instructions for
+    #'   Alpaca Elite Smart Router.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Order UUID.
     #'   - `client_order_id` (character): Client order ID.
     #'   - `symbol` (character): Ticker symbol.
-    #'   - `side` (character): `"buy"` or `"sell"` (often differs between a
-    #'     parent and its legs — e.g. a bracket parent's `buy` leg has
-    #'     `sell` take-profit and stop-loss legs).
+    #'   - `side` (character): `"buy"` or `"sell"`.
     #'   - `type` (character): Order type.
     #'   - `time_in_force` (character): Time in force.
     #'   - `status` (character): Order status (e.g., `"accepted"`, `"new"`, `"filled"`).
@@ -209,8 +196,8 @@ AlpacaTrading <- R6::R6Class(
     #' )
     #' }
     add_order = function(
-      symbol,
-      side,
+      symbol = NULL,
+      side = NULL,
       type,
       time_in_force,
       qty = NULL,
@@ -224,7 +211,9 @@ AlpacaTrading <- R6::R6Class(
       order_class = NULL,
       take_profit = NULL,
       stop_loss = NULL,
-      position_intent = NULL
+      position_intent = NULL,
+      legs = NULL,
+      advanced_instructions = NULL
     ) {
       params <- validate_order_params(
         symbol = symbol,
@@ -242,7 +231,9 @@ AlpacaTrading <- R6::R6Class(
         order_class = order_class,
         take_profit = take_profit,
         stop_loss = stop_loss,
-        position_intent = position_intent
+        position_intent = position_intent,
+        legs = legs,
+        advanced_instructions = advanced_instructions
       )
 
       return(private$.request(
@@ -322,6 +313,15 @@ AlpacaTrading <- R6::R6Class(
     #' @param nested Logical or NULL; roll up multi-leg orders under `legs`.
     #' @param symbols Character or NULL; comma-separated symbol filter.
     #' @param side Character or NULL; filter by side.
+    #' @param asset_class Character or NULL; comma-separated asset classes
+    #'   (e.g., `"us_equity"`, `"us_option"`, `"crypto"`). With `"us_option"`,
+    #'   `symbols` can filter by underlying.
+    #' @param before_order_id Character or NULL; return orders submitted before
+    #'   this order ID. Mutually exclusive with `after_order_id`. Do not combine
+    #'   with `after`/`until`.
+    #' @param after_order_id Character or NULL; return orders submitted after
+    #'   this order ID. Mutually exclusive with `before_order_id`. Do not
+    #'   combine with `after`/`until`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   the same columns as `add_order()` return value.
     #'
@@ -339,8 +339,29 @@ AlpacaTrading <- R6::R6Class(
       direction = NULL,
       nested = NULL,
       symbols = NULL,
-      side = NULL
+      side = NULL,
+      asset_class = NULL,
+      before_order_id = NULL,
+      after_order_id = NULL
     ) {
+      if (!is.null(before_order_id) && !is.null(after_order_id)) {
+        rlang::abort("`before_order_id` and `after_order_id` are mutually exclusive.")
+      }
+      if ((!is.null(before_order_id) || !is.null(after_order_id)) &&
+        (!is.null(after) || !is.null(until))) {
+        rlang::abort(
+          "Order-ID pagination (`before_order_id` / `after_order_id`) cannot be combined with timestamp pagination (`after` / `until`)."
+        )
+      }
+      if (!is.null(status)) {
+        rlang::arg_match0(status, c("open", "closed", "all"))
+      }
+      if (!is.null(direction)) {
+        rlang::arg_match0(direction, c("asc", "desc"))
+      }
+      if (!is.null(side)) {
+        rlang::arg_match0(tolower(side), c("buy", "sell"))
+      }
       return(private$.request(
         endpoint = "/v2/orders",
         query = list(
@@ -351,7 +372,10 @@ AlpacaTrading <- R6::R6Class(
           direction = direction,
           nested = nested,
           symbols = symbols,
-          side = side
+          side = side,
+          asset_class = asset_class,
+          before_order_id = before_order_id,
+          after_order_id = after_order_id
         ),
         .parser = parse_orders
       ))
@@ -580,12 +604,16 @@ AlpacaTrading <- R6::R6Class(
     #' ```
     #'
     #' @param order_id Character; order UUID to replace.
-    #' @param qty Numeric or NULL; new quantity.
+    #' @param qty Numeric or NULL; new quantity. Mutually exclusive with `notional`.
+    #' @param notional Numeric or NULL; new notional (dollar) amount. Only valid
+    #'   for IPO indications of interest (`asset_class = "ipo"`).
     #' @param time_in_force Character or NULL; new time in force.
     #' @param limit_price Numeric or NULL; new limit price.
     #' @param stop_price Numeric or NULL; new stop price.
-    #' @param trail Numeric or NULL; new trail value.
+    #' @param trail Numeric or NULL; new trail value (for `type = "trailing_stop"`).
     #' @param client_order_id Character or NULL; new client order ID.
+    #' @param advanced_instructions List or NULL; routing instructions for
+    #'   Alpaca Elite Smart Router.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
     #'   the replacement order details.
     #'
@@ -602,10 +630,18 @@ AlpacaTrading <- R6::R6Class(
       limit_price = NULL,
       stop_price = NULL,
       trail = NULL,
-      client_order_id = NULL
+      client_order_id = NULL,
+      notional = NULL,
+      advanced_instructions = NULL
     ) {
+      if (!is.null(qty) && !is.null(notional)) {
+        rlang::abort("`qty` and `notional` are mutually exclusive on a single replace request.")
+      }
       if (!is.null(qty)) {
         qty <- as.character(qty)
+      }
+      if (!is.null(notional)) {
+        notional <- as.character(notional)
       }
       if (!is.null(limit_price)) {
         limit_price <- as.character(limit_price)
@@ -627,7 +663,9 @@ AlpacaTrading <- R6::R6Class(
           limit_price = limit_price,
           stop_price = stop_price,
           trail = trail,
-          client_order_id = client_order_id
+          client_order_id = client_order_id,
+          notional = notional,
+          advanced_instructions = advanced_instructions
         ),
         .parser = parse_order
       ))
