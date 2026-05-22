@@ -76,6 +76,16 @@ test_that("get_snapshot returns flattened data.table with always-present conditi
   # Bar `*_close` columns are scalar numbers (not "conditions").
   expect_true(is.numeric(dt$minute_bar_close))
   expect_equal(dt$minute_bar_close, 185.50)
+  # All five nested *_timestamp fields must parse to POSIXct, not stay
+  # as character strings (PR #11 fix — they were renamed but never
+  # converted).
+  for (col in c(
+    "latest_trade_timestamp", "latest_quote_timestamp",
+    "minute_bar_timestamp", "daily_bar_timestamp",
+    "prev_daily_bar_timestamp"
+  )) {
+    expect_true(inherits(dt[[col]], "POSIXct"), label = col)
+  }
 })
 
 test_that("get_assets returns data.table", {

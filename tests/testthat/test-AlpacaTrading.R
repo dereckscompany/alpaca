@@ -98,6 +98,10 @@ test_that("get_orders rbinds simple + bracket orders into a single flat table", 
   expect_equal(nrow(dt), 4L)
   expect_equal(sum(is.na(dt$parent_order_id)), 2L) # simple + bracket-parent
   expect_equal(sum(!is.na(dt$parent_order_id)), 2L) # 2 legs
+  # Timestamp fields must be POSIXct on parent rows AND on leg rows
+  # (parse_order applies the conversion after rbinding parent+legs).
+  expect_true(inherits(dt$created_at, "POSIXct"))
+  expect_true(inherits(dt$submitted_at, "POSIXct"))
 })
 
 test_that("parse_order returns no list columns even with legs", {

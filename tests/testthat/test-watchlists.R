@@ -17,6 +17,13 @@ test_that("get_watchlists returns data.table of watchlists", {
   expect_equal(nrow(result), 2)
   expect_true("name" %in% names(result))
   expect_equal(result$name[1], "Tech Stocks")
+  # created_at / updated_at must parse to POSIXct (UTC).
+  if ("created_at" %in% names(result)) {
+    expect_true(inherits(result$created_at, "POSIXct"))
+  }
+  if ("updated_at" %in% names(result)) {
+    expect_true(inherits(result$updated_at, "POSIXct"))
+  }
 })
 
 test_that("get_watchlist returns long-format data.table with one row per asset", {

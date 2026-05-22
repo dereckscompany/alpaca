@@ -38,6 +38,12 @@ test_that("get_news returns one row per article (no cartesian inflation)", {
   expect_equal(result[id == 12345L]$symbols, "AAPL")
   expect_equal(result[id == 12345L]$image_sizes, "large")
   expect_equal(result[id == 12345L]$image_urls, "https://cdn.example.com/12345-large.jpg")
+
+  # created_at / updated_at must parse to POSIXct (UTC).
+  expect_true(inherits(result$created_at, "POSIXct"))
+  if ("updated_at" %in% names(result)) {
+    expect_true(inherits(result$updated_at, "POSIXct"))
+  }
 })
 
 test_that("get_news joins multiple symbols with `;` on a single row", {
