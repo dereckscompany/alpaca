@@ -393,7 +393,7 @@ cat("Buying power:", info$buying_power, "\n")
 Get Account Configurations
 
 Retrieves the current account configuration settings including DTBP
-check behavior, trade confirmation emails, and shorting restrictions.
+check behaviour, trade confirmation emails, and shorting restrictions.
 \subsection{API Endpoint}{
 
 \verb{GET https://paper-api.alpaca.markets/v2/account/configurations}

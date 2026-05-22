@@ -154,7 +154,7 @@ AlpacaAccount <- R6::R6Class(
     #' Get Account Configurations
     #'
     #' Retrieves the current account configuration settings including DTBP
-    #' check behavior, trade confirmation emails, and shorting restrictions.
+    #' check behaviour, trade confirmation emails, and shorting restrictions.
     #'
     #' ### API Endpoint
     #' `GET https://paper-api.alpaca.markets/v2/account/configurations`
