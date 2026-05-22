@@ -55,6 +55,30 @@
 #' | get_most_actives | `GET /v1beta1/screener/stocks/most-actives` | data |
 #' | get_movers | `GET /v1beta1/screener/\{market_type\}/movers` | data |
 #'
+#' ### Timezones
+#' This client wraps Alpaca's `/v2/` market-data endpoints, which are
+#' US-only. All returned date / time columns are coerced to `Date` or
+#' `POSIXct` for ergonomic use:
+#'
+#' - Endpoints whose JSON carries an explicit RFC-3339 offset (bars,
+#'   trades, quotes, news, snapshots, clock) are parsed at the exact
+#'   instant. Clock is displayed in `America/New_York`; bars / trades
+#'   / quotes / news in UTC. Use [lubridate::with_tz()] to view in any
+#'   other timezone.
+#' - The calendar endpoint returns *naive* wall-clock times (`"09:30"`,
+#'   `"0400"`) with no offset in the payload. Alpaca does **not**
+#'   explicitly document the timezone on the calendar reference page,
+#'   but the values are Eastern Time by inference (US-only venues,
+#'   `09:30` matches the NYSE/NASDAQ open, every other SDK treats them
+#'   as ET, and the market-data FAQ confirms NY tz for bar
+#'   aggregation). We localise with the named tz `America/New_York`,
+#'   so DST transitions flip automatically.
+#'
+#' This assumption is safe for `/v2/`. When Alpaca's `/v3/` multi-market
+#' endpoints are adopted, per-market timezone lookup will replace the
+#' single hard-coded tz. The constant lives in `R/helpers_parse.R`
+#' (search for `TODO(v3)`).
+#'
 #' @examples
 #' \dontrun{
 #' # Synchronous usage
@@ -1176,9 +1200,16 @@ AlpacaMarketData <- R6::R6Class(
     #'   Determines whether `start`/`end` are interpreted as trading dates
     #'   (default) or settlement dates.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `date` (character): Trading date.
-    #'   - `open` (character): Market open time (ET).
-    #'   - `close` (character): Market close time (ET).
+    #'   - `date` (Date): Trading date.
+    #'   - `open` (POSIXct, `America/New_York`): Regular-hours market open.
+    #'   - `close` (POSIXct, `America/New_York`): Regular-hours market close.
+    #'   - `session_open` (POSIXct, `America/New_York`): Extended-hours session open.
+    #'   - `session_close` (POSIXct, `America/New_York`): Extended-hours session close.
+    #'   - `settlement_date` (Date): Settlement date for trades executed on `date`.
+    #'
+    #' Alpaca's API returns market times without an offset; per the
+    #' Alpaca docs they are Eastern Time. We localise to
+    #' `America/New_York` (the named tz handles DST automatically).
     #'
     #' @examples
     #' \dontrun{
@@ -1193,7 +1224,28 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/calendar",
         query = list(start = start, end = end, date_type = date_type),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          if (nrow(dt) == 0L) return(dt)
+          # Snapshot the date column before we reassign it to Date below;
+          # the time-combine calls need the original "YYYY-MM-DD" character.
+          d <- dt$date
+          # Regular-hours open/close arrive as "HH:MM".
+          for (col in c("open", "close")) {
+            if (col %in% names(dt)) {
+              dt[, (col) := combine_et_datetime(d, get(col))]
+            }
+          }
+          # Extended-hours session_open/session_close arrive as "HHMM"
+          # (no colon) — normalise before combining.
+          for (col in c("session_open", "session_close")) {
+            if (col %in% names(dt)) {
+              dt[, (col) := combine_et_datetime(d, hhmm_to_hh_mm(get(col)))]
+            }
+          }
+          parse_date_cols(dt, c("date", "settlement_date"))
+          return(dt[])
+        }
       ))
     },
 
@@ -1227,10 +1279,15 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `timestamp` (character): Current server timestamp.
+    #'   - `timestamp` (POSIXct, `America/New_York`): Current server timestamp.
     #'   - `is_open` (logical): Whether the market is currently open.
-    #'   - `next_open` (character): Next market open time.
-    #'   - `next_close` (character): Next market close time.
+    #'   - `next_open` (POSIXct, `America/New_York`): Next market open time.
+    #'   - `next_close` (POSIXct, `America/New_York`): Next market close time.
+    #'
+    #' The Alpaca clock endpoint returns ISO-8601 timestamps with an
+    #' explicit offset; we parse the instant exactly and display it in
+    #' `America/New_York` for consistency with `get_calendar()`. Use
+    #' `lubridate::with_tz()` to view in another timezone.
     #'
     #' @examples
     #' \dontrun{
@@ -1241,7 +1298,17 @@ AlpacaMarketData <- R6::R6Class(
     get_clock = function() {
       return(private$.request(
         endpoint = "/v2/clock",
-        .parser = as_dt_row
+        .parser = function(x) {
+          dt <- as_dt_row(x)
+          if (nrow(dt) == 0L) return(dt)
+          for (col in c("timestamp", "next_open", "next_close")) {
+            if (col %in% names(dt)) {
+              parsed <- rfc3339_to_datetime(dt[[col]])
+              dt[, (col) := lubridate::with_tz(parsed, ALPACA_EXCHANGE_TZ)]
+            }
+          }
+          return(dt[])
+        }
       ))
     },
 

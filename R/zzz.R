@@ -22,5 +22,12 @@ utils::globalVariables(c(
   "price",
   "size",
   # Option contract deliverables NSE
-  "deliverable_index"
+  "deliverable_index",
+  # Calendar parser NSE (date/time conversion in get_calendar)
+  "date",
+  "open",
+  "close",
+  "session_open",
+  "session_close",
+  "settlement_date"
 ))

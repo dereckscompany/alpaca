@@ -49,6 +49,47 @@ covered:
 Use `lubridate::with_tz()` to view in any other timezone; the
 underlying instant is preserved.
 
+## Calendar and clock return parsed datetimes (breaking)
+
+`AlpacaMarketData$get_calendar()` and `$get_clock()` no longer return
+character columns for dates and times. Instead:
+
+- `get_calendar()` returns `date`/`settlement_date` as `Date` and
+  `open`/`close`/`session_open`/`session_close` as `POSIXct` localised
+  to `America/New_York`. Alpaca's `/v2/calendar` reference page does
+  not state a timezone explicitly; ET is inferred from `/v2` being
+  US-only, the market-data FAQ using NY tz as canonical for bar
+  aggregation, and `09:30` only making sense as ET wall-clock. The
+  named tz handles DST automatically (a fixed `-05:00` would be wrong
+  half the year). See the `AlpacaMarketData` class docs for the full
+  reasoning.
+- `get_clock()` returns `timestamp`/`next_open`/`next_close` as
+  `POSIXct` in `America/New_York`. The wall-clock instant is preserved
+  exactly — only the display tz is normalised. Use
+  `lubridate::with_tz()` to view elsewhere.
+
+The previous `@return` documentation also omitted `session_open`,
+`session_close`, and `settlement_date`; those are now enumerated.
+
+The class-level `AlpacaMarketData` docs now carry a "Timezones"
+section spelling out the ET-by-inference assumption for calendar
+times (Alpaca does not state it explicitly on the reference page) and
+flagging that `/v3` multi-market endpoints will need per-market
+timezone lookup. A `TODO(v3)` marker sits next to the
+`ALPACA_EXCHANGE_TZ` constant in `R/helpers_parse.R` so a future
+migration is hard to miss.
+
+## Internal: date / time helpers chokepoint (developer note)
+
+`R/helpers_parse.R` now carries a top-of-file banner listing the five
+date / time helpers (`rfc3339_to_datetime`, `parse_timestamp_cols`,
+`parse_date_cols`, `combine_et_datetime`, `hhmm_to_hh_mm`) with a
+when-to-use-which guide. The `rfc3339_to_datetime()` roxygen also
+explains why it exists as a thin wrapper around `lubridate::as_datetime`
+(NULL / all-NA short-circuit, single chokepoint for any future change
+of parser). Future contributors should route all RFC-3339 / pure-date
+parsing through these helpers rather than calling `lubridate` directly.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

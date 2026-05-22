@@ -69,6 +69,33 @@ base URL. Both are configurable via constructor parameters.
 }
 
 }
+
+\subsection{Timezones}{
+
+This client wraps Alpaca's \verb{/v2/} market-data endpoints, which are
+US-only. All returned date / time columns are coerced to \code{Date} or
+\code{POSIXct} for ergonomic use:
+\itemize{
+\item Endpoints whose JSON carries an explicit RFC-3339 offset (bars,
+trades, quotes, news, snapshots, clock) are parsed at the exact
+instant. Clock is displayed in \code{America/New_York}; bars / trades
+/ quotes / news in UTC. Use \code{\link[lubridate:with_tz]{lubridate::with_tz()}} to view in any
+other timezone.
+\item The calendar endpoint returns \emph{naive} wall-clock times (\code{"09:30"},
+\code{"0400"}) with no offset in the payload. Alpaca does \strong{not}
+explicitly document the timezone on the calendar reference page,
+but the values are Eastern Time by inference (US-only venues,
+\code{09:30} matches the NYSE/NASDAQ open, every other SDK treats them
+as ET, and the market-data FAQ confirms NY tz for bar
+aggregation). We localise with the named tz \code{America/New_York},
+so DST transitions flip automatically.
+}
+
+This assumption is safe for \verb{/v2/}. When Alpaca's \verb{/v3/} multi-market
+endpoints are adopted, per-market timezone lookup will replace the
+single hard-coded tz. The constant lives in \code{R/helpers_parse.R}
+(search for \code{TODO(v3)}).
+}
 }
 \examples{
 \dontrun{
@@ -1580,10 +1607,17 @@ Determines whether \code{start}/\code{end} are interpreted as trading dates
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{date} (character): Trading date.
-\item \code{open} (character): Market open time (ET).
-\item \code{close} (character): Market close time (ET).
+\item \code{date} (Date): Trading date.
+\item \code{open} (POSIXct, \code{America/New_York}): Regular-hours market open.
+\item \code{close} (POSIXct, \code{America/New_York}): Regular-hours market close.
+\item \code{session_open} (POSIXct, \code{America/New_York}): Extended-hours session open.
+\item \code{session_close} (POSIXct, \code{America/New_York}): Extended-hours session close.
+\item \code{settlement_date} (Date): Settlement date for trades executed on \code{date}.
 }
+
+Alpaca's API returns market times without an offset; per the
+Alpaca docs they are Eastern Time. We localise to
+\code{America/New_York} (the named tz handles DST automatically).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1641,11 +1675,16 @@ Verified: 2026-05-21
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
 \itemize{
-\item \code{timestamp} (character): Current server timestamp.
+\item \code{timestamp} (POSIXct, \code{America/New_York}): Current server timestamp.
 \item \code{is_open} (logical): Whether the market is currently open.
-\item \code{next_open} (character): Next market open time.
-\item \code{next_close} (character): Next market close time.
+\item \code{next_open} (POSIXct, \code{America/New_York}): Next market open time.
+\item \code{next_close} (POSIXct, \code{America/New_York}): Next market close time.
 }
+
+The Alpaca clock endpoint returns ISO-8601 timestamps with an
+explicit offset; we parse the instant exactly and display it in
+\code{America/New_York} for consistency with \code{get_calendar()}. Use
+\code{lubridate::with_tz()} to view in another timezone.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
