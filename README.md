@@ -35,21 +35,36 @@ transformations applied:
 
 1.  **snake_case column names** – camelCase keys from the JSON response
     (e.g. `latestTrade`, `nextClose`) are converted to snake_case
-    (`latest_trade`, `next_close`) via a mechanical transformation. No
-    columns are renamed beyond this.
+    (`latest_trade`, `next_close`). A handful of endpoints additionally
+    expand abbreviated single-letter keys returned by Alpaca’s
+    bar/trade/quote feeds (e.g. `t` → `timestamp`, `p` → `price`,
+    `o`/`h`/`l`/`c` → `open`/`high`/`low`/`close`, `vw` →
+    `volume_weighted_avg_price`) so the resulting column names are
+    self-describing. The full mapping per endpoint is documented in the
+    method-level `@return` blocks.
 
-2.  **Timestamps to POSIXct** – Columns containing RFC-3339 timestamps
-    or epoch seconds are converted to `POSIXct` in-place under their
-    snake_case name.
+2.  **Timestamps to POSIXct where the field is clearly a market-data
+    timestamp** – Numeric epoch fields and obvious RFC-3339 fields on
+    market-data endpoints (bars, trades, quotes, snapshots, orderbook)
+    are converted to `POSIXct` under their snake_case name. Some textual
+    `created_at` / `updated_at` fields on lower-level endpoints (notably
+    news articles) are left as `character` strings; see the relevant
+    `@return` for the exact type per column.
 
-3.  **One entity = one row, no list columns** – The package never
-    returns a `data.table` with a list column. See *Data-shape
-    conventions* below for the exact rules per nested-data shape.
+3.  **One entity = one row, no list columns** – For every endpoint
+    normalised under the shape policy (see *Data-shape conventions*
+    below) the returned `data.table` contains no list columns. A small
+    number of legacy endpoints that go through the generic parser may
+    still surface nested arrays as list columns; those are called out
+    individually in their `@return`.
 
-**No fields are dropped and no columns are renamed** beyond the
-camelCase-to-snake_case conversion and the shape transforms above. If a
-column exists in the Alpaca API response, it will exist in the returned
-`data.table`. If you don’t need a column, drop it yourself.
+**No fields are dropped** by the normalising parsers (`parse_trades`,
+`parse_quotes`, `parse_news`, `parse_snapshot`,
+`parse_asset`/`parse_assets`, `parse_order`/`parse_orders`,
+`parse_watchlist`). Every scalar and array field present in the Alpaca
+response surfaces as a column on the resulting `data.table` – collapsed,
+exploded, or wide-prefixed per the shape policy. If you don’t need a
+column, drop it yourself.
 
 ## Data-shape conventions
 
@@ -85,12 +100,21 @@ strsplit(dt$attributes[1], ";", fixed = TRUE)[[1]]
 ```
 
 URL-encoded fields (currently just news `image_urls`, where Alpaca
-legitimately uses `;` inside some URLs) round-trip via `URLdecode()`:
+legitimately uses `;` inside some URLs) round-trip via `URLdecode()`.
+The encoding is **lossless** in both directions: each URL is
+double-encoded (`%` → `%25`, then `;` → `%3B`) before joining, so a
+single `URLdecode()` after splitting recovers the original string even
+when the upstream URL already contained `%3B` or other percent-escapes:
 
 ``` r
 urls <- strsplit(news$image_urls[1], ";", fixed = TRUE)[[1]]
 urls <- vapply(urls, URLdecode, character(1))
 ```
+
+For parallel arrays like `image_sizes` / `image_urls`, when one element
+omits a per-image field the missing value becomes an **empty token**
+(e.g. `"large;"`), never the literal string `"NA"` — so a real `"NA"`
+value remains unambiguous from a missing one.
 
 ### Multi-leg orders (`bracket` / `oco` / `oto`)
 
@@ -252,12 +276,14 @@ news <- market$get_news(symbols = "AAPL", limit = 5)
 news[, .(headline, source, created_at)]
 ```
 
-    #>                              headline   source           created_at
-    #>                                <char>   <char>               <char>
-    #> 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
-    #> 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
-    #> 3:      Some Generic Markets Headline     wire 2024-01-25T15:00:00Z
-    #> 4:                URL with semicolons     test 2024-01-25T14:00:00Z
+    #>                                      headline   source           created_at
+    #>                                        <char>   <char>               <char>
+    #> 1:           Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
+    #> 2:         Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
+    #> 3:              Some Generic Markets Headline     wire 2024-01-25T15:00:00Z
+    #> 4:                        URL with semicolons     test 2024-01-25T14:00:00Z
+    #> 5:  URL with a pre-existing %3B in the source     test 2024-01-25T13:00:00Z
+    #> 6: Article with partially-missing image sizes     test 2024-01-25T12:00:00Z
 
 ## Account
 
@@ -387,14 +413,18 @@ chain[]
     #>                 <char>                 <char>              <num>
     #> 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5
     #> 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2
-    #>    latest_trade_size latest_quote_timestamp latest_quote_ask_price
-    #>                <int>                 <char>                  <num>
-    #> 1:                10   2024-06-15T14:30:00Z                    5.6
-    #> 2:                 5   2024-06-15T14:30:00Z                    3.3
-    #>    latest_quote_bid_price latest_quote_ask_size latest_quote_bid_size
-    #>                     <num>                 <int>                 <int>
-    #> 1:                    5.4                    50                    40
-    #> 2:                    3.1                    30                    25
+    #>    latest_trade_size latest_trade_conditions latest_quote_timestamp
+    #>                <int>                  <char>                 <char>
+    #> 1:                10                    <NA>   2024-06-15T14:30:00Z
+    #> 2:                 5                    <NA>   2024-06-15T14:30:00Z
+    #>    latest_quote_ask_price latest_quote_bid_price latest_quote_ask_size
+    #>                     <num>                  <num>                 <int>
+    #> 1:                    5.6                    5.4                    50
+    #> 2:                    3.3                    3.1                    30
+    #>    latest_quote_bid_size latest_quote_conditions
+    #>                    <int>                  <char>
+    #> 1:                    40                    <NA>
+    #> 2:                    25                    <NA>
 
 ## Short Selling
 

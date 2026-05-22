@@ -156,7 +156,11 @@ AlpacaTrading <- R6::R6Class(
     #'   options strategies. Required when `order_class = "mleg"`.
     #' @param advanced_instructions List or NULL; routing instructions for
     #'   Alpaca Elite Smart Router.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   A simple order returns a single row. A `bracket` / `oco` / `oto` /
+    #'   `mleg` order returns the parent row plus one row per leg — see the
+    #'   "Multi-leg orders" section in the README and `vignette("data-shapes")`
+    #'   for the parent + leg layout. Columns:
     #'   - `id` (character): Order UUID.
     #'   - `client_order_id` (character): Client order ID.
     #'   - `symbol` (character): Ticker symbol.
@@ -170,6 +174,11 @@ AlpacaTrading <- R6::R6Class(
     #'   - `limit_price` (character): Limit price (if set).
     #'   - `stop_price` (character): Stop price (if set).
     #'   - `created_at` (character): Order creation timestamp.
+    #'   - `leg_index` (integer): `NA` on the parent row; `1..N` on each leg.
+    #'   - `parent_order_id` (character): `NA` on the parent row; the parent's
+    #'     `id` on each leg. Use `dt[is.na(parent_order_id)]` to keep just
+    #'     parent rows, or `dt[parent_order_id == "<uuid>"]` for the legs of
+    #'     one bracket.
     #'
     #' @examples
     #' \dontrun{
@@ -438,8 +447,14 @@ AlpacaTrading <- R6::R6Class(
     #' ```
     #'
     #' @param order_id Character; order UUID.
-    #' @param nested Logical or NULL; include leg orders.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row.
+    #' @param nested Logical or NULL; include leg orders. When `TRUE`, a
+    #'   bracket / OCO / OTO / multi-leg order returns the parent row plus
+    #'   one row per leg, distinguished by `leg_index` (`NA` on parent,
+    #'   `1..N` on legs) and `parent_order_id` (`NA` on parent, parent's
+    #'   `id` on legs). Simple orders return a single row regardless.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
+    #'   with the same columns as `add_order()`. Multi-row when `nested =
+    #'   TRUE` and the order has legs; otherwise single row.
     #'
     #' @examples
     #' \dontrun{
@@ -514,7 +529,11 @@ AlpacaTrading <- R6::R6Class(
     #' ```
     #'
     #' @param client_order_id Character; the client order ID (max 128 chars).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
+    #'   with the same columns as `add_order()`. A simple order returns a
+    #'   single row; a bracket / OCO / OTO / multi-leg order returns the
+    #'   parent row plus one row per leg, distinguished by `leg_index`
+    #'   and `parent_order_id`.
     #'
     #' @examples
     #' \dontrun{

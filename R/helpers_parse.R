@@ -284,6 +284,13 @@ parse_quotes <- function(quotes) {
 #' columns are plain character — not list columns. Per the package's
 #' "one entity = one row" policy, one symbol = one snapshot row.
 #'
+#' Options-specific extras: when the upstream snapshot carries an
+#' `impliedVolatility` scalar (top-level) it surfaces as the
+#' `implied_volatility` column, and the nested `greeks` object
+#' (`delta`, `gamma`, `theta`, `vega`, `rho`) is flattened into
+#' `greeks_*` columns. Stock snapshots never include these fields, so
+#' the columns only appear for option chains / option snapshots.
+#'
 #' Note: the `c` field on the bar sections (minuteBar, dailyBar,
 #' prevDailyBar) is the close *price* — a scalar number — and is left
 #' untouched. The name map renames it to `*_close` per section.
@@ -300,9 +307,21 @@ parse_snapshot <- function(snapshot) {
   # Collapse the inner `c` condition-code arrays on latestTrade /
   # latestQuote BEFORE flattening. Only these two sections — bar
   # sections use `c` to mean close price (a scalar), not conditions.
+  #
+  # When the section exists but its `c` field is missing or NULL, we
+  # still want the downstream `latest_*_conditions` column to appear
+  # (as `NA_character_`) so the schema stays consistent across calls.
+  # Without this, an Alpaca payload that omits `c` would silently drop
+  # the conditions column.
   for (sec in c("latestTrade", "latestQuote")) {
     sub <- snapshot[[sec]]
-    if (!is.null(sub) && !is.null(sub[["c"]]) && (is.list(sub[["c"]]) || length(sub[["c"]]) > 1L)) {
+    if (is.null(sub)) next
+    if (is.null(sub[["c"]])) {
+      sub[["c"]] <- NA_character_
+      snapshot[[sec]] <- sub
+      next
+    }
+    if (is.list(sub[["c"]]) || length(sub[["c"]]) > 1L) {
       snapshot[[sec]] <- collapse_string_array_fields(sub, "c")
     }
   }
@@ -316,6 +335,19 @@ parse_snapshot <- function(snapshot) {
       for (nm in names(sub)) {
         flat[[paste0(prefix, "_", nm)]] <- sub[[nm]]
       }
+    }
+  }
+  # Options-snapshot extras: top-level `impliedVolatility` (a scalar)
+  # and the nested `greeks` object (fixed schema: delta, gamma, theta,
+  # vega, rho). Stock snapshots never carry these, so the columns only
+  # appear when the upstream is an options snapshot.
+  if (!is.null(snapshot[["impliedVolatility"]])) {
+    flat[["implied_volatility"]] <- snapshot[["impliedVolatility"]]
+  }
+  greeks <- snapshot[["greeks"]]
+  if (!is.null(greeks) && length(greeks) > 0L) {
+    for (nm in names(greeks)) {
+      flat[[paste0("greeks_", to_snake_case(nm))]] <- greeks[[nm]]
     }
   }
   dt <- as_dt_row(flat)
@@ -649,6 +681,67 @@ parse_assets <- function(items) {
     return(data.table::data.table()[])
   }
   return(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[])
+}
+
+#' Parse a Single Option Contract Record
+#'
+#' Like `as_dt_row()` but handles the optional `deliverables` array
+#' (present when the caller passed `show_deliverables = TRUE`) per the
+#' "array of objects" treatment: explode to one row per deliverable
+#' with contract fields replicated, prefix deliverable columns with
+#' `deliverable_`, and add a 1-indexed `deliverable_index`.
+#'
+#' Contracts without `deliverables` (the default response shape) come
+#' back as a single row with no `deliverable_*` columns.
+#'
+#' @param x A named list representing a single Alpaca option contract.
+#' @return A [data.table::data.table] with one row per deliverable
+#'   (or one row when no `deliverables` are present).
+#'
+#' @keywords internal
+#' @noRd
+parse_contract <- function(x) {
+  if (is.null(x) || length(x) == 0L) {
+    return(data.table::data.table()[])
+  }
+  delivs <- x[["deliverables"]]
+  x[["deliverables"]] <- NULL
+  contract_row <- as_dt_row(x)
+  if (is.null(delivs) || length(delivs) == 0L) {
+    return(contract_row[])
+  }
+  # Normalise per-deliverable records before binding: replace `NULL`
+  # fields with `NA` so `rbindlist(fill = TRUE)` doesn't warn about
+  # length-0 columns when one deliverable omits a field that another
+  # has (e.g. a cash deliverable with no `asset_id`).
+  delivs <- lapply(delivs, function(d) {
+    lapply(d, function(v) if (is.null(v)) NA else v)
+  })
+  deliv_dt <- data.table::rbindlist(delivs, fill = TRUE)
+  data.table::setnames(deliv_dt, to_snake_case(names(deliv_dt)))
+  data.table::setnames(deliv_dt, paste0("deliverable_", names(deliv_dt)))
+  deliv_dt[, deliverable_index := seq_len(.N)]
+  contract_rep <- contract_row[rep(1L, nrow(deliv_dt)), ]
+  return(cbind(contract_rep, deliv_dt)[])
+}
+
+#' Parse an Alpaca Option Contracts List
+#'
+#' Applies `parse_contract()` per record. When `show_deliverables =
+#' TRUE` was passed to the underlying endpoint, the returned table has
+#' one row per `(contract, deliverable)` pair; otherwise it has one
+#' row per contract.
+#'
+#' @param items A list of option contract records.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_contracts <- function(items) {
+  if (is.null(items) || length(items) == 0L) {
+    return(data.table::data.table()[])
+  }
+  return(data.table::rbindlist(lapply(items, parse_contract), fill = TRUE)[])
 }
 
 #' Parse a Single Order Response to data.table

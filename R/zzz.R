@@ -19,5 +19,7 @@ utils::globalVariables(c(
   "level",
   "side",
   "price",
-  "size"
+  "size",
+  # Option contract deliverables NSE
+  "deliverable_index"
 ))

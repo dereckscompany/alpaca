@@ -1,12 +1,14 @@
 # Tests for AlpacaMarketData news method
 #
 # Policy: one article = one row. `symbols`, `image_sizes` and `image_urls` are
-# semicolon-collapsed character columns. The four fixture articles in
+# semicolon-collapsed character columns. The six fixture articles in
 # `mock_news_response()` exercise:
 #   1. one symbol + one image (regular)
 #   2. three symbols + two images (used to cartesian to 6 rows)
 #   3. empty symbols + empty images (NA columns)
 #   4. a single image whose URL contains a literal ";" (percent-encode path)
+#   5. a URL whose source already contains "%3B" (lossless round-trip path)
+#   6. two images where only one has a `size` field (empty-token path)
 
 test_that("get_news returns one row per article (no cartesian inflation)", {
   mock_perform <- function(req) {

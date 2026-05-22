@@ -479,7 +479,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote**. Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
@@ -487,6 +488,12 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
     #'   - `bid_size` (integer): Bid size.
+    #'   - `conditions` (character): `;`-separated quote condition codes
+    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
+    #'     recover the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     no conditions were reported.
+    #'   - `tape` (character): Tape identifier.
     #'
     #' @examples
     #' \dontrun{
@@ -723,7 +730,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and quote columns.
+    #'   `symbol` column and quote columns (`timestamp`, `ask_*`, `bid_*`,
+    #'   `conditions`, `tape`). `conditions` is a `;`-separated character
+    #'   column following the package's array-collapse convention.
     get_latest_quotes_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/quotes/latest",
@@ -955,7 +964,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote**. Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
@@ -963,6 +973,12 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
     #'   - `bid_size` (integer): Bid size.
+    #'   - `conditions` (character): `;`-separated quote condition codes
+    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
+    #'     recover the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     no conditions were reported.
+    #'   - `tape` (character): Tape identifier.
     get_quotes = function(
       symbol,
       start = NULL,
@@ -1415,10 +1431,18 @@ AlpacaMarketData <- R6::R6Class(
     #'     `strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]`.
     #'   - `image_sizes` (character): Semicolon-separated image size labels
     #'     parallel to `image_urls`. `NA` when the article has no images.
-    #'   - `image_urls` (character): Semicolon-separated image URLs. Any
-    #'     literal `;` inside a URL is percent-encoded as `%3B` before
-    #'     joining; recover via `vapply(strsplit(dt$image_urls[1], ";",
-    #'     fixed = TRUE)[[1]], URLdecode, character(1))`.
+    #'     When some images on an article report a `size` and others omit
+    #'     it, the missing values become **empty tokens** (e.g.
+    #'     `"large;"`) — never the literal string `"NA"` — so a real
+    #'     value is unambiguous from a missing one.
+    #'   - `image_urls` (character): Semicolon-separated image URLs.
+    #'     The join is **lossless** for any input URL: each URL is
+    #'     double-encoded (`%` → `%25` first, then `;` → `%3B`) before
+    #'     joining, so a single pass of `URLdecode()` after splitting
+    #'     recovers the original string even when it already contained
+    #'     `%3B` or other percent-escapes. Recover with
+    #'     `vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]],
+    #'     URLdecode, character(1))`.
     #'
     #' @examples
     #' \dontrun{

@@ -457,6 +457,85 @@ mock_option_contracts_response <- function() {
   )
 }
 
+mock_option_contracts_with_deliverables_response <- function() {
+  # Exercises `show_deliverables = TRUE`: one contract with a single
+  # deliverable (typical equity option), one contract with two
+  # deliverables (e.g. a post-corporate-action contract).
+  list(
+    option_contracts = list(
+      list(
+        id = "opt-uuid-1",
+        symbol = "AAPL240621C00200000",
+        name = "AAPL Jun 21 2024 200.00 Call",
+        status = "active",
+        tradable = TRUE,
+        type = "call",
+        strike_price = "200.00",
+        expiration_date = "2024-06-21",
+        underlying_symbol = "AAPL",
+        underlying_asset_id = "uuid-aapl",
+        style = "american",
+        root_symbol = "AAPL",
+        size = "100",
+        open_interest = "1234",
+        close_price = "5.50",
+        deliverables = list(
+          list(
+            type = "equity",
+            symbol = "AAPL",
+            asset_id = "uuid-aapl",
+            amount = "100",
+            allocation_percentage = "100",
+            settlement_type = "T+1",
+            settlement_method = "BTOB",
+            delayed_settlement = FALSE
+          )
+        )
+      ),
+      list(
+        id = "opt-uuid-spinoff",
+        symbol = "OLDCOSPINOFF000",
+        name = "Post-spinoff combined contract",
+        status = "active",
+        tradable = TRUE,
+        type = "call",
+        strike_price = "50.00",
+        expiration_date = "2026-01-16",
+        underlying_symbol = "OLDCO",
+        underlying_asset_id = "uuid-oldco",
+        style = "american",
+        root_symbol = "OLDCO",
+        size = "100",
+        open_interest = "12",
+        close_price = "1.20",
+        deliverables = list(
+          list(
+            type = "equity",
+            symbol = "NEWCO",
+            asset_id = "uuid-newco",
+            amount = "100",
+            allocation_percentage = "60",
+            settlement_type = "T+1",
+            settlement_method = "BTOB",
+            delayed_settlement = FALSE
+          ),
+          list(
+            type = "cash",
+            symbol = "USD",
+            asset_id = NULL,
+            amount = "250.00",
+            allocation_percentage = "40",
+            settlement_type = "T+1",
+            settlement_method = "BTOB",
+            delayed_settlement = FALSE
+          )
+        )
+      )
+    ),
+    next_page_token = NULL
+  )
+}
+
 mock_option_contract_response <- function() {
   list(
     id = "opt-uuid-1",
@@ -950,6 +1029,28 @@ mock_option_chain_response <- function() {
       AAPL240621C00210000 = list(
         latestTrade = list(t = "2024-06-15T14:30:00Z", p = 3.20, s = 5L),
         latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 3.30, bp = 3.10, "as" = 30L, bs = 25L)
+      )
+    )
+  )
+}
+
+mock_option_chain_with_greeks_response <- function() {
+  # Includes the top-level `impliedVolatility` scalar and nested
+  # `greeks` object that Alpaca returns for options snapshots — both
+  # were being silently dropped before the parser fix.
+  list(
+    snapshots = list(
+      AAPL240621C00200000 = list(
+        latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L, c = list("a")),
+        latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 5.60, bp = 5.40, "as" = 50L, bs = 40L, c = list("R")),
+        impliedVolatility = 0.2712,
+        greeks = list(
+          delta = -0.4577,
+          gamma = 0.0187,
+          theta = -0.0756,
+          vega = 0.3215,
+          rho = -0.1289
+        )
       )
     )
   )

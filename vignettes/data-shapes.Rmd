@@ -286,9 +286,10 @@ asset$attributes
 #> "fractional_eh_enabled;has_options;overnight_tradable"
 ```
 
-Filter with `grepl`:
+Filter with `grepl` over a list of assets:
 
 ```r
+assets <- market$get_assets()
 options_assets <- assets[grepl("has_options", attributes)]
 ```
 
@@ -302,14 +303,26 @@ strsplit(asset$attributes, ";", fixed = TRUE)[[1]]
 The separator is `;` rather than `,` because semicolons are far less
 likely to appear *inside* one of the values themselves. For fields
 where a value could legally contain `;` — currently just news image
-URLs, where `;` is a valid URL sub-delimiter — the value is
-percent-encoded to `%3B` before joining, and you recover via
-`URLdecode()` per element:
+URLs, where `;` is a valid URL sub-delimiter — each value is
+**double-encoded** before joining (first `%` → `%25`, then `;` →
+`%3B`), so a single `URLdecode()` after splitting recovers the
+original string losslessly, even when the source URL already contained
+percent-escapes such as `%3B`:
 
 ```r
 news <- market$get_news(symbols = "AAPL", limit = 1)
 urls  <- strsplit(news$image_urls[1], ";", fixed = TRUE)[[1]]
 urls  <- vapply(urls, URLdecode, character(1))
+```
+
+Parallel arrays (e.g. each news image has both a `size` and a `url`)
+are collapsed independently into separate columns. When some entries
+have a per-element field and others omit it, the missing values
+appear as **empty tokens**, not literal `"NA"`:
+
+```r
+news[id == 12350, image_sizes]
+#> "large;"          # second image had no `size`; never "large;NA"
 ```
 
 Where it's used: `attributes` on assets, `conditions` on trades and

@@ -316,7 +316,18 @@ returns only contracts eligible for penny price increments.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+With \code{show_deliverables = NULL} (default) or \code{FALSE}, returns one
+row per contract. With \code{show_deliverables = TRUE}, the nested
+\code{deliverables} array is exploded to one row per
+\verb{(contract, deliverable)}; contract fields are replicated on
+each row, deliverable fields appear as \verb{deliverable_*} columns,
+and a 1-indexed \code{deliverable_index} is added. For the typical
+equity option with exactly one deliverable this means one row
+per contract still; for spinoff / split deliverables you get
+one row per deliverable. Filter to canonical per-contract rows
+with \code{dt[deliverable_index == 1L | is.na(deliverable_index)]}.
+Columns (contract):
 \itemize{
 \item \code{id} (character): Contract UUID.
 \item \code{symbol} (character): OCC option symbol.
@@ -333,6 +344,14 @@ returns only contracts eligible for penny price increments.}
 \item \code{open_interest} (character): Open interest.
 \item \code{close_price} (character): Last close price.
 }
+
+Columns (deliverables, only when \code{show_deliverables = TRUE}):
+\code{deliverable_index}, \code{deliverable_type}, \code{deliverable_symbol},
+\code{deliverable_asset_id}, \code{deliverable_amount},
+\code{deliverable_allocation_percentage},
+\code{deliverable_settlement_type},
+\code{deliverable_settlement_method},
+\code{deliverable_delayed_settlement}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -861,8 +880,22 @@ or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-flattened snapshot fields plus a \code{symbol} column.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
+with \strong{one row per contract}. Columns:
+\itemize{
+\item \code{symbol} (character): OCC option symbol.
+\item \verb{latest_trade_*}, \verb{latest_quote_*}, \verb{minute_bar_*},
+\verb{daily_bar_*}, \verb{prev_daily_bar_*}: flattened sections; see
+\code{get_snapshot()} for the per-field listing. \code{latest_trade_t}
+etc. are expanded to \code{latest_trade_timestamp} etc.;
+\code{latest_trade_conditions} and \code{latest_quote_conditions} are
+\verb{;}-collapsed character columns.
+\item \code{implied_volatility} (numeric): Top-level implied volatility
+when present in the snapshot.
+\item \code{greeks_delta}, \code{greeks_gamma}, \code{greeks_theta},
+\code{greeks_vega}, \code{greeks_rho} (numeric): The fixed-schema
+\code{greeks} object flattened to wide columns.
+}
 }
 }
 \if{html}{\out{<hr>}}
@@ -1095,8 +1128,13 @@ after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-flattened snapshot fields plus a \code{symbol} column.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
+with \strong{one row per contract in the chain}. Columns mirror
+\code{get_option_snapshots()}: a \code{symbol} key, the flattened
+\verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} /
+\verb{daily_bar_*} / \verb{prev_daily_bar_*} blocks, plus
+\code{implied_volatility} and the \code{greeks_delta}, \code{greeks_gamma},
+\code{greeks_theta}, \code{greeks_vega}, \code{greeks_rho} columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

@@ -801,7 +801,8 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -810,6 +811,12 @@ Verified: 2026-05-22
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
+\item \code{conditions} (character): \verb{;}-separated quote condition codes
+(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
+recover the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+no conditions were reported.
+\item \code{tape} (character): Tape identifier.
 }
 }
 \subsection{Examples}{
@@ -1072,7 +1079,9 @@ Verified: 2026-05-22
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and quote columns.
+\code{symbol} column and quote columns (\code{timestamp}, \verb{ask_*}, \verb{bid_*},
+\code{conditions}, \code{tape}). \code{conditions} is a \verb{;}-separated character
+column following the package's array-collapse convention.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1322,7 +1331,8 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -1331,6 +1341,12 @@ Verified: 2026-05-22
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
+\item \code{conditions} (character): \verb{;}-separated quote condition codes
+(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
+recover the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+no conditions were reported.
+\item \code{tape} (character): Tape identifier.
 }
 }
 }
@@ -1868,9 +1884,17 @@ the original vector via
 \code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
 \item \code{image_sizes} (character): Semicolon-separated image size labels
 parallel to \code{image_urls}. \code{NA} when the article has no images.
-\item \code{image_urls} (character): Semicolon-separated image URLs. Any
-literal \verb{;} inside a URL is percent-encoded as \verb{\%3B} before
-joining; recover via \code{vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))}.
+When some images on an article report a \code{size} and others omit
+it, the missing values become \strong{empty tokens} (e.g.
+\code{"large;"}) — never the literal string \code{"NA"} — so a real
+value is unambiguous from a missing one.
+\item \code{image_urls} (character): Semicolon-separated image URLs.
+The join is \strong{lossless} for any input URL: each URL is
+double-encoded (\verb{\%} → \verb{\%25} first, then \verb{;} → \verb{\%3B}) before
+joining, so a single pass of \code{URLdecode()} after splitting
+recovers the original string even when it already contained
+\verb{\%3B} or other percent-escapes. Recover with
+\code{vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))}.
 }
 }
 \subsection{Examples}{
