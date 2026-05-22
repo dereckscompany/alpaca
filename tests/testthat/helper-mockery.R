@@ -246,6 +246,65 @@ mock_order_response <- function() {
   )
 }
 
+# Bracket-order response: parent order with two child legs (take-profit
+# limit + stop-loss). Shape mirrors the live `/v2/orders` POST response
+# captured during PR verification — each leg is itself a full order
+# object with its own id, side ("sell"), limit/stop prices, and status.
+mock_bracket_order_response <- function() {
+  list(
+    id = "bracket-parent",
+    client_order_id = "client-bracket-parent",
+    symbol = "AAPL",
+    side = "buy",
+    type = "limit",
+    time_in_force = "gtc",
+    order_class = "bracket",
+    status = "accepted",
+    qty = "1",
+    filled_qty = "0",
+    limit_price = "1.00",
+    stop_price = NULL,
+    created_at = "2024-01-15T14:30:00Z",
+    submitted_at = "2024-01-15T14:30:00Z",
+    legs = list(
+      list(
+        id = "leg-tp",
+        client_order_id = "client-leg-tp",
+        symbol = "AAPL",
+        side = "sell",
+        type = "limit",
+        time_in_force = "gtc",
+        order_class = "bracket",
+        status = "held",
+        qty = "1",
+        filled_qty = "0",
+        limit_price = "500.00",
+        stop_price = NULL,
+        created_at = "2024-01-15T14:30:00Z",
+        submitted_at = "2024-01-15T14:30:00Z",
+        legs = NULL
+      ),
+      list(
+        id = "leg-sl",
+        client_order_id = "client-leg-sl",
+        symbol = "AAPL",
+        side = "sell",
+        type = "stop_limit",
+        time_in_force = "gtc",
+        order_class = "bracket",
+        status = "held",
+        qty = "1",
+        filled_qty = "0",
+        limit_price = "0.40",
+        stop_price = "0.50",
+        created_at = "2024-01-15T14:30:00Z",
+        submitted_at = "2024-01-15T14:30:00Z",
+        legs = NULL
+      )
+    )
+  )
+}
+
 mock_orders_list_response <- function() {
   list(
     list(

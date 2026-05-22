@@ -609,9 +609,26 @@ parse_assets <- function(items) {
 
 #' Parse a Single Order Response to data.table
 #'
-#' Handles the `legs` array field: for bracket/OCO orders, expands to long
-#' format with one row per leg (prefixed `leg_`). Simple orders get one row
-#' with `leg_*` columns as NA.
+#' Returns a flat `data.table` with one row per "order" (parent and any
+#' legs treated equally). For simple orders that's one row. For a bracket /
+#' OCO / OTO order it's one parent row plus one row per leg.
+#'
+#' Two helper columns distinguish parent rows from leg rows:
+#'
+#' \itemize{
+#'   \item `leg_index` — `NA_integer_` for the parent row; `1, 2, ...` for
+#'         each leg in submission order.
+#'   \item `parent_order_id` — `NA_character_` for the parent row; the
+#'         parent's `id` for each leg row.
+#' }
+#'
+#' Use `dt[is.na(parent_order_id)]` to see just the parent orders, and
+#' `dt[parent_order_id == "<id>"]` to see the legs of a specific bracket.
+#'
+#' Each leg in the API is itself a full order object — including its own
+#' `id`, `side`, `limit_price`, `status`, etc. — so the parent and the
+#' legs share the same column set and `data.table::rbindlist()` aligns
+#' them naturally.
 #'
 #' @param x A named list representing a single order.
 #' @return A [data.table::data.table].
@@ -623,21 +640,31 @@ parse_order <- function(x) {
     return(data.table::data.table()[])
   }
   legs <- x[["legs"]]
+  parent_id <- x[["id"]]
   x[["legs"]] <- NULL
-  dt <- as_dt_row(x)
-  if (!is.null(legs) && is.list(legs) && length(legs) > 0) {
-    # Each leg is itself a full order object — recurse without legs to avoid nesting
-    legs_clean <- lapply(legs, function(leg) {
-      leg[["legs"]] <- NULL
-      return(leg)
-    })
-    legs_dt <- as_dt_list(legs_clean)
-    leg_names <- names(legs_dt)
-    data.table::setnames(legs_dt, leg_names, paste0("leg_", leg_names))
-    dt <- dt[rep(1L, nrow(legs_dt))]
-    dt <- cbind(dt, legs_dt)
+
+  parent_dt <- as_dt_row(x)
+  if (nrow(parent_dt) > 0L) {
+    parent_dt[, leg_index := NA_integer_]
+    parent_dt[, parent_order_id := NA_character_]
   }
-  return(dt[])
+
+  if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
+    return(parent_dt[])
+  }
+
+  # Each leg is itself an order — strip its `legs` field (always null in
+  # the response we've seen, but defensive) and parse via the same path.
+  legs_clean <- lapply(legs, function(leg) {
+    leg[["legs"]] <- NULL
+    return(leg)
+  })
+  legs_dt <- as_dt_list(legs_clean)
+  if (nrow(legs_dt) > 0L) {
+    legs_dt[, leg_index := seq_len(.N)]
+    legs_dt[, parent_order_id := parent_id]
+  }
+  return(data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)[])
 }
 
 #' Parse a List of Order Responses to data.table

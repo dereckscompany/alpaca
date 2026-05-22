@@ -70,7 +70,8 @@ test_that("parse_trades with heterogeneous fields produces NAs", {
   )
   dt <- parse_trades(trades)
 
-  # Trade 1 has 1 condition, trade 2 has no conditions (NA) => 2 rows
+  # Per the "one entity = one row" policy: two input trades -> two rows
+  # regardless of how many condition codes each carries.
   expect_equal(nrow(dt), 2L)
   # fill = TRUE creates NA values for missing fields
   expect_true(is.na(dt$exchange[2]))
@@ -78,11 +79,11 @@ test_that("parse_trades with heterogeneous fields produces NAs", {
   # tks is not in the name_map, so it stays as raw "tks" (not snake_cased)
   expect_true("tks" %in% names(dt))
   expect_true(is.na(dt$tks[1]))
-  # condition column (singular) exists, not conditions (plural)
-  expect_true("condition" %in% names(dt))
-  expect_false("conditions" %in% names(dt))
-  expect_equal(dt$condition[1], "@")
-  expect_true(is.na(dt$condition[2]))
+  # Conditions are `;`-joined character column (plural).
+  expect_true("conditions" %in% names(dt))
+  expect_false("condition" %in% names(dt))
+  expect_equal(dt$conditions[1], "@")
+  expect_true(is.na(dt$conditions[2]))
 })
 
 # -- parse_quotes with heterogeneous fields produces NAs --
@@ -202,9 +203,9 @@ test_that("parse_trades snake_cases unknown fields not in name_map", {
 
   # "tks" is not in the name_map but is already lowercase — stays as "tks"
   expect_true("tks" %in% names(dt))
-  # No conditions field => condition is NA
-  expect_true("condition" %in% names(dt))
-  expect_true(is.na(dt$condition[1]))
+  # No conditions field => conditions is NA
+  expect_true("conditions" %in% names(dt))
+  expect_true(is.na(dt$conditions[1]))
 })
 
 test_that("parse_bars snake_cases unknown camelCase fields", {
@@ -246,7 +247,8 @@ test_that("parse_trades returns exactly the expected columns for stock trades", 
   )
   dt <- parse_trades(trades)
 
-  expected_cols <- c("timestamp", "price", "size", "exchange", "tape", "id", "condition")
+  # Column order: scalar fields first, conditions appended by the collapse step.
+  expected_cols <- c("timestamp", "price", "size", "exchange", "tape", "id", "conditions")
   expect_equal(names(dt), expected_cols)
 })
 
@@ -266,6 +268,8 @@ test_that("parse_quotes returns exactly the expected columns for stock quotes", 
   )
   dt <- parse_quotes(quotes)
 
+  # Column order: scalar fields first, `conditions` appended by the collapse
+  # step.
   expected_cols <- c(
     "timestamp",
     "ask_exchange",
@@ -274,8 +278,8 @@ test_that("parse_quotes returns exactly the expected columns for stock quotes", 
     "bid_exchange",
     "bid_price",
     "bid_size",
-    "conditions",
-    "tape"
+    "tape",
+    "conditions"
   )
   expect_equal(names(dt), expected_cols)
 })
@@ -377,8 +381,9 @@ test_that("parse_trades with both p and price keeps both values", {
   # may become "price.1" or stay as a second "price" depending on rbindlist
   expect_true("price" %in% names(dt))
   expect_equal(dt$price[1], 185.50)
-  # Also has condition column from the long format expansion
-  expect_true("condition" %in% names(dt))
+  # Trade has no `c` field => `conditions` column is NA.
+  expect_true("conditions" %in% names(dt))
+  expect_true(is.na(dt$conditions[1]))
 })
 
 test_that("parse_bars with both o and open creates duplicate column names", {
@@ -548,20 +553,21 @@ test_that("wrap_list_fields wraps length-2+ lists", {
   expect_true(is.list(result$b[[1]]))
 })
 
-test_that("parse_trades expands multi-condition trades to long format", {
-  # Two trades: one with 2 conditions, one with 1 condition
+test_that("parse_trades keeps one row per trade with conditions `;`-joined", {
+  # Two trades: one with 2 conditions, one with 1 condition.
   trades <- list(
     list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L, x = "V", c = list("@", "T"), z = "C", i = 1L),
     list(t = "2024-01-15T14:31:00Z", p = 186.00, s = 50L, x = "Q", c = list("@"), z = "C", i = 2L)
   )
 
   dt <- parse_trades(trades)
-  # Trade 1 has 2 conditions => 2 rows, trade 2 has 1 condition => 1 row
-  expect_equal(nrow(dt), 3L)
-  expect_equal(dt$condition, c("@", "T", "@"))
-  # Parent trade fields are repeated
-  expect_equal(dt$price, c(185.50, 185.50, 186.00))
-  expect_equal(dt$id, c(1L, 1L, 2L))
+  # Per the "one entity = one row" policy: two input trades -> two rows.
+  expect_equal(nrow(dt), 2L)
+  # Multi-condition trade collapses to a `;`-joined character.
+  expect_equal(dt$conditions, c("@;T", "@"))
+  # Each trade's own fields appear once (no repeated rows for parent metadata).
+  expect_equal(dt$price, c(185.50, 186.00))
+  expect_equal(dt$id, c(1L, 2L))
 })
 
 test_that("wrap_list_fields still wraps list fields for non-trade use cases", {

@@ -64,8 +64,8 @@ AlpacaTrading <- R6::R6Class(
     #' `POST https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [Create Order](https://docs.alpaca.markets/reference/postorder)
-    #' Verified: 2026-03-10
+    #' [Create Order](https://docs.alpaca.markets/us/reference/postorder)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -148,11 +148,32 @@ AlpacaTrading <- R6::R6Class(
     #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
     #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
     #'   `"sell_to_open"`, `"sell_to_close"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   **One row per order, plus one row per leg for multi-leg orders.**
+    #'   A simple order returns one row. A bracket / OCO / OTO returns one
+    #'   parent row and one row for each leg. The two columns below tell
+    #'   parents apart from legs:
+    #'   - `leg_index` (integer): `NA` for the parent row; `1, 2, ...` for
+    #'     each leg in submission order.
+    #'   - `parent_order_id` (character): `NA` for the parent row; the
+    #'     parent's `id` for each leg row.
+    #'
+    #'   Useful query patterns:
+    #'   ```r
+    #'   # Just the parent orders (filter out legs):
+    #'   dt[is.na(parent_order_id)]
+    #'   # All legs of one specific bracket:
+    #'   dt[parent_order_id == "<parent-uuid>"]
+    #'   ```
+    #'
+    #'   Other columns (present on every row — each leg has its own values
+    #'   independent of the parent's):
     #'   - `id` (character): Order UUID.
     #'   - `client_order_id` (character): Client order ID.
     #'   - `symbol` (character): Ticker symbol.
-    #'   - `side` (character): `"buy"` or `"sell"`.
+    #'   - `side` (character): `"buy"` or `"sell"` (often differs between a
+    #'     parent and its legs — e.g. a bracket parent's `buy` leg has
+    #'     `sell` take-profit and stop-loss legs).
     #'   - `type` (character): Order type.
     #'   - `time_in_force` (character): Time in force.
     #'   - `status` (character): Order status (e.g., `"accepted"`, `"new"`, `"filled"`).
@@ -244,8 +265,8 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [List Orders](https://docs.alpaca.markets/reference/getallorders)
-    #' Verified: 2026-03-10
+    #' [List Orders](https://docs.alpaca.markets/us/reference/getallorders-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -345,8 +366,8 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Get Order](https://docs.alpaca.markets/reference/getorderbyorderid)
-    #' Verified: 2026-03-10
+    #' [Get Order](https://docs.alpaca.markets/us/reference/getorderbyorderid-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -421,8 +442,8 @@ AlpacaTrading <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/orders/by_client_order_id`
     #'
     #' ### Official Documentation
-    #' [Get Order by Client ID](https://docs.alpaca.markets/reference/getorderbyclientorderid)
-    #' Verified: 2026-03-10
+    #' [Get Order by Client ID](https://docs.alpaca.markets/us/reference/getorderbyclientorderid)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -497,8 +518,8 @@ AlpacaTrading <- R6::R6Class(
     #' `PATCH https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Replace Order](https://docs.alpaca.markets/reference/patchorder)
-    #' Verified: 2026-03-10
+    #' [Replace Order](https://docs.alpaca.markets/us/reference/patchorderbyorderid-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -623,8 +644,8 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders/{order_id}`
     #'
     #' ### Official Documentation
-    #' [Cancel Order](https://docs.alpaca.markets/reference/deleteorderbyorderid)
-    #' Verified: 2026-03-10
+    #' [Cancel Order](https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -675,8 +696,8 @@ AlpacaTrading <- R6::R6Class(
     #' `DELETE https://paper-api.alpaca.markets/v2/orders`
     #'
     #' ### Official Documentation
-    #' [Cancel All Orders](https://docs.alpaca.markets/reference/deleteallorders)
-    #' Verified: 2026-03-10
+    #' [Cancel All Orders](https://docs.alpaca.markets/us/reference/deleteallorders-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
