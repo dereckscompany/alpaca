@@ -106,8 +106,10 @@ rfc3339_to_datetime <- function(x) {
 #'
 #' Walks the given column names; for each that exists in `dt`, parses
 #' `"YYYY-MM-DD"` strings to `Date` via `lubridate::ymd()`. Columns
-#' that do not exist are silently skipped, matching the timestamp
-#' helper.
+#' that do not exist in `dt` are silently skipped — endpoints
+#' frequently omit optional date fields (e.g. `payable_date` on a
+#' freshly declared dividend), and we want the parser to handle the
+#' present subset without erroring.
 #'
 #' @param dt A [data.table::data.table].
 #' @param cols Character; candidate column names to convert.

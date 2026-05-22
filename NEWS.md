@@ -10,8 +10,9 @@ parsed to `Date` instead of left as `"YYYY-MM-DD"` strings:
 - **Options contracts** (`AlpacaOptions$get_contracts()`,
   `$get_contract()`): `expiration_date`.
 
-Shared `parse_date_cols()` helper added alongside the existing
-`parse_timestamp_cols()`.
+Adds a small shared `parse_date_cols(dt, cols)` helper that walks
+candidate column names and parses `"YYYY-MM-DD"` strings to `Date`
+in place; columns absent from `dt` are silently skipped.
 
 ## Data-shape convention: one entity = one row
 
