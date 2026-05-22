@@ -137,8 +137,14 @@ mock_quote_response <- function() {
 
 mock_snapshot_response <- function() {
   list(
-    latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L),
-    latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L),
+    # latestTrade.c is the multi-condition path (collapse to "@;T").
+    # latestQuote.c is the single-condition path (collapse to "R").
+    # The bar sections also have a `c` field but it's the close price
+    # (scalar number) — must NOT be touched by the conditions-collapse path.
+    latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L,
+                      c = list("@", "T")),
+    latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50,
+                       "as" = 200L, bs = 300L, c = list("R")),
     minuteBar = list(
       t = "2024-01-15T14:30:00Z",
       o = 185.40,

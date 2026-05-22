@@ -499,8 +499,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/snapshot`
     #'
     #' ### Official Documentation
-    #' [Stock Snapshot](https://docs.alpaca.markets/reference/stocksnapshot)
-    #' Verifieid: 2026-03-10
+    #' [Stock Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -522,7 +522,17 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields (prefixed by section name).
+    #'   **one row** containing the flattened snapshot. Each nested section
+    #'   is unrolled into prefixed columns:
+    #'   - `latest_trade_*` — latest trade fields (timestamp, price, size,
+    #'     exchange, id, tape, ...) plus
+    #'     `latest_trade_conditions` (character, `;`-joined trade condition
+    #'     codes, e.g. `"@;T"`).
+    #'   - `latest_quote_*` — bid/ask fields plus
+    #'     `latest_quote_conditions` (character, `;`-joined quote condition
+    #'     codes).
+    #'   - `minute_bar_*`, `daily_bar_*`, `prev_daily_bar_*` — OHLCV bar
+    #'     fields.
     #'
     #' @examples
     #' \dontrun{
@@ -737,8 +747,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/snapshots`
     #'
     #' ### Official Documentation
-    #' [Multi Stock Snapshots](https://docs.alpaca.markets/reference/stocksnapshots)
-    #' Verifieid: 2026-03-10
+    #' [Multi Stock Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -768,8 +778,11 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and flattened snapshot fields.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per symbol**. Columns are the same flattened snapshot
+    #'   fields as `get_snapshot()` plus a leading `symbol` column.
+    #'   `latest_trade_conditions` and `latest_quote_conditions` are
+    #'   `;`-joined character columns.
     #'
     #' @examples
     #' \dontrun{

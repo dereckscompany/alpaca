@@ -126,13 +126,42 @@ test_that("parse_quotes handles a quote with no condition codes as NA", {
   expect_true(is.na(dt$conditions))
 })
 
-test_that("get_snapshot returns flattened data.table", {
+test_that("get_snapshot returns one flattened row with inner conditions collapsed", {
   resp <- mock_alpaca_response(mock_snapshot_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_snapshot("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
+  # Inner condition arrays collapse to plain `;`-joined character columns.
+  expect_true("latest_trade_conditions" %in% names(dt))
+  expect_true("latest_quote_conditions" %in% names(dt))
+  expect_true(is.character(dt$latest_trade_conditions))
+  expect_true(is.character(dt$latest_quote_conditions))
+  expect_equal(dt$latest_trade_conditions, "@;T")
+  expect_equal(dt$latest_quote_conditions, "R")
+})
+
+test_that("get_snapshot leaves the bar `c` field as numeric close price", {
+  resp <- mock_alpaca_response(mock_snapshot_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_snapshot("AAPL")
+  # The conditions-collapse path must not touch bar sections, where `c` is
+  # the scalar close price. Each bar section keeps a numeric close column.
+  expect_true(is.numeric(dt$minute_bar_close))
+  expect_true(is.numeric(dt$daily_bar_close))
+  expect_true(is.numeric(dt$prev_daily_bar_close))
+  expect_equal(dt$minute_bar_close, 185.50)
+})
+
+test_that("get_snapshot returns no list columns", {
+  resp <- mock_alpaca_response(mock_snapshot_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_snapshot("AAPL")
+  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
 })
 
 test_that("get_assets returns data.table", {

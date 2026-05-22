@@ -277,7 +277,16 @@ parse_quotes <- function(quotes) {
 #'
 #' Flattens Alpaca's nested snapshot response (containing latestTrade,
 #' latestQuote, minuteBar, dailyBar, prevDailyBar) into a single-row
-#' data.table with prefixed column names.
+#' data.table with prefixed column names. The inner `c` arrays on the
+#' nested `latestTrade` and `latestQuote` (condition codes) are
+#' collapsed to a `;`-joined character before flattening, so the
+#' resulting `latest_trade_conditions` and `latest_quote_conditions`
+#' columns are plain character — not list columns. Per the package's
+#' "one entity = one row" policy, one symbol = one snapshot row.
+#'
+#' Note: the `c` field on the bar sections (minuteBar, dailyBar,
+#' prevDailyBar) is the close *price* — a scalar number — and is left
+#' untouched. The name map renames it to `*_close` per section.
 #'
 #' @param snapshot A named list representing an Alpaca snapshot.
 #' @return A single-row [data.table::data.table].
@@ -287,6 +296,15 @@ parse_quotes <- function(quotes) {
 parse_snapshot <- function(snapshot) {
   if (is.null(snapshot) || length(snapshot) == 0) {
     return(data.table::data.table()[])
+  }
+  # Collapse the inner `c` condition-code arrays on latestTrade /
+  # latestQuote BEFORE flattening. Only these two sections — bar
+  # sections use `c` to mean close price (a scalar), not conditions.
+  for (sec in c("latestTrade", "latestQuote")) {
+    sub <- snapshot[[sec]]
+    if (!is.null(sub) && !is.null(sub[["c"]]) && (is.list(sub[["c"]]) || length(sub[["c"]]) > 1L)) {
+      snapshot[[sec]] <- collapse_string_array_fields(sub, "c")
+    }
   }
   # Flatten nested sections into a single list with prefixed raw names
   sections <- c("latestTrade", "latestQuote", "minuteBar", "dailyBar", "prevDailyBar")
