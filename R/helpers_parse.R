@@ -415,8 +415,22 @@ parse_news <- function(news_items) {
     item <- collapse_string_array_fields(item, "symbols")
 
     # images: array of {size, url} objects -> two parallel `;`-joined cols.
-    # URL values may legally contain `;`, so percent-encode just that
-    # character before joining; users recover via URLdecode().
+    #
+    # Two subtleties:
+    #
+    # 1. URLs may legally contain `;` (URL sub-delimiter, common in signed
+    #    query strings). To make the joined string safely splittable AND
+    #    `URLdecode()`-recoverable, we percent-encode `%` -> `%25` first and
+    #    then `;` -> `%3B`. Encoding `;` alone would not be lossless: an
+    #    upstream URL that already contained a literal `%3B` would round-
+    #    trip to `;`. With both characters encoded, `URLdecode()` reverses
+    #    each in the right order and the original string is recovered.
+    #
+    # 2. Per-image NA values are written as the empty token `""` (NOT
+    #    `NA_character_`), because `paste(c("real", NA), collapse = ";")`
+    #    yields the literal string `"real;NA"`, indistinguishable from a
+    #    real "NA" value. `""` is unambiguous: an empty token always means
+    #    "missing".
     imgs <- item[["images"]]
     if (is.null(imgs) || length(imgs) == 0L) {
       item$image_sizes <- NA_character_
@@ -425,21 +439,28 @@ parse_news <- function(news_items) {
       sizes <- vapply(
         imgs,
         function(img) {
-          if (is.null(img$size)) NA_character_ else as.character(img$size)
+          if (is.null(img$size)) "" else as.character(img$size)
         },
         character(1)
       )
       urls <- vapply(
         imgs,
         function(img) {
-          if (is.null(img$url)) NA_character_ else as.character(img$url)
+          if (is.null(img$url)) "" else as.character(img$url)
         },
         character(1)
       )
       urls_safe <- vapply(
         urls,
         function(u) {
-          if (is.na(u)) NA_character_ else gsub(";", "%3B", u, fixed = TRUE)
+          if (!nzchar(u)) {
+            return("")
+          }
+          # Encode `%` first so we can encode `;` without ambiguity. The
+          # pair is reversible by `URLdecode()` in one pass.
+          u <- gsub("%", "%25", u, fixed = TRUE)
+          u <- gsub(";", "%3B", u, fixed = TRUE)
+          return(u)
         },
         character(1)
       )

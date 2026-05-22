@@ -711,8 +711,9 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade} (a single row for this single-trade method).
+Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -720,7 +721,11 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}. Recover
+the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+the trade carries no condition codes.
 }
 }
 \subsection{Examples}{
@@ -1226,8 +1231,8 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -1235,7 +1240,8 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}.
 }
 }
 }

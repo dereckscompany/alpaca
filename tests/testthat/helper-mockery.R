@@ -612,6 +612,41 @@ mock_news_response <- function() {
         images = list(
           list(size = "large", url = "https://cdn.example.com/12348.jpg?w=2048;h=1536")
         )
+      ),
+      # Article 5: URL whose source already contains a pre-existing `%3B`
+      # (literal percent-three-bee, e.g. a signed query string). Exercises
+      # the `%` -> `%25` step that makes URLdecode() truly lossless.
+      list(
+        id = 12349L,
+        headline = "URL with a pre-existing %3B in the source",
+        author = "Edge",
+        source = "test",
+        summary = "Article whose image URL already contains a percent-encoded `;`.",
+        url = "https://example.com/article/12349",
+        symbols = list("AMZN"),
+        created_at = "2024-01-25T13:00:00Z",
+        updated_at = "2024-01-25T13:00:00Z",
+        images = list(
+          list(size = "large", url = "https://cdn.example.com/12349.jpg?token=abc%3Bdef")
+        )
+      ),
+      # Article 6: two images where only ONE has a size field. Exercises the
+      # partial-missing path — must produce empty token (""), not literal
+      # "NA" string.
+      list(
+        id = 12350L,
+        headline = "Article with partially-missing image sizes",
+        author = "Edge",
+        source = "test",
+        summary = "Article where one image is missing its size field.",
+        url = "https://example.com/article/12350",
+        symbols = list("GOOG"),
+        created_at = "2024-01-25T12:00:00Z",
+        updated_at = "2024-01-25T12:00:00Z",
+        images = list(
+          list(size = "large", url = "https://cdn.example.com/12350-a.jpg"),
+          list(url = "https://cdn.example.com/12350-b.jpg")  # no size
+        )
       )
     ),
     next_page_token = NULL

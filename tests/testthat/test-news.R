@@ -23,9 +23,9 @@ test_that("get_news returns one row per article (no cartesian inflation)", {
   result <- market$get_news(symbols = "AAPL", limit = 10)
 
   expect_s3_class(result, "data.table")
-  # Four articles in -> four rows out. Not 1 + 3 + 1 + 1 = 6, and definitely
-  # not the prior 1 + (3 x 2) + 1 + 1 = 9 cartesian.
-  expect_equal(nrow(result), 4)
+  # Six articles in -> six rows out, irrespective of the per-article counts
+  # of symbols and images. Catches the prior cartesian inflation bug.
+  expect_equal(nrow(result), 6)
 
   # Layout: original `symbols` column is gone-then-renamed to one column.
   expect_true(all(
@@ -166,4 +166,54 @@ test_that("get_news handles empty response", {
 
   expect_s3_class(result, "data.table")
   expect_equal(nrow(result), 0)
+})
+
+test_that("get_news lossless URL round-trip survives a pre-existing %3B in the source", {
+  mock_perform <- function(req) mock_alpaca_response(mock_news_response())
+  market <- AlpacaMarketData$new(
+    keys = list(api_key = "k", api_secret = "s"),
+    base_url = "https://paper-api.alpaca.markets",
+    data_base_url = "https://data.alpaca.markets"
+  )
+  market$.__enclos_env__$private$.perform <- mock_perform
+
+  result <- market$get_news()
+  row <- result[id == 12349L]
+  expect_equal(nrow(row), 1L)
+
+  # Original URL: "https://cdn.example.com/12349.jpg?token=abc%3Bdef"
+  # Both the `%` and the (zero) literal `;` are encoded. Recover via
+  # URLdecode() in one pass — must give back the literal `%3B`, not a `;`.
+  decoded <- vapply(
+    strsplit(row$image_urls, ";", fixed = TRUE)[[1]],
+    URLdecode,
+    character(1)
+  )
+  expect_equal(unname(decoded[1]),
+               "https://cdn.example.com/12349.jpg?token=abc%3Bdef")
+})
+
+test_that("get_news writes empty token (not 'NA') for partially-missing per-image fields", {
+  mock_perform <- function(req) mock_alpaca_response(mock_news_response())
+  market <- AlpacaMarketData$new(
+    keys = list(api_key = "k", api_secret = "s"),
+    base_url = "https://paper-api.alpaca.markets",
+    data_base_url = "https://data.alpaca.markets"
+  )
+  market$.__enclos_env__$private$.perform <- mock_perform
+
+  result <- market$get_news()
+  row <- result[id == 12350L]
+  expect_equal(nrow(row), 1L)
+
+  # Image 1 has size "large", image 2 has no size field. The collapsed
+  # sizes column must NOT contain the literal "NA" — empty token instead.
+  expect_equal(row$image_sizes, "large;")
+  expect_false(grepl("NA", row$image_sizes, fixed = TRUE))
+
+  # Both URLs are present; the URL column is unaffected.
+  expect_equal(row$image_urls,
+               paste("https://cdn.example.com/12350-a.jpg",
+                     "https://cdn.example.com/12350-b.jpg",
+                     sep = ";"))
 })

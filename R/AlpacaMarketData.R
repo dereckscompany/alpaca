@@ -407,15 +407,20 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade** (a single row for this single-trade method).
+    #'   Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`. Recover
+    #'     the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     the trade carries no condition codes.
     #'
     #' @examples
     #' \dontrun{
@@ -871,15 +876,16 @@ AlpacaMarketData <- R6::R6Class(
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade**. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`.
     get_trades = function(
       symbol,
       start = NULL,
