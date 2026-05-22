@@ -1227,23 +1227,23 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(items) {
           dt <- as_dt_list(items)
           if (nrow(dt) == 0L) return(dt)
+          # Snapshot the date column before we reassign it to Date below;
+          # the time-combine calls need the original "YYYY-MM-DD" character.
           d <- dt$date
-          if ("open" %in% names(dt)) {
-            dt[, open := combine_et_datetime(d, open)]
+          # Regular-hours open/close arrive as "HH:MM".
+          for (col in c("open", "close")) {
+            if (col %in% names(dt)) {
+              dt[, (col) := combine_et_datetime(d, get(col))]
+            }
           }
-          if ("close" %in% names(dt)) {
-            dt[, close := combine_et_datetime(d, close)]
+          # Extended-hours session_open/session_close arrive as "HHMM"
+          # (no colon) — normalise before combining.
+          for (col in c("session_open", "session_close")) {
+            if (col %in% names(dt)) {
+              dt[, (col) := combine_et_datetime(d, hhmm_to_hh_mm(get(col)))]
+            }
           }
-          if ("session_open" %in% names(dt)) {
-            dt[, session_open := combine_et_datetime(d, hhmm_to_hh_mm(session_open))]
-          }
-          if ("session_close" %in% names(dt)) {
-            dt[, session_close := combine_et_datetime(d, hhmm_to_hh_mm(session_close))]
-          }
-          dt[, date := lubridate::ymd(d, quiet = TRUE)]
-          if ("settlement_date" %in% names(dt)) {
-            dt[, settlement_date := lubridate::ymd(settlement_date, quiet = TRUE)]
-          }
+          parse_date_cols(dt, c("date", "settlement_date"))
           return(dt[])
         }
       ))
