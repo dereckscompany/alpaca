@@ -945,8 +945,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets`
     #'
     #' ### Official Documentation
-    #' [Assets](https://docs.alpaca.markets/reference/get-v2-assets)
-    #' Verifieid: 2026-03-10
+    #' [Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -989,6 +989,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `marginable` (logical): Whether margin is available.
     #'   - `shortable` (logical): Whether short selling is available.
     #'   - `fractionable` (logical): Whether fractional shares are available.
+    #'   - `attributes` (character): Comma-separated attribute flags, e.g.
+    #'     `"fractional_eh_enabled,has_options,overnight_tradable"`. Filter
+    #'     with `dt[grepl("has_options", attributes)]`.
     #'
     #' @examples
     #' \dontrun{
@@ -1000,7 +1003,7 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/assets",
         query = list(status = status, asset_class = asset_class, exchange = exchange),
-        .parser = as_dt_list
+        .parser = parse_assets
       ))
     },
 
@@ -1013,8 +1016,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://paper-api.alpaca.markets/v2/assets/{symbol_or_id}`
     #'
     #' ### Official Documentation
-    #' [Asset by ID or Symbol](https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id)
-    #' Verifieid: 2026-03-10
+    #' [Asset by ID or Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -1054,7 +1057,7 @@ AlpacaMarketData <- R6::R6Class(
       endpoint <- paste0("/v2/assets/", symbol_or_id)
       return(private$.request(
         endpoint = endpoint,
-        .parser = as_dt_row
+        .parser = parse_asset
       ))
     },
 

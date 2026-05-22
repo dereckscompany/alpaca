@@ -184,7 +184,8 @@ mock_assets_response <- function() {
       tradable = TRUE,
       marginable = TRUE,
       shortable = TRUE,
-      fractionable = TRUE
+      fractionable = TRUE,
+      attributes = list("fractional_eh_enabled", "has_options", "overnight_tradable")
     ),
     list(
       id = "uuid-2",
@@ -196,7 +197,8 @@ mock_assets_response <- function() {
       tradable = TRUE,
       marginable = TRUE,
       shortable = TRUE,
-      fractionable = TRUE
+      fractionable = TRUE,
+      attributes = list()
     )
   )
 }

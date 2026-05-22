@@ -451,6 +451,75 @@ parse_watchlist <- function(wl) {
   return(dt[])
 }
 
+#' Collapse a Plain-String Array Field on a Single Record
+#'
+#' Walks the named list `x` and replaces any named field whose value is a
+#' length >= 1 list of plain character strings (or atomic character vector)
+#' with a single comma-separated character scalar. Used by the asset / news /
+#' trade / quote parsers so we get one row per entity instead of a list
+#' column or an exploded long row count.
+#'
+#' Only fields in `fields` are touched; nested objects elsewhere are left
+#' alone so they can be flattened by their own parser.
+#'
+#' @param x A named list representing a single API record.
+#' @param fields Character vector; names of fields to collapse.
+#' @return The same named list with the matching fields collapsed in place.
+#'
+#' @keywords internal
+#' @noRd
+collapse_string_array_fields <- function(x, fields) {
+  for (nm in fields) {
+    val <- x[[nm]]
+    if (is.null(val) || length(val) == 0L) next
+    if (is.list(val)) {
+      val <- unlist(val, use.names = FALSE)
+    }
+    if (is.atomic(val) && length(val) >= 1L) {
+      x[[nm]] <- paste(as.character(val), collapse = ",")
+    }
+  }
+  return(x)
+}
+
+#' Parse an Alpaca Asset Record to a Single-Row data.table
+#'
+#' Like [as_dt_row()] but collapses the `attributes` string array to a
+#' single comma-separated character column (e.g.
+#' `"fractional_eh_enabled,has_options,overnight_tradable"`). One asset
+#' stays one row.
+#'
+#' @param x A named list representing a single Alpaca asset.
+#' @return A single-row [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_asset <- function(x) {
+  if (is.null(x) || length(x) == 0L) {
+    return(data.table::data.table()[])
+  }
+  x <- collapse_string_array_fields(x, "attributes")
+  return(as_dt_row(x))
+}
+
+#' Parse an Alpaca Asset List to a data.table
+#'
+#' Like [as_dt_list()] but applies [parse_asset()] per record so the
+#' `attributes` array column is collapsed instead of arriving as a list
+#' column.
+#'
+#' @param items A list of asset records.
+#' @return A [data.table::data.table] with one row per asset.
+#'
+#' @keywords internal
+#' @noRd
+parse_assets <- function(items) {
+  if (is.null(items) || length(items) == 0L) {
+    return(data.table::data.table()[])
+  }
+  return(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[])
+}
+
 #' Parse a Single Order Response to data.table
 #'
 #' Handles the `legs` array field: for bracket/OCO orders, expands to long
