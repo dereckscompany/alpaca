@@ -167,17 +167,21 @@ parse_multi_bars <- function(data) {
   return(data.table::rbindlist(dts, fill = TRUE)[])
 }
 
-#' Parse Alpaca Trade Data to data.table (Long Format)
+#' Parse Alpaca Trade Data to data.table (One Row Per Trade)
 #'
 #' Converts a list of trade objects (with short field names) into a tidy
-#' [data.table::data.table] with descriptive column names. Trade conditions
-#' are expanded to long format: one row per condition, with parent trade
-#' fields repeated. Trades with no conditions get a single row with
-#' `condition = NA`.
+#' [data.table::data.table] with descriptive column names. Each trade is
+#' a single row; the `c` condition-code array is collapsed to a
+#' semicolon-separated `conditions` character column (e.g. `"@;T"`).
+#'
+#' Recover the original codes with
+#' `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. Filter with
+#' `dt[grepl("T", conditions)]`. Trades with no condition codes get
+#' `conditions = NA`.
 #'
 #' @param trades A list of trade objects from the Alpaca API.
 #' @return A [data.table::data.table] with columns: `timestamp`, `price`,
-#'   `size`, `exchange`, `condition`, `tape`, `id`.
+#'   `size`, `exchange`, `conditions`, `tape`, `id`.
 #'
 #' @keywords internal
 #' @noRd
@@ -185,20 +189,17 @@ parse_trades <- function(trades) {
   if (is.null(trades) || length(trades) == 0) {
     return(data.table::data.table()[])
   }
-  # Extract conditions before rbindlist, then expand to long format
-  conditions_list <- lapply(trades, function(tr) {
-    conds <- tr[["c"]]
-    if (is.null(conds) || length(conds) == 0) {
-      return(NA_character_)
+  # Collapse the `c` condition-code array on each trade so one trade
+  # remains one row. We rename `c` to `conditions` first so the helper
+  # finds the field by its semantic name.
+  trades_clean <- lapply(trades, function(tr) {
+    if (!is.null(tr[["c"]])) {
+      tr[["conditions"]] <- tr[["c"]]
+      tr[["c"]] <- NULL
     }
-    return(as.character(unlist(conds)))
+    return(collapse_string_array_fields(tr, "conditions"))
   })
-  # Remove conditions from trades for clean rbindlist
-  trades_no_conds <- lapply(trades, function(tr) {
-    tr[["c"]] <- NULL
-    return(tr)
-  })
-  dt <- data.table::rbindlist(trades_no_conds, fill = TRUE)
+  dt <- data.table::rbindlist(trades_clean, fill = TRUE)
   name_map <- c(
     t = "timestamp",
     p = "price",
@@ -215,24 +216,24 @@ parse_trades <- function(trades) {
   if ("timestamp" %in% names(dt)) {
     dt[, timestamp := rfc3339_to_datetime(timestamp)]
   }
-  # Add a row index to track which trade each condition belongs to
-  dt[, .trade_idx := .I]
-  # Expand conditions to long format
-  conds_dt <- data.table::rbindlist(lapply(seq_along(conditions_list), function(i) {
-    data.table::data.table(.trade_idx = i, condition = conditions_list[[i]])
-  }))
-  dt <- dt[conds_dt, on = ".trade_idx"]
-  dt[, .trade_idx := NULL]
   return(dt[])
 }
 
-#' Parse Alpaca Quote Data to data.table
+#' Parse Alpaca Quote Data to data.table (One Row Per Quote)
 #'
 #' Converts a list of quote objects (with short field names) into a tidy
-#' [data.table::data.table] with descriptive column names.
+#' [data.table::data.table] with descriptive column names. Each quote is
+#' a single row; the `c` condition-code array is collapsed to a
+#' semicolon-separated `conditions` character column (e.g. `"R;A"`).
+#'
+#' Recover the original codes with
+#' `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. Filter with
+#' `dt[grepl("R", conditions)]`. Quotes with no condition codes get
+#' `conditions = NA`.
 #'
 #' @param quotes A list of quote objects from the Alpaca API.
-#' @return A [data.table::data.table] with descriptive column names.
+#' @return A [data.table::data.table] with one row per quote and
+#'   descriptive column names.
 #'
 #' @keywords internal
 #' @noRd
@@ -240,8 +241,17 @@ parse_quotes <- function(quotes) {
   if (is.null(quotes) || length(quotes) == 0) {
     return(data.table::data.table()[])
   }
-  quotes <- lapply(quotes, wrap_list_fields)
-  dt <- data.table::rbindlist(quotes, fill = TRUE)
+  # Rename `c` -> `conditions` first so the helper finds the field, then
+  # collapse the array to a `;`-joined character column. One quote =
+  # one row regardless of how many condition codes it carries.
+  quotes_clean <- lapply(quotes, function(q) {
+    if (!is.null(q[["c"]])) {
+      q[["conditions"]] <- q[["c"]]
+      q[["c"]] <- NULL
+    }
+    return(collapse_string_array_fields(q, "conditions"))
+  })
+  dt <- data.table::rbindlist(quotes_clean, fill = TRUE)
   name_map <- c(
     t = "timestamp",
     ax = "ask_exchange",
@@ -250,7 +260,6 @@ parse_quotes <- function(quotes) {
     bx = "bid_exchange",
     bp = "bid_price",
     bs = "bid_size",
-    c = "conditions",
     z = "tape"
   )
   idx <- names(dt) %in% names(name_map)
@@ -268,7 +277,23 @@ parse_quotes <- function(quotes) {
 #'
 #' Flattens Alpaca's nested snapshot response (containing latestTrade,
 #' latestQuote, minuteBar, dailyBar, prevDailyBar) into a single-row
-#' data.table with prefixed column names.
+#' data.table with prefixed column names. The inner `c` arrays on the
+#' nested `latestTrade` and `latestQuote` (condition codes) are
+#' collapsed to a `;`-joined character before flattening, so the
+#' resulting `latest_trade_conditions` and `latest_quote_conditions`
+#' columns are plain character — not list columns. Per the package's
+#' "one entity = one row" policy, one symbol = one snapshot row.
+#'
+#' Options-specific extras: when the upstream snapshot carries an
+#' `impliedVolatility` scalar (top-level) it surfaces as the
+#' `implied_volatility` column, and the nested `greeks` object
+#' (`delta`, `gamma`, `theta`, `vega`, `rho`) is flattened into
+#' `greeks_*` columns. Stock snapshots never include these fields, so
+#' the columns only appear for option chains / option snapshots.
+#'
+#' Note: the `c` field on the bar sections (minuteBar, dailyBar,
+#' prevDailyBar) is the close *price* — a scalar number — and is left
+#' untouched. The name map renames it to `*_close` per section.
 #'
 #' @param snapshot A named list representing an Alpaca snapshot.
 #' @return A single-row [data.table::data.table].
@@ -278,6 +303,29 @@ parse_quotes <- function(quotes) {
 parse_snapshot <- function(snapshot) {
   if (is.null(snapshot) || length(snapshot) == 0) {
     return(data.table::data.table()[])
+  }
+  # Collapse the inner `c` condition-code arrays on latestTrade /
+  # latestQuote BEFORE flattening. Only these two sections — bar
+  # sections use `c` to mean close price (a scalar), not conditions.
+  #
+  # When the section exists but its `c` field is missing or NULL, we
+  # still want the downstream `latest_*_conditions` column to appear
+  # (as `NA_character_`) so the schema stays consistent across calls.
+  # Without this, an Alpaca payload that omits `c` would silently drop
+  # the conditions column.
+  for (sec in c("latestTrade", "latestQuote")) {
+    sub <- snapshot[[sec]]
+    if (is.null(sub)) {
+      next
+    }
+    if (is.null(sub[["c"]])) {
+      sub[["c"]] <- NA_character_
+      snapshot[[sec]] <- sub
+      next
+    }
+    if (is.list(sub[["c"]]) || length(sub[["c"]]) > 1L) {
+      snapshot[[sec]] <- collapse_string_array_fields(sub, "c")
+    }
   }
   # Flatten nested sections into a single list with prefixed raw names
   sections <- c("latestTrade", "latestQuote", "minuteBar", "dailyBar", "prevDailyBar")
@@ -289,6 +337,19 @@ parse_snapshot <- function(snapshot) {
       for (nm in names(sub)) {
         flat[[paste0(prefix, "_", nm)]] <- sub[[nm]]
       }
+    }
+  }
+  # Options-snapshot extras: top-level `impliedVolatility` (a scalar)
+  # and the nested `greeks` object (fixed schema: delta, gamma, theta,
+  # vega, rho). Stock snapshots never carry these, so the columns only
+  # appear when the upstream is an options snapshot.
+  if (!is.null(snapshot[["impliedVolatility"]])) {
+    flat[["implied_volatility"]] <- snapshot[["impliedVolatility"]]
+  }
+  greeks <- snapshot[["greeks"]]
+  if (!is.null(greeks) && length(greeks) > 0L) {
+    for (nm in names(greeks)) {
+      flat[[paste0("greeks_", to_snake_case(nm))]] <- greeks[[nm]]
     }
   }
   dt <- as_dt_row(flat)
@@ -352,14 +413,28 @@ parse_snapshot <- function(snapshot) {
   return(dt[])
 }
 
-#' Parse Alpaca News Response to Long-Format data.table
+#' Parse Alpaca News Response to data.table (One Row Per Article)
 #'
-#' Expands the `symbols` array field so that each news article is represented
-#' by one row per related symbol. Articles with no symbols get a single row
-#' with `symbol = NA`.
+#' Per the package's "one entity = one row" policy, news articles are the
+#' entity. The two nested arrays (`symbols` and `images`) become collapsed
+#' character columns rather than exploding the row count.
+#'
+#' Concretely, the returned `data.table` has:
+#'   - `symbols` (character): semicolon-separated related tickers, e.g.
+#'     `"AAPL;MSFT;GOOGL"`. Recover with
+#'     `strsplit(news$symbols, ";", fixed = TRUE)`.
+#'   - `image_sizes` (character): semicolon-separated size labels (e.g.
+#'     `"large;small"`) parallel to `image_urls`.
+#'   - `image_urls` (character): semicolon-separated URLs. Any literal `;`
+#'     inside a URL is percent-encoded to `%3B` before joining, so users
+#'     can do `vapply(strsplit(news$image_urls, ";", fixed = TRUE)[[1]],
+#'     URLdecode, character(1))` to recover the original URLs.
+#'
+#' Articles with no symbols and/or no images keep the article row, with
+#' the missing fields set to `NA`.
 #'
 #' @param news_items A list of news article objects from the Alpaca API.
-#' @return A [data.table::data.table] in long format with a `symbol` column.
+#' @return A [data.table::data.table] with one row per article.
 #'
 #' @keywords internal
 #' @noRd
@@ -367,29 +442,71 @@ parse_news <- function(news_items) {
   if (is.null(news_items) || length(news_items) == 0) {
     return(data.table::data.table()[])
   }
-  # Extract symbols before rbindlist, then expand to long format
-  symbols_list <- lapply(news_items, function(item) {
-    syms <- item[["symbols"]]
-    if (is.null(syms) || length(syms) == 0) {
-      return(NA_character_)
+  # Walk each article, collapse the two nested arrays into scalar character
+  # fields, then drop the originals so rbindlist sees a flat record.
+  items_clean <- lapply(news_items, function(item) {
+    # symbols: plain string array -> `;`-joined
+    item <- collapse_string_array_fields(item, "symbols")
+
+    # images: array of {size, url} objects -> two parallel `;`-joined cols.
+    #
+    # Two subtleties:
+    #
+    # 1. URLs may legally contain `;` (URL sub-delimiter, common in signed
+    #    query strings). To make the joined string safely splittable AND
+    #    `URLdecode()`-recoverable, we percent-encode `%` -> `%25` first and
+    #    then `;` -> `%3B`. Encoding `;` alone would not be lossless: an
+    #    upstream URL that already contained a literal `%3B` would round-
+    #    trip to `;`. With both characters encoded, `URLdecode()` reverses
+    #    each in the right order and the original string is recovered.
+    #
+    # 2. Per-image NA values are written as the empty token `""` (NOT
+    #    `NA_character_`), because `paste(c("real", NA), collapse = ";")`
+    #    yields the literal string `"real;NA"`, indistinguishable from a
+    #    real "NA" value. `""` is unambiguous: an empty token always means
+    #    "missing".
+    imgs <- item[["images"]]
+    if (is.null(imgs) || length(imgs) == 0L) {
+      item$image_sizes <- NA_character_
+      item$image_urls <- NA_character_
+    } else {
+      sizes <- vapply(
+        imgs,
+        function(img) {
+          return(if (is.null(img$size)) "" else as.character(img$size))
+        },
+        character(1)
+      )
+      urls <- vapply(
+        imgs,
+        function(img) {
+          return(if (is.null(img$url)) "" else as.character(img$url))
+        },
+        character(1)
+      )
+      urls_safe <- vapply(
+        urls,
+        function(u) {
+          if (!nzchar(u)) {
+            return("")
+          }
+          # Encode `%` first so we can encode `;` without ambiguity. The
+          # pair is reversible by `URLdecode()` in one pass.
+          u <- gsub("%", "%25", u, fixed = TRUE)
+          u <- gsub(";", "%3B", u, fixed = TRUE)
+          return(u)
+        },
+        character(1)
+      )
+      item$image_sizes <- paste(sizes, collapse = ";")
+      item$image_urls <- paste(urls_safe, collapse = ";")
     }
-    return(as.character(unlist(syms)))
+    item[["images"]] <- NULL
+    return(item)
   })
-  # Remove symbols from items for clean rbindlist
-  items_no_syms <- lapply(news_items, function(item) {
-    item[["symbols"]] <- NULL
-    return(wrap_list_fields(item))
-  })
-  dt <- data.table::rbindlist(items_no_syms, fill = TRUE)
+
+  dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
-  # Add a row index to track which article each symbol belongs to
-  dt[, .article_idx := .I]
-  # Expand symbols to long format
-  syms_dt <- data.table::rbindlist(lapply(seq_along(symbols_list), function(i) {
-    data.table::data.table(.article_idx = i, symbol = symbols_list[[i]])
-  }))
-  dt <- dt[syms_dt, on = ".article_idx"]
-  dt[, .article_idx := NULL]
   return(dt[])
 }
 
@@ -398,6 +515,10 @@ parse_news <- function(news_items) {
 #' Expands the `assets` array field so that each watchlist is represented
 #' by one row per asset. Watchlists with no assets get a single row with
 #' asset columns set to NA.
+#'
+#' Per-asset `attributes` arrays are collapsed to a `;`-separated character
+#' column (see `collapse_string_array_fields()`), so the returned table has
+#' no list columns even when some assets have empty `attributes`.
 #'
 #' @param wl A named list representing a single watchlist response from the
 #'   Alpaca API.
@@ -419,8 +540,17 @@ parse_watchlist <- function(wl) {
     parent[, asset_id := NA_character_]
     parent[, asset_symbol := NA_character_]
     parent[, asset_name := NA_character_]
+    # `asset_attributes` exists on every populated watchlist row (as a
+    # `;`-collapsed character or NA). Include it on the empty row too so
+    # the schema is stable across populated / empty watchlists, matching
+    # the documented @return contract.
+    parent[, asset_attributes := NA_character_]
     return(parent[])
   }
+  # Collapse each asset's `attributes` string array to a scalar character
+  # before binding. Without this, mixed empty/populated arrays make
+  # `rbindlist` warn and fall back to a list column.
+  assets <- lapply(assets, collapse_string_array_fields, "attributes")
   # Build the assets data.table
   assets_dt <- data.table::rbindlist(assets, fill = TRUE)
   data.table::setnames(assets_dt, to_snake_case(names(assets_dt)))
@@ -430,5 +560,273 @@ parse_watchlist <- function(wl) {
   # Cross-join: repeat parent row for each asset
   parent_rep <- parent[rep(1L, nrow(assets_dt)), ]
   dt <- cbind(parent_rep, assets_dt)
+  return(dt[])
+}
+
+#' Collapse a Plain-String Array Field on a Single Record
+#'
+#' Walks the named list `x` and replaces any named field whose value is a
+#' length >= 1 list of plain character strings (or atomic character vector)
+#' with a single semicolon-separated character scalar. Used by the asset /
+#' news / trade / quote parsers so we get one row per entity instead of a
+#' list column or an exploded long row count.
+#'
+#' ### Separator choice
+#' We use `;` rather than `,` because semicolon is far less likely to appear
+#' inside any of the values themselves (the array elements are all
+#' short codes / snake_case identifiers / tickers — none of which contain
+#' semicolons). Commas can legitimately appear inside URL query strings, so
+#' a future URL-valued field would need either URL-encoding or a different
+#' separator entirely. Semicolon sidesteps that.
+#'
+#' If any individual value contains a literal `;`, we'd silently corrupt
+#' the data on a subsequent split. To make any future shape change loud,
+#' we emit a once-per-session warning when that happens.
+#'
+#' ### Recovering the original values
+#' Splitting on `;` gives back the original vector:
+#'
+#' ```r
+#' dt <- market$get_asset("AAPL")
+#' strsplit(dt$attributes, ";", fixed = TRUE)[[1]]
+#' #> [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
+#' ```
+#'
+#' For URL fields (e.g. `image_urls` returned by `get_news()`) `parse_news()`
+#' itself percent-encodes any literal `;` inside each URL *before* it
+#' calls this helper — so the joined string can be split on `;` cleanly
+#' and the original URLs recovered via `URLdecode()` per element. This
+#' helper itself does no encoding; it only joins. To recover the URLs:
+#'
+#' ```r
+#' news <- market$get_news(symbols = "AAPL", limit = 1)
+#' urls  <- strsplit(news$image_urls, ";", fixed = TRUE)[[1]]
+#' urls  <- vapply(urls, URLdecode, character(1))
+#' ```
+#'
+#' Plain-string fields (everything other than URLs) are NOT encoded, so
+#' `URLdecode()` on them is a no-op.
+#'
+#' Only fields in `fields` are touched; nested objects elsewhere are left
+#' alone so they can be flattened by their own parser.
+#'
+#' @param x A named list representing a single API record.
+#' @param fields Character vector; names of fields to collapse.
+#' @return The same named list with the matching fields collapsed in place.
+#'
+#' @keywords internal
+#' @noRd
+collapse_string_array_fields <- function(x, fields) {
+  for (nm in fields) {
+    val <- x[[nm]]
+    # Empty / missing -> NA_character_ rather than `list()`. This unifies
+    # the column type so downstream `data.table::rbindlist()` builds a
+    # character column instead of falling back to a list column when some
+    # records have arrays and others don't.
+    if (is.null(val) || length(val) == 0L) {
+      x[[nm]] <- NA_character_
+      next
+    }
+    if (is.list(val)) {
+      val <- unlist(val, use.names = FALSE)
+    }
+    if (is.atomic(val) && length(val) >= 1L) {
+      val_chr <- as.character(val)
+      if (any(grepl(";", val_chr, fixed = TRUE))) {
+        rlang::warn(
+          paste0(
+            "Field `",
+            nm,
+            "` contains a literal `;` which collides with the ",
+            "collapse separator. Joining anyway; downstream code that splits ",
+            "on `;` will see corrupted values. Please report this so we can ",
+            "switch the separator for this field."
+          ),
+          # Fire once per session per field — once the user has seen the
+          # warning for a given field they know that field's shape is
+          # changing, and there's no value in repeating.
+          .frequency = "once",
+          .frequency_id = paste0("collapse_sep_collision_", nm)
+        )
+      }
+      x[[nm]] <- paste(val_chr, collapse = ";")
+    }
+  }
+  return(x)
+}
+
+#' Parse an Alpaca Asset Record to a Single-Row data.table
+#'
+#' Like `as_dt_row()` but collapses the `attributes` string array to a
+#' single semicolon-separated character column (e.g.
+#' `"fractional_eh_enabled;has_options;overnight_tradable"`). One asset
+#' stays one row.
+#'
+#' @param x A named list representing a single Alpaca asset.
+#' @return A single-row [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_asset <- function(x) {
+  if (is.null(x) || length(x) == 0L) {
+    return(data.table::data.table()[])
+  }
+  x <- collapse_string_array_fields(x, "attributes")
+  return(as_dt_row(x))
+}
+
+#' Parse an Alpaca Asset List to a data.table
+#'
+#' Like `as_dt_list()` but applies `parse_asset()` per record so the
+#' `attributes` array column is collapsed instead of arriving as a list
+#' column.
+#'
+#' @param items A list of asset records.
+#' @return A [data.table::data.table] with one row per asset.
+#'
+#' @keywords internal
+#' @noRd
+parse_assets <- function(items) {
+  if (is.null(items) || length(items) == 0L) {
+    return(data.table::data.table()[])
+  }
+  return(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[])
+}
+
+#' Parse a Single Option Contract Record
+#'
+#' Like `as_dt_row()` but handles the optional `deliverables` array
+#' (present when the caller passed `show_deliverables = TRUE`) per the
+#' "array of objects" treatment: explode to one row per deliverable
+#' with contract fields replicated, prefix deliverable columns with
+#' `deliverable_`, and add a 1-indexed `deliverable_index`.
+#'
+#' Contracts without `deliverables` (the default response shape) come
+#' back as a single row with no `deliverable_*` columns.
+#'
+#' @param x A named list representing a single Alpaca option contract.
+#' @return A [data.table::data.table] with one row per deliverable
+#'   (or one row when no `deliverables` are present).
+#'
+#' @keywords internal
+#' @noRd
+parse_contract <- function(x) {
+  if (is.null(x) || length(x) == 0L) {
+    return(data.table::data.table()[])
+  }
+  delivs <- x[["deliverables"]]
+  x[["deliverables"]] <- NULL
+  contract_row <- as_dt_row(x)
+  if (is.null(delivs) || length(delivs) == 0L) {
+    return(contract_row[])
+  }
+  # Normalise per-deliverable records before binding: replace `NULL`
+  # fields with `NA` so `rbindlist(fill = TRUE)` doesn't warn about
+  # length-0 columns when one deliverable omits a field that another
+  # has (e.g. a cash deliverable with no `asset_id`).
+  delivs <- lapply(delivs, function(d) {
+    return(lapply(d, function(v) if (is.null(v)) NA else v))
+  })
+  deliv_dt <- data.table::rbindlist(delivs, fill = TRUE)
+  data.table::setnames(deliv_dt, to_snake_case(names(deliv_dt)))
+  data.table::setnames(deliv_dt, paste0("deliverable_", names(deliv_dt)))
+  deliv_dt[, deliverable_index := seq_len(.N)]
+  contract_rep <- contract_row[rep(1L, nrow(deliv_dt)), ]
+  return(cbind(contract_rep, deliv_dt)[])
+}
+
+#' Parse an Alpaca Option Contracts List
+#'
+#' Applies `parse_contract()` per record. When `show_deliverables =
+#' TRUE` was passed to the underlying endpoint, the returned table has
+#' one row per `(contract, deliverable)` pair; otherwise it has one
+#' row per contract.
+#'
+#' @param items A list of option contract records.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_contracts <- function(items) {
+  if (is.null(items) || length(items) == 0L) {
+    return(data.table::data.table()[])
+  }
+  return(data.table::rbindlist(lapply(items, parse_contract), fill = TRUE)[])
+}
+
+#' Parse a Single Order Response to data.table
+#'
+#' Returns a flat `data.table` with one row per "order" (parent and any
+#' legs treated equally). For simple orders that's one row. For a bracket /
+#' OCO / OTO order it's one parent row plus one row per leg.
+#'
+#' Two helper columns distinguish parent rows from leg rows:
+#'
+#' \itemize{
+#'   \item `leg_index` — `NA_integer_` for the parent row; `1, 2, ...` for
+#'         each leg in submission order.
+#'   \item `parent_order_id` — `NA_character_` for the parent row; the
+#'         parent's `id` for each leg row.
+#' }
+#'
+#' Use `dt[is.na(parent_order_id)]` to see just the parent orders, and
+#' `dt[parent_order_id == "<id>"]` to see the legs of a specific bracket.
+#'
+#' Each leg in the API is itself a full order object — including its own
+#' `id`, `side`, `limit_price`, `status`, etc. — so the parent and the
+#' legs share the same column set and `data.table::rbindlist()` aligns
+#' them naturally.
+#'
+#' @param x A named list representing a single order.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_order <- function(x) {
+  if (is.null(x) || length(x) == 0) {
+    return(data.table::data.table()[])
+  }
+  legs <- x[["legs"]]
+  parent_id <- x[["id"]]
+  x[["legs"]] <- NULL
+
+  parent_dt <- as_dt_row(x)
+  if (nrow(parent_dt) > 0L) {
+    parent_dt[, leg_index := NA_integer_]
+    parent_dt[, parent_order_id := NA_character_]
+  }
+
+  if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
+    return(parent_dt[])
+  }
+
+  # Each leg is itself an order — strip its `legs` field (always null in
+  # the response we've seen, but defensive) and parse via the same path.
+  legs_clean <- lapply(legs, function(leg) {
+    leg[["legs"]] <- NULL
+    return(leg)
+  })
+  legs_dt <- as_dt_list(legs_clean)
+  if (nrow(legs_dt) > 0L) {
+    legs_dt[, leg_index := seq_len(.N)]
+    legs_dt[, parent_order_id := parent_id]
+  }
+  return(data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)[])
+}
+
+#' Parse a List of Order Responses to data.table
+#'
+#' Applies `parse_order()` to each item and row-binds.
+#'
+#' @param items A list of order named lists.
+#' @return A [data.table::data.table].
+#'
+#' @keywords internal
+#' @noRd
+parse_orders <- function(items) {
+  if (is.null(items) || length(items) == 0) {
+    return(data.table::data.table()[])
+  }
+  dt <- data.table::rbindlist(lapply(items, parse_order), fill = TRUE)
   return(dt[])
 }

@@ -146,7 +146,19 @@ AlpacaAccount <- R6::R6Class(
     get_account = function() {
       return(private$.request(
         endpoint = "/v2/account",
-        .parser = as_dt_row
+        .parser = function(data) {
+          # Flatten nested configuration objects into wide prefixed columns
+          for (cfg_field in c("admin_configurations", "user_configurations")) {
+            cfg <- data[[cfg_field]]
+            if (!is.null(cfg) && is.list(cfg) && length(cfg) > 0) {
+              for (nm in names(cfg)) {
+                data[[paste0(cfg_field, "_", nm)]] <- cfg[[nm]]
+              }
+            }
+            data[[cfg_field]] <- NULL
+          }
+          return(as_dt_row(data))
+        }
       ))
     },
 
@@ -1062,7 +1074,11 @@ AlpacaAccount <- R6::R6Class(
     #'   format with one row per asset in the watchlist. Columns include watchlist
     #'   metadata (`id`, `account_id`, `name`, `created_at`, `updated_at`) and
     #'   asset columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
-    #'   `asset_name`, etc.).
+    #'   `asset_name`, `asset_attributes`, etc.). `asset_attributes` is a
+    #'   `;`-separated character column (e.g.
+    #'   `"fractional_eh_enabled;has_options"`) — `NA` when the asset has
+    #'   no attributes. Recover the original vector with
+    #'   `strsplit(dt$asset_attributes, ";", fixed = TRUE)[[1]]`.
     #'
     #' @examples
     #' \dontrun{
@@ -1125,8 +1141,13 @@ AlpacaAccount <- R6::R6Class(
     #' @param name Character; watchlist name.
     #' @param symbols Character vector or NULL; initial symbols (e.g.,
     #'   `c("AAPL", "MSFT")`).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
-    #'   created watchlist details.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   the same long-format shape as `get_watchlist()`: one row per
+    #'   asset, with watchlist metadata (`id`, `account_id`, `name`,
+    #'   `created_at`, `updated_at`) replicated and asset columns prefixed
+    #'   `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
+    #'   `asset_attributes`, ...). A watchlist created with no symbols
+    #'   returns one row with asset columns set to `NA`.
     #'
     #' @examples
     #' \dontrun{
@@ -1189,8 +1210,10 @@ AlpacaAccount <- R6::R6Class(
     #' @param watchlist_id Character; watchlist UUID.
     #' @param name Character; new watchlist name.
     #' @param symbols Character vector; new full list of symbols (replaces existing).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with updated
-    #'   watchlist details.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   the same long-format shape as `get_watchlist()`: one row per
+    #'   asset (after the modification), watchlist metadata replicated
+    #'   on each row, asset columns prefixed `asset_`.
     #'
     #' @examples
     #' \dontrun{
@@ -1254,7 +1277,8 @@ AlpacaAccount <- R6::R6Class(
     #' @param watchlist_id Character; watchlist UUID.
     #' @param symbol Character; ticker symbol to add (e.g., `"AAPL"`).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the updated watchlist.
+    #'   the same long-format shape as `get_watchlist()`: one row per
+    #'   asset in the updated watchlist.
     #'
     #' @examples
     #' \dontrun{
@@ -1327,7 +1351,7 @@ AlpacaAccount <- R6::R6Class(
               status = "removed"
             )[])
           }
-          parse_watchlist(data)
+          return(parse_watchlist(data))
         }
       ))
     },

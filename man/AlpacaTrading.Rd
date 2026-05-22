@@ -27,7 +27,7 @@ asynchronous execution depending on the \code{async} parameter at construction.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/orders-4}{Orders}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{Endpoints Covered}{\tabular{lll}{
@@ -186,7 +186,7 @@ advanced order classes (bracket, OCO, OTO).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/postorder}{Create Order}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -326,7 +326,11 @@ Alpaca Elite Smart Router.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+A simple order returns a single row. A \code{bracket} / \code{oco} / \code{oto} /
+\code{mleg} order returns the parent row plus one row per leg — see the
+"Multi-leg orders" section in the README and \code{vignette("data-shapes")}
+for the parent + leg layout. Columns:
 \itemize{
 \item \code{id} (character): Order UUID.
 \item \code{client_order_id} (character): Client order ID.
@@ -341,6 +345,11 @@ Alpaca Elite Smart Router.}
 \item \code{limit_price} (character): Limit price (if set).
 \item \code{stop_price} (character): Stop price (if set).
 \item \code{created_at} (character): Order creation timestamp.
+\item \code{leg_index} (integer): \code{NA} on the parent row; \verb{1..N} on each leg.
+\item \code{parent_order_id} (character): \code{NA} on the parent row; the parent's
+\code{id} on each leg. Use \code{dt[is.na(parent_order_id)]} to keep just
+parent rows, or \code{dt[parent_order_id == "<uuid>"]} for the legs of
+one bracket.
 }
 }
 \subsection{Examples}{
@@ -390,7 +399,7 @@ side, and date range. Supports pagination.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getallorders-1}{List Orders}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -521,7 +530,7 @@ Retrieves a single order by its UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getorderbyorderid-1}{Get Order}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -578,12 +587,17 @@ Verified: 2026-05-21
 \describe{
 \item{\code{order_id}}{Character; order UUID.}
 
-\item{\code{nested}}{Logical or NULL; include leg orders.}
+\item{\code{nested}}{Logical or NULL; include leg orders. When \code{TRUE}, a
+bracket / OCO / OTO / multi-leg order returns the parent row plus
+one row per leg, distinguished by \code{leg_index} (\code{NA} on parent,
+\verb{1..N} on legs) and \code{parent_order_id} (\code{NA} on parent, parent's
+\code{id} on legs). Simple orders return a single row regardless.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
+with the same columns as \code{add_order()}. Multi-row when \code{nested = TRUE} and the order has legs; otherwise single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -614,7 +628,7 @@ order tracking in production systems.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/getorderbyclientorderid}{Get Order by Client ID}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -674,7 +688,11 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
+with the same columns as \code{add_order()}. A simple order returns a
+single row; a bracket / OCO / OTO / multi-leg order returns the
+parent row plus one row per leg, distinguished by \code{leg_index}
+and \code{parent_order_id}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -705,7 +723,7 @@ is cancelled and a new order is created atomically.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/patchorderbyorderid-1}{Replace Order}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -839,7 +857,7 @@ Cancels a single open order by its UUID.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1}{Cancel Order}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -905,7 +923,7 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/deleteallorders-1}{Cancel All Orders}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{

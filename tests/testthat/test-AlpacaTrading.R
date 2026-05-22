@@ -2,7 +2,7 @@ KEYS <- get_api_keys(api_key = "k", api_secret = "s")
 BASE <- "https://paper-api.alpaca.markets"
 
 new_trading <- function() {
-  AlpacaTrading$new(keys = KEYS, base_url = BASE)
+  return(AlpacaTrading$new(keys = KEYS, base_url = BASE))
 }
 
 test_that("AlpacaTrading inherits from AlpacaBase", {
@@ -28,6 +28,82 @@ test_that("add_order returns order data.table", {
   expect_equal(dt$id, "order-uuid-123")
   expect_equal(dt$symbol, "AAPL")
   expect_equal(dt$status, "accepted")
+  # Simple order: leg_index and parent_order_id are NA (parent row only).
+  expect_true(is.na(dt$leg_index))
+  expect_true(is.na(dt$parent_order_id))
+})
+
+# ---- Bracket orders: parent row + leg rows -------------------------------
+
+test_that("add_order on a bracket returns one parent row + N leg rows", {
+  resp <- mock_alpaca_response(mock_bracket_order_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$add_order(
+    symbol = "AAPL",
+    side = "buy",
+    type = "limit",
+    time_in_force = "gtc",
+    qty = 1,
+    limit_price = 1,
+    order_class = "bracket",
+    take_profit = list(limit_price = 500),
+    stop_loss = list(stop_price = 0.5, limit_price = 0.4)
+  )
+
+  # Two legs → three rows: parent + take-profit + stop-loss.
+  expect_equal(nrow(dt), 3L)
+
+  parents <- dt[is.na(parent_order_id)]
+  expect_equal(nrow(parents), 1L)
+  expect_equal(parents$id, "bracket-parent")
+  expect_true(is.na(parents$leg_index))
+
+  legs <- dt[!is.na(parent_order_id)]
+  expect_equal(nrow(legs), 2L)
+  expect_setequal(legs$parent_order_id, "bracket-parent")
+  expect_equal(legs$leg_index, c(1L, 2L))
+  expect_equal(legs$id, c("leg-tp", "leg-sl"))
+  # Legs carry their own field values, not the parent's.
+  expect_equal(legs$side, c("sell", "sell"))
+  expect_equal(legs[leg_index == 1L]$limit_price, "500.00")
+  expect_equal(legs[leg_index == 2L]$stop_price, "0.50")
+})
+
+test_that("get_order on a bracket exposes parent + legs via parent_order_id", {
+  resp <- mock_alpaca_response(mock_bracket_order_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$get_order("bracket-parent")
+  expect_equal(nrow(dt), 3L)
+
+  # User-facing query patterns documented in @return:
+  parent_only <- dt[is.na(parent_order_id)]
+  expect_equal(nrow(parent_only), 1L)
+
+  bracket_legs <- dt[parent_order_id == "bracket-parent"]
+  expect_equal(nrow(bracket_legs), 2L)
+})
+
+test_that("get_orders rbinds simple + bracket orders into a single flat table", {
+  # Mock a list of two orders: one simple, one bracket. The result should
+  # be 1 (simple) + 1 (parent) + 2 (legs) = 4 rows.
+  resp <- mock_alpaca_response(list(
+    mock_order_response(),
+    mock_bracket_order_response()
+  ))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_trading()$get_orders()
+  expect_equal(nrow(dt), 4L)
+  expect_equal(sum(is.na(dt$parent_order_id)), 2L) # simple + bracket-parent
+  expect_equal(sum(!is.na(dt$parent_order_id)), 2L) # 2 legs
+})
+
+test_that("parse_order returns no list columns even with legs", {
+  dt <- parse_order(mock_bracket_order_response())
+  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
 })
 
 test_that("add_order sends POST to /v2/orders", {
@@ -138,7 +214,8 @@ test_that("modify_order rejects both qty and notional", {
 test_that("get_orders rejects both before_order_id and after_order_id", {
   expect_error(
     new_trading()$get_orders(
-      before_order_id = "a", after_order_id = "b"
+      before_order_id = "a",
+      after_order_id = "b"
     ),
     "mutually exclusive"
   )
@@ -147,13 +224,15 @@ test_that("get_orders rejects both before_order_id and after_order_id", {
 test_that("get_orders rejects mixing order-ID and timestamp pagination", {
   expect_error(
     new_trading()$get_orders(
-      before_order_id = "a", after = "2026-01-01"
+      before_order_id = "a",
+      after = "2026-01-01"
     ),
     "cannot be combined"
   )
   expect_error(
     new_trading()$get_orders(
-      after_order_id = "b", until = "2026-01-01"
+      after_order_id = "b",
+      until = "2026-01-01"
     ),
     "cannot be combined"
   )

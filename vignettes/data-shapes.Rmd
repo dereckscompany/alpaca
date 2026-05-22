@@ -1,0 +1,463 @@
+---
+title: "Package Tour and Data-Shape Conventions"
+author: "Dereck Mezquita"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Package Tour and Data-Shape Conventions}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+This vignette is the **one-stop tour** of the `alpaca` package. It
+catalogues every public method by topic, explains the shape of what
+each one returns, and then documents the underlying data-shape policy
+in detail.
+
+If you've never used the package, read top to bottom. If you've used
+it and just want to know how a specific endpoint comes back, jump to
+the catalogue table for its class and then to the relevant treatment
+section.
+
+---
+
+## What's in the package
+
+Four R6 classes plus a handful of standalone helpers wrap the Alpaca
+REST API. Every class supports both **synchronous** and **asynchronous
+(promise-based)** operation via `httr2`.
+
+| Class | What it covers |
+|---|---|
+| `AlpacaMarketData` | Stock + crypto market data — historical bars, latest trades / quotes / snapshots, assets, calendar, clock, corporate actions, news, screener, crypto orderbook |
+| `AlpacaOptions` | Options contracts and options market data — bars, trades, latest quotes, snapshots, option chain |
+| `AlpacaTrading` | Order management — place, modify, cancel, query (including multi-leg bracket / OCO / OTO / mleg) |
+| `AlpacaAccount` | Account info, configuration, positions, portfolio history, activities, watchlists |
+
+Standalone (not on a class):
+
+| Helper | What it does |
+|---|---|
+| `get_api_keys()`, `get_base_url()`, `get_data_base_url()` | Read API credentials and base URLs from environment variables |
+| `alpaca_build_request()`, `alpaca_paginate()` | Low-level HTTP / pagination primitives — every method goes through these |
+| `alpaca_backfill_bars()` | Bulk historical bar download for many symbols × timeframes with CSV resume |
+| `time_convert_to_alpaca()`, `time_convert_from_alpaca()` | RFC-3339 ↔ `POSIXct` |
+| `alpaca_aapl_1day_bars` | Bundled sample dataset (simulated AAPL daily bars) |
+
+---
+
+## Setup
+
+Set credentials in `.Renviron`:
+
+```bash
+ALPACA_API_KEY=your-api-key
+ALPACA_API_SECRET=your-api-secret
+ALPACA_API_ENDPOINT=https://paper-api.alpaca.markets   # paper trading
+```
+
+Then in R:
+
+```r
+library(alpaca)
+keys   <- get_api_keys()
+market <- AlpacaMarketData$new(keys = keys)
+acct   <- AlpacaAccount$new(keys = keys)
+trading <- AlpacaTrading$new(keys = keys)
+opts   <- AlpacaOptions$new(keys = keys)
+```
+
+---
+
+## `AlpacaMarketData` — stock + crypto market data
+
+### Historical OHLCV
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_bars(symbol, ...)` | `/v2/stocks/{symbol}/bars` | flat — one row per bar |
+| `get_bars_multi(symbols, ...)` | `/v2/stocks/bars` | flat — one row per (symbol, bar), `symbol` column added |
+
+```r
+bars <- market$get_bars("AAPL", "1Day",
+                        start = "2024-01-01", end = "2024-01-31")
+```
+
+### Latest data (single + multi)
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_latest_bar(symbol)` | `/v2/stocks/{symbol}/bars/latest` | flat — single row |
+| `get_latest_trade(symbol)` | `/v2/stocks/{symbol}/trades/latest` | single row, `conditions` `;`-joined |
+| `get_latest_quote(symbol)` | `/v2/stocks/{symbol}/quotes/latest` | single row, `conditions` `;`-joined |
+| `get_snapshot(symbol)` | `/v2/stocks/{symbol}/snapshot` | single row, wide prefix (`latest_trade_*`, `latest_quote_*`, `*_bar_*`); inner conditions `;`-joined |
+| `get_latest_bars_multi(symbols)` | `/v2/stocks/bars/latest` | flat — one row per symbol |
+| `get_latest_trades_multi(symbols)` | `/v2/stocks/trades/latest` | one row per symbol, `conditions` `;`-joined |
+| `get_latest_quotes_multi(symbols)` | `/v2/stocks/quotes/latest` | one row per symbol, `conditions` `;`-joined |
+| `get_snapshots_multi(symbols)` | `/v2/stocks/snapshots` | one row per symbol, wide prefix + inner `;` collapse |
+
+### Historical trades and quotes
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_trades(symbol, ...)` | `/v2/stocks/{symbol}/trades` | one row per trade, `conditions` `;`-joined |
+| `get_quotes(symbol, ...)` | `/v2/stocks/{symbol}/quotes` | one row per quote, `conditions` `;`-joined |
+
+### Reference data
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_assets(...)` | `/v2/assets` | one row per asset, `attributes` `;`-joined |
+| `get_asset(symbol_or_id)` | `/v2/assets/{id}` | single row, `attributes` `;`-joined |
+| `get_calendar(start, end, date_type)` | `/v2/calendar` | flat — one row per trading day |
+| `get_clock()` | `/v2/clock` | flat — single row |
+| `get_corporate_actions(...)` | `/v2/corporate_actions/announcements` | flat — one row per announcement |
+
+### News and screener
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_news(symbols, ...)` | `/v1beta1/news` | one row per article; `symbols`, `image_sizes`, `image_urls` `;`-joined |
+| `get_most_actives(by, top)` | `/v1beta1/screener/stocks/most-actives` | flat — one row per stock |
+| `get_movers(market_type, top)` | `/v1beta1/screener/{market}/movers` | flat — one row per mover with `direction` column |
+
+### Crypto
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_crypto_orderbook(symbols, loc)` | `/v1beta3/crypto/{loc}/latest/orderbooks` | long format — one row per `(symbol, side, level)` |
+
+---
+
+## `AlpacaOptions` — options market data and contracts
+
+### Contracts
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_contracts(...)` | `/v2/options/contracts` | one row per contract (default); with `show_deliverables = TRUE`, one row per `(contract, deliverable)` with `deliverable_*` columns + `deliverable_index` |
+| `get_contract(symbol_or_id)` | `/v2/options/contracts/{id}` | one row (default); one row per deliverable when the response includes the array |
+
+The `deliverables` array is a Treatment B (long-format) explode: for
+the typical equity option with exactly one deliverable, the row count
+is unchanged. Contracts that span a spinoff or split (two or more
+deliverables) expand to one row per deliverable. Filter to a canonical
+per-contract row with
+`dt[deliverable_index == 1L | is.na(deliverable_index)]`.
+
+### Options market data
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_option_bars(symbols, timeframe, ...)` | `/v1beta1/options/bars` | flat — one row per (symbol, bar) |
+| `get_option_trades(symbols, ...)` | `/v1beta1/options/trades` | flat — one row per trade |
+| `get_option_latest_quotes(symbols)` | `/v1beta1/options/quotes/latest` | flat — one row per symbol |
+| `get_option_latest_trades(symbols)` | `/v1beta1/options/trades/latest` | flat — one row per symbol |
+| `get_option_snapshots(symbols, ...)` | `/v1beta1/options/snapshots` | wide prefix — one row per symbol with `latest_trade_*` / `latest_quote_*` |
+| `get_option_chain(underlying_symbol, ...)` | `/v1beta1/options/snapshots/{underlying}` | wide prefix — one row per contract in the chain |
+
+`get_option_snapshot(symbol)` is **deprecated** at runtime — it calls
+`/v1beta1/options/snapshots/{symbol}` which Alpaca repurposed to the
+underlying-chain endpoint. Use `get_option_snapshots(symbols = "<OCC>")`
+for a single contract.
+
+---
+
+## `AlpacaTrading` — order management
+
+### Place / modify / cancel
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `add_order(...)` | `POST /v2/orders` | one row for simple; parent + leg rows for `bracket` / `oco` / `oto` / `mleg` |
+| `modify_order(order_id, ...)` | `PATCH /v2/orders/{id}` | same shape as `add_order` |
+| `cancel_order(order_id)` | `DELETE /v2/orders/{id}` | single-row stub `(order_id, status = "cancelled")` |
+| `cancel_all_orders()` | `DELETE /v2/orders` | one row per cancelled order |
+
+### Query
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_orders(...)` | `GET /v2/orders` | one row per parent + one row per leg, sharing the same column set |
+| `get_order(order_id, nested)` | `GET /v2/orders/{id}` | parent + leg rows (single if not bracket) |
+| `get_order_by_client_id(client_order_id)` | `GET /v2/orders:by_client_order_id` | same |
+
+The multi-leg shape uses `leg_index` (NA on parent, 1..N on legs) +
+`parent_order_id` (NA on parent, parent's id on legs) — see the
+**Treatment B′** section below.
+
+---
+
+## `AlpacaAccount` — account, positions, portfolio, watchlists
+
+### Account info and configuration
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_account()` | `/v2/account` | single row, wide-prefix `admin_configurations_*` / `user_configurations_*` |
+| `get_account_config()` | `/v2/account/configurations` | flat — single row |
+| `modify_account_config(...)` | `PATCH /v2/account/configurations` | single row of the updated config |
+
+### Positions
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_positions()` | `/v2/positions` | flat — one row per open position |
+| `get_position(symbol_or_id)` | `/v2/positions/{id}` | single row |
+| `close_position(symbol_or_id, qty / percentage)` | `DELETE /v2/positions/{id}` | order returned (one row per leg if bracket) |
+| `close_all_positions(cancel_orders)` | `DELETE /v2/positions` | one row per closed position |
+| `exercise_option(symbol_or_id)` | `POST /v2/positions/{id}/exercise` | single-row stub |
+
+### Portfolio history and activities
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_portfolio_history(...)` | `/v2/account/portfolio/history` | flat — one row per snapshot (`timestamp`, `equity`, `profit_loss`, `profit_loss_pct`) |
+| `get_activities(...)` | `/v2/account/activities` | flat — one row per activity |
+| `get_activities_by_type(activity_type, ...)` | `/v2/account/activities/{type}` | flat — one row per activity |
+
+### Watchlists
+
+| Method | Endpoint | Shape |
+|---|---|---|
+| `get_watchlists()` | `/v2/watchlists` | flat — one row per watchlist |
+| `get_watchlist(watchlist_id)` | `/v2/watchlists/{id}` | long — one row per (watchlist, asset), `asset_*` columns |
+| `add_watchlist(name, symbols)` | `POST /v2/watchlists` | same long shape |
+| `modify_watchlist(watchlist_id, name, symbols)` | `PUT /v2/watchlists/{id}` | same |
+| `add_watchlist_symbol(watchlist_id, symbol)` | `POST /v2/watchlists/{id}` | same |
+| `cancel_watchlist_symbol(watchlist_id, symbol)` | `DELETE /v2/watchlists/{id}/{symbol}` | same |
+| `cancel_watchlist(watchlist_id)` | `DELETE /v2/watchlists/{id}` | single-row stub |
+
+---
+
+## Standalone helpers
+
+| Function | What it does |
+|---|---|
+| `alpaca_backfill_bars(symbols, timeframes, start, path)` | Bulk download bars for many symbols × timeframes to CSV with resume support. Used for backtests / pre-computing features |
+| `alpaca_paginate(base_url, endpoint, ...)` | Low-level cursor-based pagination loop. Most methods use this internally; expose to users who want fine-grained control |
+| `alpaca_build_request(base_url, endpoint, ...)` | Low-level single-request HTTP primitive. The single point through which all Alpaca calls flow |
+| `time_convert_to_alpaca(x)` / `time_convert_from_alpaca(x)` | RFC-3339 ↔ `POSIXct` |
+| `alpaca_aapl_1day_bars` (data) | Bundled sample of simulated AAPL daily bars — useful for examples and tests without hitting the API |
+
+### Async usage
+
+Pass `async = TRUE` to any class constructor; methods then return
+promises. See `vignette("async-usage", package = "alpaca")` for the
+full pattern.
+
+```r
+market_async <- AlpacaMarketData$new(async = TRUE)
+main <- coro::async(function() {
+  bars  <- await(market_async$get_bars("AAPL", "1Day", start = "2024-01-01"))
+  clock <- await(market_async$get_clock())
+  print(bars); cat("Market open:", clock$is_open, "\n")
+})
+main()
+while (!later::loop_empty()) later::run_now()
+```
+
+---
+
+# Data-shape conventions
+
+Now that you've seen the surface, here are the rules used to decide
+what a row in the returned `data.table` represents.
+
+Every method follows one principle:
+
+> **Identify the entity for the endpoint, and return one row per entity.**
+
+A trade has a row, an article has a row, an asset has a row. Anything
+nested *under* the entity becomes either a flat column on the same row
+or an additional row on a different axis — **never a list column**.
+
+The exact treatment depends on the nested shape. There are four.
+
+## Treatment A — `;` collapse for arrays of strings
+
+When the entity has a variable-length array of plain strings (tags,
+codes, permissions, identifiers), we join them into one character
+column with a `;` separator.
+
+```r
+asset <- market$get_asset("AAPL")
+asset$attributes
+#> "fractional_eh_enabled;has_options;overnight_tradable"
+```
+
+Filter with `grepl` over a list of assets:
+
+```r
+assets <- market$get_assets()
+options_assets <- assets[grepl("has_options", attributes)]
+```
+
+Recover the original character vector by splitting:
+
+```r
+strsplit(asset$attributes, ";", fixed = TRUE)[[1]]
+#> [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
+```
+
+The separator is `;` rather than `,` because semicolons are far less
+likely to appear *inside* one of the values themselves. For fields
+where a value could legally contain `;` — currently just news image
+URLs, where `;` is a valid URL sub-delimiter — each value is
+**double-encoded** before joining (first `%` → `%25`, then `;` →
+`%3B`), so a single `URLdecode()` after splitting recovers the
+original string losslessly, even when the source URL already contained
+percent-escapes such as `%3B`:
+
+```r
+news <- market$get_news(symbols = "AAPL", limit = 1)
+urls  <- strsplit(news$image_urls[1], ";", fixed = TRUE)[[1]]
+urls  <- vapply(urls, URLdecode, character(1))
+```
+
+Parallel arrays (e.g. each news image has both a `size` and a `url`)
+are collapsed independently into separate columns. When some entries
+have a per-element field and others omit it, the missing values
+appear as **empty tokens**, not literal `"NA"`:
+
+```r
+news[id == 12350, image_sizes]
+#> "large;"          # second image had no `size`; never "large;NA"
+```
+
+Where it's used: `attributes` on assets, `conditions` on trades and
+quotes (single, multi, and historical variants), `symbols` /
+`image_sizes` / `image_urls` on news.
+
+## Treatment B — Long format for arrays of objects
+
+When the array elements are themselves records (each has a `price`,
+a `size`, a `symbol`, …), we explode to one row per element with
+parent fields replicated. A position-index column is added where order
+matters (`level`, `leg_index`).
+
+```r
+ob <- market$get_crypto_orderbook("BTC/USD")
+ob
+#>     symbol side level    price  size           timestamp
+#>     <char> <char> <int>   <num> <num>              <POSc>
+#>  1: BTC/USD  bid     1 42950.50  0.5 2024-01-15 20:00:00
+#>  2: BTC/USD  bid     2 42949.00  1.2 2024-01-15 20:00:00
+#>  3: BTC/USD  ask     1 42951.00  0.3 2024-01-15 20:00:00
+#>  4: BTC/USD  ask     2 42952.50  0.8 2024-01-15 20:00:00
+```
+
+Where it's used: `bids` / `asks` levels on the crypto orderbook;
+`assets` on watchlists (one row per (watchlist, asset) with `asset_`
+prefixed columns).
+
+## Treatment B′ — Parent + leg rows for multi-leg orders
+
+A variant of Treatment B that applies to multi-leg orders (`bracket`,
+`oco`, `oto`, `mleg`). The parent and each leg get their own row in a
+single flat table; two helper columns disambiguate:
+
+- `leg_index` (integer): `NA` on the parent row, `1, 2, …` on each leg.
+- `parent_order_id` (character): `NA` on the parent row, the parent's
+  `id` on each leg row.
+
+```r
+# A bracket order: 1 parent + 2 legs = 3 rows
+o <- trading$add_order(
+  symbol = "AAPL", side = "buy", type = "limit",
+  time_in_force = "gtc", qty = 1, limit_price = 1,
+  order_class = "bracket",
+  take_profit = list(limit_price = 500),
+  stop_loss   = list(stop_price = 0.5, limit_price = 0.4)
+)
+nrow(o)                                                   # 3
+o[is.na(parent_order_id), .(id, side)]                    # the parent
+parent_id <- o[is.na(parent_order_id), id]
+o[parent_order_id == parent_id,
+  .(leg_index, side, limit_price, stop_price)]            # the two legs
+```
+
+A simple order returns a single row with both helper columns `NA`.
+
+Where it's used: `add_order` / `get_order` / `get_orders` /
+`get_order_by_client_id` / `modify_order` on `AlpacaTrading`.
+
+## Treatment C — Wide prefix for fixed-schema nested objects
+
+When the nested data is an *object* (not an array) with a known fixed
+key set, we flatten the inner fields into `parent_child` columns on
+the same row. The parent stays one row.
+
+```r
+acct <- acct$get_account()
+acct$admin_configurations_max_options_trading_level   # was nested under admin_configurations
+#> 2
+acct$user_configurations_dtbp_check                   # was nested under user_configurations
+#> "both"
+```
+
+Where it's used: `admin_configurations_*` / `user_configurations_*`
+on `get_account`; `latest_trade_*` / `latest_quote_*` / `minute_bar_*`
+/ `daily_bar_*` / `prev_daily_bar_*` on `get_snapshot` and the
+multi-symbol variant.
+
+## The one hybrid
+
+`get_snapshot()` is Treatment C with one inner Treatment A. The
+top-level object is wide-flattened to `latest_trade_*` /
+`latest_quote_*` / `*_bar_*` columns; the inner `c` arrays on the
+trade and quote sections become semicolon-joined
+`latest_trade_conditions` / `latest_quote_conditions` columns. The
+`c` field on the bar sections is the **close price** (a scalar
+number), so it's not touched — it ends up as a numeric `*_close`
+column.
+
+```r
+snap <- market$get_snapshot("AAPL")
+snap$latest_trade_conditions   # "@;T"          — Treatment A inside the C flatten
+snap$latest_quote_conditions   # "R"            — same
+snap$minute_bar_close          # 304.7          — left alone, numeric
+```
+
+## Two cross-cutting rules
+
+These apply to every method, regardless of treatment.
+
+**Empty arrays become `NA`, not list cells.** An asset with no
+attributes, a trade with no condition codes, an article with no
+images — all set the relevant column to `NA_character_`. Downstream
+code that does `is.na()` keeps working; no list-column gymnastics.
+
+**Empty responses return an empty `data.table`.** No synthetic stub
+rows. `nrow()` is the honest count of "things I got back."
+
+## What was *not* done
+
+We considered but didn't end up needing **list of two data.tables** —
+returning e.g. `list(orders = ..., legs = ...)` keyed by a foreign key
+for genuinely heterogeneous nested arrays. Every nested field across
+the package fits into one of the four treatments above. The escape
+hatch is held in reserve if a future endpoint forces it.
+
+## Why this matters across exchanges
+
+The same convention is being applied to the sibling `binance` and
+`kucoin` packages. A trader who hops between them can rely on:
+
+- the same canonical column names (`symbol`, `timestamp`, `price`,
+  `size`, `side`, `conditions`, …),
+- the same row-shape contract (entity-per-row, never a list column),
+- the same recovery idioms (`grepl`, `strsplit`, `URLdecode`, the
+  `is.na(parent_order_id)` filter for multi-leg orders).
+
+That predictability is what makes the connector layer (`exchanges`
+package, on top of `tradebot-core`) easy to write: each raw wrapper
+returns data the connector can re-shape without having to special-case
+list columns or wrap-and-unwrap nested structures.

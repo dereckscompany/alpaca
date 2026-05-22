@@ -218,7 +218,7 @@ AlpacaMarketData <- R6::R6Class(
           currency = currency
         ),
         .parser = function(data) {
-          parse_bars(data$bars)
+          return(parse_bars(data$bars))
         }
       ))
     },
@@ -364,7 +364,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed),
         .parser = function(data) {
-          parse_bars(list(data$bar))
+          return(parse_bars(list(data$bar)))
         }
       ))
     },
@@ -379,7 +379,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -407,15 +407,20 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade** (a single row for this single-trade method).
+    #'   Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`. Recover
+    #'     the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     the trade carries no condition codes.
     #'
     #' @examples
     #' \dontrun{
@@ -429,7 +434,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
-          parse_trades(list(data$trade))
+          return(parse_trades(list(data$trade)))
         }
       ))
     },
@@ -444,7 +449,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -474,7 +479,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote**. Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
@@ -482,6 +488,12 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
     #'   - `bid_size` (integer): Bid size.
+    #'   - `conditions` (character): `;`-separated quote condition codes
+    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
+    #'     recover the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     no conditions were reported.
+    #'   - `tape` (character): Tape identifier.
     #'
     #' @examples
     #' \dontrun{
@@ -495,7 +507,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
-          parse_quotes(list(data$quote))
+          return(parse_quotes(list(data$quote)))
         }
       ))
     },
@@ -511,7 +523,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Stock Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -632,7 +644,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Multi Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -655,7 +667,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and trade columns.
+    #'   leading `symbol` column and the same per-trade columns as
+    #'   `get_latest_trade()`: `timestamp`, `price`, `size`, `exchange`,
+    #'   `conditions` (`;`-collapsed), `tape`, `id`. One row per symbol.
     get_latest_trades_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/trades/latest",
@@ -695,7 +709,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Latest Multi Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -718,7 +732,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   `"otc"`, `"boats"`, `"overnight"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and quote columns.
+    #'   `symbol` column and quote columns (`timestamp`, `ask_*`, `bid_*`,
+    #'   `conditions`, `tape`). `conditions` is a `;`-separated character
+    #'   column following the package's array-collapse convention.
     get_latest_quotes_multi = function(symbols, feed = NULL, currency = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/quotes/latest",
@@ -758,7 +774,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Multi Stock Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -839,7 +855,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Historical Stock Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -871,15 +887,16 @@ AlpacaMarketData <- R6::R6Class(
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per trade condition. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per trade**. Columns:
     #'   - `timestamp` (POSIXct): Trade timestamp.
     #'   - `price` (numeric): Trade price.
     #'   - `size` (integer): Trade size.
     #'   - `exchange` (character): Exchange code.
     #'   - `tape` (character): SIP tape.
     #'   - `id` (integer): Trade ID.
-    #'   - `condition` (character): Trade condition code.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`.
     get_trades = function(
       symbol,
       start = NULL,
@@ -918,7 +935,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Historical Stock Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -949,7 +966,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote**. Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
@@ -957,6 +975,12 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
     #'   - `bid_size` (integer): Bid size.
+    #'   - `conditions` (character): `;`-separated quote condition codes
+    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
+    #'     recover the original vector via
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     no conditions were reported.
+    #'   - `tape` (character): Tape identifier.
     get_quotes = function(
       symbol,
       start = NULL,
@@ -997,7 +1021,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -1057,7 +1081,7 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/assets",
         query = list(status = status, asset_class = asset_class, exchange = exchange, attributes = attributes),
-        .parser = as_dt_list
+        .parser = parse_assets
       ))
     },
 
@@ -1071,7 +1095,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [Asset by ID or Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -1111,7 +1135,7 @@ AlpacaMarketData <- R6::R6Class(
       endpoint <- paste0("/v2/assets/", symbol_or_id)
       return(private$.request(
         endpoint = endpoint,
-        .parser = as_dt_row
+        .parser = parse_asset
       ))
     },
 
@@ -1354,7 +1378,7 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' ### Official Documentation
     #' [News](https://docs.alpaca.markets/us/reference/news-3)
-    #' Verified: 2026-05-21
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -1393,8 +1417,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
     #'   without content.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per related symbol. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per article**. Columns:
     #'   - `id` (integer): Article ID.
     #'   - `headline` (character): Article headline.
     #'   - `author` (character): Author name.
@@ -1403,7 +1427,24 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `url` (character): Article URL.
     #'   - `created_at` (character): Publication timestamp.
     #'   - `updated_at` (character): Last update timestamp.
-    #'   - `symbol` (character): Related ticker symbol.
+    #'   - `symbols` (character): Semicolon-separated related tickers, e.g.
+    #'     `"AAPL;MSFT"`. Filter with `dt[grepl("AAPL", symbols)]`; recover
+    #'     the original vector via
+    #'     `strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]`.
+    #'   - `image_sizes` (character): Semicolon-separated image size labels
+    #'     parallel to `image_urls`. `NA` when the article has no images.
+    #'     When some images on an article report a `size` and others omit
+    #'     it, the missing values become **empty tokens** (e.g.
+    #'     `"large;"`) — never the literal string `"NA"` — so a real
+    #'     value is unambiguous from a missing one.
+    #'   - `image_urls` (character): Semicolon-separated image URLs.
+    #'     The join is **lossless** for any input URL: each URL is
+    #'     double-encoded (`%` → `%25` first, then `;` → `%3B`) before
+    #'     joining, so a single pass of `URLdecode()` after splitting
+    #'     recovers the original string even when it already contained
+    #'     `%3B` or other percent-escapes. Recover with
+    #'     `vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]],
+    #'     URLdecode, character(1))`.
     #'
     #' @examples
     #' \dontrun{
@@ -1443,6 +1484,116 @@ AlpacaMarketData <- R6::R6Class(
           page_token = page_token
         ),
         .parser = function(data) parse_news(data$news)
+      ))
+    },
+
+    # ---- Crypto Orderbook ----
+
+    #' @description
+    #' Get Latest Crypto Orderbook
+    #'
+    #' Retrieves the latest orderbook (top of book) for a crypto symbol.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1beta3/crypto/{loc}/latest/orderbooks`
+    #'
+    #' ### Official Documentation
+    #' [Latest Crypto Orderbooks](https://docs.alpaca.markets/us/reference/cryptolatestorderbooks-1)
+    #' Verified: 2026-05-22
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1beta3/crypto/us/latest/orderbooks?symbols=BTC/USD'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "orderbooks": {
+    #'     "BTC/USD": {
+    #'       "t": "2024-01-15T20:00:00.123456Z",
+    #'       "b": [
+    #'         {"p": 42950.50, "s": 0.5},
+    #'         {"p": 42949.00, "s": 1.2}
+    #'       ],
+    #'       "a": [
+    #'         {"p": 42951.00, "s": 0.3},
+    #'         {"p": 42952.50, "s": 0.8}
+    #'       ]
+    #'     }
+    #'   }
+    #' }
+    #' ```
+    #'
+    #' @param symbols Character vector; crypto symbols (e.g. `"BTC/USD"`).
+    #' @param loc Character; location code, `"us"` (default).
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   one row per `(symbol, side, level)`. Columns:
+    #'   - `symbol` (character): Crypto symbol.
+    #'   - `side` (character): `"bid"` or `"ask"`.
+    #'   - `level` (integer): 1-based depth within the side. `level = 1` is
+    #'     top of book (best bid / best ask); `level = 2` is the next-best,
+    #'     and so on. Ordering is preserved from the Alpaca response.
+    #'   - `price` (numeric): Price at this level.
+    #'   - `size` (numeric): Quantity at this level.
+    #'   - `timestamp` (POSIXct): Orderbook timestamp.
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #' ob <- market$get_crypto_orderbook("BTC/USD")
+    #' print(ob)
+    #' }
+    get_crypto_orderbook = function(symbols, loc = "us") {
+      if (length(symbols) > 1) {
+        symbols <- paste(symbols, collapse = ",")
+      }
+      endpoint <- paste0("/v1beta3/crypto/", loc, "/latest/orderbooks")
+      return(private$.data_request(
+        endpoint = endpoint,
+        query = list(symbols = symbols),
+        .parser = function(data) {
+          ob_map <- data$orderbooks
+          if (is.null(ob_map) || length(ob_map) == 0) {
+            return(data.table::data.table(
+              symbol = character(),
+              side = character(),
+              level = integer(),
+              price = numeric(),
+              size = numeric(),
+              timestamp = as.POSIXct(character())
+            ))
+          }
+          dts <- lapply(names(ob_map), function(sym) {
+            ob <- ob_map[[sym]]
+            ts <- rfc3339_to_datetime(ob$t)
+            rows <- list()
+            if (!is.null(ob$b) && length(ob$b) > 0) {
+              bids <- data.table::rbindlist(ob$b)
+              data.table::setnames(bids, c("p", "s"), c("price", "size"))
+              # `level` is 1-based depth from the top of book. .I after
+              # rbindlist preserves the Alpaca response's level ordering.
+              bids[, `:=`(symbol = sym, side = "bid", level = .I, timestamp = ts)]
+              rows <- c(rows, list(bids))
+            }
+            if (!is.null(ob$a) && length(ob$a) > 0) {
+              asks <- data.table::rbindlist(ob$a)
+              data.table::setnames(asks, c("p", "s"), c("price", "size"))
+              asks[, `:=`(symbol = sym, side = "ask", level = .I, timestamp = ts)]
+              rows <- c(rows, list(asks))
+            }
+            if (length(rows) == 0) {
+              return(data.table::data.table())
+            }
+            return(data.table::rbindlist(rows, fill = TRUE))
+          })
+          dt <- data.table::rbindlist(dts, fill = TRUE)
+          if (nrow(dt) > 0 && "symbol" %in% names(dt)) {
+            data.table::setcolorder(dt, c("symbol", "side", "level", "price", "size", "timestamp"))
+          }
+          return(dt[])
+        }
       ))
     },
 

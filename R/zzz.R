@@ -6,5 +6,21 @@ utils::globalVariables(c(
   ":=",
   "symbol",
   "timeframe",
-  "timestamp"
+  "timestamp",
+  # data.table NSE inside parsers (assigned via `dt[, col := ...]`)
+  "leg_index",
+  "parent_order_id",
+  "asset_id",
+  "asset_name",
+  "asset_symbol",
+  "asset_attributes",
+  "image_sizes",
+  "image_urls",
+  # Crypto orderbook NSE columns
+  "level",
+  "side",
+  "price",
+  "size",
+  # Option contract deliverables NSE
+  "deliverable_index"
 ))

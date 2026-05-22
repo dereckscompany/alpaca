@@ -244,6 +244,16 @@ news <- market$get_news(symbols = "TSLA", include_content = TRUE)
 }
 
 ## ------------------------------------------------
+## Method `AlpacaMarketData$get_crypto_orderbook`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+ob <- market$get_crypto_orderbook("BTC/USD")
+print(ob)
+}
+
+## ------------------------------------------------
 ## Method `AlpacaMarketData$get_most_actives`
 ## ------------------------------------------------
 
@@ -288,6 +298,7 @@ print(movers)
 \item \href{#method-AlpacaMarketData-get_clock}{\code{AlpacaMarketData$get_clock()}}
 \item \href{#method-AlpacaMarketData-get_corporate_actions}{\code{AlpacaMarketData$get_corporate_actions()}}
 \item \href{#method-AlpacaMarketData-get_news}{\code{AlpacaMarketData$get_news()}}
+\item \href{#method-AlpacaMarketData-get_crypto_orderbook}{\code{AlpacaMarketData$get_crypto_orderbook()}}
 \item \href{#method-AlpacaMarketData-get_most_actives}{\code{AlpacaMarketData$get_most_actives()}}
 \item \href{#method-AlpacaMarketData-get_movers}{\code{AlpacaMarketData$get_movers()}}
 \item \href{#method-AlpacaMarketData-clone}{\code{AlpacaMarketData$clone()}}
@@ -657,7 +668,7 @@ Retrieves the most recent trade for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1}{Latest Trade}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -700,8 +711,9 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade} (a single row for this single-trade method).
+Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -709,7 +721,11 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}. Recover
+the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+the trade carries no condition codes.
 }
 }
 \subsection{Examples}{
@@ -740,7 +756,7 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1}{Latest Quote}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -785,7 +801,8 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -794,6 +811,12 @@ Verified: 2026-05-21
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
+\item \code{conditions} (character): \verb{;}-separated quote condition codes
+(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
+recover the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+no conditions were reported.
+\item \code{tape} (character): Tape identifier.
 }
 }
 \subsection{Examples}{
@@ -825,7 +848,7 @@ latest quote, minute bar, daily bar, and previous daily bar.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocksnapshotsingle}{Stock Snapshot}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -962,7 +985,7 @@ Retrieves the most recent trade for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatesttrades-1}{Latest Multi Trades}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1000,7 +1023,9 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and trade columns.
+leading \code{symbol} column and the same per-trade columns as
+\code{get_latest_trade()}: \code{timestamp}, \code{price}, \code{size}, \code{exchange},
+\code{conditions} (\verb{;}-collapsed), \code{tape}, \code{id}. One row per symbol.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1018,7 +1043,7 @@ Retrieves the most recent NBBO quote for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocklatestquotes-1}{Latest Multi Quotes}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1056,7 +1081,9 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and quote columns.
+\code{symbol} column and quote columns (\code{timestamp}, \verb{ask_*}, \verb{bid_*},
+\code{conditions}, \code{tape}). \code{conditions} is a \verb{;}-separated character
+column following the package's array-collapse convention.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1074,7 +1101,7 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocksnapshots-1}{Multi Stock Snapshots}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1152,7 +1179,7 @@ Retrieves historical trade data for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stocktradesingle-1}{Historical Stock Trades}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1215,8 +1242,8 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -1224,7 +1251,8 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}.
 }
 }
 }
@@ -1243,7 +1271,7 @@ Retrieves historical quote (NBBO) data for a symbol.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/stockquotesingle-1}{Historical Stock Quotes}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1305,7 +1333,8 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -1314,6 +1343,12 @@ Verified: 2026-05-21
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
+\item \code{conditions} (character): \verb{;}-separated quote condition codes
+(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
+recover the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+no conditions were reported.
+\item \code{tape} (character): Tape identifier.
 }
 }
 }
@@ -1332,7 +1367,7 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/get-v2-assets-1}{Assets}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1433,7 +1468,7 @@ Retrieves metadata for a single asset.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1766,7 +1801,7 @@ date range, or content. Useful for event-driven trading strategies.
 \subsection{Official Documentation}{
 
 \href{https://docs.alpaca.markets/us/reference/news-3}{News}
-Verified: 2026-05-21
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1834,8 +1869,8 @@ without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per related symbol. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per article}. Columns:
 \itemize{
 \item \code{id} (integer): Article ID.
 \item \code{headline} (character): Article headline.
@@ -1845,7 +1880,23 @@ format with one row per related symbol. Columns:
 \item \code{url} (character): Article URL.
 \item \code{created_at} (character): Publication timestamp.
 \item \code{updated_at} (character): Last update timestamp.
-\item \code{symbol} (character): Related ticker symbol.
+\item \code{symbols} (character): Semicolon-separated related tickers, e.g.
+\code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]}; recover
+the original vector via
+\code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
+\item \code{image_sizes} (character): Semicolon-separated image size labels
+parallel to \code{image_urls}. \code{NA} when the article has no images.
+When some images on an article report a \code{size} and others omit
+it, the missing values become \strong{empty tokens} (e.g.
+\code{"large;"}) — never the literal string \code{"NA"} — so a real
+value is unambiguous from a missing one.
+\item \code{image_urls} (character): Semicolon-separated image URLs.
+The join is \strong{lossless} for any input URL: each URL is
+double-encoded (\verb{\%} → \verb{\%25} first, then \verb{;} → \verb{\%3B}) before
+joining, so a single pass of \code{URLdecode()} after splitting
+recovers the original string even when it already contained
+\verb{\%3B} or other percent-escapes. Recover with
+\code{vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))}.
 }
 }
 \subsection{Examples}{
@@ -1859,6 +1910,90 @@ print(news[, .(headline, source, created_at)])
 
 # News with full content
 news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_crypto_orderbook"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_crypto_orderbook}{}}}
+\subsection{Method \code{get_crypto_orderbook()}}{
+Get Latest Crypto Orderbook
+
+Retrieves the latest orderbook (top of book) for a crypto symbol.
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1beta3/crypto/\{loc\}/latest/orderbooks}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/us/reference/cryptolatestorderbooks-1}{Latest Crypto Orderbooks}
+Verified: 2026-05-22
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1beta3/crypto/us/latest/orderbooks?symbols=BTC/USD'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "orderbooks": \{
+    "BTC/USD": \{
+      "t": "2024-01-15T20:00:00.123456Z",
+      "b": [
+        \{"p": 42950.50, "s": 0.5\},
+        \{"p": 42949.00, "s": 1.2\}
+      ],
+      "a": [
+        \{"p": 42951.00, "s": 0.3\},
+        \{"p": 42952.50, "s": 0.8\}
+      ]
+    \}
+  \}
+\}
+}\if{html}{\out{</div>}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_crypto_orderbook(symbols, loc = "us")}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{symbols}}{Character vector; crypto symbols (e.g. \code{"BTC/USD"}).}
+
+\item{\code{loc}}{Character; location code, \code{"us"} (default).}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+one row per \verb{(symbol, side, level)}. Columns:
+\itemize{
+\item \code{symbol} (character): Crypto symbol.
+\item \code{side} (character): \code{"bid"} or \code{"ask"}.
+\item \code{level} (integer): 1-based depth within the side. \code{level = 1} is
+top of book (best bid / best ask); \code{level = 2} is the next-best,
+and so on. Ordering is preserved from the Alpaca response.
+\item \code{price} (numeric): Price at this level.
+\item \code{size} (numeric): Quantity at this level.
+\item \code{timestamp} (POSIXct): Orderbook timestamp.
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+ob <- market$get_crypto_orderbook("BTC/USD")
+print(ob)
 }
 }
 \if{html}{\out{</div>}}

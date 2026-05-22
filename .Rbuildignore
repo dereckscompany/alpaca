@@ -31,8 +31,10 @@ tests-manual/
 tests-temp/
 log.txt
 ^\.claude$
+^\.playwright-mcp$
 ^\.graphics$
 ^_pkgdown\.yml$
+^docs$
 ^air\.toml$
 ^cran-comments\.md$
 ^ROADMAP\.md$

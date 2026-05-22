@@ -163,7 +163,18 @@ AlpacaOptions <- R6::R6Class(
     #'   `deliverables` array in the response.
     #' @param ppind Logical or NULL; filter by Penny Program Indicator. `TRUE`
     #'   returns only contracts eligible for penny price increments.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #'   With `show_deliverables = NULL` (default) or `FALSE`, returns one
+    #'   row per contract. With `show_deliverables = TRUE`, the nested
+    #'   `deliverables` array is exploded to one row per
+    #'   `(contract, deliverable)`; contract fields are replicated on
+    #'   each row, deliverable fields appear as `deliverable_*` columns,
+    #'   and a 1-indexed `deliverable_index` is added. For the typical
+    #'   equity option with exactly one deliverable this means one row
+    #'   per contract still; for spinoff / split deliverables you get
+    #'   one row per deliverable. Filter to canonical per-contract rows
+    #'   with `dt[deliverable_index == 1L | is.na(deliverable_index)]`.
+    #'   Columns (contract):
     #'   - `id` (character): Contract UUID.
     #'   - `symbol` (character): OCC option symbol.
     #'   - `name` (character): Human-readable contract name.
@@ -178,6 +189,14 @@ AlpacaOptions <- R6::R6Class(
     #'   - `size` (character): Contract size (typically `"100"`).
     #'   - `open_interest` (character): Open interest.
     #'   - `close_price` (character): Last close price.
+    #'
+    #'   Columns (deliverables, only when `show_deliverables = TRUE`):
+    #'   `deliverable_index`, `deliverable_type`, `deliverable_symbol`,
+    #'   `deliverable_asset_id`, `deliverable_amount`,
+    #'   `deliverable_allocation_percentage`,
+    #'   `deliverable_settlement_type`,
+    #'   `deliverable_settlement_method`,
+    #'   `deliverable_delayed_settlement`.
     #'
     #' @examples
     #' \dontrun{
@@ -234,7 +253,7 @@ AlpacaOptions <- R6::R6Class(
           ppind = ppind
         ),
         .parser = function(data) {
-          as_dt_list(data$option_contracts)
+          return(parse_contracts(data$option_contracts))
         }
       ))
     },
@@ -294,7 +313,7 @@ AlpacaOptions <- R6::R6Class(
       endpoint <- paste0("/v2/options/contracts/", symbol_or_id)
       return(private$.request(
         endpoint = endpoint,
-        .parser = as_dt_row
+        .parser = parse_contract
       ))
     },
 
@@ -356,8 +375,17 @@ AlpacaOptions <- R6::R6Class(
     #' @param limit Integer or NULL; max bars (1-10000, default 1000).
     #' @param page_token Character or NULL; cursor for pagination.
     #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and the same bar columns as stock bars.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per bar** and a leading `symbol` column. Bar columns mirror
+    #'   the equity `get_bars()` output:
+    #'   - `timestamp` (POSIXct): Bar start timestamp.
+    #'   - `open` (numeric): Opening price.
+    #'   - `high` (numeric): High price.
+    #'   - `low` (numeric): Low price.
+    #'   - `close` (numeric): Closing price.
+    #'   - `volume` (integer): Contracts traded.
+    #'   - `trade_count` (integer): Number of trades in the bar.
+    #'   - `vwap` (numeric): Volume-weighted average price.
     #'
     #' @examples
     #' \dontrun{
@@ -442,7 +470,16 @@ AlpacaOptions <- R6::R6Class(
     #' @param page_token Character or NULL; cursor for pagination.
     #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   trade columns.
+    #'   **one row per trade** and a leading `symbol` column. Columns:
+    #'   - `timestamp` (POSIXct): Trade timestamp.
+    #'   - `price` (numeric): Trade price.
+    #'   - `size` (integer): Trade size (contracts).
+    #'   - `exchange` (character): Exchange code.
+    #'   - `conditions` (character): `;`-separated trade condition codes,
+    #'     or a single-character code for option trades. `NA` when no
+    #'     conditions were reported.
+    #'   - `tape` (character): Tape identifier.
+    #'   - `id` (integer): Trade ID.
     get_option_trades = function(
       symbols,
       start = NULL,
@@ -519,7 +556,13 @@ AlpacaOptions <- R6::R6Class(
     #' @param feed Character or NULL; `"opra"` (default, official OPRA feed) or
     #'   `"indicative"` (free, delayed/modified).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   quote columns plus a `symbol` column.
+    #'   **one row per contract** and a leading `symbol` column. Columns:
+    #'   - `timestamp` (POSIXct): Quote timestamp.
+    #'   - `ask_exchange`, `ask_price`, `ask_size`.
+    #'   - `bid_exchange`, `bid_price`, `bid_size`.
+    #'   - `conditions` (character): `;`-separated quote condition codes,
+    #'     or a single-character code for option quotes. `NA` when no
+    #'     conditions were reported.
     get_option_latest_quotes = function(symbols, feed = NULL) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/quotes/latest",
@@ -581,7 +624,16 @@ AlpacaOptions <- R6::R6Class(
     #' @param symbols Character; comma-separated OCC option symbols.
     #' @param feed Character or NULL; data feed.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   trade columns plus a `symbol` column.
+    #'   **one row per contract** and a leading `symbol` column. Columns:
+    #'   - `timestamp` (POSIXct): Trade timestamp.
+    #'   - `price` (numeric): Trade price.
+    #'   - `size` (integer): Trade size (contracts).
+    #'   - `exchange` (character): Exchange code.
+    #'   - `conditions` (character): `;`-separated trade condition codes,
+    #'     or a single-character code for option trades. `NA` when no
+    #'     conditions were reported.
+    #'   - `tape` (character): Tape identifier.
+    #'   - `id` (integer): Trade ID.
     get_option_latest_trades = function(symbols, feed = NULL) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/trades/latest",
@@ -694,12 +746,36 @@ AlpacaOptions <- R6::R6Class(
     #'   or after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param limit Integer or NULL; max snapshots (1-1000, default 100).
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields plus a `symbol` column.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
+    #'   with **one row per contract**. Columns:
+    #'   - `symbol` (character): OCC option symbol.
+    #'   - `latest_trade_*`, `latest_quote_*`, `minute_bar_*`,
+    #'     `daily_bar_*`, `prev_daily_bar_*`: flattened sections; see
+    #'     `get_snapshot()` for the per-field listing. `latest_trade_t`
+    #'     etc. are expanded to `latest_trade_timestamp` etc.;
+    #'     `latest_trade_conditions` and `latest_quote_conditions` are
+    #'     character columns (`;`-collapsed when Alpaca returns multiple
+    #'     codes, single code otherwise, `NA` when absent).
+    #'   - `implied_volatility` (numeric, optional): Top-level implied
+    #'     volatility. Alpaca returns this only when the account's
+    #'     options data subscription includes greeks/IV — on the default
+    #'     paper-trading `indicative` feed without a subscription the
+    #'     column is absent. Use `if ("implied_volatility" %in%
+    #'     names(dt)) ...` if you need to handle both shapes.
+    #'   - `greeks_delta`, `greeks_gamma`, `greeks_theta`,
+    #'     `greeks_vega`, `greeks_rho` (numeric, optional): The
+    #'     fixed-schema `greeks` object flattened to wide columns. Same
+    #'     subscription-gating as `implied_volatility`.
     get_option_snapshots = function(symbols, feed = NULL, updated_since = NULL, limit = NULL, page_token = NULL) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/snapshots",
-        query = list(symbols = symbols, feed = feed, updated_since = updated_since, limit = limit, page_token = page_token),
+        query = list(
+          symbols = symbols,
+          feed = feed,
+          updated_since = updated_since,
+          limit = limit,
+          page_token = page_token
+        ),
         .parser = function(data) {
           snaps <- data$snapshots
           if (is.null(snaps) || length(snaps) == 0) {
@@ -778,7 +854,10 @@ AlpacaOptions <- R6::R6Class(
     #' @param symbol Character; OCC option symbol.
     #' @param feed Character or NULL; data feed.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields.
+    #'   the same shape as `get_option_chain()` — one row per contract in
+    #'   the chain rooted at `symbol`. Despite the legacy name, this is
+    #'   **not** a single-contract snapshot; for that, use
+    #'   `get_option_snapshots(symbols = "<OCC>")`.
     #'
     #' @examples
     #' \dontrun{
@@ -792,17 +871,14 @@ AlpacaOptions <- R6::R6Class(
           "`get_option_snapshot()` is deprecated. The URL it calls ",
           "(/v1beta1/options/snapshots/{symbol}) is now the ",
           "underlying-chain endpoint, not a per-contract snapshot. ",
-          "For a single contract use `get_option_snapshots(symbols = \"<OCC>\")`."
+          "For a single contract use `get_option_snapshots(symbols = \"<OCC>\")`; ",
+          "for the full chain rooted at an underlying use `get_option_chain()`. ",
+          "This call now delegates to `get_option_chain(symbol)`."
         ),
         .frequency = "regularly",
         .frequency_id = "get_option_snapshot_deprecated"
       )
-      endpoint <- paste0("/v1beta1/options/snapshots/", symbol)
-      return(private$.data_request(
-        endpoint = endpoint,
-        query = list(feed = feed),
-        .parser = parse_snapshot
-      ))
+      return(self$get_option_chain(underlying_symbol = symbol, feed = feed))
     },
 
     #' @description
@@ -900,8 +976,17 @@ AlpacaOptions <- R6::R6Class(
     #' @param updated_since Character or NULL; only snapshots updated at or
     #'   after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields plus a `symbol` column.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
+    #'   with **one row per contract in the chain**. Columns mirror
+    #'   `get_option_snapshots()`: a `symbol` key, the flattened
+    #'   `latest_trade_*` / `latest_quote_*` / `minute_bar_*` /
+    #'   `daily_bar_*` / `prev_daily_bar_*` blocks (including
+    #'   `latest_trade_conditions` / `latest_quote_conditions`), and —
+    #'   when the account's options data subscription includes them —
+    #'   the optional `implied_volatility` and `greeks_delta` /
+    #'   `greeks_gamma` / `greeks_theta` / `greeks_vega` / `greeks_rho`
+    #'   columns. The greeks/IV columns are absent for the default
+    #'   paper-trading `indicative` feed without a subscription.
     #'
     #' @examples
     #' \dontrun{

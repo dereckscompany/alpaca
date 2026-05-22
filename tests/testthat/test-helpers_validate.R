@@ -278,6 +278,45 @@ test_that("validate_order_params rejects mleg orders with more than 4 legs", {
   )
 })
 
+test_that("validate_order_params rejects mleg with notional (qty-only on the server)", {
+  legs <- list(
+    list(symbol = "AAPL240621C00200000", side = "buy", ratio_qty = "1"),
+    list(symbol = "AAPL240621P00180000", side = "sell", ratio_qty = "1")
+  )
+  expect_error(
+    validate_order_params(
+      type = "market",
+      time_in_force = "day",
+      notional = 100,
+      order_class = "mleg",
+      legs = legs
+    ),
+    "notional.*not supported.*mleg"
+  )
+})
+
+test_that("validate_order_params rejects mleg with stop/stop_limit/trailing_stop type", {
+  legs <- list(
+    list(symbol = "AAPL240621C00200000", side = "buy", ratio_qty = "1"),
+    list(symbol = "AAPL240621P00180000", side = "sell", ratio_qty = "1")
+  )
+  for (bad_type in c("stop", "stop_limit", "trailing_stop")) {
+    expect_error(
+      validate_order_params(
+        type = bad_type,
+        time_in_force = "day",
+        qty = 1,
+        stop_price = 1,
+        limit_price = 0.5,
+        trail_price = 1,
+        order_class = "mleg",
+        legs = legs
+      ),
+      "only supports.*market.*limit"
+    )
+  }
+})
+
 test_that("validate_order_params normalises order_class case", {
   legs <- list(list(symbol = "X", side = "buy", ratio_qty = "1"))
   params <- validate_order_params(

@@ -1403,7 +1403,11 @@ Verified: 2026-05-21
 format with one row per asset in the watchlist. Columns include watchlist
 metadata (\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and
 asset columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
-\code{asset_name}, etc.).
+\code{asset_name}, \code{asset_attributes}, etc.). \code{asset_attributes} is a
+\verb{;}-separated character column (e.g.
+\code{"fractional_eh_enabled;has_options"}) — \code{NA} when the asset has
+no attributes. Recover the original vector with
+\code{strsplit(dt$asset_attributes, ";", fixed = TRUE)[[1]]}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1485,8 +1489,13 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
-created watchlist details.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the same long-format shape as \code{get_watchlist()}: one row per
+asset, with watchlist metadata (\code{id}, \code{account_id}, \code{name},
+\code{created_at}, \code{updated_at}) replicated and asset columns prefixed
+\code{asset_} (\code{asset_id}, \code{asset_symbol}, \code{asset_name},
+\code{asset_attributes}, ...). A watchlist created with no symbols
+returns one row with asset columns set to \code{NA}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1568,8 +1577,10 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with updated
-watchlist details.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+the same long-format shape as \code{get_watchlist()}: one row per
+asset (after the modification), watchlist metadata replicated
+on each row, asset columns prefixed \code{asset_}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1650,7 +1661,8 @@ Verified: 2026-05-21
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the updated watchlist.
+the same long-format shape as \code{get_watchlist()}: one row per
+asset in the updated watchlist.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

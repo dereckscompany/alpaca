@@ -2,7 +2,7 @@ KEYS <- get_api_keys(api_key = "k", api_secret = "s")
 BASE <- "https://paper-api.alpaca.markets"
 
 new_account <- function() {
-  AlpacaAccount$new(keys = KEYS, base_url = BASE)
+  return(AlpacaAccount$new(keys = KEYS, base_url = BASE))
 }
 
 test_that("AlpacaAccount inherits from AlpacaBase", {
@@ -22,6 +22,31 @@ test_that("get_account returns data.table with account fields", {
   expect_equal(dt$equity, "100000")
   expect_equal(dt$buying_power, "400000")
   expect_true("pattern_day_trader" %in% names(dt))
+})
+
+test_that("get_account flattens admin_configurations / user_configurations into wide cols (no list cols)", {
+  resp <- mock_alpaca_response(mock_account_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_account()$get_account()
+
+  # The nested config objects must be gone, replaced by wide-prefixed
+  # columns. No list columns anywhere.
+  expect_false("admin_configurations" %in% names(dt))
+  expect_false("user_configurations" %in% names(dt))
+  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
+
+  # admin_*
+  expect_true("admin_configurations_max_margin_multiplier" %in% names(dt))
+  expect_equal(dt$admin_configurations_max_margin_multiplier, "4")
+  expect_equal(dt$admin_configurations_max_options_trading_level, 3L)
+
+  # user_*
+  expect_true("user_configurations_dtbp_check" %in% names(dt))
+  expect_equal(dt$user_configurations_dtbp_check, "entry")
+  expect_equal(dt$user_configurations_no_shorting, FALSE)
+  expect_equal(dt$user_configurations_trade_confirm_email, "all")
 })
 
 test_that("get_positions returns data.table", {
@@ -49,7 +74,9 @@ test_that("get_position returns single-row data.table", {
 test_that("get_portfolio_history rejects providing all of period, start, end", {
   expect_error(
     new_account()$get_portfolio_history(
-      period = "1M", start = "2026-01-01", end = "2026-02-01"
+      period = "1M",
+      start = "2026-01-01",
+      end = "2026-02-01"
     ),
     "Only two of"
   )
@@ -67,7 +94,8 @@ test_that("get_portfolio_history warns and forwards deprecated date_start/date_e
 
   expect_warning(
     new_account()$get_portfolio_history(
-      date_start = "2026-01-01", date_end = "2026-02-01"
+      date_start = "2026-01-01",
+      date_end = "2026-02-01"
     ),
     "date_start.*deprecated"
   )
@@ -78,7 +106,8 @@ test_that("get_portfolio_history warns and forwards deprecated date_start/date_e
 test_that("get_activities rejects both activity_types and category", {
   expect_error(
     new_account()$get_activities(
-      activity_types = "FILL", category = "trade_activity"
+      activity_types = "FILL",
+      category = "trade_activity"
     ),
     "mutually exclusive"
   )
