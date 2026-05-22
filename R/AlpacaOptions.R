@@ -188,7 +188,9 @@ AlpacaOptions <- R6::R6Class(
     #'   - `root_symbol` (character): Root symbol.
     #'   - `size` (character): Contract size (typically `"100"`).
     #'   - `open_interest` (character): Open interest.
+    #'   - `open_interest_date` (Date): Date of the open-interest snapshot.
     #'   - `close_price` (character): Last close price.
+    #'   - `close_price_date` (Date): Date of the last close price.
     #'
     #'   Columns (deliverables, only when `show_deliverables = TRUE`):
     #'   `deliverable_index`, `deliverable_type`, `deliverable_symbol`,

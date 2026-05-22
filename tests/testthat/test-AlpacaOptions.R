@@ -44,7 +44,9 @@ test_that("get_contract returns single-row data.table", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
   expect_equal(dt$symbol, "AAPL240621C00200000")
-  expect_s3_class(dt$expiration_date, "Date")
+  for (col in c("expiration_date", "open_interest_date", "close_price_date")) {
+    expect_true(inherits(dt[[col]], "Date"), label = col)
+  }
 })
 
 test_that("get_contracts with show_deliverables explodes deliverables to long format", {

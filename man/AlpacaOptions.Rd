@@ -342,7 +342,9 @@ Columns (contract):
 \item \code{root_symbol} (character): Root symbol.
 \item \code{size} (character): Contract size (typically \code{"100"}).
 \item \code{open_interest} (character): Open interest.
+\item \code{open_interest_date} (Date): Date of the open-interest snapshot.
 \item \code{close_price} (character): Last close price.
+\item \code{close_price_date} (Date): Date of the last close price.
 }
 
 Columns (deliverables, only when \code{show_deliverables = TRUE}):

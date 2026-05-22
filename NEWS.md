@@ -8,7 +8,16 @@ parsed to `Date` instead of left as `"YYYY-MM-DD"` strings:
 - **Corporate actions** (`AlpacaMarketData$get_corporate_actions()`):
   `declaration_date`, `ex_date`, `record_date`, `payable_date`.
 - **Options contracts** (`AlpacaOptions$get_contracts()`,
-  `$get_contract()`): `expiration_date`.
+  `$get_contract()`): `expiration_date`, `open_interest_date`,
+  `close_price_date`.
+
+`get_corporate_actions()`: the `date_type` argument is now
+validated client-side. The accepted values are the suffixed forms
+Alpaca's docs and SDKs use — `"declaration_date"`, `"ex_date"`,
+`"record_date"`, `"payable_date"` — not the short forms the
+roxygen previously documented (`"declaration"`, `"ex"`, ...). The
+short forms were not accepted by the server, so any caller relying
+on them was already sending an invalid request.
 
 Adds a small shared `parse_date_cols(dt, cols)` helper that walks
 candidate column names and parses `"YYYY-MM-DD"` strings to `Date`

@@ -1739,8 +1739,11 @@ values: \code{"dividend"}, \code{"merger"}, \code{"spinoff"}, \code{"split"}.}
 
 \item{\code{cusip}}{Character or NULL; filter by CUSIP.}
 
-\item{\code{date_type}}{Character or NULL; which date field \code{since}/\code{until} refer to:
-\code{"declaration"}, \code{"ex"}, \code{"record"}, \code{"payable"}. Default \code{"ex"}.}
+\item{\code{date_type}}{Character or NULL; which date field \code{since}/\code{until} refer
+to. Alpaca's documented / SDK values are
+\code{"declaration_date"}, \code{"ex_date"}, \code{"record_date"}, \code{"payable_date"}
+(default server-side: \code{"ex_date"}). Validated client-side; invalid
+values abort before the request.}
 }
 \if{html}{\out{</div>}}
 }

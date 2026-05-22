@@ -1300,8 +1300,11 @@ AlpacaMarketData <- R6::R6Class(
     #' @param until Character; end date (`"YYYY-MM-DD"`). Required.
     #' @param symbol Character or NULL; filter by ticker symbol.
     #' @param cusip Character or NULL; filter by CUSIP.
-    #' @param date_type Character or NULL; which date field `since`/`until` refer to:
-    #'   `"declaration"`, `"ex"`, `"record"`, `"payable"`. Default `"ex"`.
+    #' @param date_type Character or NULL; which date field `since`/`until` refer
+    #'   to. Alpaca's documented / SDK values are
+    #'   `"declaration_date"`, `"ex_date"`, `"record_date"`, `"payable_date"`
+    #'   (default server-side: `"ex_date"`). Validated client-side; invalid
+    #'   values abort before the request.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Announcement UUID.
     #'   - `corporate_action_id` (character): Corporate action ID.
@@ -1341,6 +1344,12 @@ AlpacaMarketData <- R6::R6Class(
       cusip = NULL,
       date_type = NULL
     ) {
+      if (!is.null(date_type)) {
+        rlang::arg_match0(
+          date_type,
+          c("declaration_date", "ex_date", "record_date", "payable_date")
+        )
+      }
       rlang::warn(
         paste0(
           "`get_corporate_actions()` wraps `/v2/corporate_actions/announcements`, ",

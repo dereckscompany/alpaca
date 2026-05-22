@@ -744,7 +744,11 @@ parse_contract <- function(x) {
   delivs <- x[["deliverables"]]
   x[["deliverables"]] <- NULL
   contract_row <- as_dt_row(x)
-  parse_date_cols(contract_row, "expiration_date")
+  parse_date_cols(contract_row, c(
+    "expiration_date",
+    "open_interest_date",
+    "close_price_date"
+  ))
   if (is.null(delivs) || length(delivs) == 0L) {
     return(contract_row[])
   }
