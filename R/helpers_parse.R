@@ -315,7 +315,9 @@ parse_snapshot <- function(snapshot) {
   # the conditions column.
   for (sec in c("latestTrade", "latestQuote")) {
     sub <- snapshot[[sec]]
-    if (is.null(sub)) next
+    if (is.null(sub)) {
+      next
+    }
     if (is.null(sub[["c"]])) {
       sub[["c"]] <- NA_character_
       snapshot[[sec]] <- sub

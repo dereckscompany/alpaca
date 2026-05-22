@@ -104,15 +104,22 @@ validate_order_params <- function(
     if (!is.list(legs)) {
       rlang::abort("`legs` must be a list of leg objects (each itself a list).")
     }
-    bad <- which(!vapply(legs, function(leg) {
-      is.list(leg) &&
-        all(c("symbol", "side", "ratio_qty") %in% names(leg))
-    }, logical(1)))
+    bad <- which(
+      !vapply(
+        legs,
+        function(leg) {
+          is.list(leg) &&
+            all(c("symbol", "side", "ratio_qty") %in% names(leg))
+        },
+        logical(1)
+      )
+    )
     if (length(bad) > 0L) {
       rlang::abort(paste0(
         "Each entry in `legs` must be a list with at least `symbol`, `side`, ",
         "and `ratio_qty` fields. Offending leg position(s): ",
-        paste(bad, collapse = ", "), "."
+        paste(bad, collapse = ", "),
+        "."
       ))
     }
   }

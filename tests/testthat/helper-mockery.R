@@ -738,7 +738,7 @@ mock_news_response <- function() {
         updated_at = "2024-01-25T12:00:00Z",
         images = list(
           list(size = "large", url = "https://cdn.example.com/12350-a.jpg"),
-          list(url = "https://cdn.example.com/12350-b.jpg")  # no size
+          list(url = "https://cdn.example.com/12350-b.jpg") # no size
         )
       )
     ),

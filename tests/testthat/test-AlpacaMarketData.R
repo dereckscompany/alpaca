@@ -241,8 +241,10 @@ test_that("get_bars puts asof and currency on the URL", {
   })
 
   new_market()$get_bars(
-    "AAPL", timeframe = "1Day",
-    asof = "2024-06-09", currency = "EUR"
+    "AAPL",
+    timeframe = "1Day",
+    asof = "2024-06-09",
+    currency = "EUR"
   )
   expect_true(grepl("asof=2024-06-09", captured_url))
   expect_true(grepl("currency=EUR", captured_url))
@@ -293,8 +295,7 @@ test_that("get_crypto_orderbook returns long format with `level` position index"
   # Mock fixture has 2 bids + 2 asks for one symbol -> 4 rows.
   expect_equal(nrow(dt), 4L)
   # Column set + ordering match the documented `(symbol, side, level, ...)`.
-  expect_equal(names(dt),
-               c("symbol", "side", "level", "price", "size", "timestamp"))
+  expect_equal(names(dt), c("symbol", "side", "level", "price", "size", "timestamp"))
   # No list columns sneak through.
   list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
   expect_equal(length(list_cols), 0L)
@@ -331,8 +332,7 @@ test_that("get_crypto_orderbook returns empty data.table with full schema on emp
   dt <- new_market()$get_crypto_orderbook("BTC/USD")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 0L)
-  expect_equal(names(dt),
-               c("symbol", "side", "level", "price", "size", "timestamp"))
+  expect_equal(names(dt), c("symbol", "side", "level", "price", "size", "timestamp"))
 })
 
 test_that("get_crypto_orderbook builds the right URL", {

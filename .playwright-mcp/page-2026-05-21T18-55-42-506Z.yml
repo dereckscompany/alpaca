@@ -1,0 +1,250 @@
+- generic [ref=e6]:
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - generic [active]:
+        - link "Jump to Content":
+          - /url: "#content"
+      - generic [ref=e10]:
+        - link "Alpaca US" [ref=e11] [cursor=pointer]:
+          - /url: https://alpaca.markets
+          - img "Alpaca US" [ref=e12]
+        - 'link "Region: US" [ref=e13] [cursor=pointer]':
+          - /url: /us/page/regions
+      - text:     
+      - generic [ref=e14]:
+        - button "Search ⌘k" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: Search
+          - generic [ref=e19]: ⌘K
+        - button "ai.asAiAriaLabel" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+          - generic [ref=e25]: Ask AI
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - link "Log In" [ref=e28] [cursor=pointer]:
+            - /url: /login?redirect_uri=/us/reference/getopenposition-1
+          - link "Trading Dashboard" [ref=e29] [cursor=pointer]:
+            - /url: https://app.alpaca.markets/
+          - link "Broker Dashboard" [ref=e30] [cursor=pointer]:
+            - /url: https://broker-app.alpaca.markets/
+        - button "Toggle color scheme" [ref=e32] [cursor=pointer]:
+          - img "Toggle color scheme" [ref=e33]
+          - img "Toggle color scheme" [ref=e37]
+          - img "Toggle color scheme" [ref=e40]
+    - navigation "Primary navigation" [ref=e48]:
+      - link " Home" [ref=e49] [cursor=pointer]:
+        - /url: /us/
+        - generic [ref=e50]: 
+        - generic [ref=e51]: Home
+      - link " Documentation" [ref=e52] [cursor=pointer]:
+        - /url: /us/docs
+        - generic [ref=e53]: 
+        - generic [ref=e54]: Documentation
+      - link " API Reference" [ref=e55] [cursor=pointer]:
+        - /url: /us/reference
+        - generic [ref=e56]: 
+        - generic [ref=e57]: API Reference
+  - main [ref=e59]:
+    - generic [ref=e61]:
+      - article [ref=e62]:
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - heading "Get an Open Position" [level=1] [ref=e66]
+            - generic [ref=e69]:
+              - button [ref=e70] [cursor=pointer]
+              - button [ref=e73] [cursor=pointer]
+          - generic [ref=e76]:
+            - generic [ref=e77]: get
+            - 'generic "https://paper-api.alpaca.markets/v2/positions/{symbol_or_asset_id}" [ref=e79]'
+            - button "Copy to clipboard" [ref=e80] [cursor=pointer]
+          - paragraph [ref=e84]: Retrieves the account’s open position for the given symbol or assetId.
+        - generic [ref=e85]:
+          - generic [ref=e87]:
+            - link "Skip link to Path Params" [ref=e88] [cursor=pointer]:
+              - /url: "#path-params"
+            - text: Path Params
+          - generic [ref=e96]:
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - generic [ref=e99]: symbol_or_asset_id
+                - generic [ref=e100]: string
+                - generic [ref=e101]: required
+              - paragraph [ref=e105]: symbol or assetId
+            - 'combobox "{symbol_or_asset_id} symbol_or_asset_id" [ref=e108]'
+        - generic [ref=e110]:
+          - link "Skip link to Response" [ref=e111] [cursor=pointer]:
+            - /url: "#response-schemas"
+          - text: Response
+        - heading "200 200 Successful response" [level=1] [ref=e116]:
+          - button "200 200 Successful response" [ref=e117] [cursor=pointer]:
+            - generic [ref=e118]:
+              - generic [ref=e119]:
+                - code [ref=e120]:
+                  - img "200" [ref=e121]
+                - text: "200"
+              - paragraph [ref=e123]: Successful response
+      - generic [ref=e127]:
+        - generic [ref=e128]:
+          - generic [ref=e130]: Language
+          - generic [ref=e132]:
+            - button " Shell" [pressed] [ref=e133] [cursor=pointer]:
+              - generic [ref=e134]: 
+              - text: Shell
+            - button " Node" [ref=e135] [cursor=pointer]:
+              - generic [ref=e136]: 
+              - text: Node
+            - button " Ruby" [ref=e137] [cursor=pointer]:
+              - generic [ref=e138]: 
+              - text: Ruby
+            - button " PHP" [ref=e139] [cursor=pointer]:
+              - generic [ref=e140]: 
+              - text: PHP
+            - button " Python" [ref=e141] [cursor=pointer]:
+              - generic [ref=e142]:
+                - generic [ref=e143]: 
+                - generic: 
+              - text: Python
+            - button "More Languages" [ref=e145] [cursor=pointer]
+        - generic [ref=e149]:
+          - generic [ref=e151]: Credentials
+          - generic [ref=e152]:
+            - button "Header +1" [disabled] [ref=e155]:
+              - generic [ref=e156]: Header +1
+            - generic [ref=e158]:
+              - textbox "APCA-API-KEY-ID" [ref=e159]
+              - button "Hide" [ref=e160] [cursor=pointer]
+              - button "Information" [ref=e163]: 
+            - generic [ref=e165]:
+              - textbox "APCA-API-SECRET-KEY" [ref=e166]
+              - button "Hide" [ref=e167] [cursor=pointer]
+              - button "Information" [ref=e170]: 
+        - generic [ref=e171]:
+          - generic [ref=e173]: URL
+          - generic [ref=e174]:
+            - button "Base URL " [ref=e176] [cursor=pointer]:
+              - generic [ref=e177]: Base URL
+              - generic [ref=e178]: 
+            - 'button "https://paper-api.alpaca.markets /v2/positions/{symbol_or_asset_id}" [disabled] [ref=e179]':
+              - generic [ref=e180]: https://paper-api.alpaca.markets
+              - generic [ref=e181]: "/v2/positions/{symbol_or_asset_id}"
+        - generic [ref=e182]:
+          - button "cURL Request" [ref=e186] [cursor=pointer]:
+            - generic [ref=e187]: cURL Request
+          - generic [ref=e196]:
+            - generic [ref=e197]:
+              - generic [ref=e198]: "1"
+              - text: curl --request GET \
+            - generic [ref=e199]:
+              - generic [ref=e200]: "2"
+              - text: "--url https://paper-api.alpaca.markets/v2/positions/symbol_or_asset_id \\"
+            - generic [ref=e201]:
+              - generic [ref=e202]: "3"
+              - text: "--header 'accept: application/json'"
+          - generic [ref=e206]:
+            - button "Copy to clipboard" [ref=e208] [cursor=pointer]
+            - button "Try It!" [ref=e211] [cursor=pointer]
+          - generic [ref=e212]:
+            - generic [ref=e214]: Response
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - text: Click
+                - code [ref=e217]: Try It!
+                - text: "to start a request and see the response here! Or choose an example:"
+              - generic [ref=e219]:
+                - generic [ref=e220]: application/json
+                - button "200 200" [ref=e222] [cursor=pointer]:
+                  - code [ref=e223]:
+                    - img "200" [ref=e224]
+                  - generic [ref=e225]: "200"
+      - text:   
+  - contentinfo [ref=e226]:
+    - generic [ref=e228]:
+      - navigation [ref=e230]:
+        - generic [ref=e231]:
+          - heading "Developers" [level=2] [ref=e232]
+          - link "Docs" [ref=e233] [cursor=pointer]:
+            - /url: https://docs.alpaca.markets
+          - link "Slack" [ref=e234] [cursor=pointer]:
+            - /url: https://alpaca.markets/slack
+          - link "Forum" [ref=e235] [cursor=pointer]:
+            - /url: https://forum.alpaca.markets/
+          - link "Support" [ref=e236] [cursor=pointer]:
+            - /url: https://alpaca.markets/support/
+          - link "Learn" [ref=e237] [cursor=pointer]:
+            - /url: https://alpaca.markets/learn/
+          - link "SDKs & Libraries" [ref=e238] [cursor=pointer]:
+            - /url: https://alpaca.markets/docs/api-documentation/client-sdk/
+          - link "GitHub" [ref=e239] [cursor=pointer]:
+            - /url: https://github.com/alpacahq/
+          - link "API Status" [ref=e240] [cursor=pointer]:
+            - /url: https://status.alpaca.markets/
+          - link "Security" [ref=e241] [cursor=pointer]:
+            - /url: https://alpaca.markets/security
+        - generic [ref=e242]:
+          - heading "About Us" [level=2] [ref=e243]
+          - link "Story" [ref=e244] [cursor=pointer]:
+            - /url: https://techcrunch.com/2021/08/30/alpaca-raises-50m-to-rapidly-scale-its-equities-trading-api-business/?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAI4JGSuo7z4Eu8sGNb4TaXm5yUO7O40OPPy3yVtt2fYXuy46t-4ZQ-8HqqJRmVV3wUUHdA8YgVS2oFszkogNsyJAw1McTl4urvwJYbrG9PF1NGIkeH7zN8_QQnWMbSS_I2s2bxcjTW1gLnU_FP2k3MX1beVCzevohGkXKw684ITb
+          - link "Blog" [ref=e245] [cursor=pointer]:
+            - /url: https://alpaca.markets/blog/
+          - link "Contact" [ref=e246] [cursor=pointer]:
+            - /url: https://alpaca.markets/contact
+          - link "We're hiring" [ref=e247] [cursor=pointer]:
+            - /url: https://alpaca.markets/hiring
+        - generic [ref=e248]:
+          - heading "Disclosures" [level=2] [ref=e249]
+          - link "Disclosure Library" [ref=e250] [cursor=pointer]:
+            - /url: https://alpaca.markets/disclosures
+          - link "Form CRS" [ref=e251] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRS.pdf
+          - link "Form CRS Responses to Conversation Starters" [ref=e252] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRSConvStrtrs.pdf
+          - link "Privacy Policy" [ref=e253] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/PrivacyPolicy.pdf
+          - link "Cookie Policy" [ref=e254] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/CookiePolicy.pdf
+          - link "Terms & Conditions" [ref=e255] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/library/TermsAndConditions.pdf
+        - generic [ref=e256]:
+          - generic [ref=e257]:
+            - link "Twitter" [ref=e258] [cursor=pointer]:
+              - /url: https://twitter.com/AlpacaHQ
+              - img "Twitter" [ref=e259]
+            - link "LinkedIn" [ref=e261] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/9300556/
+              - img "LinkedIn" [ref=e262]
+            - link "Facebook" [ref=e264] [cursor=pointer]:
+              - /url: https://www.facebook.com/alpacahq
+              - img "Facebook" [ref=e265]
+            - link "Slack" [ref=e267] [cursor=pointer]:
+              - /url: https://alpaca.markets/slack
+              - img "Slack" [ref=e268]
+          - link "Submit Feedback" [ref=e270] [cursor=pointer]:
+            - /url: " https://forms.gle/vZmCs8uCRnA1SpXz6"
+      - generic [ref=e271]:
+        - link "Alpaca" [ref=e272] [cursor=pointer]:
+          - /url: https://alpaca.markets/
+          - img "Alpaca" [ref=e273]
+        - paragraph [ref=e284]: © 2025 Alpaca Securities LLC All rights reserved.
+        - paragraph [ref=e285]: © 2025 Alpaca Crypto LLC All rights reserved.
+        - paragraph [ref=e286]: © 2025 AlpacaDB, Inc. All rights reserved.
+        - paragraph [ref=e287]:
+          - text: Securities brokerage services are provided by Alpaca Securities LLC ("Alpaca Securities"), member
+          - link "FINRA" [ref=e288] [cursor=pointer]:
+            - /url: https://www.finra.org/
+          - text: /
+          - link "SIPC" [ref=e289] [cursor=pointer]:
+            - /url: https://www.sipc.org/
+          - text: ", a wholly-owned subsidiary of AlpacaDB, Inc. Technology and services are offered by AlpacaDB, Inc."
+          - text: Options trading is not suitable for all investors due to its inherent high risk, which can potentially result in significant losses. Please read
+          - link "Characteristics and Risks of Standardized Options" [ref=e290] [cursor=pointer]:
+            - /url: https://www.theocc.com/company-information/documents-and-archives/options-disclosure-document
+          - text: before investing in options.
+          - text: "Cryptocurrency services are made available by Alpaca Crypto LLC (\"Alpaca Crypto\"), a FinCEN registered money services business (NMLS # 2160858), and a wholly-owned subsidiary of AlpacaDB, Inc. Alpaca Crypto is not a member of SIPC or FINRA. Cryptocurrencies are not stocks and your cryptocurrency investments are not protected by either FDIC or SIPC."
+          - text: Cryptocurrency is highly speculative in nature, involves a high degree of risks, such as volatile market price swings, market manipulation, flash crashes, and cybersecurity risks. Cryptocurrency regulations are continuously evolving, and it is your responsibility to understand and abide by them. Cryptocurrency trading can lead to large, immediate and permanent loss of financial value. You should have appropriate knowledge and experience before engaging in cryptocurrency trading. For additional information, please click
+          - link "here" [ref=e291] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/CryptoRiskDisclosures.pdf
+          - text: .
+        - link "! View Important Disclosures" [ref=e292] [cursor=pointer]:
+          - /url: https://alpaca.markets/#disclosures
+          - generic [ref=e293]: "!"
+          - generic [ref=e294]: View Important Disclosures

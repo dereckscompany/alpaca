@@ -173,10 +173,16 @@ test_that("get_option_chain preserves impliedVolatility and greeks_*", {
   expect_equal(dt$implied_volatility, 0.2712)
 
   # Greeks flattened to wide.
-  expect_true(all(c(
-    "greeks_delta", "greeks_gamma", "greeks_theta",
-    "greeks_vega", "greeks_rho"
-  ) %in% names(dt)))
+  expect_true(all(
+    c(
+      "greeks_delta",
+      "greeks_gamma",
+      "greeks_theta",
+      "greeks_vega",
+      "greeks_rho"
+    ) %in%
+      names(dt)
+  ))
   expect_equal(dt$greeks_delta, -0.4577)
   expect_equal(dt$greeks_rho, -0.1289)
 })

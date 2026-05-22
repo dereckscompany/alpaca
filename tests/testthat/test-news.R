@@ -191,8 +191,7 @@ test_that("get_news lossless URL round-trip survives a pre-existing %3B in the s
     URLdecode,
     character(1)
   )
-  expect_equal(unname(decoded[1]),
-               "https://cdn.example.com/12349.jpg?token=abc%3Bdef")
+  expect_equal(unname(decoded[1]), "https://cdn.example.com/12349.jpg?token=abc%3Bdef")
 })
 
 test_that("get_news writes empty token (not 'NA') for partially-missing per-image fields", {
@@ -214,8 +213,8 @@ test_that("get_news writes empty token (not 'NA') for partially-missing per-imag
   expect_false(grepl("NA", row$image_sizes, fixed = TRUE))
 
   # Both URLs are present; the URL column is unaffected.
-  expect_equal(row$image_urls,
-               paste("https://cdn.example.com/12350-a.jpg",
-                     "https://cdn.example.com/12350-b.jpg",
-                     sep = ";"))
+  expect_equal(
+    row$image_urls,
+    paste("https://cdn.example.com/12350-a.jpg", "https://cdn.example.com/12350-b.jpg", sep = ";")
+  )
 })

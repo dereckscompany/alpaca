@@ -1,0 +1,2402 @@
+- generic [ref=e6]:
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - generic:
+        - link "Jump to Content":
+          - /url: "#content"
+      - generic [ref=e10]:
+        - link "Alpaca US" [ref=e11] [cursor=pointer]:
+          - /url: https://alpaca.markets
+          - img "Alpaca US" [ref=e12]
+        - 'link "Region: US" [ref=e13] [cursor=pointer]':
+          - /url: /us/page/regions
+      - text:     
+      - generic [ref=e14]:
+        - button "Search ⌘k" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: Search
+          - generic [ref=e19]: ⌘K
+        - button "ai.asAiAriaLabel" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+          - generic [ref=e25]: Ask AI
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - link "Log In" [ref=e28] [cursor=pointer]:
+            - /url: /login?redirect_uri=/us/reference/postorder
+          - link "Trading Dashboard" [ref=e29] [cursor=pointer]:
+            - /url: https://app.alpaca.markets/
+          - link "Broker Dashboard" [ref=e30] [cursor=pointer]:
+            - /url: https://broker-app.alpaca.markets/
+        - button "Toggle color scheme" [ref=e32] [cursor=pointer]:
+          - img "Toggle color scheme" [ref=e33]
+          - img "Toggle color scheme" [ref=e37]
+          - img "Toggle color scheme" [ref=e40]
+    - navigation "Primary navigation" [ref=e48]:
+      - link " Home" [ref=e49] [cursor=pointer]:
+        - /url: /us/
+        - generic [ref=e50]: 
+        - generic [ref=e51]: Home
+      - link " Documentation" [ref=e52] [cursor=pointer]:
+        - /url: /us/docs
+        - generic [ref=e53]: 
+        - generic [ref=e54]: Documentation
+      - link " API Reference" [ref=e55] [cursor=pointer]:
+        - /url: /us/reference
+        - generic [ref=e56]: 
+        - generic [ref=e57]: API Reference
+  - main [ref=e59]:
+    - navigation "Secondary navigation" [ref=e60]:
+      - button "JUMP TO" [active] [ref=e62] [cursor=pointer]:
+        - text: JUMP TO
+        - generic [ref=e63]: ⌘/
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - heading "Alpaca Py" [level=2] [ref=e66]
+          - list [ref=e67]:
+            - listitem [ref=e68]:
+              - link "About Alpaca-py" [ref=e69] [cursor=pointer]:
+                - /url: /us/reference/api-references
+                - generic [ref=e71]: About Alpaca-py
+        - generic [ref=e72]:
+          - heading "Authentication API" [level=2] [ref=e73]
+          - list [ref=e74]:
+            - listitem [ref=e75]:
+              - link "OAuth2 Show subpages for OAuth2" [ref=e76] [cursor=pointer]:
+                - /url: /us/reference/issuetokens
+                - generic [ref=e78]: OAuth2
+                - button "Show subpages for OAuth2" [ref=e79]:
+                  - generic [ref=e80]: 
+              - list:
+                - listitem [ref=e81]:
+                  - link "Issue tokens post" [ref=e82] [cursor=pointer]:
+                    - /url: /us/reference/issuetokens
+                    - generic [ref=e84]: Issue tokens
+                    - generic [ref=e86]: post
+        - generic [ref=e87]:
+          - heading "Trading API" [level=2] [ref=e88]
+          - list [ref=e89]:
+            - listitem [ref=e90]:
+              - link "Accounts Show subpages for Accounts" [ref=e91] [cursor=pointer]:
+                - /url: /us/reference/getaccount-1
+                - generic [ref=e93]: Accounts
+                - button "Show subpages for Accounts" [ref=e94]:
+                  - generic [ref=e95]: 
+              - list:
+                - listitem [ref=e96]:
+                  - link "Get Account get" [ref=e97] [cursor=pointer]:
+                    - /url: /us/reference/getaccount-1
+                    - generic [ref=e99]: Get Account
+                    - generic [ref=e101]: get
+            - listitem [ref=e102]:
+              - link "Assets Show subpages for Assets" [ref=e103] [cursor=pointer]:
+                - /url: /us/reference/get-v2-assets-1
+                - generic [ref=e105]: Assets
+                - button "Show subpages for Assets" [ref=e106]:
+                  - generic [ref=e107]: 
+              - list:
+                - listitem [ref=e108]:
+                  - link "Get Assets get" [ref=e109] [cursor=pointer]:
+                    - /url: /us/reference/get-v2-assets-1
+                    - generic [ref=e111]: Get Assets
+                    - generic [ref=e113]: get
+                - listitem [ref=e114]:
+                  - link "Get an Asset by ID or Symbol get" [ref=e115] [cursor=pointer]:
+                    - /url: /us/reference/get-v2-assets-symbol_or_asset_id
+                    - generic [ref=e117]: Get an Asset by ID or Symbol
+                    - generic [ref=e119]: get
+                - listitem [ref=e120]:
+                  - link "Get Option Contracts get" [ref=e121] [cursor=pointer]:
+                    - /url: /us/reference/get-options-contracts
+                    - generic [ref=e123]: Get Option Contracts
+                    - generic [ref=e125]: get
+                - listitem [ref=e126]:
+                  - link "Get an option contract by ID or Symbol get" [ref=e127] [cursor=pointer]:
+                    - /url: /us/reference/get-option-contract-symbol_or_id
+                    - generic [ref=e129]: Get an option contract by ID or Symbol
+                    - generic [ref=e131]: get
+                - listitem [ref=e132]:
+                  - link "Get US treasuries get" [ref=e133] [cursor=pointer]:
+                    - /url: /us/reference/ustreasuries
+                    - generic [ref=e135]: Get US treasuries
+                    - generic [ref=e137]: get
+                - listitem [ref=e138]:
+                  - link "Get US corporates get" [ref=e139] [cursor=pointer]:
+                    - /url: /us/reference/uscorporates
+                    - generic [ref=e141]: Get US corporates
+                    - generic [ref=e143]: get
+            - listitem [ref=e144]:
+              - link "Corporate Actions Show subpages for Corporate Actions" [ref=e145] [cursor=pointer]:
+                - /url: /us/reference/get-v2-corporate_actions-announcements-id-1
+                - generic [ref=e147]: Corporate Actions
+                - button "Show subpages for Corporate Actions" [ref=e148]:
+                  - generic [ref=e149]: 
+              - list:
+                - listitem [ref=e150]:
+                  - link "Retrieve a Specific Announcement Deprecated Endpoint get" [ref=e151] [cursor=pointer]:
+                    - /url: /us/reference/get-v2-corporate_actions-announcements-id-1
+                    - generic [ref=e153]: Retrieve a Specific Announcement
+                    - generic [ref=e154]:
+                      - button "Deprecated Endpoint" [ref=e155]:
+                        - img [ref=e157]
+                      - generic [ref=e160]: get
+                - listitem [ref=e161]:
+                  - link "Retrieve Announcements Deprecated Endpoint get" [ref=e162] [cursor=pointer]:
+                    - /url: /us/reference/get-v2-corporate_actions-announcements-1
+                    - generic [ref=e164]: Retrieve Announcements
+                    - generic [ref=e165]:
+                      - button "Deprecated Endpoint" [ref=e166]
+                      - generic [ref=e169]: get
+            - listitem [ref=e170]:
+              - link "Orders Hide subpages for Orders" [ref=e171] [cursor=pointer]:
+                - /url: /us/reference/postorder
+                - generic [ref=e173]: Orders
+                - button "Hide subpages for Orders" [expanded] [ref=e174]:
+                  - generic [ref=e175]: 
+              - list [ref=e176]:
+                - listitem [ref=e177]:
+                  - link "Create an Order post" [ref=e178] [cursor=pointer]:
+                    - /url: /us/reference/postorder
+                    - generic [ref=e180]: Create an Order
+                    - generic [ref=e182]: post
+                - listitem [ref=e183]:
+                  - link "Get All Orders get" [ref=e184] [cursor=pointer]:
+                    - /url: /us/reference/getallorders-1
+                    - generic [ref=e186]: Get All Orders
+                    - generic [ref=e188]: get
+                - listitem [ref=e189]:
+                  - link "Delete All Orders del" [ref=e190] [cursor=pointer]:
+                    - /url: /us/reference/deleteallorders-1
+                    - generic [ref=e192]: Delete All Orders
+                    - generic [ref=e194]: del
+                - listitem [ref=e195]:
+                  - link "Get Order by Client Order ID get" [ref=e196] [cursor=pointer]:
+                    - /url: /us/reference/getorderbyclientorderid
+                    - generic [ref=e198]: Get Order by Client Order ID
+                    - generic [ref=e200]: get
+                - listitem [ref=e201]:
+                  - link "Get Order by ID get" [ref=e202] [cursor=pointer]:
+                    - /url: /us/reference/getorderbyorderid-1
+                    - generic [ref=e204]: Get Order by ID
+                    - generic [ref=e206]: get
+                - listitem [ref=e207]:
+                  - link "Replace Order by ID patch" [ref=e208] [cursor=pointer]:
+                    - /url: /us/reference/patchorderbyorderid-1
+                    - generic [ref=e210]: Replace Order by ID
+                    - generic [ref=e212]: patch
+                - listitem [ref=e213]:
+                  - link "Delete Order by ID del" [ref=e214] [cursor=pointer]:
+                    - /url: /us/reference/deleteorderbyorderid-1
+                    - generic [ref=e216]: Delete Order by ID
+                    - generic [ref=e218]: del
+            - listitem [ref=e219]:
+              - link "Positions Show subpages for Positions" [ref=e220] [cursor=pointer]:
+                - /url: /us/reference/getallopenpositions
+                - generic [ref=e222]: Positions
+                - button "Show subpages for Positions" [ref=e223]:
+                  - generic [ref=e224]: 
+              - list:
+                - listitem [ref=e225]:
+                  - link "All Open Positions get" [ref=e226] [cursor=pointer]:
+                    - /url: /us/reference/getallopenpositions
+                    - generic [ref=e228]: All Open Positions
+                    - generic [ref=e230]: get
+                - listitem [ref=e231]:
+                  - link "Close All Positions del" [ref=e232] [cursor=pointer]:
+                    - /url: /us/reference/deleteallopenpositions-1
+                    - generic [ref=e234]: Close All Positions
+                    - generic [ref=e236]: del
+                - listitem [ref=e237]:
+                  - link "Get an Open Position get" [ref=e238] [cursor=pointer]:
+                    - /url: /us/reference/getopenposition-1
+                    - generic [ref=e240]: Get an Open Position
+                    - generic [ref=e242]: get
+                - listitem [ref=e243]:
+                  - link "Close a Position del" [ref=e244] [cursor=pointer]:
+                    - /url: /us/reference/deleteopenposition-1
+                    - generic [ref=e246]: Close a Position
+                    - generic [ref=e248]: del
+                - listitem [ref=e249]:
+                  - link "Exercise an Options Position post" [ref=e250] [cursor=pointer]:
+                    - /url: /us/reference/optionexercise
+                    - generic [ref=e252]: Exercise an Options Position
+                    - generic [ref=e254]: post
+            - listitem [ref=e255]:
+              - link "Portfolio History Show subpages for Portfolio History" [ref=e256] [cursor=pointer]:
+                - /url: /us/reference/getaccountportfoliohistory-1
+                - generic [ref=e258]: Portfolio History
+                - button "Show subpages for Portfolio History" [ref=e259]:
+                  - generic [ref=e260]: 
+              - list:
+                - listitem [ref=e261]:
+                  - link "Get Account Portfolio History get" [ref=e262] [cursor=pointer]:
+                    - /url: /us/reference/getaccountportfoliohistory-1
+                    - generic [ref=e264]: Get Account Portfolio History
+                    - generic [ref=e266]: get
+            - listitem [ref=e267]:
+              - link "Watchlists Show subpages for Watchlists" [ref=e268] [cursor=pointer]:
+                - /url: /us/reference/getwatchlists-1
+                - generic [ref=e270]: Watchlists
+                - button "Show subpages for Watchlists" [ref=e271]:
+                  - generic [ref=e272]: 
+              - list:
+                - listitem [ref=e273]:
+                  - link "Get All Watchlists get" [ref=e274] [cursor=pointer]:
+                    - /url: /us/reference/getwatchlists-1
+                    - generic [ref=e276]: Get All Watchlists
+                    - generic [ref=e278]: get
+                - listitem [ref=e279]:
+                  - link "Create Watchlist post" [ref=e280] [cursor=pointer]:
+                    - /url: /us/reference/postwatchlist-1
+                    - generic [ref=e282]: Create Watchlist
+                    - generic [ref=e284]: post
+                - listitem [ref=e285]:
+                  - link "Get Watchlist by ID get" [ref=e286] [cursor=pointer]:
+                    - /url: /us/reference/getwatchlistbyid-1
+                    - generic [ref=e288]: Get Watchlist by ID
+                    - generic [ref=e290]: get
+                - listitem [ref=e291]:
+                  - link "Update Watchlist By Id put" [ref=e292] [cursor=pointer]:
+                    - /url: /us/reference/updatewatchlistbyid-1
+                    - generic [ref=e294]: Update Watchlist By Id
+                    - generic [ref=e296]: put
+                - listitem [ref=e297]:
+                  - link "Add Asset to Watchlist post" [ref=e298] [cursor=pointer]:
+                    - /url: /us/reference/addassettowatchlist-1
+                    - generic [ref=e300]: Add Asset to Watchlist
+                    - generic [ref=e302]: post
+                - listitem [ref=e303]:
+                  - link "Delete Watchlist By Id del" [ref=e304] [cursor=pointer]:
+                    - /url: /us/reference/deletewatchlistbyid-1
+                    - generic [ref=e306]: Delete Watchlist By Id
+                    - generic [ref=e308]: del
+                - listitem [ref=e309]:
+                  - link "Get Watchlist by Name get" [ref=e310] [cursor=pointer]:
+                    - /url: /us/reference/getwatchlistbyname-1
+                    - generic [ref=e312]: Get Watchlist by Name
+                    - generic [ref=e314]: get
+                - listitem [ref=e315]:
+                  - link "Update Watchlist By Name put" [ref=e316] [cursor=pointer]:
+                    - /url: /us/reference/updatewatchlistbyname-1
+                    - generic [ref=e318]: Update Watchlist By Name
+                    - generic [ref=e320]: put
+                - listitem [ref=e321]:
+                  - link "Add Asset to Watchlist By Name post" [ref=e322] [cursor=pointer]:
+                    - /url: /us/reference/addassettowatchlistbyname-1
+                    - generic [ref=e324]: Add Asset to Watchlist By Name
+                    - generic [ref=e326]: post
+                - listitem [ref=e327]:
+                  - link "Delete Watchlist By Name del" [ref=e328] [cursor=pointer]:
+                    - /url: /us/reference/deletewatchlistbyname-1
+                    - generic [ref=e330]: Delete Watchlist By Name
+                    - generic [ref=e332]: del
+                - listitem [ref=e333]:
+                  - link "Delete Symbol from Watchlist del" [ref=e334] [cursor=pointer]:
+                    - /url: /us/reference/removeassetfromwatchlist-1
+                    - generic [ref=e336]: Delete Symbol from Watchlist
+                    - generic [ref=e338]: del
+            - listitem [ref=e339]:
+              - link "Account Configurations Show subpages for Account Configurations" [ref=e340] [cursor=pointer]:
+                - /url: /us/reference/getaccountconfig-1
+                - generic [ref=e342]: Account Configurations
+                - button "Show subpages for Account Configurations" [ref=e343]:
+                  - generic [ref=e344]: 
+              - list:
+                - listitem [ref=e345]:
+                  - link "Get Account Configurations get" [ref=e346] [cursor=pointer]:
+                    - /url: /us/reference/getaccountconfig-1
+                    - generic [ref=e348]: Get Account Configurations
+                    - generic [ref=e350]: get
+                - listitem [ref=e351]:
+                  - link "Account Configurations patch" [ref=e352] [cursor=pointer]:
+                    - /url: /us/reference/patchaccountconfig-1
+                    - generic [ref=e354]: Account Configurations
+                    - generic [ref=e356]: patch
+            - listitem [ref=e357]:
+              - link "Account Activities Show subpages for Account Activities" [ref=e358] [cursor=pointer]:
+                - /url: /us/reference/getaccountactivities-2
+                - generic [ref=e360]: Account Activities
+                - button "Show subpages for Account Activities" [ref=e361]:
+                  - generic [ref=e362]: 
+              - list:
+                - listitem [ref=e363]:
+                  - link "Retrieve Account Activities get" [ref=e364] [cursor=pointer]:
+                    - /url: /us/reference/getaccountactivities-2
+                    - generic [ref=e366]: Retrieve Account Activities
+                    - generic [ref=e368]: get
+                - listitem [ref=e369]:
+                  - link "Retrieve Account Activities of Specific Type get" [ref=e370] [cursor=pointer]:
+                    - /url: /us/reference/getaccountactivitiesbyactivitytype-1
+                    - generic [ref=e372]: Retrieve Account Activities of Specific Type
+                    - generic [ref=e374]: get
+            - listitem [ref=e375]:
+              - link "Calendar Show subpages for Calendar" [ref=e376] [cursor=pointer]:
+                - /url: /us/reference/legacycalendar
+                - generic [ref=e378]: Calendar
+                - button "Show subpages for Calendar" [ref=e379]:
+                  - generic [ref=e380]: 
+              - list:
+                - listitem [ref=e381]:
+                  - link "Get US Market Calendar get" [ref=e382] [cursor=pointer]:
+                    - /url: /us/reference/legacycalendar
+                    - generic [ref=e384]: Get US Market Calendar
+                    - generic [ref=e386]: get
+                - listitem [ref=e387]:
+                  - link "Get US Market Clock get" [ref=e388] [cursor=pointer]:
+                    - /url: /us/reference/legacyclock
+                    - generic [ref=e390]: Get US Market Clock
+                    - generic [ref=e392]: get
+                - listitem [ref=e393]:
+                  - link "Get Market Calendar get" [ref=e394] [cursor=pointer]:
+                    - /url: /us/reference/calendar-2
+                    - generic [ref=e396]: Get Market Calendar
+                    - generic [ref=e398]: get
+                - listitem [ref=e399]:
+                  - link "Get Market Clock get" [ref=e400] [cursor=pointer]:
+                    - /url: /us/reference/clock-1
+                    - generic [ref=e402]: Get Market Clock
+                    - generic [ref=e404]: get
+            - listitem [ref=e405]:
+              - link "Crypto Funding Show subpages for Crypto Funding" [ref=e406] [cursor=pointer]:
+                - /url: /us/reference/listcryptofundingwallets
+                - generic [ref=e408]: Crypto Funding
+                - button "Show subpages for Crypto Funding" [ref=e409]:
+                  - generic [ref=e410]: 
+              - list:
+                - listitem [ref=e411]:
+                  - link "Retrieve Crypto Funding Wallets get" [ref=e412] [cursor=pointer]:
+                    - /url: /us/reference/listcryptofundingwallets
+                    - generic [ref=e414]: Retrieve Crypto Funding Wallets
+                    - generic [ref=e416]: get
+                - listitem [ref=e417]:
+                  - link "Retrieve Crypto Funding Transfers get" [ref=e418] [cursor=pointer]:
+                    - /url: /us/reference/listcryptofundingtransfers
+                    - generic [ref=e420]: Retrieve Crypto Funding Transfers
+                    - generic [ref=e422]: get
+                - listitem [ref=e423]:
+                  - link "Request a New Withdrawal post" [ref=e424] [cursor=pointer]:
+                    - /url: /us/reference/createcryptotransferforaccount
+                    - generic [ref=e426]: Request a New Withdrawal
+                    - generic [ref=e428]: post
+                - listitem [ref=e429]:
+                  - link "Retrieve a Crypto Funding Transfer get" [ref=e430] [cursor=pointer]:
+                    - /url: /us/reference/getcryptofundingtransfer
+                    - generic [ref=e432]: Retrieve a Crypto Funding Transfer
+                    - generic [ref=e434]: get
+                - listitem [ref=e435]:
+                  - link "An array of whitelisted addresses get" [ref=e436] [cursor=pointer]:
+                    - /url: /us/reference/listwhitelistedaddress
+                    - generic [ref=e438]: An array of whitelisted addresses
+                    - generic [ref=e440]: get
+                - listitem [ref=e441]:
+                  - link "Request a new whitelisted address post" [ref=e442] [cursor=pointer]:
+                    - /url: /us/reference/createwhitelistedaddress
+                    - generic [ref=e444]: Request a new whitelisted address
+                    - generic [ref=e446]: post
+                - listitem [ref=e447]:
+                  - link "Delete a whitelisted address del" [ref=e448] [cursor=pointer]:
+                    - /url: /us/reference/deletewhitelistedaddress
+                    - generic [ref=e450]: Delete a whitelisted address
+                    - generic [ref=e452]: del
+                - listitem [ref=e453]:
+                  - link "Returns the estimated gas fee for a proposed transaction. get" [ref=e454] [cursor=pointer]:
+                    - /url: /us/reference/getcryptotransferestimate
+                    - generic [ref=e456]: Returns the estimated gas fee for a proposed transaction.
+                    - generic [ref=e458]: get
+            - listitem [ref=e459]:
+              - link "Crypto Perpetuals Funding (Beta) Show subpages for Crypto Perpetuals Funding (Beta)" [ref=e460] [cursor=pointer]:
+                - /url: /us/reference/crypto-perpetuals-funding-beta
+                - generic [ref=e462]: Crypto Perpetuals Funding (Beta)
+                - button "Show subpages for Crypto Perpetuals Funding (Beta)" [ref=e463]:
+                  - generic [ref=e464]: 
+              - list:
+                - listitem [ref=e465]:
+                  - link "Retrieve Crypto Funding Wallets get" [ref=e466] [cursor=pointer]:
+                    - /url: /us/reference/listcryptoperpfundingwallets
+                    - generic [ref=e468]: Retrieve Crypto Funding Wallets
+                    - generic [ref=e470]: get
+                - listitem [ref=e471]:
+                  - link "Retrieve Crypto Funding Transfers get" [ref=e472] [cursor=pointer]:
+                    - /url: /us/reference/listcryptoperpfundingtransfers
+                    - generic [ref=e474]: Retrieve Crypto Funding Transfers
+                    - generic [ref=e476]: get
+                - listitem [ref=e477]:
+                  - link "Request a New Withdrawal post" [ref=e478] [cursor=pointer]:
+                    - /url: /us/reference/createcryptoperptransferforaccount
+                    - generic [ref=e480]: Request a New Withdrawal
+                    - generic [ref=e482]: post
+                - listitem [ref=e483]:
+                  - link "Retrieve a Crypto Funding Transfer get" [ref=e484] [cursor=pointer]:
+                    - /url: /us/reference/getcryptoperpfundingtransfer
+                    - generic [ref=e486]: Retrieve a Crypto Funding Transfer
+                    - generic [ref=e488]: get
+                - listitem [ref=e489]:
+                  - link "An array of whitelisted addresses get" [ref=e490] [cursor=pointer]:
+                    - /url: /us/reference/listwhitelistedperpaddress
+                    - generic [ref=e492]: An array of whitelisted addresses
+                    - generic [ref=e494]: get
+                - listitem [ref=e495]:
+                  - link "Request a new whitelisted address post" [ref=e496] [cursor=pointer]:
+                    - /url: /us/reference/createwhitelistedperpaddress
+                    - generic [ref=e498]: Request a new whitelisted address
+                    - generic [ref=e500]: post
+                - listitem [ref=e501]:
+                  - link "Delete a whitelisted address del" [ref=e502] [cursor=pointer]:
+                    - /url: /us/reference/deletewhitelistedperpaddress
+                    - generic [ref=e504]: Delete a whitelisted address
+                    - generic [ref=e506]: del
+                - listitem [ref=e507]:
+                  - link "Returns the estimated gas fee for a proposed transaction get" [ref=e508] [cursor=pointer]:
+                    - /url: /us/reference/getcryptoperptransferestimate
+                    - generic [ref=e510]: Returns the estimated gas fee for a proposed transaction
+                    - generic [ref=e512]: get
+            - listitem [ref=e513]:
+              - link "Crypto Perpetuals Account Vitals (Beta) Show subpages for Crypto Perpetuals Account Vitals (Beta)" [ref=e514] [cursor=pointer]:
+                - /url: /us/reference/crypto-perpetuals-account-vitals-beta
+                - generic [ref=e516]: Crypto Perpetuals Account Vitals (Beta)
+                - button "Show subpages for Crypto Perpetuals Account Vitals (Beta)" [ref=e517]:
+                  - generic [ref=e518]: 
+              - list:
+                - listitem [ref=e519]:
+                  - link "Retrieve Account Vitals get" [ref=e520] [cursor=pointer]:
+                    - /url: /us/reference/getcryptoperpaccountvitals
+                    - generic [ref=e522]: Retrieve Account Vitals
+                    - generic [ref=e524]: get
+            - listitem [ref=e525]:
+              - link "Crypto Perpetuals Leverage (Beta) Show subpages for Crypto Perpetuals Leverage (Beta)" [ref=e526] [cursor=pointer]:
+                - /url: /us/reference/crypto-perpetuals-leverage-beta
+                - generic [ref=e528]: Crypto Perpetuals Leverage (Beta)
+                - button "Show subpages for Crypto Perpetuals Leverage (Beta)" [ref=e529]:
+                  - generic [ref=e530]: 
+              - list:
+                - listitem [ref=e531]:
+                  - link "Get Account Leverage for an Asset get" [ref=e532] [cursor=pointer]:
+                    - /url: /us/reference/getcryptoperpaccountleverage
+                    - generic [ref=e534]: Get Account Leverage for an Asset
+                    - generic [ref=e536]: get
+                - listitem [ref=e537]:
+                  - link "Set Account Leverage for an Asset post" [ref=e538] [cursor=pointer]:
+                    - /url: /us/reference/setcryptoperpaccountleverage
+                    - generic [ref=e540]: Set Account Leverage for an Asset
+                    - generic [ref=e542]: post
+            - listitem [ref=e543]:
+              - link "Positions Show subpages for Positions" [ref=e544] [cursor=pointer]:
+                - /url: /us/reference/optiondonotexercise
+                - generic [ref=e546]: Positions
+                - button "Show subpages for Positions" [ref=e547]:
+                  - generic [ref=e548]: 
+              - list:
+                - listitem [ref=e549]:
+                  - link "Do Not Exercise an Options Position post" [ref=e550] [cursor=pointer]:
+                    - /url: /us/reference/optiondonotexercise
+                    - generic [ref=e552]: Do Not Exercise an Options Position
+                    - generic [ref=e554]: post
+            - listitem [ref=e555]:
+              - link "Events Show subpages for Events" [ref=e556] [cursor=pointer]:
+                - /url: /us/reference/subscribetoactivitiessse
+                - generic [ref=e558]: Events
+                - button "Show subpages for Events" [ref=e559]:
+                  - generic [ref=e560]: 
+              - list:
+                - listitem [ref=e561]:
+                  - link "Subscribe to Activity Events (SSE) get" [ref=e562] [cursor=pointer]:
+                    - /url: /us/reference/subscribetoactivitiessse
+                    - generic [ref=e564]: Subscribe to Activity Events (SSE)
+                    - generic [ref=e566]: get
+            - listitem [ref=e567]:
+              - link "Tokenization Show subpages for Tokenization" [ref=e568] [cursor=pointer]:
+                - /url: /us/reference/posttokenizationmint
+                - generic [ref=e570]: Tokenization
+                - button "Show subpages for Tokenization" [ref=e571]:
+                  - generic [ref=e572]: 
+              - list:
+                - listitem [ref=e573]:
+                  - link "Mint a Tokenized Asset post" [ref=e574] [cursor=pointer]:
+                    - /url: /us/reference/posttokenizationmint
+                    - generic [ref=e576]: Mint a Tokenized Asset
+                    - generic [ref=e578]: post
+                - listitem [ref=e579]:
+                  - link "List Tokenization Requests get" [ref=e580] [cursor=pointer]:
+                    - /url: /us/reference/gettokenizationrequests
+                    - generic [ref=e582]: List Tokenization Requests
+                    - generic [ref=e584]: get
+        - generic [ref=e585]:
+          - heading "Market Data API" [level=2] [ref=e586]
+          - list [ref=e587]:
+            - listitem [ref=e588]:
+              - link "Stock Show subpages for Stock" [ref=e589] [cursor=pointer]:
+                - /url: /us/reference/stockauctions-1
+                - generic [ref=e591]: Stock
+                - button "Show subpages for Stock" [ref=e592]:
+                  - generic [ref=e593]: 
+              - list:
+                - listitem [ref=e594]:
+                  - link "Historical auctions get" [ref=e595] [cursor=pointer]:
+                    - /url: /us/reference/stockauctions-1
+                    - generic [ref=e597]: Historical auctions
+                    - generic [ref=e599]: get
+                - listitem [ref=e600]:
+                  - link "Historical bars get" [ref=e601] [cursor=pointer]:
+                    - /url: /us/reference/stockbars
+                    - generic [ref=e603]: Historical bars
+                    - generic [ref=e605]: get
+                - listitem [ref=e606]:
+                  - link "Latest bars get" [ref=e607] [cursor=pointer]:
+                    - /url: /us/reference/stocklatestbars-1
+                    - generic [ref=e609]: Latest bars
+                    - generic [ref=e611]: get
+                - listitem [ref=e612]:
+                  - link "Condition codes get" [ref=e613] [cursor=pointer]:
+                    - /url: /us/reference/stockmetaconditions-1
+                    - generic [ref=e615]: Condition codes
+                    - generic [ref=e617]: get
+                - listitem [ref=e618]:
+                  - link "Exchange codes get" [ref=e619] [cursor=pointer]:
+                    - /url: /us/reference/stockmetaexchanges-1
+                    - generic [ref=e621]: Exchange codes
+                    - generic [ref=e623]: get
+                - listitem [ref=e624]:
+                  - link "Historical quotes get" [ref=e625] [cursor=pointer]:
+                    - /url: /us/reference/stockquotes-1
+                    - generic [ref=e627]: Historical quotes
+                    - generic [ref=e629]: get
+                - listitem [ref=e630]:
+                  - link "Latest quotes get" [ref=e631] [cursor=pointer]:
+                    - /url: /us/reference/stocklatestquotes-1
+                    - generic [ref=e633]: Latest quotes
+                    - generic [ref=e635]: get
+                - listitem [ref=e636]:
+                  - link "Snapshots get" [ref=e637] [cursor=pointer]:
+                    - /url: /us/reference/stocksnapshots-1
+                    - generic [ref=e639]: Snapshots
+                    - generic [ref=e641]: get
+                - listitem [ref=e642]:
+                  - link "Historical trades get" [ref=e643] [cursor=pointer]:
+                    - /url: /us/reference/stocktrades-1
+                    - generic [ref=e645]: Historical trades
+                    - generic [ref=e647]: get
+                - listitem [ref=e648]:
+                  - link "Latest trades get" [ref=e649] [cursor=pointer]:
+                    - /url: /us/reference/stocklatesttrades-1
+                    - generic [ref=e651]: Latest trades
+                    - generic [ref=e653]: get
+                - listitem [ref=e654]:
+                  - link "Historical auctions (single) get" [ref=e655] [cursor=pointer]:
+                    - /url: /us/reference/stockauctionsingle-1
+                    - generic [ref=e657]: Historical auctions (single)
+                    - generic [ref=e659]: get
+                - listitem [ref=e660]:
+                  - link "Historical bars (single symbol) get" [ref=e661] [cursor=pointer]:
+                    - /url: /us/reference/stockbarsingle-1
+                    - generic [ref=e663]: Historical bars (single symbol)
+                    - generic [ref=e665]: get
+                - listitem [ref=e666]:
+                  - link "Latest bar (single symbol) get" [ref=e667] [cursor=pointer]:
+                    - /url: /us/reference/stocklatestbarsingle-1
+                    - generic [ref=e669]: Latest bar (single symbol)
+                    - generic [ref=e671]: get
+                - listitem [ref=e672]:
+                  - link "Historical quotes (single symbol) get" [ref=e673] [cursor=pointer]:
+                    - /url: /us/reference/stockquotesingle-1
+                    - generic [ref=e675]: Historical quotes (single symbol)
+                    - generic [ref=e677]: get
+                - listitem [ref=e678]:
+                  - link "Latest quote (single symbol) get" [ref=e679] [cursor=pointer]:
+                    - /url: /us/reference/stocklatestquotesingle-1
+                    - generic [ref=e681]: Latest quote (single symbol)
+                    - generic [ref=e683]: get
+                - listitem [ref=e684]:
+                  - link "Snapshot (single symbol) get" [ref=e685] [cursor=pointer]:
+                    - /url: /us/reference/stocksnapshotsingle
+                    - generic [ref=e687]: Snapshot (single symbol)
+                    - generic [ref=e689]: get
+                - listitem [ref=e690]:
+                  - link "Historical trades (single symbol) get" [ref=e691] [cursor=pointer]:
+                    - /url: /us/reference/stocktradesingle-1
+                    - generic [ref=e693]: Historical trades (single symbol)
+                    - generic [ref=e695]: get
+                - listitem [ref=e696]:
+                  - link "Latest trade (single symbol) get" [ref=e697] [cursor=pointer]:
+                    - /url: /us/reference/stocklatesttradesingle-1
+                    - generic [ref=e699]: Latest trade (single symbol)
+                    - generic [ref=e701]: get
+            - listitem [ref=e702]:
+              - link "Option Show subpages for Option" [ref=e703] [cursor=pointer]:
+                - /url: /us/reference/optionbars
+                - generic [ref=e705]: Option
+                - button "Show subpages for Option" [ref=e706]:
+                  - generic [ref=e707]: 
+              - list:
+                - listitem [ref=e708]:
+                  - link "Historical bars get" [ref=e709] [cursor=pointer]:
+                    - /url: /us/reference/optionbars
+                    - generic [ref=e711]: Historical bars
+                    - generic [ref=e713]: get
+                - listitem [ref=e714]:
+                  - link "Condition codes get" [ref=e715] [cursor=pointer]:
+                    - /url: /us/reference/optionmetaconditions
+                    - generic [ref=e717]: Condition codes
+                    - generic [ref=e719]: get
+                - listitem [ref=e720]:
+                  - link "Exchange codes get" [ref=e721] [cursor=pointer]:
+                    - /url: /us/reference/optionmetaexchanges
+                    - generic [ref=e723]: Exchange codes
+                    - generic [ref=e725]: get
+                - listitem [ref=e726]:
+                  - link "Latest quotes get" [ref=e727] [cursor=pointer]:
+                    - /url: /us/reference/optionlatestquotes
+                    - generic [ref=e729]: Latest quotes
+                    - generic [ref=e731]: get
+                - listitem [ref=e732]:
+                  - link "Snapshots get" [ref=e733] [cursor=pointer]:
+                    - /url: /us/reference/optionsnapshots
+                    - generic [ref=e735]: Snapshots
+                    - generic [ref=e737]: get
+                - listitem [ref=e738]:
+                  - link "Option chain get" [ref=e739] [cursor=pointer]:
+                    - /url: /us/reference/optionchain
+                    - generic [ref=e741]: Option chain
+                    - generic [ref=e743]: get
+                - listitem [ref=e744]:
+                  - link "Historical trades get" [ref=e745] [cursor=pointer]:
+                    - /url: /us/reference/optiontrades
+                    - generic [ref=e747]: Historical trades
+                    - generic [ref=e749]: get
+                - listitem [ref=e750]:
+                  - link "Latest trades get" [ref=e751] [cursor=pointer]:
+                    - /url: /us/reference/optionlatesttrades
+                    - generic [ref=e753]: Latest trades
+                    - generic [ref=e755]: get
+            - listitem [ref=e756]:
+              - link "Crypto Show subpages for Crypto" [ref=e757] [cursor=pointer]:
+                - /url: /us/reference/cryptobars-1
+                - generic [ref=e759]: Crypto
+                - button "Show subpages for Crypto" [ref=e760]:
+                  - generic [ref=e761]: 
+              - list:
+                - listitem [ref=e762]:
+                  - link "Historical bars get" [ref=e763] [cursor=pointer]:
+                    - /url: /us/reference/cryptobars-1
+                    - generic [ref=e765]: Historical bars
+                    - generic [ref=e767]: get
+                - listitem [ref=e768]:
+                  - link "Latest bars get" [ref=e769] [cursor=pointer]:
+                    - /url: /us/reference/cryptolatestbars-1
+                    - generic [ref=e771]: Latest bars
+                    - generic [ref=e773]: get
+                - listitem [ref=e774]:
+                  - link "Latest orderbook get" [ref=e775] [cursor=pointer]:
+                    - /url: /us/reference/cryptolatestorderbooks-1
+                    - generic [ref=e777]: Latest orderbook
+                    - generic [ref=e779]: get
+                - listitem [ref=e780]:
+                  - link "Latest quotes get" [ref=e781] [cursor=pointer]:
+                    - /url: /us/reference/cryptolatestquotes-1
+                    - generic [ref=e783]: Latest quotes
+                    - generic [ref=e785]: get
+                - listitem [ref=e786]:
+                  - link "Latest trades get" [ref=e787] [cursor=pointer]:
+                    - /url: /us/reference/cryptolatesttrades-1
+                    - generic [ref=e789]: Latest trades
+                    - generic [ref=e791]: get
+                - listitem [ref=e792]:
+                  - link "Historical quotes get" [ref=e793] [cursor=pointer]:
+                    - /url: /us/reference/cryptoquotes-1
+                    - generic [ref=e795]: Historical quotes
+                    - generic [ref=e797]: get
+                - listitem [ref=e798]:
+                  - link "Snapshots get" [ref=e799] [cursor=pointer]:
+                    - /url: /us/reference/cryptosnapshots-1
+                    - generic [ref=e801]: Snapshots
+                    - generic [ref=e803]: get
+                - listitem [ref=e804]:
+                  - link "Historical trades get" [ref=e805] [cursor=pointer]:
+                    - /url: /us/reference/cryptotrades-1
+                    - generic [ref=e807]: Historical trades
+                    - generic [ref=e809]: get
+            - listitem [ref=e810]:
+              - link "Crypto perpetual futures Show subpages for Crypto perpetual futures" [ref=e811] [cursor=pointer]:
+                - /url: /us/reference/cryptoperplatestbars
+                - generic [ref=e813]: Crypto perpetual futures
+                - button "Show subpages for Crypto perpetual futures" [ref=e814]:
+                  - generic [ref=e815]: 
+              - list:
+                - listitem [ref=e816]:
+                  - link "Latest bars get" [ref=e817] [cursor=pointer]:
+                    - /url: /us/reference/cryptoperplatestbars
+                    - generic [ref=e819]: Latest bars
+                    - generic [ref=e821]: get
+                - listitem [ref=e822]:
+                  - link "Latest pricing get" [ref=e823] [cursor=pointer]:
+                    - /url: /us/reference/cryptoperplatestfuturespricing
+                    - generic [ref=e825]: Latest pricing
+                    - generic [ref=e827]: get
+                - listitem [ref=e828]:
+                  - link "Latest orderbook get" [ref=e829] [cursor=pointer]:
+                    - /url: /us/reference/cryptoperplatestorderbooks
+                    - generic [ref=e831]: Latest orderbook
+                    - generic [ref=e833]: get
+                - listitem [ref=e834]:
+                  - link "Latest quotes get" [ref=e835] [cursor=pointer]:
+                    - /url: /us/reference/cryptoperplatestquotes
+                    - generic [ref=e837]: Latest quotes
+                    - generic [ref=e839]: get
+                - listitem [ref=e840]:
+                  - link "Latest trades get" [ref=e841] [cursor=pointer]:
+                    - /url: /us/reference/cryptoperplatesttrades
+                    - generic [ref=e843]: Latest trades
+                    - generic [ref=e845]: get
+            - listitem [ref=e846]:
+              - link "Fixed income Show subpages for Fixed income" [ref=e847] [cursor=pointer]:
+                - /url: /us/reference/fixedincomelatestprices
+                - generic [ref=e849]: Fixed income
+                - button "Show subpages for Fixed income" [ref=e850]:
+                  - generic [ref=e851]: 
+              - list:
+                - listitem [ref=e852]:
+                  - link "Latest prices get" [ref=e853] [cursor=pointer]:
+                    - /url: /us/reference/fixedincomelatestprices
+                    - generic [ref=e855]: Latest prices
+                    - generic [ref=e857]: get
+            - listitem [ref=e858]:
+              - link "Forex Show subpages for Forex" [ref=e859] [cursor=pointer]:
+                - /url: /us/reference/latestrates-1
+                - generic [ref=e861]: Forex
+                - button "Show subpages for Forex" [ref=e862]:
+                  - generic [ref=e863]: 
+              - list:
+                - listitem [ref=e864]:
+                  - link "Latest rates for currency pairs get" [ref=e865] [cursor=pointer]:
+                    - /url: /us/reference/latestrates-1
+                    - generic [ref=e867]: Latest rates for currency pairs
+                    - generic [ref=e869]: get
+                - listitem [ref=e870]:
+                  - link "Historical rates for currency pairs get" [ref=e871] [cursor=pointer]:
+                    - /url: /us/reference/rates-1
+                    - generic [ref=e873]: Historical rates for currency pairs
+                    - generic [ref=e875]: get
+            - listitem [ref=e876]:
+              - link "Logos Show subpages for Logos" [ref=e877] [cursor=pointer]:
+                - /url: /us/reference/logos-5
+                - generic [ref=e879]: Logos
+                - button "Show subpages for Logos" [ref=e880]:
+                  - generic [ref=e881]: 
+              - list:
+                - listitem [ref=e882]:
+                  - link "Logos get" [ref=e883] [cursor=pointer]:
+                    - /url: /us/reference/logos-5
+                    - generic [ref=e885]: Logos
+                    - generic [ref=e887]: get
+            - listitem [ref=e888]:
+              - link "Screener Show subpages for Screener" [ref=e889] [cursor=pointer]:
+                - /url: /us/reference/mostactives-1
+                - generic [ref=e891]: Screener
+                - button "Show subpages for Screener" [ref=e892]:
+                  - generic [ref=e893]: 
+              - list:
+                - listitem [ref=e894]:
+                  - link "Most active stocks get" [ref=e895] [cursor=pointer]:
+                    - /url: /us/reference/mostactives-1
+                    - generic [ref=e897]: Most active stocks
+                    - generic [ref=e899]: get
+                - listitem [ref=e900]:
+                  - link "Top market movers get" [ref=e901] [cursor=pointer]:
+                    - /url: /us/reference/movers-1
+                    - generic [ref=e903]: Top market movers
+                    - generic [ref=e905]: get
+            - listitem [ref=e906]:
+              - link "News Show subpages for News" [ref=e907] [cursor=pointer]:
+                - /url: /us/reference/news-3
+                - generic [ref=e909]: News
+                - button "Show subpages for News" [ref=e910]:
+                  - generic [ref=e911]: 
+              - list:
+                - listitem [ref=e912]:
+                  - link "News articles get" [ref=e913] [cursor=pointer]:
+                    - /url: /us/reference/news-3
+                    - generic [ref=e915]: News articles
+                    - generic [ref=e917]: get
+            - listitem [ref=e918]:
+              - link "Corporate actions Show subpages for Corporate actions" [ref=e919] [cursor=pointer]:
+                - /url: /us/reference/corporateactions-1
+                - generic [ref=e921]: Corporate actions
+                - button "Show subpages for Corporate actions" [ref=e922]:
+                  - generic [ref=e923]: 
+              - list:
+                - listitem [ref=e924]:
+                  - link "Corporate actions get" [ref=e925] [cursor=pointer]:
+                    - /url: /us/reference/corporateactions-1
+                    - generic [ref=e927]: Corporate actions
+                    - generic [ref=e929]: get
+        - generic [ref=e930]:
+          - heading "Broker API" [level=2] [ref=e931]
+          - list [ref=e932]:
+            - listitem [ref=e933]:
+              - link "Accounts Show subpages for Accounts" [ref=e934] [cursor=pointer]:
+                - /url: /us/reference/getallaccounts
+                - generic [ref=e936]: Accounts
+                - button "Show subpages for Accounts" [ref=e937]:
+                  - generic [ref=e938]: 
+              - list:
+                - listitem [ref=e939]:
+                  - link "Get All Accounts get" [ref=e940] [cursor=pointer]:
+                    - /url: /us/reference/getallaccounts
+                    - generic [ref=e942]: Get All Accounts
+                    - generic [ref=e944]: get
+                - listitem [ref=e945]:
+                  - link "Create an Account post" [ref=e946] [cursor=pointer]:
+                    - /url: /us/reference/createaccount
+                    - generic [ref=e948]: Create an Account
+                    - generic [ref=e950]: post
+                - listitem [ref=e951]:
+                  - link "Get An Account by ID get" [ref=e952] [cursor=pointer]:
+                    - /url: /us/reference/getaccount
+                    - generic [ref=e954]: Get An Account by ID
+                    - generic [ref=e956]: get
+                - listitem [ref=e957]:
+                  - link "Update an Account patch" [ref=e958] [cursor=pointer]:
+                    - /url: /us/reference/patchaccount
+                    - generic [ref=e960]: Update an Account
+                    - generic [ref=e962]: patch
+                - listitem [ref=e963]:
+                  - link "Request options trading for an account (BETA) post" [ref=e964] [cursor=pointer]:
+                    - /url: /us/reference/requestoptionsforaccount
+                    - generic [ref=e966]: Request options trading for an account (BETA)
+                    - generic [ref=e968]: post
+                - listitem [ref=e969]:
+                  - link "Retrieve options level approval requests (BETA) get" [ref=e970] [cursor=pointer]:
+                    - /url: /us/reference/requestlistoptionsapprovals
+                    - generic [ref=e972]: Retrieve options level approval requests (BETA)
+                    - generic [ref=e974]: get
+                - listitem [ref=e975]:
+                  - link "Retrieve Account Activities get" [ref=e976] [cursor=pointer]:
+                    - /url: /us/reference/getaccountactivities
+                    - generic [ref=e978]: Retrieve Account Activities
+                    - generic [ref=e980]: get
+                - listitem [ref=e981]:
+                  - link "Retrieve Account Activities of Specific Type get" [ref=e982] [cursor=pointer]:
+                    - /url: /us/reference/getaccountactivitiesbytype
+                    - generic [ref=e984]: Retrieve Account Activities of Specific Type
+                    - generic [ref=e986]: get
+                - listitem [ref=e987]:
+                  - link "Retrieve Trading Details for an Account get" [ref=e988] [cursor=pointer]:
+                    - /url: /us/reference/gettradingaccount
+                    - generic [ref=e990]: Retrieve Trading Details for an Account
+                    - generic [ref=e992]: get
+                - listitem [ref=e993]:
+                  - link "Get Pattern Day Trader Status for account get" [ref=e994] [cursor=pointer]:
+                    - /url: /us/reference/pdtgetstatus
+                    - generic [ref=e996]: Get Pattern Day Trader Status for account
+                    - generic [ref=e998]: get
+                - listitem [ref=e999]:
+                  - link "Exercise PDT one time removal post" [ref=e1000] [cursor=pointer]:
+                    - /url: /us/reference/pdtonetimeremoval
+                    - generic [ref=e1002]: Exercise PDT one time removal
+                    - generic [ref=e1004]: post
+                - listitem [ref=e1005]:
+                  - link "Close an Account post" [ref=e1006] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-accounts-account_id-actions-close
+                    - generic [ref=e1008]: Close an Account
+                    - generic [ref=e1010]: post
+                - listitem [ref=e1011]:
+                  - link "Get a single activity (V2) event by event_id ULID. get" [ref=e1012] [cursor=pointer]:
+                    - /url: /us/reference/getaccountactivityevent
+                    - generic [ref=e1014]: Get a single activity (V2) event by event_id ULID.
+                    - generic [ref=e1016]: get
+            - listitem [ref=e1017]:
+              - link "Documents Show subpages for Documents" [ref=e1018] [cursor=pointer]:
+                - /url: /us/reference/getdocsforaccount
+                - generic [ref=e1020]: Documents
+                - button "Show subpages for Documents" [ref=e1021]:
+                  - generic [ref=e1022]: 
+              - list:
+                - listitem [ref=e1023]:
+                  - link "Retrieve a List of Account Documents get" [ref=e1024] [cursor=pointer]:
+                    - /url: /us/reference/getdocsforaccount
+                    - generic [ref=e1026]: Retrieve a List of Account Documents
+                    - generic [ref=e1028]: get
+                - listitem [ref=e1029]:
+                  - link "Upload Owner Documents for an Existing Account post" [ref=e1030] [cursor=pointer]:
+                    - /url: /us/reference/uploaddoctoaccount
+                    - generic [ref=e1032]: Upload Owner Documents for an Existing Account
+                    - generic [ref=e1034]: post
+                - listitem [ref=e1035]:
+                  - link "Download an Account Document get" [ref=e1036] [cursor=pointer]:
+                    - /url: /us/reference/downloaddocfromaccount
+                    - generic [ref=e1038]: Download an Account Document
+                    - generic [ref=e1040]: get
+                - listitem [ref=e1041]:
+                  - link "Download the W8BEN document for the primary owner of an account get" [ref=e1042] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-accounts-account_id-documents-w8ben-document_id-download
+                    - generic [ref=e1044]: Download the W8BEN document for the primary owner of an account
+                    - generic [ref=e1046]: get
+            - listitem [ref=e1047]:
+              - link "Trading Show subpages for Trading" [ref=e1048] [cursor=pointer]:
+                - /url: /us/reference/getpositionsforaccount
+                - generic [ref=e1050]: Trading
+                - button "Show subpages for Trading" [ref=e1051]:
+                  - generic [ref=e1052]: 
+              - list:
+                - listitem [ref=e1053]:
+                  - link "List Open Positions for an Account get" [ref=e1054] [cursor=pointer]:
+                    - /url: /us/reference/getpositionsforaccount
+                    - generic [ref=e1056]: List Open Positions for an Account
+                    - generic [ref=e1058]: get
+                - listitem [ref=e1059]:
+                  - link "Close All Positions for an Account del" [ref=e1060] [cursor=pointer]:
+                    - /url: /us/reference/closeallpositionsforaccount
+                    - generic [ref=e1062]: Close All Positions for an Account
+                    - generic [ref=e1064]: del
+                - listitem [ref=e1065]:
+                  - link "Get an Open Position for account by Symbol or AssetId get" [ref=e1066] [cursor=pointer]:
+                    - /url: /us/reference/getpositionsforaccountbysymbol
+                    - generic [ref=e1068]: Get an Open Position for account by Symbol or AssetId
+                    - generic [ref=e1070]: get
+                - listitem [ref=e1071]:
+                  - link "Close a Position for an Account del" [ref=e1072] [cursor=pointer]:
+                    - /url: /us/reference/closepositionforaccountbysymbol
+                    - generic [ref=e1074]: Close a Position for an Account
+                    - generic [ref=e1076]: del
+                - listitem [ref=e1077]:
+                  - link "Exercise an Options Position (BETA) post" [ref=e1078] [cursor=pointer]:
+                    - /url: /us/reference/optionexercise-1
+                    - generic [ref=e1080]: Exercise an Options Position (BETA)
+                    - generic [ref=e1082]: post
+                - listitem [ref=e1083]:
+                  - link "Do Not Exercise an Options Position (BETA) post" [ref=e1084] [cursor=pointer]:
+                    - /url: /us/reference/optiondonotexercise-1
+                    - generic [ref=e1086]: Do Not Exercise an Options Position (BETA)
+                    - generic [ref=e1088]: post
+                - listitem [ref=e1089]:
+                  - link "Retrieve an Order by its ID get" [ref=e1090] [cursor=pointer]:
+                    - /url: /us/reference/getorderforaccount
+                    - generic [ref=e1092]: Retrieve an Order by its ID
+                    - generic [ref=e1094]: get
+                - listitem [ref=e1095]:
+                  - link "Replace an Order patch" [ref=e1096] [cursor=pointer]:
+                    - /url: /us/reference/replaceorderforaccount
+                    - generic [ref=e1098]: Replace an Order
+                    - generic [ref=e1100]: patch
+                - listitem [ref=e1101]:
+                  - link "Cancel an Open Order del" [ref=e1102] [cursor=pointer]:
+                    - /url: /us/reference/deleteorderforaccount
+                    - generic [ref=e1104]: Cancel an Open Order
+                    - generic [ref=e1106]: del
+                - listitem [ref=e1107]:
+                  - link "Retrieve a List of Orders get" [ref=e1108] [cursor=pointer]:
+                    - /url: /us/reference/getallordersforaccount
+                    - generic [ref=e1110]: Retrieve a List of Orders
+                    - generic [ref=e1112]: get
+                - listitem [ref=e1113]:
+                  - link "Retrieves a single order specified by the client order ID. get" [ref=e1114] [cursor=pointer]:
+                    - /url: /us/reference/getorderbyclientorderidforaccount
+                    - generic [ref=e1116]: Retrieves a single order specified by the client order ID.
+                    - generic [ref=e1118]: get
+                - listitem [ref=e1119]:
+                  - link "Create an Order for an Account post" [ref=e1120] [cursor=pointer]:
+                    - /url: /us/reference/createorderforaccount
+                    - generic [ref=e1122]: Create an Order for an Account
+                    - generic [ref=e1124]: post
+                - listitem [ref=e1125]:
+                  - link "Cancel all Open Orders For an Account del" [ref=e1126] [cursor=pointer]:
+                    - /url: /us/reference/deleteallordersforaccount
+                    - generic [ref=e1128]: Cancel all Open Orders For an Account
+                    - generic [ref=e1130]: del
+                - listitem [ref=e1131]:
+                  - link "Estimate an Order post" [ref=e1132] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-trading-accounts-account_id-orders-estimation
+                    - generic [ref=e1134]: Estimate an Order
+                    - generic [ref=e1136]: post
+                - listitem [ref=e1137]:
+                  - link "Bulk Fetch All Accounts Positions Deprecated Endpoint get" [ref=e1138] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-accounts-positions
+                    - generic [ref=e1140]: Bulk Fetch All Accounts Positions
+                    - generic [ref=e1141]:
+                      - button "Deprecated Endpoint" [ref=e1142]
+                      - generic [ref=e1145]: get
+                - listitem [ref=e1146]:
+                  - link "Update Trading Configurations for an Account patch" [ref=e1147] [cursor=pointer]:
+                    - /url: /us/reference/patch-patch-v1-trading-accounts-account_id-account-configurations
+                    - generic [ref=e1149]: Update Trading Configurations for an Account
+                    - generic [ref=e1151]: patch
+                - listitem [ref=e1152]:
+                  - link "Retrieve real-time Trading Limits for an Account get" [ref=e1153] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-account-trading-limits
+                    - generic [ref=e1155]: Retrieve real-time Trading Limits for an Account
+                    - generic [ref=e1157]: get
+            - listitem [ref=e1158]:
+              - link "Instant Funding Show subpages for Instant Funding" [ref=e1159] [cursor=pointer]:
+                - /url: /us/reference/get-v1-instant-funding-list
+                - generic [ref=e1161]: Instant Funding
+                - button "Show subpages for Instant Funding" [ref=e1162]:
+                  - generic [ref=e1163]: 
+              - list:
+                - listitem [ref=e1164]:
+                  - link "Get Instant Funding List get" [ref=e1165] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-list
+                    - generic [ref=e1167]: Get Instant Funding List
+                    - generic [ref=e1169]: get
+                - listitem [ref=e1170]:
+                  - link "Create an instant funding request post" [ref=e1171] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-instant-funding
+                    - generic [ref=e1173]: Create an instant funding request
+                    - generic [ref=e1175]: post
+                - listitem [ref=e1176]:
+                  - link "Get an instant funding request get" [ref=e1177] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-single
+                    - generic [ref=e1179]: Get an instant funding request
+                    - generic [ref=e1181]: get
+                - listitem [ref=e1182]:
+                  - link "Cancel an instant funding request del" [ref=e1183] [cursor=pointer]:
+                    - /url: /us/reference/delete-v1-instant-funding-single
+                    - generic [ref=e1185]: Cancel an instant funding request
+                    - generic [ref=e1187]: del
+                - listitem [ref=e1188]:
+                  - link "List settlements get" [ref=e1189] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-settlements
+                    - generic [ref=e1191]: List settlements
+                    - generic [ref=e1193]: get
+                - listitem [ref=e1194]:
+                  - link "Create a new settlement post" [ref=e1195] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-instant-funding-settlements
+                    - generic [ref=e1197]: Create a new settlement
+                    - generic [ref=e1199]: post
+                - listitem [ref=e1200]:
+                  - link "Get a single settlement get" [ref=e1201] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-settlements-single
+                    - generic [ref=e1203]: Get a single settlement
+                    - generic [ref=e1205]: get
+                - listitem [ref=e1206]:
+                  - link "Get instant funding limits get" [ref=e1207] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-correspondent-limits
+                    - generic [ref=e1209]: Get instant funding limits
+                    - generic [ref=e1211]: get
+                - listitem [ref=e1212]:
+                  - link "Get instant funding account limits get" [ref=e1213] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-account-limits
+                    - generic [ref=e1215]: Get instant funding account limits
+                    - generic [ref=e1217]: get
+                - listitem [ref=e1218]:
+                  - link "Get instant funding report get" [ref=e1219] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-instant-funding-reports
+                    - generic [ref=e1221]: Get instant funding report
+                    - generic [ref=e1223]: get
+            - listitem [ref=e1224]:
+              - link "Assets Show subpages for Assets" [ref=e1225] [cursor=pointer]:
+                - /url: /us/reference/getassets
+                - generic [ref=e1227]: Assets
+                - button "Show subpages for Assets" [ref=e1228]:
+                  - generic [ref=e1229]: 
+              - list:
+                - listitem [ref=e1230]:
+                  - link "Retrieve All Assets get" [ref=e1231] [cursor=pointer]:
+                    - /url: /us/reference/getassets
+                    - generic [ref=e1233]: Retrieve All Assets
+                    - generic [ref=e1235]: get
+                - listitem [ref=e1236]:
+                  - link "Retrieve an Asset by ID get" [ref=e1237] [cursor=pointer]:
+                    - /url: /us/reference/getassetbysymbolorid
+                    - generic [ref=e1239]: Retrieve an Asset by ID
+                    - generic [ref=e1241]: get
+                - listitem [ref=e1242]:
+                  - link "Retrieve Entry Requirements for requested assets get" [ref=e1243] [cursor=pointer]:
+                    - /url: /us/reference/get-asset-entry-requirements
+                    - generic [ref=e1245]: Retrieve Entry Requirements for requested assets
+                    - generic [ref=e1247]: get
+                - listitem [ref=e1248]:
+                  - link "Get Option Contracts (BETA) get" [ref=e1249] [cursor=pointer]:
+                    - /url: /us/reference/get-options-contracts-1
+                    - generic [ref=e1251]: Get Option Contracts (BETA)
+                    - generic [ref=e1253]: get
+                - listitem [ref=e1254]:
+                  - link "Get an option contract by ID or Symbol (BETA) get" [ref=e1255] [cursor=pointer]:
+                    - /url: /us/reference/get-option-contract-symbol_or_id-1
+                    - generic [ref=e1257]: Get an option contract by ID or Symbol (BETA)
+                    - generic [ref=e1259]: get
+                - listitem [ref=e1260]:
+                  - link "Get US treasuries get" [ref=e1261] [cursor=pointer]:
+                    - /url: /us/reference/ustreasuries-1
+                    - generic [ref=e1263]: Get US treasuries
+                    - generic [ref=e1265]: get
+                - listitem [ref=e1266]:
+                  - link "Get US corporates get" [ref=e1267] [cursor=pointer]:
+                    - /url: /us/reference/uscorporates-1
+                    - generic [ref=e1269]: Get US corporates
+                    - generic [ref=e1271]: get
+            - listitem [ref=e1272]:
+              - link "Calendar Show subpages for Calendar" [ref=e1273] [cursor=pointer]:
+                - /url: /us/reference/legacycalendar-1
+                - generic [ref=e1275]: Calendar
+                - button "Show subpages for Calendar" [ref=e1276]:
+                  - generic [ref=e1277]: 
+              - list:
+                - listitem [ref=e1278]:
+                  - link "Get US Market Calendar get" [ref=e1279] [cursor=pointer]:
+                    - /url: /us/reference/legacycalendar-1
+                    - generic [ref=e1281]: Get US Market Calendar
+                    - generic [ref=e1283]: get
+                - listitem [ref=e1284]:
+                  - link "Get Market Calendar get" [ref=e1285] [cursor=pointer]:
+                    - /url: /us/reference/calendar-6
+                    - generic [ref=e1287]: Get Market Calendar
+                    - generic [ref=e1289]: get
+                - listitem [ref=e1290]:
+                  - link "Get US Market Clock get" [ref=e1291] [cursor=pointer]:
+                    - /url: /us/reference/legacyclock-1
+                    - generic [ref=e1293]: Get US Market Clock
+                    - generic [ref=e1295]: get
+                - listitem [ref=e1296]:
+                  - link "Get Market Clock get" [ref=e1297] [cursor=pointer]:
+                    - /url: /us/reference/clock-2
+                    - generic [ref=e1299]: Get Market Clock
+                    - generic [ref=e1301]: get
+            - listitem [ref=e1302]:
+              - link "Events Show subpages for Events" [ref=e1303] [cursor=pointer]:
+                - /url: /us/reference/suscribetoaccountstatussse
+                - generic [ref=e1305]: Events
+                - button "Show subpages for Events" [ref=e1306]:
+                  - generic [ref=e1307]: 
+              - list:
+                - listitem [ref=e1308]:
+                  - link "Subscribe to Account Status Events (SSE) get" [ref=e1309] [cursor=pointer]:
+                    - /url: /us/reference/suscribetoaccountstatussse
+                    - generic [ref=e1311]: Subscribe to Account Status Events (SSE)
+                    - generic [ref=e1313]: get
+                - listitem [ref=e1314]:
+                  - link "Subscribe to Journal Events (SSE) (Legacy) get" [ref=e1315] [cursor=pointer]:
+                    - /url: /us/reference/subscribetojournalstatussse
+                    - generic [ref=e1317]: Subscribe to Journal Events (SSE) (Legacy)
+                    - generic [ref=e1319]: get
+                - listitem [ref=e1320]:
+                  - link "Subscribe to Journal Events (SSE) get" [ref=e1321] [cursor=pointer]:
+                    - /url: /us/reference/subscribetojournalstatusv2sse
+                    - generic [ref=e1323]: Subscribe to Journal Events (SSE)
+                    - generic [ref=e1325]: get
+                - listitem [ref=e1326]:
+                  - link "Subscribe to Transfer Events (SSE) (Legacy) Deprecated Endpoint get" [ref=e1327] [cursor=pointer]:
+                    - /url: /us/reference/subscribetotransferstatussse
+                    - generic [ref=e1329]: Subscribe to Transfer Events (SSE) (Legacy)
+                    - generic [ref=e1330]:
+                      - button "Deprecated Endpoint" [ref=e1331]
+                      - generic [ref=e1334]: get
+                - listitem [ref=e1335]:
+                  - link "Subscribe to Trade Events (SSE) (Legacy) Deprecated Endpoint get" [ref=e1336] [cursor=pointer]:
+                    - /url: /us/reference/subscribetotradesse
+                    - generic [ref=e1338]: Subscribe to Trade Events (SSE) (Legacy)
+                    - generic [ref=e1339]:
+                      - button "Deprecated Endpoint" [ref=e1340]
+                      - generic [ref=e1343]: get
+                - listitem [ref=e1344]:
+                  - link "Subscribe to Trade Events (SSE) get" [ref=e1345] [cursor=pointer]:
+                    - /url: /us/reference/subscribetotradev2sse
+                    - generic [ref=e1347]: Subscribe to Trade Events (SSE)
+                    - generic [ref=e1349]: get
+                - listitem [ref=e1350]:
+                  - link "Subscribe to Admin Action Events (SSE) get" [ref=e1351] [cursor=pointer]:
+                    - /url: /us/reference/subscribetoadminactionsse
+                    - generic [ref=e1353]: Subscribe to Admin Action Events (SSE)
+                    - generic [ref=e1355]: get
+                - listitem [ref=e1356]:
+                  - link "Subscribe to Non-Trading Activities Events (SSE) get" [ref=e1357] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-events-nta
+                    - generic [ref=e1359]: Subscribe to Non-Trading Activities Events (SSE)
+                    - generic [ref=e1361]: get
+                - listitem [ref=e1362]:
+                  - link "Subscribe to Funding Status Events (SSE) get" [ref=e1363] [cursor=pointer]:
+                    - /url: /us/reference/subscribetofundingstatussse
+                    - generic [ref=e1365]: Subscribe to Funding Status Events (SSE)
+                    - generic [ref=e1367]: get
+                - listitem [ref=e1368]:
+                  - link "Subscribe to System Events (SSE) get" [ref=e1369] [cursor=pointer]:
+                    - /url: /us/reference/subscribetosystemeventv2sse
+                    - generic [ref=e1371]: Subscribe to System Events (SSE)
+                    - generic [ref=e1373]: get
+                - listitem [ref=e1374]:
+                  - link "Subscribe to Activity Events (SSE) get" [ref=e1375] [cursor=pointer]:
+                    - /url: /us/reference/subscribetoactivitiessse-1
+                    - generic [ref=e1377]: Subscribe to Activity Events (SSE)
+                    - generic [ref=e1379]: get
+                - listitem [ref=e1380]:
+                  - link "Subscribe to IPO Events (SSE) get" [ref=e1381] [cursor=pointer]:
+                    - /url: /us/reference/subscribetoipoeventssse
+                    - generic [ref=e1383]: Subscribe to IPO Events (SSE)
+                    - generic [ref=e1385]: get
+            - listitem [ref=e1386]:
+              - link "Funding Show subpages for Funding" [ref=e1387] [cursor=pointer]:
+                - /url: /us/reference/getrecipientbanks
+                - generic [ref=e1389]: Funding
+                - button "Show subpages for Funding" [ref=e1390]:
+                  - generic [ref=e1391]: 
+              - list:
+                - listitem [ref=e1392]:
+                  - link "Retrieve Bank Relationships for an Account get" [ref=e1393] [cursor=pointer]:
+                    - /url: /us/reference/getrecipientbanks
+                    - generic [ref=e1395]: Retrieve Bank Relationships for an Account
+                    - generic [ref=e1397]: get
+                - listitem [ref=e1398]:
+                  - link "Create a Bank Relationship for an Account post" [ref=e1399] [cursor=pointer]:
+                    - /url: /us/reference/createrecipientbank
+                    - generic [ref=e1401]: Create a Bank Relationship for an Account
+                    - generic [ref=e1403]: post
+                - listitem [ref=e1404]:
+                  - link "Delete a Bank Relationship for an Account del" [ref=e1405] [cursor=pointer]:
+                    - /url: /us/reference/deleterecipientbank
+                    - generic [ref=e1407]: Delete a Bank Relationship for an Account
+                    - generic [ref=e1409]: del
+                - listitem [ref=e1410]:
+                  - link "Retrieve List of Transfers for an Account. get" [ref=e1411] [cursor=pointer]:
+                    - /url: /us/reference/gettransfersforaccount
+                    - generic [ref=e1413]: Retrieve List of Transfers for an Account.
+                    - generic [ref=e1415]: get
+                - listitem [ref=e1416]:
+                  - link "Request a New Transfer post" [ref=e1417] [cursor=pointer]:
+                    - /url: /us/reference/createtransferforaccount
+                    - generic [ref=e1419]: Request a New Transfer
+                    - generic [ref=e1421]: post
+                - listitem [ref=e1422]:
+                  - link "Request to Close a Transfer del" [ref=e1423] [cursor=pointer]:
+                    - /url: /us/reference/deletetransfer
+                    - generic [ref=e1425]: Request to Close a Transfer
+                    - generic [ref=e1427]: del
+                - listitem [ref=e1428]:
+                  - link "Retrieve ACH Relationships for an account get" [ref=e1429] [cursor=pointer]:
+                    - /url: /us/reference/getaccountachrelationships
+                    - generic [ref=e1431]: Retrieve ACH Relationships for an account
+                    - generic [ref=e1433]: get
+                - listitem [ref=e1434]:
+                  - link "Create an ACH Relationship post" [ref=e1435] [cursor=pointer]:
+                    - /url: /us/reference/createachrelationshipforaccount
+                    - generic [ref=e1437]: Create an ACH Relationship
+                    - generic [ref=e1439]: post
+                - listitem [ref=e1440]:
+                  - link "Delete an existing ACH relationship del" [ref=e1441] [cursor=pointer]:
+                    - /url: /us/reference/deleteachrelationshipfromaccount
+                    - generic [ref=e1443]: Delete an existing ACH relationship
+                    - generic [ref=e1445]: del
+                - listitem [ref=e1446]:
+                  - link "Retrieve JIT Reports get" [ref=e1447] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-transfers-jit-reports
+                    - generic [ref=e1449]: Retrieve JIT Reports
+                    - generic [ref=e1451]: get
+                - listitem [ref=e1452]:
+                  - link "Retrieve Daily Trading Limits get" [ref=e1453] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-transfers-jit-limits
+                    - generic [ref=e1455]: Retrieve Daily Trading Limits
+                    - generic [ref=e1457]: get
+                - listitem [ref=e1458]:
+                  - link "Retrieve JIT Ledgers get" [ref=e1459] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-transfers-jit-ledgers
+                    - generic [ref=e1461]: Retrieve JIT Ledgers
+                    - generic [ref=e1463]: get
+                - listitem [ref=e1464]:
+                  - link "Retrieve JIT Ledger Balances get" [ref=e1465] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-transfers-jit-ledger_id-balances
+                    - generic [ref=e1467]: Retrieve JIT Ledger Balances
+                    - generic [ref=e1469]: get
+                - listitem [ref=e1470]:
+                  - link "List all JIT Settlements get" [ref=e1471] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-jit-settlements
+                    - generic [ref=e1473]: List all JIT Settlements
+                    - generic [ref=e1475]: get
+                - listitem [ref=e1476]:
+                  - link "Create a new JIT settlement post" [ref=e1477] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-jit-settlements
+                    - generic [ref=e1479]: Create a new JIT settlement
+                    - generic [ref=e1481]: post
+                - listitem [ref=e1482]:
+                  - link "Get a single JIT settlement get" [ref=e1483] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-jit-settlements-single
+                    - generic [ref=e1485]: Get a single JIT settlement
+                    - generic [ref=e1487]: get
+            - listitem [ref=e1488]:
+              - link "Cash Interest Show subpages for Cash Interest" [ref=e1489] [cursor=pointer]:
+                - /url: /us/reference/get-v1-list-apr-tiers
+                - generic [ref=e1491]: Cash Interest
+                - button "Show subpages for Cash Interest" [ref=e1492]:
+                  - generic [ref=e1493]: 
+              - list:
+                - listitem [ref=e1494]:
+                  - link "List APR Tiers get" [ref=e1495] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-list-apr-tiers
+                    - generic [ref=e1497]: List APR Tiers
+                    - generic [ref=e1499]: get
+            - listitem [ref=e1500]:
+              - link "OAuth Show subpages for OAuth" [ref=e1501] [cursor=pointer]:
+                - /url: /us/reference/getoauthclient
+                - generic [ref=e1503]: OAuth
+                - button "Show subpages for OAuth" [ref=e1504]:
+                  - generic [ref=e1505]: 
+              - list:
+                - listitem [ref=e1506]:
+                  - link "Get an OAuth client get" [ref=e1507] [cursor=pointer]:
+                    - /url: /us/reference/getoauthclient
+                    - generic [ref=e1509]: Get an OAuth client
+                    - generic [ref=e1511]: get
+                - listitem [ref=e1512]:
+                  - link "Issue an OAuth token post" [ref=e1513] [cursor=pointer]:
+                    - /url: /us/reference/issueoauthtoken
+                    - generic [ref=e1515]: Issue an OAuth token
+                    - generic [ref=e1517]: post
+                - listitem [ref=e1518]:
+                  - link "Authorize an OAuth Token post" [ref=e1519] [cursor=pointer]:
+                    - /url: /us/reference/authorizeoauthtoken
+                    - generic [ref=e1521]: Authorize an OAuth Token
+                    - generic [ref=e1523]: post
+            - listitem [ref=e1524]:
+              - link "Journals Show subpages for Journals" [ref=e1525] [cursor=pointer]:
+                - /url: /us/reference/getalljournals
+                - generic [ref=e1527]: Journals
+                - button "Show subpages for Journals" [ref=e1528]:
+                  - generic [ref=e1529]: 
+              - list:
+                - listitem [ref=e1530]:
+                  - link "Retrieve a List Journals get" [ref=e1531] [cursor=pointer]:
+                    - /url: /us/reference/getalljournals
+                    - generic [ref=e1533]: Retrieve a List Journals
+                    - generic [ref=e1535]: get
+                - listitem [ref=e1536]:
+                  - link "Create a Journal post" [ref=e1537] [cursor=pointer]:
+                    - /url: /us/reference/createjournal
+                    - generic [ref=e1539]: Create a Journal
+                    - generic [ref=e1541]: post
+                - listitem [ref=e1542]:
+                  - link "Cancel a Pending Journal del" [ref=e1543] [cursor=pointer]:
+                    - /url: /us/reference/deletejournalbyid
+                    - generic [ref=e1545]: Cancel a Pending Journal
+                    - generic [ref=e1547]: del
+                - listitem [ref=e1548]:
+                  - link "Retrieve a Single Journal Entry get" [ref=e1549] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-journals-journal_id
+                    - generic [ref=e1551]: Retrieve a Single Journal Entry
+                    - generic [ref=e1553]: get
+                - listitem [ref=e1554]:
+                  - link "Create a Batch Journal Transaction (One-to-Many) post" [ref=e1555] [cursor=pointer]:
+                    - /url: /us/reference/createbatchjournal
+                    - generic [ref=e1557]: Create a Batch Journal Transaction (One-to-Many)
+                    - generic [ref=e1559]: post
+                - listitem [ref=e1560]:
+                  - link "Create a Reverse Batch Journal Transaction (Many-to-One) post" [ref=e1561] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-journals-reverse_batch
+                    - generic [ref=e1563]: Create a Reverse Batch Journal Transaction (Many-to-One)
+                    - generic [ref=e1565]: post
+            - listitem [ref=e1566]:
+              - link "FPSL Program Show subpages for FPSL Program" [ref=e1567] [cursor=pointer]:
+                - /url: /us/reference/get-v1-list-fpsl-tiers
+                - generic [ref=e1569]: FPSL Program
+                - button "Show subpages for FPSL Program" [ref=e1570]:
+                  - generic [ref=e1571]: 
+              - list:
+                - listitem [ref=e1572]:
+                  - link "List FPSL Tiers get" [ref=e1573] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-list-fpsl-tiers
+                    - generic [ref=e1575]: List FPSL Tiers
+                    - generic [ref=e1577]: get
+                - listitem [ref=e1578]:
+                  - link "List FPSL Loans get" [ref=e1579] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-list-fpsl-loans
+                    - generic [ref=e1581]: List FPSL Loans
+                    - generic [ref=e1583]: get
+                - listitem [ref=e1584]:
+                  - link "Read FPSL Loans Analytics for an Account get" [ref=e1585] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-fpsl-analytics-account-loans
+                    - generic [ref=e1587]: Read FPSL Loans Analytics for an Account
+                    - generic [ref=e1589]: get
+            - listitem [ref=e1590]:
+              - link "Watchlist Show subpages for Watchlist" [ref=e1591] [cursor=pointer]:
+                - /url: /us/reference/getallwatchlistsforaccount
+                - generic [ref=e1593]: Watchlist
+                - button "Show subpages for Watchlist" [ref=e1594]:
+                  - generic [ref=e1595]: 
+              - list:
+                - listitem [ref=e1596]:
+                  - link "Retrieve all Watchlists for an Account get" [ref=e1597] [cursor=pointer]:
+                    - /url: /us/reference/getallwatchlistsforaccount
+                    - generic [ref=e1599]: Retrieve all Watchlists for an Account
+                    - generic [ref=e1601]: get
+                - listitem [ref=e1602]:
+                  - link "Create a New Watchlist for an Account post" [ref=e1603] [cursor=pointer]:
+                    - /url: /us/reference/createwatchlistforaccount
+                    - generic [ref=e1605]: Create a New Watchlist for an Account
+                    - generic [ref=e1607]: post
+                - listitem [ref=e1608]:
+                  - link "Manage watchlists get" [ref=e1609] [cursor=pointer]:
+                    - /url: /us/reference/getwatchlistforaccountbyid
+                    - generic [ref=e1611]: Manage watchlists
+                    - generic [ref=e1613]: get
+                - listitem [ref=e1614]:
+                  - link "Update a Watchlist put" [ref=e1615] [cursor=pointer]:
+                    - /url: /us/reference/replacewatchlistforaccountbyid
+                    - generic [ref=e1617]: Update a Watchlist
+                    - generic [ref=e1619]: put
+                - listitem [ref=e1620]:
+                  - link "Remove a Watchlist del" [ref=e1621] [cursor=pointer]:
+                    - /url: /us/reference/deletewatchlistfromaccountbyid
+                    - generic [ref=e1623]: Remove a Watchlist
+                    - generic [ref=e1625]: del
+                - listitem [ref=e1626]:
+                  - link "Add an Asset to a Watchlist post" [ref=e1627] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-trading-accounts-account_id-watchlists-watchlist_id
+                    - generic [ref=e1629]: Add an Asset to a Watchlist
+                    - generic [ref=e1631]: post
+                - listitem [ref=e1632]:
+                  - link "Remove a Symbol from a Watchlist del" [ref=e1633] [cursor=pointer]:
+                    - /url: /us/reference/delete-delete-v1-trading-accounts-account_id-watchlists-watchlist_id-symbol
+                    - generic [ref=e1635]: Remove a Symbol from a Watchlist
+                    - generic [ref=e1637]: del
+            - listitem [ref=e1638]:
+              - link "KYC Show subpages for KYC" [ref=e1639] [cursor=pointer]:
+                - /url: /us/reference/post-v1-accounts-account_id-cip
+                - generic [ref=e1641]: KYC
+                - button "Show subpages for KYC" [ref=e1642]:
+                  - generic [ref=e1643]: 
+              - list:
+                - listitem [ref=e1644]:
+                  - link "Upload CIP information post" [ref=e1645] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-accounts-account_id-cip
+                    - generic [ref=e1647]: Upload CIP information
+                    - generic [ref=e1649]: post
+                - listitem [ref=e1650]:
+                  - link "Retrieve CIP information get" [ref=e1651] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-accounts-account_id-cip
+                    - generic [ref=e1653]: Retrieve CIP information
+                    - generic [ref=e1655]: get
+                - listitem [ref=e1656]:
+                  - link "Retrieve an Onfido SDK Token get" [ref=e1657] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-accounts-account_id-onfido-sdk-tokens
+                    - generic [ref=e1659]: Retrieve an Onfido SDK Token
+                    - generic [ref=e1661]: get
+                - listitem [ref=e1662]:
+                  - link "Update the Onfido SDK Outcome patch" [ref=e1663] [cursor=pointer]:
+                    - /url: /us/reference/patch-v1-accounts-account_id-onfido-sdk
+                    - generic [ref=e1665]: Update the Onfido SDK Outcome
+                    - generic [ref=e1667]: patch
+            - listitem [ref=e1668]:
+              - link "Rebalancing Show subpages for Rebalancing" [ref=e1669] [cursor=pointer]:
+                - /url: /us/reference/get-v1-rebalancing-portfolios
+                - generic [ref=e1671]: Rebalancing
+                - button "Show subpages for Rebalancing" [ref=e1672]:
+                  - generic [ref=e1673]: 
+              - list:
+                - listitem [ref=e1674]:
+                  - link "List Portfolios get" [ref=e1675] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-portfolios
+                    - generic [ref=e1677]: List Portfolios
+                    - generic [ref=e1679]: get
+                - listitem [ref=e1680]:
+                  - link "Create Portfolio post" [ref=e1681] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-rebalancing-portfolios
+                    - generic [ref=e1683]: Create Portfolio
+                    - generic [ref=e1685]: post
+                - listitem [ref=e1686]:
+                  - link "Get Portfolio by ID get" [ref=e1687] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-portfolios-portfolio_id
+                    - generic [ref=e1689]: Get Portfolio by ID
+                    - generic [ref=e1691]: get
+                - listitem [ref=e1692]:
+                  - link "Update Portfolio by ID patch" [ref=e1693] [cursor=pointer]:
+                    - /url: /us/reference/patch-v1-rebalancing-portfolios-portfolio_id
+                    - generic [ref=e1695]: Update Portfolio by ID
+                    - generic [ref=e1697]: patch
+                - listitem [ref=e1698]:
+                  - link "Inactivate Portfolio By ID del" [ref=e1699] [cursor=pointer]:
+                    - /url: /us/reference/delete-v1-rebalancing-portfolios-portfolio_id
+                    - generic [ref=e1701]: Inactivate Portfolio By ID
+                    - generic [ref=e1703]: del
+                - listitem [ref=e1704]:
+                  - link "List All Subscriptions get" [ref=e1705] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-subscriptions
+                    - generic [ref=e1707]: List All Subscriptions
+                    - generic [ref=e1709]: get
+                - listitem [ref=e1710]:
+                  - link "Create Subscription post" [ref=e1711] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-rebalancing-subscriptions
+                    - generic [ref=e1713]: Create Subscription
+                    - generic [ref=e1715]: post
+                - listitem [ref=e1716]:
+                  - link "Get Subscription by ID get" [ref=e1717] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-subscriptions-subscription_id
+                    - generic [ref=e1719]: Get Subscription by ID
+                    - generic [ref=e1721]: get
+                - listitem [ref=e1722]:
+                  - link "Unsubscribe Account (Delete Subscription) del" [ref=e1723] [cursor=pointer]:
+                    - /url: /us/reference/delete-v1-rebalancing-subscriptions-subscription_id
+                    - generic [ref=e1725]: Unsubscribe Account (Delete Subscription)
+                    - generic [ref=e1727]: del
+                - listitem [ref=e1728]:
+                  - link "List All Runs. get" [ref=e1729] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-runs
+                    - generic [ref=e1731]: List All Runs.
+                    - generic [ref=e1733]: get
+                - listitem [ref=e1734]:
+                  - link "Create Run (Manual rebalancing event) post" [ref=e1735] [cursor=pointer]:
+                    - /url: /us/reference/post-v1-rebalancing-runs
+                    - generic [ref=e1737]: Create Run (Manual rebalancing event)
+                    - generic [ref=e1739]: post
+                - listitem [ref=e1740]:
+                  - link "Get Run by ID get" [ref=e1741] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-rebalancing-runs-run_id
+                    - generic [ref=e1743]: Get Run by ID
+                    - generic [ref=e1745]: get
+                - listitem [ref=e1746]:
+                  - link "Cancel Run by ID del" [ref=e1747] [cursor=pointer]:
+                    - /url: /us/reference/delete-v1-rebalancing-runs-run_id
+                    - generic [ref=e1749]: Cancel Run by ID
+                    - generic [ref=e1751]: del
+            - listitem [ref=e1752]:
+              - link "Funding Wallets Show subpages for Funding Wallets" [ref=e1753] [cursor=pointer]:
+                - /url: /us/reference/demodepositfunding
+                - generic [ref=e1755]: Funding Wallets
+                - button "Show subpages for Funding Wallets" [ref=e1756]:
+                  - generic [ref=e1757]: 
+              - list:
+                - listitem [ref=e1758]:
+                  - link "Create sandbox deposit transfer post" [ref=e1759] [cursor=pointer]:
+                    - /url: /us/reference/demodepositfunding
+                    - generic [ref=e1761]: Create sandbox deposit transfer
+                    - generic [ref=e1763]: post
+                - listitem [ref=e1764]:
+                  - link "Batch create funding wallets post" [ref=e1765] [cursor=pointer]:
+                    - /url: /us/reference/batchcreatefundingwallets
+                    - generic [ref=e1767]: Batch create funding wallets
+                    - generic [ref=e1769]: post
+                - listitem [ref=e1770]:
+                  - link "Retrieve funding wallet get" [ref=e1771] [cursor=pointer]:
+                    - /url: /us/reference/getfundingwallet
+                    - generic [ref=e1773]: Retrieve funding wallet
+                    - generic [ref=e1775]: get
+                - listitem [ref=e1776]:
+                  - link "Creates a funding wallet post" [ref=e1777] [cursor=pointer]:
+                    - /url: /us/reference/createfundingwallet
+                    - generic [ref=e1779]: Creates a funding wallet
+                    - generic [ref=e1781]: post
+                - listitem [ref=e1782]:
+                  - link "Retrieve funding details get" [ref=e1783] [cursor=pointer]:
+                    - /url: /us/reference/listfundingdetails
+                    - generic [ref=e1785]: Retrieve funding details
+                    - generic [ref=e1787]: get
+                - listitem [ref=e1788]:
+                  - link "Retrieve funding wallet transfers get" [ref=e1789] [cursor=pointer]:
+                    - /url: /us/reference/getfundingwallettransfers
+                    - generic [ref=e1791]: Retrieve funding wallet transfers
+                    - generic [ref=e1793]: get
+                - listitem [ref=e1794]:
+                  - link "Retrieve funding wallet transfer by ID get" [ref=e1795] [cursor=pointer]:
+                    - /url: /us/reference/getfundingwallettransferbyid
+                    - generic [ref=e1797]: Retrieve funding wallet transfer by ID
+                    - generic [ref=e1799]: get
+                - listitem [ref=e1800]:
+                  - link "Retrieve recipient bank get" [ref=e1801] [cursor=pointer]:
+                    - /url: /us/reference/getfundingwalletrecipientbank
+                    - generic [ref=e1803]: Retrieve recipient bank
+                    - generic [ref=e1805]: get
+                - listitem [ref=e1806]:
+                  - link "Create a recipient bank post" [ref=e1807] [cursor=pointer]:
+                    - /url: /us/reference/createfundingwalletrecipientbank
+                    - generic [ref=e1809]: Create a recipient bank
+                    - generic [ref=e1811]: post
+                - listitem [ref=e1812]:
+                  - link "Delete a recipient bank del" [ref=e1813] [cursor=pointer]:
+                    - /url: /us/reference/deletefundingwalletrecipientbank
+                    - generic [ref=e1815]: Delete a recipient bank
+                    - generic [ref=e1817]: del
+                - listitem [ref=e1818]:
+                  - link "Create a withdrawal post" [ref=e1819] [cursor=pointer]:
+                    - /url: /us/reference/createfundingwalletwithdrawal
+                    - generic [ref=e1821]: Create a withdrawal
+                    - generic [ref=e1823]: post
+            - listitem [ref=e1824]:
+              - link "Logos Show subpages for Logos" [ref=e1825] [cursor=pointer]:
+                - /url: /us/reference/get-v1beta1-logos-symbol
+                - generic [ref=e1827]: Logos
+                - button "Show subpages for Logos" [ref=e1828]:
+                  - generic [ref=e1829]: 
+              - list:
+                - listitem [ref=e1830]:
+                  - link "Get Logo get" [ref=e1831] [cursor=pointer]:
+                    - /url: /us/reference/get-v1beta1-logos-symbol
+                    - generic [ref=e1833]: Get Logo
+                    - generic [ref=e1835]: get
+            - listitem [ref=e1836]:
+              - link "Reporting Show subpages for Reporting" [ref=e1837] [cursor=pointer]:
+                - /url: /us/reference/get-v1-reporting-eod-aggregate_positions
+                - generic [ref=e1839]: Reporting
+                - button "Show subpages for Reporting" [ref=e1840]:
+                  - generic [ref=e1841]: 
+              - list:
+                - listitem [ref=e1842]:
+                  - link "Retrieve Aggregate Positions get" [ref=e1843] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-reporting-eod-aggregate_positions
+                    - generic [ref=e1845]: Retrieve Aggregate Positions
+                    - generic [ref=e1847]: get
+                - listitem [ref=e1848]:
+                  - link "Retrieve EOD Positions get" [ref=e1849] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-reporting-eod-positions
+                    - generic [ref=e1851]: Retrieve EOD Positions
+                    - generic [ref=e1853]: get
+                - listitem [ref=e1854]:
+                  - link "Retrieve EOD Cash Interest Details get" [ref=e1855] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-get-eod-cash-interest-report
+                    - generic [ref=e1857]: Retrieve EOD Cash Interest Details
+                    - generic [ref=e1859]: get
+            - listitem [ref=e1860]:
+              - link "Country Info Show subpages for Country Info" [ref=e1861] [cursor=pointer]:
+                - /url: /us/reference/querycountryinfos
+                - generic [ref=e1863]: Country Info
+                - button "Show subpages for Country Info" [ref=e1864]:
+                  - generic [ref=e1865]: 
+              - list:
+                - listitem [ref=e1866]:
+                  - link "Retrieve countries information get" [ref=e1867] [cursor=pointer]:
+                    - /url: /us/reference/querycountryinfos
+                    - generic [ref=e1869]: Retrieve countries information
+                    - generic [ref=e1871]: get
+            - listitem [ref=e1872]:
+              - link "Corporate Actions Show subpages for Corporate Actions" [ref=e1873] [cursor=pointer]:
+                - /url: /us/reference/getcorporateannouncements
+                - generic [ref=e1875]: Corporate Actions
+                - button "Show subpages for Corporate Actions" [ref=e1876]:
+                  - generic [ref=e1877]: 
+              - list:
+                - listitem [ref=e1878]:
+                  - link "Retrieve Announcements Deprecated Endpoint get" [ref=e1879] [cursor=pointer]:
+                    - /url: /us/reference/getcorporateannouncements
+                    - generic [ref=e1881]: Retrieve Announcements
+                    - generic [ref=e1882]:
+                      - button "Deprecated Endpoint" [ref=e1883]
+                      - generic [ref=e1886]: get
+                - listitem [ref=e1887]:
+                  - link "Retrieve a Specific Announcement Deprecated Endpoint get" [ref=e1888] [cursor=pointer]:
+                    - /url: /us/reference/get-get-v1-corporate_actions-announcements-id
+                    - generic [ref=e1890]: Retrieve a Specific Announcement
+                    - generic [ref=e1891]:
+                      - button "Deprecated Endpoint" [ref=e1892]
+                      - generic [ref=e1895]: get
+            - listitem [ref=e1896]:
+              - link "IRA Show subpages for IRA" [ref=e1897] [cursor=pointer]:
+                - /url: /us/reference/listiraexcesscontritbutions
+                - generic [ref=e1899]: IRA
+                - button "Show subpages for IRA" [ref=e1900]:
+                  - generic [ref=e1901]: 
+              - list:
+                - listitem [ref=e1902]:
+                  - link "Retrieve Excess Contributions get" [ref=e1903] [cursor=pointer]:
+                    - /url: /us/reference/listiraexcesscontritbutions
+                    - generic [ref=e1905]: Retrieve Excess Contributions
+                    - generic [ref=e1907]: get
+            - listitem [ref=e1908]:
+              - link "Portfolio History Show subpages for Portfolio History" [ref=e1909] [cursor=pointer]:
+                - /url: /us/reference/get-v1-trading-accounts-account_id-account-portfolio-history
+                - generic [ref=e1911]: Portfolio History
+                - button "Show subpages for Portfolio History" [ref=e1912]:
+                  - generic [ref=e1913]: 
+              - list:
+                - listitem [ref=e1914]:
+                  - link "Get Account Portfolio History get" [ref=e1915] [cursor=pointer]:
+                    - /url: /us/reference/get-v1-trading-accounts-account_id-account-portfolio-history
+                    - generic [ref=e1917]: Get Account Portfolio History
+                    - generic [ref=e1919]: get
+            - listitem [ref=e1920]:
+              - link "Crypto Funding Show subpages for Crypto Funding" [ref=e1921] [cursor=pointer]:
+                - /url: /us/reference/listcryptofundingwallets-1
+                - generic [ref=e1923]: Crypto Funding
+                - button "Show subpages for Crypto Funding" [ref=e1924]:
+                  - generic [ref=e1925]: 
+              - list:
+                - listitem [ref=e1926]:
+                  - link "Retrieve Crypto Funding Wallets get" [ref=e1927] [cursor=pointer]:
+                    - /url: /us/reference/listcryptofundingwallets-1
+                    - generic [ref=e1929]: Retrieve Crypto Funding Wallets
+                    - generic [ref=e1931]: get
+                - listitem [ref=e1932]:
+                  - link "Retrieve Crypto Funding Transfers get" [ref=e1933] [cursor=pointer]:
+                    - /url: /us/reference/listcryptofundingtransfers-1
+                    - generic [ref=e1935]: Retrieve Crypto Funding Transfers
+                    - generic [ref=e1937]: get
+                - listitem [ref=e1938]:
+                  - link "Request a New Withdrawal post" [ref=e1939] [cursor=pointer]:
+                    - /url: /us/reference/createcryptotransferforaccount-1
+                    - generic [ref=e1941]: Request a New Withdrawal
+                    - generic [ref=e1943]: post
+                - listitem [ref=e1944]:
+                  - link "Retrieve a Crypto Funding Transfer get" [ref=e1945] [cursor=pointer]:
+                    - /url: /us/reference/getcryptofundingtransfer-1
+                    - generic [ref=e1947]: Retrieve a Crypto Funding Transfer
+                    - generic [ref=e1949]: get
+                - listitem [ref=e1950]:
+                  - link "An array of whitelisted addresses get" [ref=e1951] [cursor=pointer]:
+                    - /url: /us/reference/listwhitelistedaddress-1
+                    - generic [ref=e1953]: An array of whitelisted addresses
+                    - generic [ref=e1955]: get
+                - listitem [ref=e1956]:
+                  - link "Request a new whitelisted address post" [ref=e1957] [cursor=pointer]:
+                    - /url: /us/reference/createwhitelistedaddress-1
+                    - generic [ref=e1959]: Request a new whitelisted address
+                    - generic [ref=e1961]: post
+                - listitem [ref=e1962]:
+                  - link "Delete a whitelisted address del" [ref=e1963] [cursor=pointer]:
+                    - /url: /us/reference/deletewhitelistedaddress-1
+                    - generic [ref=e1965]: Delete a whitelisted address
+                    - generic [ref=e1967]: del
+                - listitem [ref=e1968]:
+                  - link "Returns the estimated gas fee for a proposed transaction. get" [ref=e1969] [cursor=pointer]:
+                    - /url: /us/reference/getcryptotransferestimate-1
+                    - generic [ref=e1971]: Returns the estimated gas fee for a proposed transaction.
+                    - generic [ref=e1973]: get
+            - listitem [ref=e1974]:
+              - link "Tokenization Show subpages for Tokenization" [ref=e1975] [cursor=pointer]:
+                - /url: /us/reference/posttokenizationmintbroker
+                - generic [ref=e1977]: Tokenization
+                - button "Show subpages for Tokenization" [ref=e1978]:
+                  - generic [ref=e1979]: 
+              - list:
+                - listitem [ref=e1980]:
+                  - link "Mint a Tokenized Asset post" [ref=e1981] [cursor=pointer]:
+                    - /url: /us/reference/posttokenizationmintbroker
+                    - generic [ref=e1983]: Mint a Tokenized Asset
+                    - generic [ref=e1985]: post
+                - listitem [ref=e1986]:
+                  - link "Redeem a Tokenized Asset post" [ref=e1987] [cursor=pointer]:
+                    - /url: /us/reference/posttokenizationredeem
+                    - generic [ref=e1989]: Redeem a Tokenized Asset
+                    - generic [ref=e1991]: post
+                - listitem [ref=e1992]:
+                  - link "List Tokenization Requests get" [ref=e1993] [cursor=pointer]:
+                    - /url: /us/reference/gettokenizationrequestsbroker
+                    - generic [ref=e1995]: List Tokenization Requests
+                    - generic [ref=e1997]: get
+                - listitem [ref=e1998]:
+                  - link "Confirm Tokenized Asset Minted post" [ref=e1999] [cursor=pointer]:
+                    - /url: /us/reference/posttokenizationcallbackmint
+                    - generic [ref=e2001]: Confirm Tokenized Asset Minted
+                    - generic [ref=e2003]: post
+            - listitem [ref=e2004]:
+              - link "IPO Show subpages for IPO" [ref=e2005] [cursor=pointer]:
+                - /url: /us/reference/listipoofferings
+                - generic [ref=e2007]: IPO
+                - button "Show subpages for IPO" [ref=e2008]:
+                  - generic [ref=e2009]: 
+              - list:
+                - listitem [ref=e2010]:
+                  - link "List IPO Offerings get" [ref=e2011] [cursor=pointer]:
+                    - /url: /us/reference/listipoofferings
+                    - generic [ref=e2013]: List IPO Offerings
+                    - generic [ref=e2015]: get
+                - listitem [ref=e2016]:
+                  - link "Retrieve an IPO Offering get" [ref=e2017] [cursor=pointer]:
+                    - /url: /us/reference/getipooffering
+                    - generic [ref=e2019]: Retrieve an IPO Offering
+                    - generic [ref=e2021]: get
+      - button "Hide sidebar navigation" [ref=e2022] [cursor=pointer]
+    - generic [ref=e2024]:
+      - article [ref=e2025]:
+        - generic [ref=e2026]:
+          - generic [ref=e2027]:
+            - heading "Create an Order" [level=1] [ref=e2029]
+            - generic [ref=e2032]:
+              - button [ref=e2033] [cursor=pointer]:
+                - img [ref=e2035]
+              - button [ref=e2038] [cursor=pointer]:
+                - img [ref=e2040]
+          - generic [ref=e2042]:
+            - generic [ref=e2043]: post
+            - generic [ref=e2044]:
+              - generic "https://paper-api.alpaca.markets/v2/orders" [ref=e2045]
+              - button "Show full URL" [ref=e2046] [cursor=pointer]
+            - button "Copy to clipboard" [ref=e2049] [cursor=pointer]:
+              - img [ref=e2051]
+          - paragraph [ref=e2055]: Places a new order for the given account. An order request may be rejected if the account is not authorized for trading, or if the tradable balance is insufficient to fill the order.
+        - generic [ref=e2056]:
+          - generic [ref=e2058]:
+            - link "Skip link to Body Params" [ref=e2059] [cursor=pointer]:
+              - /url: "#body-params"
+              - img [ref=e2061]
+            - text: Body Params
+          - generic [ref=e2066]:
+            - generic [ref=e2068]:
+              - generic [ref=e2069]:
+                - generic [ref=e2070]:
+                  - generic [ref=e2071]: symbol
+                  - generic [ref=e2072]: string
+                - paragraph [ref=e2076]:
+                  - text: symbol, asset ID, or currency pair to identify the asset to trade, required for all order classes except for
+                  - code [ref=e2077]: mleg
+                  - text: .
+              - combobox "symbol" [ref=e2080]
+            - generic [ref=e2082]:
+              - generic [ref=e2083]:
+                - generic [ref=e2084]:
+                  - generic [ref=e2085]: qty
+                  - generic [ref=e2086]: string
+                - paragraph [ref=e2090]:
+                  - text: number of shares to trade. Can be fractionable for only market and day order types. Required for
+                  - code [ref=e2091]: mleg
+                  - text: order class, represents the number of units to trade of this strategy.
+              - combobox "qty" [ref=e2094]
+            - generic [ref=e2096]:
+              - generic [ref=e2097]:
+                - generic [ref=e2098]:
+                  - generic [ref=e2099]: notional
+                  - generic [ref=e2100]: string
+                - paragraph [ref=e2104]:
+                  - text: dollar amount to trade. Cannot work with
+                  - code [ref=e2105]: qty
+                  - text: . Can only work for market order types and day for time in force.
+              - combobox "notional" [ref=e2108]
+            - generic [ref=e2109]:
+              - generic [ref=e2110]:
+                - generic [ref=e2111]:
+                  - generic [ref=e2112]:
+                    - generic [ref=e2113]: side
+                    - generic [ref=e2114]: string
+                    - generic [ref=e2115]: enum
+                  - generic [ref=e2118]:
+                    - paragraph [ref=e2119]: "Represents which side this order was on:"
+                    - list [ref=e2120]:
+                      - listitem [ref=e2121]: buy
+                      - listitem [ref=e2122]: sell Required for all order classes except for mleg.
+                - combobox "side" [ref=e2124] [cursor=pointer]:
+                  - option
+                  - option "buy"
+                  - option "sell"
+              - generic [ref=e2126]:
+                - generic [ref=e2127]: "Allowed:"
+                - generic [ref=e2128]:
+                  - button "buy" [ref=e2129] [cursor=pointer]:
+                    - code [ref=e2130]: buy
+                  - button "sell" [ref=e2131] [cursor=pointer]:
+                    - code [ref=e2132]: sell
+            - generic [ref=e2133]:
+              - generic [ref=e2134]:
+                - generic [ref=e2135]:
+                  - generic [ref=e2136]:
+                    - generic [ref=e2137]: type
+                    - generic [ref=e2138]: string
+                    - generic [ref=e2139]: enum
+                    - generic [ref=e2140]: required
+                  - generic [ref=e2143]:
+                    - paragraph [ref=e2144]: "The order types supported by Alpaca vary based on the order's security type. The following provides a comprehensive breakdown of the supported order types for each category:"
+                    - list [ref=e2145]:
+                      - listitem [ref=e2146]: "Equity trading: market, limit, stop, stop_limit, trailing_stop."
+                      - listitem [ref=e2147]: "Options trading: market, limit."
+                      - listitem [ref=e2148]: "Multileg Options trading: market, limit."
+                      - listitem [ref=e2149]: "Crypto trading: market, limit, stop_limit."
+                - combobox "type" [ref=e2151] [cursor=pointer]:
+                  - option
+                  - option "market" [selected]
+                  - option "limit"
+                  - option "stop"
+                  - option "stop_limit"
+                  - option "trailing_stop"
+              - generic [ref=e2153]:
+                - generic [ref=e2154]: "Allowed:"
+                - generic [ref=e2155]:
+                  - button "market" [ref=e2156] [cursor=pointer]:
+                    - code [ref=e2157]: market
+                  - button "limit" [ref=e2158] [cursor=pointer]:
+                    - code [ref=e2159]: limit
+                  - button "stop" [ref=e2160] [cursor=pointer]:
+                    - code [ref=e2161]: stop
+                  - button "stop_limit" [ref=e2162] [cursor=pointer]:
+                    - code [ref=e2163]: stop_limit
+                  - button "trailing_stop" [ref=e2164] [cursor=pointer]:
+                    - code [ref=e2165]: trailing_stop
+            - generic [ref=e2166]:
+              - generic [ref=e2167]:
+                - generic [ref=e2168]:
+                  - generic [ref=e2169]:
+                    - generic [ref=e2170]: time_in_force
+                    - generic [ref=e2171]: string
+                    - generic [ref=e2172]: enum
+                    - generic [ref=e2173]: required
+                  - generic [ref=e2176]:
+                    - paragraph [ref=e2177]: "The Time-In-Force values supported by Alpaca vary based on the order's security type. Here is a breakdown of the supported TIFs for each specific security type:"
+                    - list [ref=e2178]:
+                      - listitem [ref=e2179]: "Equity trading: day, gtc, opg, cls, ioc, fok."
+                      - listitem [ref=e2180]: "Options trading: day."
+                      - listitem [ref=e2181]: "Crypto trading: gtc, ioc."
+                    - paragraph [ref=e2182]: "Below are the descriptions of each TIF:"
+                    - list [ref=e2183]:
+                      - listitem [ref=e2184]:
+                        - paragraph [ref=e2185]: "day: A day order is eligible for execution only on the day it is live. By default, the order is only valid during Regular Trading Hours (9:30am - 4:00pm ET). If unfilled after the closing auction, it is automatically canceled. If submitted after the close, it is queued and submitted the following trading day. However, if marked as eligible for extended hours, the order can also execute during supported extended hours."
+                      - listitem [ref=e2186]:
+                        - paragraph [ref=e2187]: "gtc: The order is good until canceled. Non-marketable GTC limit orders are subject to price adjustments to offset corporate actions affecting the issue. We do not currently support Do Not Reduce (DNR) orders to opt out of such price adjustments."
+                      - listitem [ref=e2188]:
+                        - paragraph [ref=e2189]: "opg: Use this TIF with a market/limit order type to submit “market on open” (MOO) and “limit on open” (LOO) orders. This order is eligible to execute only in the market opening auction. Any unfilled orders after the open will be cancelled. OPG orders submitted after 9:28am but before 7:00pm ET will be rejected. OPG orders submitted after 7:00pm will be queued and routed to the following day’s opening auction. On open/on close orders are routed to the primary exchange. Such orders do not necessarily execute exactly at 9:30am / 4:00pm ET but execute per the exchange’s auction rules."
+                      - listitem [ref=e2190]:
+                        - paragraph [ref=e2191]: "cls: Use this TIF with a market/limit order type to submit “market on close” (MOC) and “limit on close” (LOC) orders. This order is eligible to execute only in the market closing auction. Any unfilled orders after the close will be cancelled. CLS orders submitted after 3:50pm but before 7:00pm ET will be rejected. CLS orders submitted after 7:00pm will be queued and routed to the following day’s closing auction. Only available with API v2."
+                      - listitem [ref=e2192]:
+                        - paragraph [ref=e2193]: "ioc: An Immediate Or Cancel (IOC) order requires all or part of the order to be executed immediately. Any unfilled portion of the order is canceled. Only available with API v2. Most market makers who receive IOC orders will attempt to fill the order on a principal basis only, and cancel any unfilled balance. On occasion, this can result in the entire order being cancelled if the market maker does not have any existing inventory of the security in question."
+                      - listitem [ref=e2194]:
+                        - paragraph [ref=e2195]: "fok: A Fill or Kill (FOK) order is only executed if the entire order quantity can be filled, otherwise the order is canceled. Only available with API v2."
+                - combobox "time_in_force" [ref=e2197] [cursor=pointer]:
+                  - option
+                  - option "day" [selected]
+                  - option "gtc"
+                  - option "opg"
+                  - option "cls"
+                  - option "ioc"
+                  - option "fok"
+              - generic [ref=e2199]:
+                - generic [ref=e2200]: "Allowed:"
+                - generic [ref=e2201]:
+                  - button "day" [ref=e2202] [cursor=pointer]:
+                    - code [ref=e2203]: day
+                  - button "gtc" [ref=e2204] [cursor=pointer]:
+                    - code [ref=e2205]: gtc
+                  - button "opg" [ref=e2206] [cursor=pointer]:
+                    - code [ref=e2207]: opg
+                  - button "cls" [ref=e2208] [cursor=pointer]:
+                    - code [ref=e2209]: cls
+                  - button "ioc" [ref=e2210] [cursor=pointer]:
+                    - code [ref=e2211]: ioc
+                  - button "fok" [ref=e2212] [cursor=pointer]:
+                    - code [ref=e2213]: fok
+            - generic [ref=e2215]:
+              - generic [ref=e2216]:
+                - generic [ref=e2217]:
+                  - generic [ref=e2218]: limit_price
+                  - generic [ref=e2219]: string
+                - generic [ref=e2222]:
+                  - paragraph [ref=e2223]:
+                    - text: Required if type is
+                    - code [ref=e2224]: limit
+                    - text: or
+                    - code [ref=e2225]: stop_limit
+                    - text: . In case of
+                    - code [ref=e2226]: mleg
+                    - text: ", the limit_price parameter is expressed with the following notation:"
+                  - list [ref=e2227]:
+                    - listitem [ref=e2228]: A positive value indicates a debit, representing a cost or payment to be made.
+                    - listitem [ref=e2229]: A negative value signifies a credit, reflecting an amount to be received.
+              - combobox "limit_price" [ref=e2232]
+            - generic [ref=e2234]:
+              - generic [ref=e2235]:
+                - generic [ref=e2236]:
+                  - generic [ref=e2237]: stop_price
+                  - generic [ref=e2238]: string
+                - paragraph [ref=e2242]:
+                  - text: required if type is
+                  - code [ref=e2243]: stop
+                  - text: or
+                  - code [ref=e2244]: stop_limit
+              - combobox "stop_price" [ref=e2247]
+            - generic [ref=e2249]:
+              - generic [ref=e2250]:
+                - generic [ref=e2251]:
+                  - generic [ref=e2252]: trail_price
+                  - generic [ref=e2253]: string
+                - paragraph [ref=e2257]:
+                  - text: this or
+                  - code [ref=e2258]: trail_percent
+                  - text: is required if type is
+                  - code [ref=e2259]: trailing_stop
+              - combobox "trail_price" [ref=e2262]
+            - generic [ref=e2264]:
+              - generic [ref=e2265]:
+                - generic [ref=e2266]:
+                  - generic [ref=e2267]: trail_percent
+                  - generic [ref=e2268]: string
+                - paragraph [ref=e2272]:
+                  - text: this or
+                  - code [ref=e2273]: trail_price
+                  - text: is required if type is
+                  - code [ref=e2274]: trailing_stop
+              - combobox "trail_percent" [ref=e2277]
+            - generic [ref=e2279]:
+              - generic [ref=e2280]:
+                - generic [ref=e2281]:
+                  - generic [ref=e2282]: extended_hours
+                  - generic [ref=e2283]: boolean
+                - paragraph [ref=e2287]:
+                  - text: (default) false. If true, order will be eligible for execution in the pre-market, after-hours, and overnight sessions. Only works with type
+                  - code [ref=e2288]: limit
+                  - text: and time_in_force set to either
+                  - code [ref=e2289]: day
+                  - text: or
+                  - code [ref=e2290]: gtc
+              - combobox "extended_hours" [ref=e2292] [cursor=pointer]:
+                - option [selected]
+                - option "true"
+                - option "false"
+            - generic [ref=e2294]:
+              - generic [ref=e2295]:
+                - generic [ref=e2296]:
+                  - generic [ref=e2297]: client_order_id
+                  - generic [ref=e2298]: string
+                  - generic [ref=e2299]: length ≤ 128
+                - paragraph [ref=e2303]: A unique identifier for the order. Automatically generated if not sent. (<= 128 characters)
+              - combobox "client_order_id" [ref=e2306]
+            - generic [ref=e2307]:
+              - generic [ref=e2308]:
+                - generic [ref=e2309]:
+                  - generic [ref=e2310]:
+                    - generic [ref=e2311]: order_class
+                    - generic [ref=e2312]: string
+                    - generic [ref=e2313]: enum
+                  - generic [ref=e2316]:
+                    - paragraph [ref=e2317]: "The order classes supported by Alpaca vary based on the order's security type. The following provides a comprehensive breakdown of the supported order classes for each category:"
+                    - list [ref=e2318]:
+                      - listitem [ref=e2319]: "Equity trading: simple (or \"\"), oco, oto, bracket."
+                      - listitem [ref=e2320]:
+                        - text: "Options trading:"
+                        - list [ref=e2321]:
+                          - listitem [ref=e2322]: simple (or "")
+                          - listitem [ref=e2323]: mleg (required for multi-leg complex option strategies)
+                      - listitem [ref=e2324]: "Crypto trading: simple (or \"\")."
+                - combobox "order_class" [ref=e2326] [cursor=pointer]:
+                  - option "simple"
+                  - option "bracket"
+                  - option "oco"
+                  - option "oto"
+                  - option "mleg"
+                  - option
+              - generic [ref=e2328]:
+                - generic [ref=e2329]: "Allowed:"
+                - generic [ref=e2330]:
+                  - button "simple" [ref=e2331] [cursor=pointer]:
+                    - code [ref=e2332]: simple
+                  - button "bracket" [ref=e2333] [cursor=pointer]:
+                    - code [ref=e2334]: bracket
+                  - button "oco" [ref=e2335] [cursor=pointer]:
+                    - code [ref=e2336]: oco
+                  - button "oto" [ref=e2337] [cursor=pointer]:
+                    - code [ref=e2338]: oto
+                  - button "mleg" [ref=e2339] [cursor=pointer]:
+                    - code [ref=e2340]: mleg
+                  - button "''" [ref=e2341] [cursor=pointer]:
+                    - code [ref=e2342]: "''"
+            - generic [ref=e2344]:
+              - generic [ref=e2345]:
+                - generic [ref=e2346]: legs
+                - generic [ref=e2347]: array of objects
+              - paragraph [ref=e2351]: list of order legs (<= 4)
+              - button "ADD object " [ref=e2355] [cursor=pointer]:
+                - generic [ref=e2356]: ADD object
+                - generic [ref=e2357]: 
+            - generic [ref=e2359]:
+              - generic [ref=e2360]:
+                - generic [ref=e2361]: take_profit
+                - generic [ref=e2362]: object
+              - paragraph [ref=e2366]: Takes in a string/number value for limit_price
+              - button "take_profit object " [ref=e2368] [cursor=pointer]:
+                - generic [ref=e2369]: take_profit object
+                - generic [ref=e2370]: 
+            - generic [ref=e2372]:
+              - generic [ref=e2373]:
+                - generic [ref=e2374]: stop_loss
+                - generic [ref=e2375]: object
+              - paragraph [ref=e2379]: Takes in string/number values for stop_price and limit_price
+              - button "stop_loss object " [ref=e2381] [cursor=pointer]:
+                - generic [ref=e2382]: stop_loss object
+                - generic [ref=e2383]: 
+            - generic [ref=e2384]:
+              - generic [ref=e2385]:
+                - generic [ref=e2386]:
+                  - generic [ref=e2387]:
+                    - generic [ref=e2388]: position_intent
+                    - generic [ref=e2389]: string
+                    - generic [ref=e2390]: enum
+                  - paragraph [ref=e2394]: Represents the desired position strategy.
+                - combobox "position_intent" [ref=e2396] [cursor=pointer]:
+                  - option
+                  - option "buy_to_open"
+                  - option "buy_to_close"
+                  - option "sell_to_open"
+                  - option "sell_to_close"
+              - generic [ref=e2398]:
+                - generic [ref=e2399]: "Allowed:"
+                - generic [ref=e2400]:
+                  - button "buy_to_open" [ref=e2401] [cursor=pointer]:
+                    - code [ref=e2402]: buy_to_open
+                  - button "buy_to_close" [ref=e2403] [cursor=pointer]:
+                    - code [ref=e2404]: buy_to_close
+                  - button "sell_to_open" [ref=e2405] [cursor=pointer]:
+                    - code [ref=e2406]: sell_to_open
+                  - button "sell_to_close" [ref=e2407] [cursor=pointer]:
+                    - code [ref=e2408]: sell_to_close
+            - generic [ref=e2410]:
+              - generic [ref=e2411]:
+                - generic [ref=e2412]: advanced_instructions
+                - generic [ref=e2413]: object
+              - paragraph [ref=e2417]:
+                - text: "Advanced instructions for Elite Smart Router:"
+                - link "https://docs.alpaca.markets/docs/alpaca-elite-smart-router" [ref=e2418] [cursor=pointer]:
+                  - /url: /us/docs/alpaca-elite-smart-router
+              - button "AdvancedInstructions object " [ref=e2420] [cursor=pointer]:
+                - generic [ref=e2421]: AdvancedInstructions object
+                - generic [ref=e2422]: 
+        - generic [ref=e2424]:
+          - link "Skip link to Responses" [ref=e2425] [cursor=pointer]:
+            - /url: "#response-schemas"
+            - img [ref=e2427]
+          - text: Responses
+        - generic [ref=e2429]:
+          - heading "200 200 Successful response Chevron" [level=1] [ref=e2431]:
+            - button "200 200 Successful response Chevron" [ref=e2432] [cursor=pointer]:
+              - generic [ref=e2433]:
+                - generic [ref=e2434]:
+                  - code [ref=e2435]:
+                    - img "200" [ref=e2436]
+                  - text: "200"
+                - paragraph [ref=e2438]: Successful response
+              - img "Chevron" [ref=e2441]
+          - generic [ref=e2444]:
+            - generic [ref=e2445]:
+              - code [ref=e2446]:
+                - img "403" [ref=e2447]
+              - text: "403"
+            - generic [ref=e2448]:
+              - paragraph [ref=e2449]: Forbidden
+              - paragraph [ref=e2450]: Buying power or shares is not sufficient.
+          - generic [ref=e2452]:
+            - generic [ref=e2453]:
+              - code [ref=e2454]:
+                - img "422" [ref=e2455]
+              - text: "422"
+            - generic [ref=e2456]:
+              - paragraph [ref=e2457]: Unprocessable
+              - paragraph [ref=e2458]: Input parameters are not recognized.
+        - generic [ref=e2459]:
+          - paragraph [ref=e2462]:
+            - generic [ref=e2463]: 
+            - text: Updated about 1 month ago
+          - separator [ref=e2464]
+          - navigation "Pagination Controls" [ref=e2465]:
+            - 'link "Previous Page: Retrieve Announcements" [ref=e2466] [cursor=pointer]':
+              - /url: /us/reference/get-v2-corporate_actions-announcements-1
+              - generic [ref=e2467]: 
+              - generic [ref=e2468]: Retrieve Announcements
+            - 'link "Next Page: Get All Orders" [ref=e2469] [cursor=pointer]':
+              - /url: /us/reference/getallorders-1
+              - generic [ref=e2470]: Get All Orders
+              - generic [ref=e2471]: 
+          - generic [ref=e2473]:
+            - text: Did this page help you?
+            - generic [ref=e2474]:
+              - button "Yes, this page helped me" [ref=e2476] [cursor=pointer]:
+                - generic [ref=e2477]: 
+                - generic [ref=e2478]: "Yes"
+              - button "No, this page did not help me" [ref=e2480] [cursor=pointer]:
+                - generic [ref=e2481]: 
+                - generic [ref=e2482]: "No"
+      - generic [ref=e2483]:
+        - generic [ref=e2484]:
+          - generic [ref=e2486]: Language
+          - generic [ref=e2488]:
+            - button " Shell" [pressed] [ref=e2489] [cursor=pointer]:
+              - generic [ref=e2490]: 
+              - text: Shell
+            - button " Node" [ref=e2491] [cursor=pointer]:
+              - generic [ref=e2492]: 
+              - text: Node
+            - button " Ruby" [ref=e2493] [cursor=pointer]:
+              - generic [ref=e2494]: 
+              - text: Ruby
+            - button " PHP" [ref=e2495] [cursor=pointer]:
+              - generic [ref=e2496]: 
+              - text: PHP
+            - button " Python" [ref=e2497] [cursor=pointer]:
+              - generic [ref=e2498]:
+                - generic [ref=e2499]: 
+                - generic: 
+              - text: Python
+            - button "More Languages" [ref=e2501] [cursor=pointer]:
+              - img "More ellipsis" [ref=e2503]
+        - generic [ref=e2506]:
+          - generic [ref=e2508]: Credentials
+          - generic [ref=e2509]:
+            - button "Header +1" [disabled] [ref=e2512]:
+              - generic [ref=e2513]: Header +1
+            - generic [ref=e2515]:
+              - textbox "APCA-API-KEY-ID" [ref=e2516]
+              - button "Hide" [ref=e2517] [cursor=pointer]:
+                - img [ref=e2519]
+              - button "Information" [ref=e2521]: 
+            - generic [ref=e2523]:
+              - textbox "APCA-API-SECRET-KEY" [ref=e2524]
+              - button "Hide" [ref=e2525] [cursor=pointer]:
+                - img [ref=e2527]
+              - button "Information" [ref=e2529]: 
+        - generic [ref=e2530]:
+          - generic [ref=e2532]: URL
+          - generic [ref=e2533]:
+            - button "Base URL " [ref=e2535] [cursor=pointer]:
+              - generic [ref=e2536]: Base URL
+              - generic [ref=e2537]: 
+            - button "https://paper-api.alpaca.markets /v2/orders" [disabled] [ref=e2538]:
+              - generic [ref=e2539]: https://paper-api.alpaca.markets
+              - generic [ref=e2540]: /v2/orders
+        - generic [ref=e2541]:
+          - generic [ref=e2542]:
+            - button "cURL Request" [ref=e2545] [cursor=pointer]:
+              - generic [ref=e2546]: cURL Request
+              - img [ref=e2548]
+            - button "Examples" [ref=e2551] [cursor=pointer]:
+              - generic [ref=e2552]: Examples
+              - img [ref=e2554]
+          - generic [ref=e2562]:
+            - generic [ref=e2563]:
+              - generic [ref=e2564]: "1"
+              - text: curl --request POST \
+            - generic [ref=e2565]:
+              - generic [ref=e2566]: "2"
+              - text: "--url https://paper-api.alpaca.markets/v2/orders \\"
+            - generic [ref=e2567]:
+              - generic [ref=e2568]: "3"
+              - text: "--header 'accept: application/json' \\"
+            - generic [ref=e2569]:
+              - generic [ref=e2570]: "4"
+              - text: "--header 'content-type: application/json' \\"
+            - generic [ref=e2571]:
+              - generic [ref=e2572]: "5"
+              - text: "--data '"
+            - generic [ref=e2573]:
+              - generic [ref=e2574]: "6"
+              - text: "{"
+            - generic [ref=e2575]:
+              - generic [ref=e2576]: "7"
+              - text: "\"type\": \"market\","
+            - generic [ref=e2577]:
+              - generic [ref=e2578]: "8"
+              - text: "\"time_in_force\": \"day\""
+            - generic [ref=e2579]:
+              - generic [ref=e2580]: "9"
+              - text: "}"
+            - generic [ref=e2581]:
+              - generic [ref=e2582]: "10"
+              - text: "'"
+          - generic [ref=e2586]:
+            - button "Copy to clipboard" [ref=e2588] [cursor=pointer]:
+              - img [ref=e2590]
+            - button "Try It!" [ref=e2593] [cursor=pointer]
+          - generic [ref=e2594]:
+            - generic [ref=e2596]: Response
+            - generic [ref=e2597]:
+              - generic [ref=e2598]:
+                - text: Click
+                - code [ref=e2599]: Try It!
+                - text: "to start a request and see the response here! Or choose an example:"
+              - generic [ref=e2601]:
+                - generic [ref=e2602]: application/json
+                - generic [ref=e2603]:
+                  - button "200 200 - Equity" [ref=e2604] [cursor=pointer]:
+                    - code [ref=e2605]:
+                      - img "200" [ref=e2606]
+                    - generic [ref=e2607]:
+                      - text: "200"
+                      - generic [ref=e2608]: "- Equity"
+                  - button "200 200 - Options" [ref=e2609] [cursor=pointer]:
+                    - code [ref=e2610]:
+                      - img "200" [ref=e2611]
+                    - generic [ref=e2612]:
+                      - text: "200"
+                      - generic [ref=e2613]: "- Options"
+                  - button "200 200 - Crypto" [ref=e2614] [cursor=pointer]:
+                    - code [ref=e2615]:
+                      - img "200" [ref=e2616]
+                    - generic [ref=e2617]:
+                      - text: "200"
+                      - generic [ref=e2618]: "- Crypto"
+                  - button "200 200 - MultilegOptions" [ref=e2619] [cursor=pointer]:
+                    - code [ref=e2620]:
+                      - img "200" [ref=e2621]
+                    - generic [ref=e2622]:
+                      - text: "200"
+                      - generic [ref=e2623]: "- MultilegOptions"
+                  - button "200 200 - IPO" [ref=e2624] [cursor=pointer]:
+                    - code [ref=e2625]:
+                      - img "200" [ref=e2626]
+                    - generic [ref=e2627]:
+                      - text: "200"
+                      - generic [ref=e2628]: "- IPO"
+      - text:     
+  - contentinfo [ref=e2629]:
+    - generic [ref=e2631]:
+      - navigation [ref=e2633]:
+        - generic [ref=e2634]:
+          - heading "Developers" [level=2] [ref=e2635]
+          - link "Docs" [ref=e2636] [cursor=pointer]:
+            - /url: https://docs.alpaca.markets
+          - link "Slack" [ref=e2637] [cursor=pointer]:
+            - /url: https://alpaca.markets/slack
+          - link "Forum" [ref=e2638] [cursor=pointer]:
+            - /url: https://forum.alpaca.markets/
+          - link "Support" [ref=e2639] [cursor=pointer]:
+            - /url: https://alpaca.markets/support/
+          - link "Learn" [ref=e2640] [cursor=pointer]:
+            - /url: https://alpaca.markets/learn/
+          - link "SDKs & Libraries" [ref=e2641] [cursor=pointer]:
+            - /url: https://alpaca.markets/docs/api-documentation/client-sdk/
+          - link "GitHub" [ref=e2642] [cursor=pointer]:
+            - /url: https://github.com/alpacahq/
+          - link "API Status" [ref=e2643] [cursor=pointer]:
+            - /url: https://status.alpaca.markets/
+          - link "Security" [ref=e2644] [cursor=pointer]:
+            - /url: https://alpaca.markets/security
+        - generic [ref=e2645]:
+          - heading "About Us" [level=2] [ref=e2646]
+          - link "Story" [ref=e2647] [cursor=pointer]:
+            - /url: https://techcrunch.com/2021/08/30/alpaca-raises-50m-to-rapidly-scale-its-equities-trading-api-business/?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAI4JGSuo7z4Eu8sGNb4TaXm5yUO7O40OPPy3yVtt2fYXuy46t-4ZQ-8HqqJRmVV3wUUHdA8YgVS2oFszkogNsyJAw1McTl4urvwJYbrG9PF1NGIkeH7zN8_QQnWMbSS_I2s2bxcjTW1gLnU_FP2k3MX1beVCzevohGkXKw684ITb
+          - link "Blog" [ref=e2648] [cursor=pointer]:
+            - /url: https://alpaca.markets/blog/
+          - link "Contact" [ref=e2649] [cursor=pointer]:
+            - /url: https://alpaca.markets/contact
+          - link "We're hiring" [ref=e2650] [cursor=pointer]:
+            - /url: https://alpaca.markets/hiring
+        - generic [ref=e2651]:
+          - heading "Disclosures" [level=2] [ref=e2652]
+          - link "Disclosure Library" [ref=e2653] [cursor=pointer]:
+            - /url: https://alpaca.markets/disclosures
+          - link "Form CRS" [ref=e2654] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRS.pdf
+          - link "Form CRS Responses to Conversation Starters" [ref=e2655] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRSConvStrtrs.pdf
+          - link "Privacy Policy" [ref=e2656] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/PrivacyPolicy.pdf
+          - link "Cookie Policy" [ref=e2657] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/CookiePolicy.pdf
+          - link "Terms & Conditions" [ref=e2658] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/library/TermsAndConditions.pdf
+        - generic [ref=e2659]:
+          - generic [ref=e2660]:
+            - link "Twitter" [ref=e2661] [cursor=pointer]:
+              - /url: https://twitter.com/AlpacaHQ
+              - img "Twitter" [ref=e2662]
+            - link "LinkedIn" [ref=e2664] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/9300556/
+              - img "LinkedIn" [ref=e2665]
+            - link "Facebook" [ref=e2667] [cursor=pointer]:
+              - /url: https://www.facebook.com/alpacahq
+              - img "Facebook" [ref=e2668]
+            - link "Slack" [ref=e2670] [cursor=pointer]:
+              - /url: https://alpaca.markets/slack
+              - img "Slack" [ref=e2671]
+          - link "Submit Feedback" [ref=e2673] [cursor=pointer]:
+            - /url: " https://forms.gle/vZmCs8uCRnA1SpXz6"
+      - generic [ref=e2674]:
+        - link "Alpaca" [ref=e2675] [cursor=pointer]:
+          - /url: https://alpaca.markets/
+          - img "Alpaca" [ref=e2676]
+        - paragraph [ref=e2687]: © 2025 Alpaca Securities LLC All rights reserved.
+        - paragraph [ref=e2688]: © 2025 Alpaca Crypto LLC All rights reserved.
+        - paragraph [ref=e2689]: © 2025 AlpacaDB, Inc. All rights reserved.
+        - paragraph [ref=e2690]:
+          - text: Securities brokerage services are provided by Alpaca Securities LLC ("Alpaca Securities"), member
+          - link "FINRA" [ref=e2691] [cursor=pointer]:
+            - /url: https://www.finra.org/
+          - text: /
+          - link "SIPC" [ref=e2692] [cursor=pointer]:
+            - /url: https://www.sipc.org/
+          - text: ", a wholly-owned subsidiary of AlpacaDB, Inc. Technology and services are offered by AlpacaDB, Inc."
+          - text: Options trading is not suitable for all investors due to its inherent high risk, which can potentially result in significant losses. Please read
+          - link "Characteristics and Risks of Standardized Options" [ref=e2693] [cursor=pointer]:
+            - /url: https://www.theocc.com/company-information/documents-and-archives/options-disclosure-document
+          - text: before investing in options.
+          - text: "Cryptocurrency services are made available by Alpaca Crypto LLC (\"Alpaca Crypto\"), a FinCEN registered money services business (NMLS # 2160858), and a wholly-owned subsidiary of AlpacaDB, Inc. Alpaca Crypto is not a member of SIPC or FINRA. Cryptocurrencies are not stocks and your cryptocurrency investments are not protected by either FDIC or SIPC."
+          - text: Cryptocurrency is highly speculative in nature, involves a high degree of risks, such as volatile market price swings, market manipulation, flash crashes, and cybersecurity risks. Cryptocurrency regulations are continuously evolving, and it is your responsibility to understand and abide by them. Cryptocurrency trading can lead to large, immediate and permanent loss of financial value. You should have appropriate knowledge and experience before engaging in cryptocurrency trading. For additional information, please click
+          - link "here" [ref=e2694] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/CryptoRiskDisclosures.pdf
+          - text: .
+        - link "! View Important Disclosures" [ref=e2695] [cursor=pointer]:
+          - /url: https://alpaca.markets/#disclosures
+          - generic [ref=e2696]: "!"
+          - generic [ref=e2697]: View Important Disclosures

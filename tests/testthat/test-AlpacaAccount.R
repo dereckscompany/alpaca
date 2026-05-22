@@ -49,7 +49,9 @@ test_that("get_position returns single-row data.table", {
 test_that("get_portfolio_history rejects providing all of period, start, end", {
   expect_error(
     new_account()$get_portfolio_history(
-      period = "1M", start = "2026-01-01", end = "2026-02-01"
+      period = "1M",
+      start = "2026-01-01",
+      end = "2026-02-01"
     ),
     "Only two of"
   )
@@ -67,7 +69,8 @@ test_that("get_portfolio_history warns and forwards deprecated date_start/date_e
 
   expect_warning(
     new_account()$get_portfolio_history(
-      date_start = "2026-01-01", date_end = "2026-02-01"
+      date_start = "2026-01-01",
+      date_end = "2026-02-01"
     ),
     "date_start.*deprecated"
   )
@@ -78,7 +81,8 @@ test_that("get_portfolio_history warns and forwards deprecated date_start/date_e
 test_that("get_activities rejects both activity_types and category", {
   expect_error(
     new_account()$get_activities(
-      activity_types = "FILL", category = "trade_activity"
+      activity_types = "FILL",
+      category = "trade_activity"
     ),
     "mutually exclusive"
   )

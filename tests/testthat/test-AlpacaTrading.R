@@ -214,7 +214,8 @@ test_that("modify_order rejects both qty and notional", {
 test_that("get_orders rejects both before_order_id and after_order_id", {
   expect_error(
     new_trading()$get_orders(
-      before_order_id = "a", after_order_id = "b"
+      before_order_id = "a",
+      after_order_id = "b"
     ),
     "mutually exclusive"
   )
@@ -223,13 +224,15 @@ test_that("get_orders rejects both before_order_id and after_order_id", {
 test_that("get_orders rejects mixing order-ID and timestamp pagination", {
   expect_error(
     new_trading()$get_orders(
-      before_order_id = "a", after = "2026-01-01"
+      before_order_id = "a",
+      after = "2026-01-01"
     ),
     "cannot be combined"
   )
   expect_error(
     new_trading()$get_orders(
-      after_order_id = "b", until = "2026-01-01"
+      after_order_id = "b",
+      until = "2026-01-01"
     ),
     "cannot be combined"
   )

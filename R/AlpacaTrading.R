@@ -356,8 +356,10 @@ AlpacaTrading <- R6::R6Class(
       if (!is.null(before_order_id) && !is.null(after_order_id)) {
         rlang::abort("`before_order_id` and `after_order_id` are mutually exclusive.")
       }
-      if ((!is.null(before_order_id) || !is.null(after_order_id)) &&
-        (!is.null(after) || !is.null(until))) {
+      if (
+        (!is.null(before_order_id) || !is.null(after_order_id)) &&
+          (!is.null(after) || !is.null(until))
+      ) {
         rlang::abort(
           "Order-ID pagination (`before_order_id` / `after_order_id`) cannot be combined with timestamp pagination (`after` / `until`)."
         )

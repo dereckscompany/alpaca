@@ -730,7 +730,13 @@ AlpacaOptions <- R6::R6Class(
     get_option_snapshots = function(symbols, feed = NULL, updated_since = NULL, limit = NULL, page_token = NULL) {
       return(private$.data_request(
         endpoint = "/v1beta1/options/snapshots",
-        query = list(symbols = symbols, feed = feed, updated_since = updated_since, limit = limit, page_token = page_token),
+        query = list(
+          symbols = symbols,
+          feed = feed,
+          updated_since = updated_since,
+          limit = limit,
+          page_token = page_token
+        ),
         .parser = function(data) {
           snaps <- data$snapshots
           if (is.null(snaps) || length(snaps) == 0) {

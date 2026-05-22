@@ -1,0 +1,624 @@
+- generic [ref=e6]:
+  - banner [ref=e7]:
+    - generic [ref=e9]:
+      - generic [active]:
+        - link "Jump to Content":
+          - /url: "#content"
+      - generic [ref=e10]:
+        - link "Alpaca US" [ref=e11] [cursor=pointer]:
+          - /url: https://alpaca.markets
+          - img "Alpaca US" [ref=e12]
+        - 'link "Region: US" [ref=e13] [cursor=pointer]':
+          - /url: /us/page/regions
+      - text:     
+      - generic [ref=e14]:
+        - button "Search ⌘k" [ref=e16] [cursor=pointer]:
+          - generic [ref=e17]: 
+          - generic [ref=e18]: Search
+          - generic [ref=e19]: ⌘K
+        - button "ai.asAiAriaLabel" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+          - generic [ref=e25]: Ask AI
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - link "Log In" [ref=e28] [cursor=pointer]:
+            - /url: /login?redirect_uri=/us/reference/postorder
+          - link "Trading Dashboard" [ref=e29] [cursor=pointer]:
+            - /url: https://app.alpaca.markets/
+          - link "Broker Dashboard" [ref=e30] [cursor=pointer]:
+            - /url: https://broker-app.alpaca.markets/
+        - button "Toggle color scheme" [ref=e32] [cursor=pointer]:
+          - img "Toggle color scheme" [ref=e33]
+          - img "Toggle color scheme" [ref=e37]
+          - img "Toggle color scheme" [ref=e40]
+    - navigation "Primary navigation" [ref=e48]:
+      - link " Home" [ref=e49] [cursor=pointer]:
+        - /url: /us/
+        - generic [ref=e50]: 
+        - generic [ref=e51]: Home
+      - link " Documentation" [ref=e52] [cursor=pointer]:
+        - /url: /us/docs
+        - generic [ref=e53]: 
+        - generic [ref=e54]: Documentation
+      - link " API Reference" [ref=e55] [cursor=pointer]:
+        - /url: /us/reference
+        - generic [ref=e56]: 
+        - generic [ref=e57]: API Reference
+  - main [ref=e59]:
+    - generic [ref=e61]:
+      - article [ref=e62]:
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - heading "Create an Order" [level=1] [ref=e66]
+            - generic [ref=e69]:
+              - button [ref=e70] [cursor=pointer]
+              - button [ref=e73] [cursor=pointer]
+          - generic [ref=e76]:
+            - generic [ref=e77]: post
+            - generic "https://paper-api.alpaca.markets/v2/orders" [ref=e79]
+            - button "Copy to clipboard" [ref=e80] [cursor=pointer]
+          - paragraph [ref=e84]: Places a new order for the given account. An order request may be rejected if the account is not authorized for trading, or if the tradable balance is insufficient to fill the order.
+        - generic [ref=e85]:
+          - generic [ref=e87]:
+            - link "Skip link to Body Params" [ref=e88] [cursor=pointer]:
+              - /url: "#body-params"
+            - text: Body Params
+          - generic [ref=e94]:
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - generic [ref=e98]:
+                  - generic [ref=e99]: symbol
+                  - generic [ref=e100]: string
+                - paragraph [ref=e104]:
+                  - text: symbol, asset ID, or currency pair to identify the asset to trade, required for all order classes except for
+                  - code [ref=e105]: mleg
+                  - text: .
+              - combobox "symbol" [ref=e108]
+            - generic [ref=e110]:
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - generic [ref=e113]: qty
+                  - generic [ref=e114]: string
+                - paragraph [ref=e118]:
+                  - text: number of shares to trade. Can be fractionable for only market and day order types. Required for
+                  - code [ref=e119]: mleg
+                  - text: order class, represents the number of units to trade of this strategy.
+              - combobox "qty" [ref=e122]
+            - generic [ref=e124]:
+              - generic [ref=e125]:
+                - generic [ref=e126]:
+                  - generic [ref=e127]: notional
+                  - generic [ref=e128]: string
+                - paragraph [ref=e132]:
+                  - text: dollar amount to trade. Cannot work with
+                  - code [ref=e133]: qty
+                  - text: . Can only work for market order types and day for time in force.
+              - combobox "notional" [ref=e136]
+            - generic [ref=e137]:
+              - generic [ref=e138]:
+                - generic [ref=e139]:
+                  - generic [ref=e140]:
+                    - generic [ref=e141]: side
+                    - generic [ref=e142]: string
+                    - generic [ref=e143]: enum
+                  - generic [ref=e146]:
+                    - paragraph [ref=e147]: "Represents which side this order was on:"
+                    - list [ref=e148]:
+                      - listitem [ref=e149]: buy
+                      - listitem [ref=e150]: sell Required for all order classes except for mleg.
+                - combobox "side" [ref=e152] [cursor=pointer]:
+                  - option
+                  - option "buy"
+                  - option "sell"
+              - generic [ref=e154]:
+                - generic [ref=e155]: "Allowed:"
+                - generic [ref=e156]:
+                  - button "buy" [ref=e157] [cursor=pointer]:
+                    - code [ref=e158]: buy
+                  - button "sell" [ref=e159] [cursor=pointer]:
+                    - code [ref=e160]: sell
+            - generic [ref=e161]:
+              - generic [ref=e162]:
+                - generic [ref=e163]:
+                  - generic [ref=e164]:
+                    - generic [ref=e165]: type
+                    - generic [ref=e166]: string
+                    - generic [ref=e167]: enum
+                    - generic [ref=e168]: required
+                  - generic [ref=e171]:
+                    - paragraph [ref=e172]: "The order types supported by Alpaca vary based on the order's security type. The following provides a comprehensive breakdown of the supported order types for each category:"
+                    - list [ref=e173]:
+                      - listitem [ref=e174]: "Equity trading: market, limit, stop, stop_limit, trailing_stop."
+                      - listitem [ref=e175]: "Options trading: market, limit."
+                      - listitem [ref=e176]: "Multileg Options trading: market, limit."
+                      - listitem [ref=e177]: "Crypto trading: market, limit, stop_limit."
+                - combobox "type" [ref=e179] [cursor=pointer]:
+                  - option
+                  - option "market" [selected]
+                  - option "limit"
+                  - option "stop"
+                  - option "stop_limit"
+                  - option "trailing_stop"
+              - generic [ref=e181]:
+                - generic [ref=e182]: "Allowed:"
+                - generic [ref=e183]:
+                  - button "market" [ref=e184] [cursor=pointer]:
+                    - code [ref=e185]: market
+                  - button "limit" [ref=e186] [cursor=pointer]:
+                    - code [ref=e187]: limit
+                  - button "stop" [ref=e188] [cursor=pointer]:
+                    - code [ref=e189]: stop
+                  - button "stop_limit" [ref=e190] [cursor=pointer]:
+                    - code [ref=e191]: stop_limit
+                  - button "trailing_stop" [ref=e192] [cursor=pointer]:
+                    - code [ref=e193]: trailing_stop
+            - generic [ref=e194]:
+              - generic [ref=e195]:
+                - generic [ref=e196]:
+                  - generic [ref=e197]:
+                    - generic [ref=e198]: time_in_force
+                    - generic [ref=e199]: string
+                    - generic [ref=e200]: enum
+                    - generic [ref=e201]: required
+                  - generic [ref=e204]:
+                    - paragraph [ref=e205]: "The Time-In-Force values supported by Alpaca vary based on the order's security type. Here is a breakdown of the supported TIFs for each specific security type:"
+                    - list [ref=e206]:
+                      - listitem [ref=e207]: "Equity trading: day, gtc, opg, cls, ioc, fok."
+                      - listitem [ref=e208]: "Options trading: day."
+                      - listitem [ref=e209]: "Crypto trading: gtc, ioc."
+                    - paragraph [ref=e210]: "Below are the descriptions of each TIF:"
+                    - list [ref=e211]:
+                      - listitem [ref=e212]:
+                        - paragraph [ref=e213]: "day: A day order is eligible for execution only on the day it is live. By default, the order is only valid during Regular Trading Hours (9:30am - 4:00pm ET). If unfilled after the closing auction, it is automatically canceled. If submitted after the close, it is queued and submitted the following trading day. However, if marked as eligible for extended hours, the order can also execute during supported extended hours."
+                      - listitem [ref=e214]:
+                        - paragraph [ref=e215]: "gtc: The order is good until canceled. Non-marketable GTC limit orders are subject to price adjustments to offset corporate actions affecting the issue. We do not currently support Do Not Reduce (DNR) orders to opt out of such price adjustments."
+                      - listitem [ref=e216]:
+                        - paragraph [ref=e217]: "opg: Use this TIF with a market/limit order type to submit “market on open” (MOO) and “limit on open” (LOO) orders. This order is eligible to execute only in the market opening auction. Any unfilled orders after the open will be cancelled. OPG orders submitted after 9:28am but before 7:00pm ET will be rejected. OPG orders submitted after 7:00pm will be queued and routed to the following day’s opening auction. On open/on close orders are routed to the primary exchange. Such orders do not necessarily execute exactly at 9:30am / 4:00pm ET but execute per the exchange’s auction rules."
+                      - listitem [ref=e218]:
+                        - paragraph [ref=e219]: "cls: Use this TIF with a market/limit order type to submit “market on close” (MOC) and “limit on close” (LOC) orders. This order is eligible to execute only in the market closing auction. Any unfilled orders after the close will be cancelled. CLS orders submitted after 3:50pm but before 7:00pm ET will be rejected. CLS orders submitted after 7:00pm will be queued and routed to the following day’s closing auction. Only available with API v2."
+                      - listitem [ref=e220]:
+                        - paragraph [ref=e221]: "ioc: An Immediate Or Cancel (IOC) order requires all or part of the order to be executed immediately. Any unfilled portion of the order is canceled. Only available with API v2. Most market makers who receive IOC orders will attempt to fill the order on a principal basis only, and cancel any unfilled balance. On occasion, this can result in the entire order being cancelled if the market maker does not have any existing inventory of the security in question."
+                      - listitem [ref=e222]:
+                        - paragraph [ref=e223]: "fok: A Fill or Kill (FOK) order is only executed if the entire order quantity can be filled, otherwise the order is canceled. Only available with API v2."
+                - combobox "time_in_force" [ref=e225] [cursor=pointer]:
+                  - option
+                  - option "day" [selected]
+                  - option "gtc"
+                  - option "opg"
+                  - option "cls"
+                  - option "ioc"
+                  - option "fok"
+              - generic [ref=e227]:
+                - generic [ref=e228]: "Allowed:"
+                - generic [ref=e229]:
+                  - button "day" [ref=e230] [cursor=pointer]:
+                    - code [ref=e231]: day
+                  - button "gtc" [ref=e232] [cursor=pointer]:
+                    - code [ref=e233]: gtc
+                  - button "opg" [ref=e234] [cursor=pointer]:
+                    - code [ref=e235]: opg
+                  - button "cls" [ref=e236] [cursor=pointer]:
+                    - code [ref=e237]: cls
+                  - button "ioc" [ref=e238] [cursor=pointer]:
+                    - code [ref=e239]: ioc
+                  - button "fok" [ref=e240] [cursor=pointer]:
+                    - code [ref=e241]: fok
+            - generic [ref=e243]:
+              - generic [ref=e244]:
+                - generic [ref=e245]:
+                  - generic [ref=e246]: limit_price
+                  - generic [ref=e247]: string
+                - generic [ref=e250]:
+                  - paragraph [ref=e251]:
+                    - text: Required if type is
+                    - code [ref=e252]: limit
+                    - text: or
+                    - code [ref=e253]: stop_limit
+                    - text: . In case of
+                    - code [ref=e254]: mleg
+                    - text: ", the limit_price parameter is expressed with the following notation:"
+                  - list [ref=e255]:
+                    - listitem [ref=e256]: A positive value indicates a debit, representing a cost or payment to be made.
+                    - listitem [ref=e257]: A negative value signifies a credit, reflecting an amount to be received.
+              - combobox "limit_price" [ref=e260]
+            - generic [ref=e262]:
+              - generic [ref=e263]:
+                - generic [ref=e264]:
+                  - generic [ref=e265]: stop_price
+                  - generic [ref=e266]: string
+                - paragraph [ref=e270]:
+                  - text: required if type is
+                  - code [ref=e271]: stop
+                  - text: or
+                  - code [ref=e272]: stop_limit
+              - combobox "stop_price" [ref=e275]
+            - generic [ref=e277]:
+              - generic [ref=e278]:
+                - generic [ref=e279]:
+                  - generic [ref=e280]: trail_price
+                  - generic [ref=e281]: string
+                - paragraph [ref=e285]:
+                  - text: this or
+                  - code [ref=e286]: trail_percent
+                  - text: is required if type is
+                  - code [ref=e287]: trailing_stop
+              - combobox "trail_price" [ref=e290]
+            - generic [ref=e292]:
+              - generic [ref=e293]:
+                - generic [ref=e294]:
+                  - generic [ref=e295]: trail_percent
+                  - generic [ref=e296]: string
+                - paragraph [ref=e300]:
+                  - text: this or
+                  - code [ref=e301]: trail_price
+                  - text: is required if type is
+                  - code [ref=e302]: trailing_stop
+              - combobox "trail_percent" [ref=e305]
+            - generic [ref=e307]:
+              - generic [ref=e308]:
+                - generic [ref=e309]:
+                  - generic [ref=e310]: extended_hours
+                  - generic [ref=e311]: boolean
+                - paragraph [ref=e315]:
+                  - text: (default) false. If true, order will be eligible for execution in the pre-market, after-hours, and overnight sessions. Only works with type
+                  - code [ref=e316]: limit
+                  - text: and time_in_force set to either
+                  - code [ref=e317]: day
+                  - text: or
+                  - code [ref=e318]: gtc
+              - combobox "extended_hours" [ref=e320] [cursor=pointer]:
+                - option [selected]
+                - option "true"
+                - option "false"
+            - generic [ref=e322]:
+              - generic [ref=e323]:
+                - generic [ref=e324]:
+                  - generic [ref=e325]: client_order_id
+                  - generic [ref=e326]: string
+                  - generic [ref=e327]: length ≤ 128
+                - paragraph [ref=e331]: A unique identifier for the order. Automatically generated if not sent. (<= 128 characters)
+              - combobox "client_order_id" [ref=e334]
+            - generic [ref=e335]:
+              - generic [ref=e336]:
+                - generic [ref=e337]:
+                  - generic [ref=e338]:
+                    - generic [ref=e339]: order_class
+                    - generic [ref=e340]: string
+                    - generic [ref=e341]: enum
+                  - generic [ref=e344]:
+                    - paragraph [ref=e345]: "The order classes supported by Alpaca vary based on the order's security type. The following provides a comprehensive breakdown of the supported order classes for each category:"
+                    - list [ref=e346]:
+                      - listitem [ref=e347]: "Equity trading: simple (or \"\"), oco, oto, bracket."
+                      - listitem [ref=e348]:
+                        - text: "Options trading:"
+                        - list [ref=e349]:
+                          - listitem [ref=e350]: simple (or "")
+                          - listitem [ref=e351]: mleg (required for multi-leg complex option strategies)
+                      - listitem [ref=e352]: "Crypto trading: simple (or \"\")."
+                - combobox "order_class" [ref=e354] [cursor=pointer]:
+                  - option "simple"
+                  - option "bracket"
+                  - option "oco"
+                  - option "oto"
+                  - option "mleg"
+                  - option
+              - generic [ref=e356]:
+                - generic [ref=e357]: "Allowed:"
+                - generic [ref=e358]:
+                  - button "simple" [ref=e359] [cursor=pointer]:
+                    - code [ref=e360]: simple
+                  - button "bracket" [ref=e361] [cursor=pointer]:
+                    - code [ref=e362]: bracket
+                  - button "oco" [ref=e363] [cursor=pointer]:
+                    - code [ref=e364]: oco
+                  - button "oto" [ref=e365] [cursor=pointer]:
+                    - code [ref=e366]: oto
+                  - button "mleg" [ref=e367] [cursor=pointer]:
+                    - code [ref=e368]: mleg
+                  - button "''" [ref=e369] [cursor=pointer]:
+                    - code [ref=e370]: "''"
+            - generic [ref=e372]:
+              - generic [ref=e373]:
+                - generic [ref=e374]: legs
+                - generic [ref=e375]: array of objects
+              - paragraph [ref=e379]: list of order legs (<= 4)
+              - button "ADD object " [ref=e383] [cursor=pointer]:
+                - generic [ref=e384]: ADD object
+                - generic [ref=e385]: 
+            - generic [ref=e387]:
+              - generic [ref=e388]:
+                - generic [ref=e389]: take_profit
+                - generic [ref=e390]: object
+              - paragraph [ref=e394]: Takes in a string/number value for limit_price
+              - button "take_profit object " [ref=e396] [cursor=pointer]:
+                - generic [ref=e397]: take_profit object
+                - generic [ref=e398]: 
+            - generic [ref=e400]:
+              - generic [ref=e401]:
+                - generic [ref=e402]: stop_loss
+                - generic [ref=e403]: object
+              - paragraph [ref=e407]: Takes in string/number values for stop_price and limit_price
+              - button "stop_loss object " [ref=e409] [cursor=pointer]:
+                - generic [ref=e410]: stop_loss object
+                - generic [ref=e411]: 
+            - generic [ref=e412]:
+              - generic [ref=e413]:
+                - generic [ref=e414]:
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: position_intent
+                    - generic [ref=e417]: string
+                    - generic [ref=e418]: enum
+                  - paragraph [ref=e422]: Represents the desired position strategy.
+                - combobox "position_intent" [ref=e424] [cursor=pointer]:
+                  - option
+                  - option "buy_to_open"
+                  - option "buy_to_close"
+                  - option "sell_to_open"
+                  - option "sell_to_close"
+              - generic [ref=e426]:
+                - generic [ref=e427]: "Allowed:"
+                - generic [ref=e428]:
+                  - button "buy_to_open" [ref=e429] [cursor=pointer]:
+                    - code [ref=e430]: buy_to_open
+                  - button "buy_to_close" [ref=e431] [cursor=pointer]:
+                    - code [ref=e432]: buy_to_close
+                  - button "sell_to_open" [ref=e433] [cursor=pointer]:
+                    - code [ref=e434]: sell_to_open
+                  - button "sell_to_close" [ref=e435] [cursor=pointer]:
+                    - code [ref=e436]: sell_to_close
+            - generic [ref=e438]:
+              - generic [ref=e439]:
+                - generic [ref=e440]: advanced_instructions
+                - generic [ref=e441]: object
+              - paragraph [ref=e445]:
+                - text: "Advanced instructions for Elite Smart Router:"
+                - link "https://docs.alpaca.markets/docs/alpaca-elite-smart-router" [ref=e446] [cursor=pointer]:
+                  - /url: /us/docs/alpaca-elite-smart-router
+              - button "AdvancedInstructions object " [ref=e448] [cursor=pointer]:
+                - generic [ref=e449]: AdvancedInstructions object
+                - generic [ref=e450]: 
+        - generic [ref=e452]:
+          - link "Skip link to Responses" [ref=e453] [cursor=pointer]:
+            - /url: "#response-schemas"
+          - text: Responses
+        - generic [ref=e456]:
+          - heading "200 200 Successful response" [level=1] [ref=e458]:
+            - button "200 200 Successful response" [ref=e459] [cursor=pointer]:
+              - generic [ref=e460]:
+                - generic [ref=e461]:
+                  - code [ref=e462]:
+                    - img "200" [ref=e463]
+                  - text: "200"
+                - paragraph [ref=e465]: Successful response
+          - generic [ref=e470]:
+            - generic [ref=e471]:
+              - code [ref=e472]:
+                - img "403" [ref=e473]
+              - text: "403"
+            - generic [ref=e474]:
+              - paragraph [ref=e475]: Forbidden
+              - paragraph [ref=e476]: Buying power or shares is not sufficient.
+          - generic [ref=e478]:
+            - generic [ref=e479]:
+              - code [ref=e480]:
+                - img "422" [ref=e481]
+              - text: "422"
+            - generic [ref=e482]:
+              - paragraph [ref=e483]: Unprocessable
+              - paragraph [ref=e484]: Input parameters are not recognized.
+      - generic [ref=e485]:
+        - generic [ref=e486]:
+          - generic [ref=e488]: Language
+          - generic [ref=e490]:
+            - button " Shell" [pressed] [ref=e491] [cursor=pointer]:
+              - generic [ref=e492]: 
+              - text: Shell
+            - button " Node" [ref=e493] [cursor=pointer]:
+              - generic [ref=e494]: 
+              - text: Node
+            - button " Ruby" [ref=e495] [cursor=pointer]:
+              - generic [ref=e496]: 
+              - text: Ruby
+            - button " PHP" [ref=e497] [cursor=pointer]:
+              - generic [ref=e498]: 
+              - text: PHP
+            - button " Python" [ref=e499] [cursor=pointer]:
+              - generic [ref=e500]:
+                - generic [ref=e501]: 
+                - generic: 
+              - text: Python
+            - button "More Languages" [ref=e503] [cursor=pointer]
+        - generic [ref=e507]:
+          - generic [ref=e509]: Credentials
+          - generic [ref=e510]:
+            - button "Header +1" [disabled] [ref=e513]:
+              - generic [ref=e514]: Header +1
+            - generic [ref=e516]:
+              - textbox "APCA-API-KEY-ID" [ref=e517]
+              - button "Hide" [ref=e518] [cursor=pointer]
+              - button "Information" [ref=e521]: 
+            - generic [ref=e523]:
+              - textbox "APCA-API-SECRET-KEY" [ref=e524]
+              - button "Hide" [ref=e525] [cursor=pointer]
+              - button "Information" [ref=e528]: 
+        - generic [ref=e529]:
+          - generic [ref=e531]: URL
+          - generic [ref=e532]:
+            - button "Base URL " [ref=e534] [cursor=pointer]:
+              - generic [ref=e535]: Base URL
+              - generic [ref=e536]: 
+            - button "https://paper-api.alpaca.markets /v2/orders" [disabled] [ref=e537]:
+              - generic [ref=e538]: https://paper-api.alpaca.markets
+              - generic [ref=e539]: /v2/orders
+        - generic [ref=e540]:
+          - generic [ref=e541]:
+            - button "cURL Request" [ref=e544] [cursor=pointer]:
+              - generic [ref=e545]: cURL Request
+            - button "Examples" [ref=e549] [cursor=pointer]:
+              - generic [ref=e550]: Examples
+          - generic [ref=e559]:
+            - generic [ref=e560]:
+              - generic [ref=e561]: "1"
+              - text: curl --request POST \
+            - generic [ref=e562]:
+              - generic [ref=e563]: "2"
+              - text: "--url https://paper-api.alpaca.markets/v2/orders \\"
+            - generic [ref=e564]:
+              - generic [ref=e565]: "3"
+              - text: "--header 'accept: application/json' \\"
+            - generic [ref=e566]:
+              - generic [ref=e567]: "4"
+              - text: "--header 'content-type: application/json' \\"
+            - generic [ref=e568]:
+              - generic [ref=e569]: "5"
+              - text: "--data '"
+            - generic [ref=e570]:
+              - generic [ref=e571]: "6"
+              - text: "{"
+            - generic [ref=e572]:
+              - generic [ref=e573]: "7"
+              - text: "\"type\": \"market\","
+            - generic [ref=e574]:
+              - generic [ref=e575]: "8"
+              - text: "\"time_in_force\": \"day\""
+            - generic [ref=e576]:
+              - generic [ref=e577]: "9"
+              - text: "}"
+            - generic [ref=e578]:
+              - generic [ref=e579]: "10"
+              - text: "'"
+          - generic [ref=e583]:
+            - button "Copy to clipboard" [ref=e585] [cursor=pointer]
+            - button "Try It!" [ref=e588] [cursor=pointer]
+          - generic [ref=e589]:
+            - generic [ref=e591]: Response
+            - generic [ref=e592]:
+              - generic [ref=e593]:
+                - text: Click
+                - code [ref=e594]: Try It!
+                - text: "to start a request and see the response here! Or choose an example:"
+              - generic [ref=e596]:
+                - generic [ref=e597]: application/json
+                - generic [ref=e598]:
+                  - button "200 200 - Equity" [ref=e599] [cursor=pointer]:
+                    - code [ref=e600]:
+                      - img "200" [ref=e601]
+                    - generic [ref=e602]:
+                      - text: "200"
+                      - generic [ref=e603]: "- Equity"
+                  - button "200 200 - Options" [ref=e604] [cursor=pointer]:
+                    - code [ref=e605]:
+                      - img "200" [ref=e606]
+                    - generic [ref=e607]:
+                      - text: "200"
+                      - generic [ref=e608]: "- Options"
+                  - button "200 200 - Crypto" [ref=e609] [cursor=pointer]:
+                    - code [ref=e610]:
+                      - img "200" [ref=e611]
+                    - generic [ref=e612]:
+                      - text: "200"
+                      - generic [ref=e613]: "- Crypto"
+                  - button "200 200 - MultilegOptions" [ref=e614] [cursor=pointer]:
+                    - code [ref=e615]:
+                      - img "200" [ref=e616]
+                    - generic [ref=e617]:
+                      - text: "200"
+                      - generic [ref=e618]: "- MultilegOptions"
+                  - button "200 200 - IPO" [ref=e619] [cursor=pointer]:
+                    - code [ref=e620]:
+                      - img "200" [ref=e621]
+                    - generic [ref=e622]:
+                      - text: "200"
+                      - generic [ref=e623]: "- IPO"
+      - text:   
+  - contentinfo [ref=e624]:
+    - generic [ref=e626]:
+      - navigation [ref=e628]:
+        - generic [ref=e629]:
+          - heading "Developers" [level=2] [ref=e630]
+          - link "Docs" [ref=e631] [cursor=pointer]:
+            - /url: https://docs.alpaca.markets
+          - link "Slack" [ref=e632] [cursor=pointer]:
+            - /url: https://alpaca.markets/slack
+          - link "Forum" [ref=e633] [cursor=pointer]:
+            - /url: https://forum.alpaca.markets/
+          - link "Support" [ref=e634] [cursor=pointer]:
+            - /url: https://alpaca.markets/support/
+          - link "Learn" [ref=e635] [cursor=pointer]:
+            - /url: https://alpaca.markets/learn/
+          - link "SDKs & Libraries" [ref=e636] [cursor=pointer]:
+            - /url: https://alpaca.markets/docs/api-documentation/client-sdk/
+          - link "GitHub" [ref=e637] [cursor=pointer]:
+            - /url: https://github.com/alpacahq/
+          - link "API Status" [ref=e638] [cursor=pointer]:
+            - /url: https://status.alpaca.markets/
+          - link "Security" [ref=e639] [cursor=pointer]:
+            - /url: https://alpaca.markets/security
+        - generic [ref=e640]:
+          - heading "About Us" [level=2] [ref=e641]
+          - link "Story" [ref=e642] [cursor=pointer]:
+            - /url: https://techcrunch.com/2021/08/30/alpaca-raises-50m-to-rapidly-scale-its-equities-trading-api-business/?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAI4JGSuo7z4Eu8sGNb4TaXm5yUO7O40OPPy3yVtt2fYXuy46t-4ZQ-8HqqJRmVV3wUUHdA8YgVS2oFszkogNsyJAw1McTl4urvwJYbrG9PF1NGIkeH7zN8_QQnWMbSS_I2s2bxcjTW1gLnU_FP2k3MX1beVCzevohGkXKw684ITb
+          - link "Blog" [ref=e643] [cursor=pointer]:
+            - /url: https://alpaca.markets/blog/
+          - link "Contact" [ref=e644] [cursor=pointer]:
+            - /url: https://alpaca.markets/contact
+          - link "We're hiring" [ref=e645] [cursor=pointer]:
+            - /url: https://alpaca.markets/hiring
+        - generic [ref=e646]:
+          - heading "Disclosures" [level=2] [ref=e647]
+          - link "Disclosure Library" [ref=e648] [cursor=pointer]:
+            - /url: https://alpaca.markets/disclosures
+          - link "Form CRS" [ref=e649] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRS.pdf
+          - link "Form CRS Responses to Conversation Starters" [ref=e650] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/FormCRSConvStrtrs.pdf
+          - link "Privacy Policy" [ref=e651] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/PrivacyPolicy.pdf
+          - link "Cookie Policy" [ref=e652] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/CookiePolicy.pdf
+          - link "Terms & Conditions" [ref=e653] [cursor=pointer]:
+            - /url: https://s3.amazonaws.com/files.alpaca.markets/disclosures/library/TermsAndConditions.pdf
+        - generic [ref=e654]:
+          - generic [ref=e655]:
+            - link "Twitter" [ref=e656] [cursor=pointer]:
+              - /url: https://twitter.com/AlpacaHQ
+              - img "Twitter" [ref=e657]
+            - link "LinkedIn" [ref=e659] [cursor=pointer]:
+              - /url: https://www.linkedin.com/company/9300556/
+              - img "LinkedIn" [ref=e660]
+            - link "Facebook" [ref=e662] [cursor=pointer]:
+              - /url: https://www.facebook.com/alpacahq
+              - img "Facebook" [ref=e663]
+            - link "Slack" [ref=e665] [cursor=pointer]:
+              - /url: https://alpaca.markets/slack
+              - img "Slack" [ref=e666]
+          - link "Submit Feedback" [ref=e668] [cursor=pointer]:
+            - /url: " https://forms.gle/vZmCs8uCRnA1SpXz6"
+      - generic [ref=e669]:
+        - link "Alpaca" [ref=e670] [cursor=pointer]:
+          - /url: https://alpaca.markets/
+          - img "Alpaca" [ref=e671]
+        - paragraph [ref=e682]: © 2025 Alpaca Securities LLC All rights reserved.
+        - paragraph [ref=e683]: © 2025 Alpaca Crypto LLC All rights reserved.
+        - paragraph [ref=e684]: © 2025 AlpacaDB, Inc. All rights reserved.
+        - paragraph [ref=e685]:
+          - text: Securities brokerage services are provided by Alpaca Securities LLC ("Alpaca Securities"), member
+          - link "FINRA" [ref=e686] [cursor=pointer]:
+            - /url: https://www.finra.org/
+          - text: /
+          - link "SIPC" [ref=e687] [cursor=pointer]:
+            - /url: https://www.sipc.org/
+          - text: ", a wholly-owned subsidiary of AlpacaDB, Inc. Technology and services are offered by AlpacaDB, Inc."
+          - text: Options trading is not suitable for all investors due to its inherent high risk, which can potentially result in significant losses. Please read
+          - link "Characteristics and Risks of Standardized Options" [ref=e688] [cursor=pointer]:
+            - /url: https://www.theocc.com/company-information/documents-and-archives/options-disclosure-document
+          - text: before investing in options.
+          - text: "Cryptocurrency services are made available by Alpaca Crypto LLC (\"Alpaca Crypto\"), a FinCEN registered money services business (NMLS # 2160858), and a wholly-owned subsidiary of AlpacaDB, Inc. Alpaca Crypto is not a member of SIPC or FINRA. Cryptocurrencies are not stocks and your cryptocurrency investments are not protected by either FDIC or SIPC."
+          - text: Cryptocurrency is highly speculative in nature, involves a high degree of risks, such as volatile market price swings, market manipulation, flash crashes, and cybersecurity risks. Cryptocurrency regulations are continuously evolving, and it is your responsibility to understand and abide by them. Cryptocurrency trading can lead to large, immediate and permanent loss of financial value. You should have appropriate knowledge and experience before engaging in cryptocurrency trading. For additional information, please click
+          - link "here" [ref=e689] [cursor=pointer]:
+            - /url: https://files.alpaca.markets/disclosures/library/CryptoRiskDisclosures.pdf
+          - text: .
+        - link "! View Important Disclosures" [ref=e690] [cursor=pointer]:
+          - /url: https://alpaca.markets/#disclosures
+          - generic [ref=e691]: "!"
+          - generic [ref=e692]: View Important Disclosures
