@@ -100,7 +100,7 @@ alpaca_fetch_bars <- function(
   }
 
   fetch_segment <- function(seg) {
-    alpaca_build_request(
+    return(alpaca_build_request(
       base_url = data_base_url,
       endpoint = paste0("/v2/stocks/", symbol, "/bars"),
       method = "GET",
@@ -114,10 +114,10 @@ alpaca_fetch_bars <- function(
       ),
       keys = keys,
       .perform = .perform,
-      .parser = function(data) parse_bars(data$bars),
+      .parser = function(data) return(parse_bars(data$bars)),
       is_async = is_async,
       timeout = 30
-    )
+    ))
   }
 
   if (!is_async) {
@@ -140,11 +140,11 @@ alpaca_fetch_bars <- function(
   seed <- promises::promise_resolve(list())
   chain <- Reduce(
     function(acc_promise, seg) {
-      promises::then(acc_promise, function(acc) {
-        promises::then(fetch_segment(seg), function(result) {
-          c(acc, list(result))
-        })
-      })
+      return(promises::then(acc_promise, function(acc) {
+        return(promises::then(fetch_segment(seg), function(result) {
+          return(c(acc, list(result)))
+        }))
+      }))
     },
     segments,
     accumulate = FALSE,

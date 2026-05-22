@@ -71,9 +71,11 @@ get_api_keys <- function(
   api_secret = Sys.getenv("ALPACA_API_SECRET")
 ) {
   if (!nzchar(api_key) || !nzchar(api_secret)) {
-    rlang::warn(
-      "Alpaca API credentials are empty. Set ALPACA_API_KEY and ALPACA_API_SECRET environment variables or pass them explicitly."
-    )
+    rlang::warn(paste(
+      "Alpaca API credentials are empty.",
+      "Set ALPACA_API_KEY and ALPACA_API_SECRET environment variables",
+      "or pass them explicitly."
+    ))
   }
   return(list(
     api_key = api_key,

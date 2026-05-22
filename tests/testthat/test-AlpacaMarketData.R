@@ -80,8 +80,10 @@ test_that("get_snapshot returns flattened data.table with always-present conditi
   # as character strings (PR #11 fix — they were renamed but never
   # converted).
   for (col in c(
-    "latest_trade_timestamp", "latest_quote_timestamp",
-    "minute_bar_timestamp", "daily_bar_timestamp",
+    "latest_trade_timestamp",
+    "latest_quote_timestamp",
+    "minute_bar_timestamp",
+    "daily_bar_timestamp",
     "prev_daily_bar_timestamp"
   )) {
     expect_true(inherits(dt[[col]], "POSIXct"), label = col)
@@ -153,7 +155,8 @@ test_that("get_corporate_actions rejects unknown date_type values", {
     suppressWarnings(
       new_market()$get_corporate_actions(
         ca_types = "dividend",
-        since = "2024-01-01", until = "2024-03-31",
+        since = "2024-01-01",
+        until = "2024-03-31",
         date_type = "ex"
       )
     ),
@@ -168,7 +171,8 @@ test_that("get_corporate_actions accepts all four documented date_type values", 
     expect_silent(suppressWarnings(
       new_market()$get_corporate_actions(
         ca_types = "dividend",
-        since = "2024-01-01", until = "2024-03-31",
+        since = "2024-01-01",
+        until = "2024-03-31",
         date_type = dt_arg
       )
     ))
@@ -182,10 +186,17 @@ test_that("get_calendar returns Date + POSIXct(ET) columns", {
   dt <- new_market()$get_calendar()
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
-  expect_true(all(c(
-    "date", "open", "close",
-    "session_open", "session_close", "settlement_date"
-  ) %in% names(dt)))
+  expect_true(all(
+    c(
+      "date",
+      "open",
+      "close",
+      "session_open",
+      "session_close",
+      "settlement_date"
+    ) %in%
+      names(dt)
+  ))
   expect_s3_class(dt$date, "Date")
   expect_s3_class(dt$settlement_date, "Date")
   for (col in c("open", "close", "session_open", "session_close")) {

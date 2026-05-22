@@ -108,7 +108,7 @@ alpaca_backfill_bars <- function(
       },
       error = function(e) {
         message(sprintf("    ERROR: %s", conditionMessage(e)))
-        NULL
+        return(NULL)
       }
     )
 

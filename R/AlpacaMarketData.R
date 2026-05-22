@@ -1226,7 +1226,9 @@ AlpacaMarketData <- R6::R6Class(
         query = list(start = start, end = end, date_type = date_type),
         .parser = function(items) {
           dt <- as_dt_list(items)
-          if (nrow(dt) == 0L) return(dt)
+          if (nrow(dt) == 0L) {
+            return(dt)
+          }
           # Snapshot the date column before we reassign it to Date below;
           # the time-combine calls need the original "YYYY-MM-DD" character.
           d <- dt$date
@@ -1300,7 +1302,9 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = "/v2/clock",
         .parser = function(x) {
           dt <- as_dt_row(x)
-          if (nrow(dt) == 0L) return(dt)
+          if (nrow(dt) == 0L) {
+            return(dt)
+          }
           for (col in c("timestamp", "next_open", "next_close")) {
             if (col %in% names(dt)) {
               parsed <- rfc3339_to_datetime(dt[[col]])
@@ -1439,10 +1443,15 @@ AlpacaMarketData <- R6::R6Class(
         ),
         .parser = function(items) {
           dt <- as_dt_list(items)
-          parse_date_cols(dt, c(
-            "declaration_date", "ex_date",
-            "record_date", "payable_date"
-          ))
+          parse_date_cols(
+            dt,
+            c(
+              "declaration_date",
+              "ex_date",
+              "record_date",
+              "payable_date"
+            )
+          )
           return(dt)
         }
       ))
