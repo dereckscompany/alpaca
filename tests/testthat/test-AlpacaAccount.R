@@ -24,6 +24,31 @@ test_that("get_account returns data.table with account fields", {
   expect_true("pattern_day_trader" %in% names(dt))
 })
 
+test_that("get_account flattens admin_configurations / user_configurations into wide cols (no list cols)", {
+  resp <- mock_alpaca_response(mock_account_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_account()$get_account()
+
+  # The nested config objects must be gone, replaced by wide-prefixed
+  # columns. No list columns anywhere.
+  expect_false("admin_configurations" %in% names(dt))
+  expect_false("user_configurations" %in% names(dt))
+  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
+
+  # admin_*
+  expect_true("admin_configurations_max_margin_multiplier" %in% names(dt))
+  expect_equal(dt$admin_configurations_max_margin_multiplier, "4")
+  expect_equal(dt$admin_configurations_max_options_trading_level, 3L)
+
+  # user_*
+  expect_true("user_configurations_dtbp_check" %in% names(dt))
+  expect_equal(dt$user_configurations_dtbp_check, "entry")
+  expect_equal(dt$user_configurations_no_shorting, FALSE)
+  expect_equal(dt$user_configurations_trade_confirm_email, "all")
+})
+
 test_that("get_positions returns data.table", {
   resp <- mock_alpaca_response(mock_positions_response())
   httr2::local_mocked_responses(function(req) resp)

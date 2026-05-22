@@ -13,6 +13,7 @@ utils::globalVariables(c(
   "asset_id",
   "asset_name",
   "asset_symbol",
+  "asset_attributes",
   "image_sizes",
   "image_urls",
   # Crypto orderbook NSE columns

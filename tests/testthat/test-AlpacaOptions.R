@@ -108,17 +108,24 @@ test_that("get_option_bars returns data.table with symbol column", {
   expect_true("symbol" %in% names(dt))
 })
 
-test_that("get_option_snapshot uses data base URL", {
+test_that("get_option_snapshot delegates to get_option_chain (chain shape, not single snapshot)", {
   captured_url <- NULL
-  resp <- mock_alpaca_response(mock_snapshot_response())
+  # Mock the *chain* response shape — the URL now returns a snapshots map.
+  resp <- mock_alpaca_response(mock_option_chain_response())
   httr2::local_mocked_responses(function(req) {
     captured_url <<- req$url
     return(resp)
   })
 
-  new_options()$get_option_snapshot("AAPL240621C00200000")
+  suppressWarnings(
+    dt <- new_options()$get_option_snapshot("AAPL")
+  )
   expect_true(grepl("data\\.alpaca\\.markets", captured_url))
   expect_true(grepl("v1beta1/options/snapshots", captured_url))
+  # Chain shape: one row per contract in the underlying's chain.
+  expect_s3_class(dt, "data.table")
+  expect_gt(nrow(dt), 0L)
+  expect_true("symbol" %in% names(dt))
 })
 
 test_that("get_option_latest_trades returns data.table with symbol column", {

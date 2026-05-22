@@ -540,6 +540,11 @@ parse_watchlist <- function(wl) {
     parent[, asset_id := NA_character_]
     parent[, asset_symbol := NA_character_]
     parent[, asset_name := NA_character_]
+    # `asset_attributes` exists on every populated watchlist row (as a
+    # `;`-collapsed character or NA). Include it on the empty row too so
+    # the schema is stable across populated / empty watchlists, matching
+    # the documented @return contract.
+    parent[, asset_attributes := NA_character_]
     return(parent[])
   }
   # Collapse each asset's `attributes` string array to a scalar character
@@ -637,7 +642,10 @@ collapse_string_array_fields <- function(x, fields) {
             "on `;` will see corrupted values. Please report this so we can ",
             "switch the separator for this field."
           ),
-          .frequency = "regularly",
+          # Fire once per session per field — once the user has seen the
+          # warning for a given field they know that field's shape is
+          # changing, and there's no value in repeating.
+          .frequency = "once",
           .frequency_id = paste0("collapse_sep_collision_", nm)
         )
       }

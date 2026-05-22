@@ -122,6 +122,28 @@ validate_order_params <- function(
         "."
       ))
     }
+    # Alpaca's multi-leg options endpoint only accepts market and limit
+    # order types. Stop / stop_limit / trailing_stop are single-leg-only;
+    # the server rejects them with an opaque error, so catch it locally.
+    if (!is.null(type) && !(tolower(type) %in% c("market", "limit"))) {
+      rlang::abort(paste0(
+        "`order_class = \"mleg\"` only supports `type = \"market\"` or ",
+        "`type = \"limit\"` (got '",
+        type,
+        "'). Stop / stop-limit / ",
+        "trailing-stop are single-leg-only on Alpaca."
+      ))
+    }
+    # `notional` is documented as market/equity only — mleg requires
+    # contract quantities, which the per-leg `ratio_qty` carries. Sending
+    # a top-level `notional` is rejected by the server.
+    if (!is.null(notional)) {
+      rlang::abort(paste0(
+        "`notional` is not supported for `order_class = \"mleg\"`. ",
+        "Multi-leg orders use per-leg `ratio_qty`; pass `qty` at the ",
+        "top level if you need to scale all legs together."
+      ))
+    }
   }
   rlang::arg_match0(type, c("market", "limit", "stop", "stop_limit", "trailing_stop"))
   rlang::arg_match0(time_in_force, c("day", "gtc", "opg", "cls", "ioc", "fok"))

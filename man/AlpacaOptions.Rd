@@ -1021,7 +1021,10 @@ Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-flattened snapshot fields.
+the same shape as \code{get_option_chain()} — one row per contract in
+the chain rooted at \code{symbol}. Despite the legacy name, this is
+\strong{not} a single-contract snapshot; for that, use
+\code{get_option_snapshots(symbols = "<OCC>")}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

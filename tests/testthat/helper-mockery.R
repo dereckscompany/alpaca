@@ -331,6 +331,11 @@ mock_orders_list_response <- function() {
 # ---- Account Fixtures ----
 
 mock_account_response <- function() {
+  # Includes the nested admin_configurations / user_configurations
+  # objects that the live API returns. parse_account flattens these to
+  # wide `admin_configurations_*` / `user_configurations_*` columns;
+  # the fixture exists in this shape so the flatten branch is exercised
+  # by unit tests (live tests already hit it).
   list(
     id = "acct-uuid-123",
     account_number = "PA1234567",
@@ -354,7 +359,17 @@ mock_account_response <- function() {
     regt_buying_power = "200000",
     multiplier = "4",
     sma = "0",
-    created_at = "2024-01-01T00:00:00Z"
+    created_at = "2024-01-01T00:00:00Z",
+    admin_configurations = list(
+      max_margin_multiplier = "4",
+      max_options_trading_level = 3L
+    ),
+    user_configurations = list(
+      dtbp_check = "entry",
+      no_shorting = FALSE,
+      suspend_trade = FALSE,
+      trade_confirm_email = "all"
+    )
   )
 }
 

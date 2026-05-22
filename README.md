@@ -415,7 +415,7 @@ chain[]
     #> 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2
     #>    latest_trade_size latest_trade_conditions latest_quote_timestamp
     #>                <int>                  <char>                 <char>
-    #> 1:                10                    <NA>   2024-06-15T14:30:00Z
+    #> 1:                10                       g   2024-06-15T14:30:00Z
     #> 2:                 5                    <NA>   2024-06-15T14:30:00Z
     #>    latest_quote_ask_price latest_quote_bid_price latest_quote_ask_size
     #>                     <num>                  <num>                 <int>
@@ -423,7 +423,7 @@ chain[]
     #> 2:                    3.3                    3.1                    30
     #>    latest_quote_bid_size latest_quote_conditions
     #>                    <int>                  <char>
-    #> 1:                    40                    <NA>
+    #> 1:                    40                       A
     #> 2:                    25                    <NA>
 
 ## Short Selling

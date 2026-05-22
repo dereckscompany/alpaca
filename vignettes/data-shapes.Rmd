@@ -142,8 +142,15 @@ bars <- market$get_bars("AAPL", "1Day",
 
 | Method | Endpoint | Shape |
 |---|---|---|
-| `get_contracts(...)` | `/v2/options/contracts` | flat — one row per contract |
-| `get_contract(symbol_or_id)` | `/v2/options/contracts/{id}` | single row |
+| `get_contracts(...)` | `/v2/options/contracts` | one row per contract (default); with `show_deliverables = TRUE`, one row per `(contract, deliverable)` with `deliverable_*` columns + `deliverable_index` |
+| `get_contract(symbol_or_id)` | `/v2/options/contracts/{id}` | one row (default); one row per deliverable when the response includes the array |
+
+The `deliverables` array is a Treatment B (long-format) explode: for
+the typical equity option with exactly one deliverable, the row count
+is unchanged. Contracts that span a spinoff or split (two or more
+deliverables) expand to one row per deliverable. Filter to a canonical
+per-contract row with
+`dt[deliverable_index == 1L | is.na(deliverable_index)]`.
 
 ### Options market data
 

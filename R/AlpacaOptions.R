@@ -854,7 +854,10 @@ AlpacaOptions <- R6::R6Class(
     #' @param symbol Character; OCC option symbol.
     #' @param feed Character or NULL; data feed.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields.
+    #'   the same shape as `get_option_chain()` — one row per contract in
+    #'   the chain rooted at `symbol`. Despite the legacy name, this is
+    #'   **not** a single-contract snapshot; for that, use
+    #'   `get_option_snapshots(symbols = "<OCC>")`.
     #'
     #' @examples
     #' \dontrun{
@@ -868,17 +871,14 @@ AlpacaOptions <- R6::R6Class(
           "`get_option_snapshot()` is deprecated. The URL it calls ",
           "(/v1beta1/options/snapshots/{symbol}) is now the ",
           "underlying-chain endpoint, not a per-contract snapshot. ",
-          "For a single contract use `get_option_snapshots(symbols = \"<OCC>\")`."
+          "For a single contract use `get_option_snapshots(symbols = \"<OCC>\")`; ",
+          "for the full chain rooted at an underlying use `get_option_chain()`. ",
+          "This call now delegates to `get_option_chain(symbol)`."
         ),
         .frequency = "regularly",
         .frequency_id = "get_option_snapshot_deprecated"
       )
-      endpoint <- paste0("/v1beta1/options/snapshots/", symbol)
-      return(private$.data_request(
-        endpoint = endpoint,
-        query = list(feed = feed),
-        .parser = parse_snapshot
-      ))
+      return(self$get_option_chain(underlying_symbol = symbol, feed = feed))
     },
 
     #' @description
