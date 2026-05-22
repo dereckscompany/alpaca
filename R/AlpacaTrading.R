@@ -129,8 +129,11 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
-    #' @param side Character; `"buy"` or `"sell"`.
+    #' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
+    #'   for all order classes except `"mleg"` (multi-leg options), where each
+    #'   leg carries its own symbol.
+    #' @param side Character or NULL; `"buy"` or `"sell"`. Required for all
+    #'   order classes except `"mleg"`, where each leg carries its own side.
     #' @param type Character; order type: `"market"`, `"limit"`, `"stop"`,
     #'   `"stop_limit"`, `"trailing_stop"`.
     #' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
@@ -341,6 +344,15 @@ AlpacaTrading <- R6::R6Class(
       before_order_id = NULL,
       after_order_id = NULL
     ) {
+      if (!is.null(before_order_id) && !is.null(after_order_id)) {
+        rlang::abort("`before_order_id` and `after_order_id` are mutually exclusive.")
+      }
+      if ((!is.null(before_order_id) || !is.null(after_order_id)) &&
+        (!is.null(after) || !is.null(until))) {
+        rlang::abort(
+          "Order-ID pagination (`before_order_id` / `after_order_id`) cannot be combined with timestamp pagination (`after` / `until`)."
+        )
+      }
       return(private$.request(
         endpoint = "/v2/orders",
         query = list(
@@ -613,6 +625,9 @@ AlpacaTrading <- R6::R6Class(
       client_order_id = NULL,
       advanced_instructions = NULL
     ) {
+      if (!is.null(qty) && !is.null(notional)) {
+        rlang::abort("`qty` and `notional` are mutually exclusive on a single replace request.")
+      }
       if (!is.null(qty)) {
         qty <- as.character(qty)
       }

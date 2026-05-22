@@ -278,9 +278,12 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{Character or NULL; ticker symbol (e.g., \code{"AAPL"}). Required
+for all order classes except \code{"mleg"} (multi-leg options), where each
+leg carries its own symbol.}
 
-\item{\code{side}}{Character; \code{"buy"} or \code{"sell"}.}
+\item{\code{side}}{Character or NULL; \code{"buy"} or \code{"sell"}. Required for all
+order classes except \code{"mleg"}, where each leg carries its own side.}
 
 \item{\code{type}}{Character; order type: \code{"market"}, \code{"limit"}, \code{"stop"},
 \code{"stop_limit"}, \code{"trailing_stop"}.}

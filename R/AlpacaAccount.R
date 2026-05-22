@@ -714,6 +714,9 @@ AlpacaAccount <- R6::R6Class(
       intraday_reporting = NULL,
       pnl_reset = NULL
     ) {
+      if (!is.null(period) && !is.null(start) && !is.null(end)) {
+        rlang::abort("Only two of `start`, `end`, and `period` may be supplied at once.")
+      }
       return(private$.request(
         endpoint = "/v2/account/portfolio/history",
         query = list(
@@ -812,6 +815,9 @@ AlpacaAccount <- R6::R6Class(
       page_size = NULL,
       page_token = NULL
     ) {
+      if (!is.null(activity_types) && !is.null(category)) {
+        rlang::abort("`activity_types` and `category` are mutually exclusive.")
+      }
       return(private$.request(
         endpoint = "/v2/account/activities",
         query = list(

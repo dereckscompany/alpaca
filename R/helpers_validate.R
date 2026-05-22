@@ -14,8 +14,11 @@
 #' - **Stop-limit orders**: require `qty`, `stop_price`, and `limit_price`.
 #' - **Trailing stop orders**: require `qty` and either `trail_price` or `trail_percent`.
 #'
-#' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
-#' @param side Character; `"buy"` or `"sell"`.
+#' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
+#'   for all order classes except `"mleg"` (multi-leg options), where each
+#'   leg carries its own symbol.
+#' @param side Character or NULL; `"buy"` or `"sell"`. Required for all order
+#'   classes except `"mleg"`, where each leg carries its own side.
 #' @param type Character; order type.
 #' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
 #' @param qty Numeric or NULL; number of shares.
@@ -26,7 +29,9 @@
 #' @param trail_percent Numeric or NULL; trailing stop percentage offset.
 #' @param extended_hours Logical or NULL; allow pre/post market.
 #' @param client_order_id Character or NULL; unique client order ID (max 128 chars).
-#' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`, `"oto"`.
+#' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`,
+#'   `"oto"`, or `"mleg"` (multi-leg options). Case-insensitive; empty string
+#'   is treated as NULL.
 #' @param take_profit List or NULL; `list(limit_price = ...)` for bracket orders.
 #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
 #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
@@ -41,8 +46,8 @@
 #' @keywords internal
 #' @noRd
 validate_order_params <- function(
-  symbol,
-  side,
+  symbol = NULL,
+  side = NULL,
   type,
   time_in_force,
   qty = NULL,
@@ -60,23 +65,41 @@ validate_order_params <- function(
   legs = NULL,
   advanced_instructions = NULL
 ) {
-  # Required field validation. mleg order_class does not require symbol/side,
-  # so only enforce on non-mleg.
+  # Normalise order_class first: empty string is equivalent to NULL, and
+  # match case-insensitively so callers don't have to remember the casing.
+  if (!is.null(order_class) && identical(order_class, "")) {
+    order_class <- NULL
+  }
+  if (!is.null(order_class)) {
+    order_class <- tolower(order_class)
+  }
   is_mleg <- identical(order_class, "mleg")
 
-  if (!is_mleg) {
-    side <- tolower(side)
-  }
   type <- tolower(type)
   time_in_force <- tolower(time_in_force)
 
-  if (!is_mleg) rlang::arg_match0(side, c("buy", "sell"))
+  if (!is_mleg) {
+    # Non-mleg orders require both symbol and side. mleg orders carry these
+    # on each leg, so the top-level fields are optional.
+    if (is.null(symbol) || !is.character(symbol) || !nzchar(symbol)) {
+      rlang::abort("Parameter 'symbol' must be a non-empty character string (omit only for `order_class = \"mleg\"`).")
+    }
+    if (is.null(side) || !is.character(side) || !nzchar(side)) {
+      rlang::abort("Parameter 'side' must be 'buy' or 'sell' (omit only for `order_class = \"mleg\"`).")
+    }
+    side <- tolower(side)
+    rlang::arg_match0(side, c("buy", "sell"))
+  } else {
+    # mleg orders require legs (each leg carries its own symbol/side/qty).
+    if (is.null(legs) || length(legs) == 0L) {
+      rlang::abort("`legs` is required for `order_class = \"mleg\"` (provide a list of leg objects).")
+    }
+    if (length(legs) > 4L) {
+      rlang::abort(paste0("`legs` may contain at most 4 entries (got ", length(legs), ")."))
+    }
+  }
   rlang::arg_match0(type, c("market", "limit", "stop", "stop_limit", "trailing_stop"))
   rlang::arg_match0(time_in_force, c("day", "gtc", "opg", "cls", "ioc", "fok"))
-
-  if (!is_mleg && (!is.character(symbol) || !nzchar(symbol))) {
-    rlang::abort("Parameter 'symbol' must be a non-empty character string.")
-  }
 
   # Convert numerics to character for the API
   if (!is.null(qty)) {
