@@ -102,6 +102,31 @@ rfc3339_to_datetime <- function(x) {
   return(lubridate::as_datetime(x))
 }
 
+#' Convert Named Character Columns of a data.table to Date
+#'
+#' Walks the given column names; for each that exists in `dt`, parses
+#' `"YYYY-MM-DD"` strings to `Date` via `lubridate::ymd()`. Columns
+#' that do not exist are silently skipped, matching the timestamp
+#' helper.
+#'
+#' @param dt A [data.table::data.table].
+#' @param cols Character; candidate column names to convert.
+#' @return `dt`, modified by reference and returned invisibly.
+#'
+#' @keywords internal
+#' @noRd
+parse_date_cols <- function(dt, cols) {
+  if (nrow(dt) == 0L) {
+    return(invisible(dt))
+  }
+  for (col in cols) {
+    if (col %in% names(dt)) {
+      dt[, (col) := lubridate::ymd(get(col), quiet = TRUE)]
+    }
+  }
+  return(invisible(dt))
+}
+
 #' Parse Alpaca Bar Data to data.table
 #'
 #' Converts a list of bar objects (with short field names `t`, `o`, `h`, `l`,
@@ -717,6 +742,7 @@ parse_contract <- function(x) {
   delivs <- x[["deliverables"]]
   x[["deliverables"]] <- NULL
   contract_row <- as_dt_row(x)
+  parse_date_cols(contract_row, "expiration_date")
   if (is.null(delivs) || length(delivs) == 0L) {
     return(contract_row[])
   }

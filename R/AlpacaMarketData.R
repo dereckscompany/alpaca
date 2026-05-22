@@ -1309,10 +1309,10 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `ca_sub_type` (character): Action sub-type.
     #'   - `initiating_symbol` (character): Symbol initiating the action.
     #'   - `target_symbol` (character): Target symbol (for mergers).
-    #'   - `declaration_date` (character): Declaration date.
-    #'   - `ex_date` (character): Ex-date.
-    #'   - `record_date` (character): Record date.
-    #'   - `payable_date` (character): Payable date.
+    #'   - `declaration_date` (Date): Declaration date.
+    #'   - `ex_date` (Date): Ex-date.
+    #'   - `record_date` (Date): Record date.
+    #'   - `payable_date` (Date): Payable date.
     #'   - `cash` (character): Cash amount (for dividends).
     #'   - `old_rate` (character): Old rate (for splits).
     #'   - `new_rate` (character): New rate (for splits).
@@ -1361,7 +1361,14 @@ AlpacaMarketData <- R6::R6Class(
           cusip = cusip,
           date_type = date_type
         ),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          parse_date_cols(dt, c(
+            "declaration_date", "ex_date",
+            "record_date", "payable_date"
+          ))
+          return(dt)
+        }
       ))
     },
 

@@ -1,5 +1,18 @@
 # alpaca 0.1.0.9000
 
+## Pure-date fields are now `Date` (breaking)
+
+Fields that carry calendar dates without a time component are now
+parsed to `Date` instead of left as `"YYYY-MM-DD"` strings:
+
+- **Corporate actions** (`AlpacaMarketData$get_corporate_actions()`):
+  `declaration_date`, `ex_date`, `record_date`, `payable_date`.
+- **Options contracts** (`AlpacaOptions$get_contracts()`,
+  `$get_contract()`): `expiration_date`.
+
+Shared `parse_date_cols()` helper added alongside the existing
+`parse_timestamp_cols()`.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

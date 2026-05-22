@@ -336,7 +336,7 @@ Columns (contract):
 \item \code{tradable} (logical): Whether the contract is tradable.
 \item \code{type} (character): \code{"call"} or \code{"put"}.
 \item \code{strike_price} (character): Strike price.
-\item \code{expiration_date} (character): Expiration date.
+\item \code{expiration_date} (Date): Expiration date.
 \item \code{underlying_symbol} (character): Underlying ticker symbol.
 \item \code{style} (character): Option style.
 \item \code{root_symbol} (character): Root symbol.

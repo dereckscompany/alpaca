@@ -182,7 +182,7 @@ AlpacaOptions <- R6::R6Class(
     #'   - `tradable` (logical): Whether the contract is tradable.
     #'   - `type` (character): `"call"` or `"put"`.
     #'   - `strike_price` (character): Strike price.
-    #'   - `expiration_date` (character): Expiration date.
+    #'   - `expiration_date` (Date): Expiration date.
     #'   - `underlying_symbol` (character): Underlying ticker symbol.
     #'   - `style` (character): Option style.
     #'   - `root_symbol` (character): Root symbol.

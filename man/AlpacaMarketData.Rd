@@ -1753,10 +1753,10 @@ values: \code{"dividend"}, \code{"merger"}, \code{"spinoff"}, \code{"split"}.}
 \item \code{ca_sub_type} (character): Action sub-type.
 \item \code{initiating_symbol} (character): Symbol initiating the action.
 \item \code{target_symbol} (character): Target symbol (for mergers).
-\item \code{declaration_date} (character): Declaration date.
-\item \code{ex_date} (character): Ex-date.
-\item \code{record_date} (character): Record date.
-\item \code{payable_date} (character): Payable date.
+\item \code{declaration_date} (Date): Declaration date.
+\item \code{ex_date} (Date): Ex-date.
+\item \code{record_date} (Date): Record date.
+\item \code{payable_date} (Date): Payable date.
 \item \code{cash} (character): Cash amount (for dividends).
 \item \code{old_rate} (character): Old rate (for splits).
 \item \code{new_rate} (character): New rate (for splits).
