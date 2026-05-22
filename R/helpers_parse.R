@@ -219,13 +219,21 @@ parse_trades <- function(trades) {
   return(dt[])
 }
 
-#' Parse Alpaca Quote Data to data.table
+#' Parse Alpaca Quote Data to data.table (One Row Per Quote)
 #'
 #' Converts a list of quote objects (with short field names) into a tidy
-#' [data.table::data.table] with descriptive column names.
+#' [data.table::data.table] with descriptive column names. Each quote is
+#' a single row; the `c` condition-code array is collapsed to a
+#' semicolon-separated `conditions` character column (e.g. `"R;A"`).
+#'
+#' Recover the original codes with
+#' `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. Filter with
+#' `dt[grepl("R", conditions)]`. Quotes with no condition codes get
+#' `conditions = NA`.
 #'
 #' @param quotes A list of quote objects from the Alpaca API.
-#' @return A [data.table::data.table] with descriptive column names.
+#' @return A [data.table::data.table] with one row per quote and
+#'   descriptive column names.
 #'
 #' @keywords internal
 #' @noRd
@@ -233,8 +241,17 @@ parse_quotes <- function(quotes) {
   if (is.null(quotes) || length(quotes) == 0) {
     return(data.table::data.table()[])
   }
-  quotes <- lapply(quotes, wrap_list_fields)
-  dt <- data.table::rbindlist(quotes, fill = TRUE)
+  # Rename `c` -> `conditions` first so the helper finds the field, then
+  # collapse the array to a `;`-joined character column. One quote =
+  # one row regardless of how many condition codes it carries.
+  quotes_clean <- lapply(quotes, function(q) {
+    if (!is.null(q[["c"]])) {
+      q[["conditions"]] <- q[["c"]]
+      q[["c"]] <- NULL
+    }
+    collapse_string_array_fields(q, "conditions")
+  })
+  dt <- data.table::rbindlist(quotes_clean, fill = TRUE)
   name_map <- c(
     t = "timestamp",
     ax = "ask_exchange",
@@ -243,7 +260,6 @@ parse_quotes <- function(quotes) {
     bx = "bid_exchange",
     bp = "bid_price",
     bs = "bid_size",
-    c = "conditions",
     z = "tape"
   )
   idx <- names(dt) %in% names(name_map)

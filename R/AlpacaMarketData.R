@@ -429,8 +429,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Quote](https://docs.alpaca.markets/reference/stocklatestquote)
-    #' Verifieid: 2026-03-10
+    #' [Latest Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -458,7 +458,9 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbol Character; ticker symbol.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote** (a single row for this single-quote method).
+    #'   Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
@@ -466,6 +468,9 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
     #'   - `bid_size` (integer): Bid size.
+    #'   - `conditions` (character): Semicolon-separated condition codes
+    #'     (e.g. `"R"` or `"R;A"`). Filter with `dt[grepl("R", conditions)]`.
+    #'     `NA` when the quote carries no condition codes.
     #'
     #' @examples
     #' \dontrun{
@@ -670,8 +675,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/quotes/latest`
     #'
     #' ### Official Documentation
-    #' [Latest Multi Quotes](https://docs.alpaca.markets/reference/stocklatestquotes)
-    #' Verifieid: 2026-03-10
+    #' [Latest Multi Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -691,8 +696,10 @@ AlpacaMarketData <- R6::R6Class(
     #'
     #' @param symbols Character vector; ticker symbols.
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and quote columns.
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per symbol** (the latest quote for each). Columns include
+    #'   `symbol` plus the quote fields documented on `get_latest_quote()`,
+    #'   including a `;`-separated `conditions` character column.
     get_latest_quotes_multi = function(symbols, feed = NULL) {
       return(private$.data_request(
         endpoint = "/v2/stocks/quotes/latest",
@@ -880,8 +887,8 @@ AlpacaMarketData <- R6::R6Class(
     #' `GET https://data.alpaca.markets/v2/stocks/{symbol}/quotes`
     #'
     #' ### Official Documentation
-    #' [Historical Stock Quotes](https://docs.alpaca.markets/reference/stockquotes)
-    #' Verifieid: 2026-03-10
+    #' [Historical Stock Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
+    #' Verified: 2026-05-22
     #'
     #' ### curl
     #' ```
@@ -908,13 +915,19 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"iex"` or `"sip"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per quote**. Columns:
     #'   - `timestamp` (POSIXct): Quote timestamp.
     #'   - `ask_exchange` (character): Ask exchange code.
     #'   - `ask_price` (numeric): Ask price.
     #'   - `ask_size` (integer): Ask size.
     #'   - `bid_exchange` (character): Bid exchange code.
     #'   - `bid_price` (numeric): Bid price.
+    #'   - `conditions` (character): Semicolon-separated condition codes.
+    #'     Filter with `dt[grepl("R", conditions)]`; recover the original
+    #'     character vector with
+    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
+    #'     the quote carries no condition codes.
     #'   - `bid_size` (integer): Bid size.
     get_quotes = function(
       symbol,

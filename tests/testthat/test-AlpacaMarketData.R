@@ -87,14 +87,43 @@ test_that("parse_trades handles a trade with no condition codes as NA", {
   expect_true(is.na(dt$conditions))
 })
 
-test_that("get_latest_quote returns single-row data.table", {
+test_that("get_latest_quote returns single-row data.table with conditions collapsed", {
   resp <- mock_alpaca_response(mock_quote_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_latest_quote("AAPL")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
-  expect_true(all(c("timestamp", "ask_price", "bid_price") %in% names(dt)))
+  expect_true(all(c("timestamp", "ask_price", "bid_price", "conditions") %in% names(dt)))
+  expect_true(is.character(dt$conditions))
+  expect_false(is.list(dt$conditions))
+  expect_equal(dt$conditions, "R")
+})
+
+test_that("parse_quotes collapses multiple condition codes with `;`", {
+  quotes <- list(list(
+    t = "2024-01-15T20:00:00Z",
+    ax = "V", ap = 185.55, "as" = 200L,
+    bx = "Q", bp = 185.50, bs = 300L,
+    c = list("R", "A"),
+    z = "C"
+  ))
+  dt <- parse_quotes(quotes)
+  expect_equal(nrow(dt), 1L)
+  expect_equal(dt$conditions, "R;A")
+  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]], c("R", "A"))
+})
+
+test_that("parse_quotes handles a quote with no condition codes as NA", {
+  quotes <- list(list(
+    t = "2024-01-15T20:00:00Z",
+    ax = "V", ap = 185.55, "as" = 200L,
+    bx = "Q", bp = 185.50, bs = 300L,
+    z = "C"
+  ))
+  dt <- parse_quotes(quotes)
+  expect_equal(nrow(dt), 1L)
+  expect_true(is.na(dt$conditions))
 })
 
 test_that("get_snapshot returns flattened data.table", {
@@ -237,7 +266,7 @@ test_that("get_latest_trades_multi returns one row per symbol with conditions co
   expect_false(is.list(dt$conditions))
 })
 
-test_that("get_latest_quotes_multi returns data.table with symbol column", {
+test_that("get_latest_quotes_multi returns one row per symbol with conditions collapsed", {
   resp <- mock_alpaca_response(mock_latest_quotes_multi_response())
   httr2::local_mocked_responses(function(req) resp)
 
@@ -245,7 +274,8 @@ test_that("get_latest_quotes_multi returns data.table with symbol column", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
   expect_true("symbol" %in% names(dt))
-  expect_true(all(c("ask_price", "bid_price") %in% names(dt)))
+  expect_true(all(c("ask_price", "bid_price", "conditions") %in% names(dt)))
+  expect_false(is.list(dt$conditions))
 })
 
 test_that("get_snapshots_multi returns data.table with symbol column", {
