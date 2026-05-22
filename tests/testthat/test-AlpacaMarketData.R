@@ -226,3 +226,54 @@ test_that("get_movers uses correct endpoint", {
   new_market()$get_movers(market_type = "stocks", top = 5)
   expect_true(grepl("screener/stocks/movers", captured_url))
 })
+
+# ---- new query parameters land on the URL ----------------------------------
+
+test_that("get_bars puts asof and currency on the URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_bars_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_bars(
+    "AAPL", timeframe = "1Day",
+    asof = "2024-06-09", currency = "EUR"
+  )
+  expect_true(grepl("asof=2024-06-09", captured_url))
+  expect_true(grepl("currency=EUR", captured_url))
+})
+
+test_that("get_calendar puts date_type on the URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_calendar(date_type = "SETTLEMENT")
+  expect_true(grepl("date_type=SETTLEMENT", captured_url))
+})
+
+test_that("get_assets puts attributes on the URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_assets(attributes = "has_options,overnight_tradable")
+  expect_true(grepl("attributes=has_options", captured_url))
+})
+
+# ---- enum guards ------------------------------------------------------------
+
+test_that("get_calendar rejects unknown date_type", {
+  expect_error(
+    new_market()$get_calendar(date_type = "WHENEVER"),
+    "date_type"
+  )
+})

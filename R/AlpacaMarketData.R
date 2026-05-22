@@ -1163,6 +1163,9 @@ AlpacaMarketData <- R6::R6Class(
     #' print(cal)
     #' }
     get_calendar = function(start = NULL, end = NULL, date_type = NULL) {
+      if (!is.null(date_type)) {
+        rlang::arg_match0(date_type, c("TRADING", "SETTLEMENT"))
+      }
       return(private$.request(
         endpoint = "/v2/calendar",
         query = list(start = start, end = end, date_type = date_type),
@@ -1314,6 +1317,16 @@ AlpacaMarketData <- R6::R6Class(
       cusip = NULL,
       date_type = NULL
     ) {
+      rlang::warn(
+        paste0(
+          "`get_corporate_actions()` wraps `/v2/corporate_actions/announcements`, ",
+          "which Alpaca has flagged DEPRECATED in favour of the newer ",
+          "`/v1beta1/corporate-actions` market-data endpoint. The wrapper still ",
+          "works today but migration is recommended."
+        ),
+        .frequency = "regularly",
+        .frequency_id = "get_corporate_actions_deprecated"
+      )
       return(private$.request(
         endpoint = "/v2/corporate_actions/announcements",
         query = list(

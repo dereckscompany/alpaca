@@ -67,11 +67,15 @@ validate_order_params <- function(
 ) {
   # Normalise order_class first: empty string is equivalent to NULL, and
   # match case-insensitively so callers don't have to remember the casing.
-  if (!is.null(order_class) && identical(order_class, "")) {
-    order_class <- NULL
-  }
   if (!is.null(order_class)) {
-    order_class <- tolower(order_class)
+    if (!is.character(order_class) || length(order_class) != 1L) {
+      rlang::abort("Parameter 'order_class' must be a single character string.")
+    }
+    if (identical(order_class, "")) {
+      order_class <- NULL
+    } else {
+      order_class <- tolower(order_class)
+    }
   }
   is_mleg <- identical(order_class, "mleg")
 
@@ -96,6 +100,20 @@ validate_order_params <- function(
     }
     if (length(legs) > 4L) {
       rlang::abort(paste0("`legs` may contain at most 4 entries (got ", length(legs), ")."))
+    }
+    if (!is.list(legs)) {
+      rlang::abort("`legs` must be a list of leg objects (each itself a list).")
+    }
+    bad <- which(!vapply(legs, function(leg) {
+      is.list(leg) &&
+        all(c("symbol", "side", "ratio_qty") %in% names(leg))
+    }, logical(1)))
+    if (length(bad) > 0L) {
+      rlang::abort(paste0(
+        "Each entry in `legs` must be a list with at least `symbol`, `side`, ",
+        "and `ratio_qty` fields. Offending leg position(s): ",
+        paste(bad, collapse = ", "), "."
+      ))
     }
   }
   rlang::arg_match0(type, c("market", "limit", "stop", "stop_limit", "trailing_stop"))

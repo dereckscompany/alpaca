@@ -353,6 +353,15 @@ AlpacaTrading <- R6::R6Class(
           "Order-ID pagination (`before_order_id` / `after_order_id`) cannot be combined with timestamp pagination (`after` / `until`)."
         )
       }
+      if (!is.null(status)) {
+        rlang::arg_match0(status, c("open", "closed", "all"))
+      }
+      if (!is.null(direction)) {
+        rlang::arg_match0(direction, c("asc", "desc"))
+      }
+      if (!is.null(side)) {
+        rlang::arg_match0(tolower(side), c("buy", "sell"))
+      }
       return(private$.request(
         endpoint = "/v2/orders",
         query = list(

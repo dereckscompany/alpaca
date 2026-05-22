@@ -787,6 +787,16 @@ AlpacaOptions <- R6::R6Class(
     #' print(snap)
     #' }
     get_option_snapshot = function(symbol, feed = NULL) {
+      rlang::warn(
+        paste0(
+          "`get_option_snapshot()` is deprecated. The URL it calls ",
+          "(/v1beta1/options/snapshots/{symbol}) is now the ",
+          "underlying-chain endpoint, not a per-contract snapshot. ",
+          "For a single contract use `get_option_snapshots(symbols = \"<OCC>\")`."
+        ),
+        .frequency = "regularly",
+        .frequency_id = "get_option_snapshot_deprecated"
+      )
       endpoint <- paste0("/v1beta1/options/snapshots/", symbol)
       return(private$.data_request(
         endpoint = endpoint,

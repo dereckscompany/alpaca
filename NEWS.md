@@ -45,9 +45,22 @@ Added support for new optional parameters Alpaca has introduced upstream. All ad
 
 * `validate_order_params()` updated to accept `legs` / `advanced_instructions` and to allow `order_class = "mleg"` (which also makes `symbol` and `side` optional, since the legs carry that info).
 
+## ENUM ADDITIONS
+
+* `AlpacaAccount$get_portfolio_history()` `intraday_reporting` now lists `"continuous"` as a valid value (for 24/7 crypto charts). `pnl_reset` is documented with its `"per_day"` (default) / `"no_reset"` values. Both are now client-side enum-validated.
+* Selected new enum params are validated client-side and abort with a clear message on a typo: `date_type` on `get_calendar()`, `category` and `direction` on `get_activities()`, `status` / `direction` / `side` on `get_orders()`, `intraday_reporting` / `pnl_reset` on `get_portfolio_history()`. (The `feed` and `adjustment` enums are left permissive because Alpaca expands those upstream from time to time.)
+
+## RUNTIME DEPRECATION WARNINGS
+
+* `AlpacaOptions$get_option_snapshot()` now emits a deprecation warning on call. Its URL (`/v1beta1/options/snapshots/{symbol}`) is the underlying-chain endpoint upstream — not a per-contract snapshot. Prefer `get_option_snapshots(symbols = "<OCC>")` for a single contract.
+* `AlpacaMarketData$get_corporate_actions()` now emits a deprecation warning on call. `/v2/corporate_actions/announcements` is still functional but Alpaca has flagged it DEPRECATED in favour of `/v1beta1/corporate-actions`.
+* Both warnings are rate-limited (`rlang::warn(..., .frequency = "regularly")`), so a tight loop won't spam stderr.
+
 ## TESTING
 
-Live integration tests run against the Alpaca paper-trading API: **546 PASS / 0 FAIL** (80 public market-data + 37 private trading + 429 mocked unit tests). The 6 warnings are benign `data.table::rbindlist` notices for empty list columns and predate this release.
+Live integration tests run against the Alpaca paper-trading API; combined with mocked unit tests this release ships with **>560 PASS / 0 FAIL**. The handful of warnings during the run are benign `data.table::rbindlist` notices for empty list columns and predate this release.
+
+The "57 verified" count above refers to the package's 57 R6 methods (a few share an endpoint upstream, e.g. `get_option_snapshot` and `get_option_chain` both call `/v1beta1/options/snapshots/{symbol}`), not 57 distinct upstream endpoints.
 
 # alpaca 0.0.1
 

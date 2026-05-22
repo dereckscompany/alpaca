@@ -721,21 +721,32 @@ AlpacaAccount <- R6::R6Class(
       date_start = NULL,
       date_end = NULL
     ) {
-      # Deprecated aliases — forward to the new names with a warning.
+      # Deprecated aliases — forward to the new names with a once-per-session
+      # warning so a tight loop doesn't spam stderr.
       if (!is.null(date_start)) {
         rlang::warn(
-          "`date_start` is deprecated as of alpaca 0.1.0; use `start` instead. Forwarding the value."
+          "`date_start` is deprecated as of alpaca 0.1.0; use `start` instead. Forwarding the value.",
+          .frequency = "regularly",
+          .frequency_id = "get_portfolio_history_date_start_deprecated"
         )
         if (is.null(start)) start <- date_start
       }
       if (!is.null(date_end)) {
         rlang::warn(
-          "`date_end` is deprecated as of alpaca 0.1.0; use `end` instead. Forwarding the value."
+          "`date_end` is deprecated as of alpaca 0.1.0; use `end` instead. Forwarding the value.",
+          .frequency = "regularly",
+          .frequency_id = "get_portfolio_history_date_end_deprecated"
         )
         if (is.null(end)) end <- date_end
       }
       if (!is.null(period) && !is.null(start) && !is.null(end)) {
         rlang::abort("Only two of `start`, `end`, and `period` may be supplied at once.")
+      }
+      if (!is.null(intraday_reporting)) {
+        rlang::arg_match0(intraday_reporting, c("market_hours", "extended_hours", "continuous"))
+      }
+      if (!is.null(pnl_reset)) {
+        rlang::arg_match0(pnl_reset, c("per_day", "no_reset"))
       }
       return(private$.request(
         endpoint = "/v2/account/portfolio/history",
@@ -837,6 +848,12 @@ AlpacaAccount <- R6::R6Class(
     ) {
       if (!is.null(activity_types) && !is.null(category)) {
         rlang::abort("`activity_types` and `category` are mutually exclusive.")
+      }
+      if (!is.null(category)) {
+        rlang::arg_match0(category, c("trade_activity", "non_trade_activity"))
+      }
+      if (!is.null(direction)) {
+        rlang::arg_match0(direction, c("asc", "desc"))
       }
       return(private$.request(
         endpoint = "/v2/account/activities",
