@@ -989,9 +989,12 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `marginable` (logical): Whether margin is available.
     #'   - `shortable` (logical): Whether short selling is available.
     #'   - `fractionable` (logical): Whether fractional shares are available.
-    #'   - `attributes` (character): Comma-separated attribute flags, e.g.
-    #'     `"fractional_eh_enabled,has_options,overnight_tradable"`. Filter
-    #'     with `dt[grepl("has_options", attributes)]`.
+    #'   - `attributes` (character): Semicolon-separated attribute flags, e.g.
+    #'     `"fractional_eh_enabled;has_options;overnight_tradable"`. Filter
+    #'     with `dt[grepl("has_options", attributes)]`. Semicolon is used as
+    #'     the separator so values that may contain commas (URLs in other
+    #'     endpoints) join safely; the convention is consistent across the
+    #'     package.
     #'
     #' @examples
     #' \dontrun{

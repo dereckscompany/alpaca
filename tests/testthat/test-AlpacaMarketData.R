@@ -87,7 +87,7 @@ test_that("get_asset returns single-row data.table", {
   expect_equal(nrow(dt), 1L)
 })
 
-test_that("get_asset collapses the `attributes` array to a comma-separated character", {
+test_that("get_asset collapses the `attributes` array to a semicolon-separated character", {
   resp <- mock_alpaca_response(mock_assets_response()[[1]])
   httr2::local_mocked_responses(function(req) resp)
 
@@ -95,7 +95,15 @@ test_that("get_asset collapses the `attributes` array to a comma-separated chara
   expect_true("attributes" %in% names(dt))
   expect_true(is.character(dt$attributes))
   expect_false(is.list(dt$attributes))
-  expect_equal(dt$attributes, "fractional_eh_enabled,has_options,overnight_tradable")
+  expect_equal(dt$attributes, "fractional_eh_enabled;has_options;overnight_tradable")
+})
+
+test_that("collapse helper warns if a value contains the `;` separator", {
+  bad <- list(symbol = "X", attributes = list("has;options"))
+  expect_warning(
+    parse_asset(bad),
+    "contains a literal"
+  )
 })
 
 test_that("get_asset handles an empty `attributes` array as NA", {
@@ -116,7 +124,7 @@ test_that("get_assets keeps one row per asset (no list columns)", {
   list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
   expect_equal(length(list_cols), 0L)
   expect_equal(dt[symbol == "AAPL", attributes],
-               "fractional_eh_enabled,has_options,overnight_tradable")
+               "fractional_eh_enabled;has_options;overnight_tradable")
 })
 
 test_that("get_clock returns data.table with is_open field", {

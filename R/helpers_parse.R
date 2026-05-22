@@ -455,9 +455,21 @@ parse_watchlist <- function(wl) {
 #'
 #' Walks the named list `x` and replaces any named field whose value is a
 #' length >= 1 list of plain character strings (or atomic character vector)
-#' with a single comma-separated character scalar. Used by the asset / news /
-#' trade / quote parsers so we get one row per entity instead of a list
-#' column or an exploded long row count.
+#' with a single semicolon-separated character scalar. Used by the asset /
+#' news / trade / quote parsers so we get one row per entity instead of a
+#' list column or an exploded long row count.
+#'
+#' ### Separator choice
+#' We use `;` rather than `,` because semicolon is far less likely to appear
+#' inside any of the values themselves (the array elements are all
+#' short codes / snake_case identifiers / tickers — none of which contain
+#' semicolons). Commas can legitimately appear inside URL query strings, so
+#' a future URL-valued field would need either URL-encoding or a different
+#' separator entirely. Semicolon sidesteps that.
+#'
+#' If any individual value contains a literal `;`, we'd silently corrupt
+#' the data on a subsequent split. To make any future shape change loud,
+#' we emit a once-per-session warning when that happens.
 #'
 #' Only fields in `fields` are touched; nested objects elsewhere are left
 #' alone so they can be flattened by their own parser.
@@ -476,7 +488,20 @@ collapse_string_array_fields <- function(x, fields) {
       val <- unlist(val, use.names = FALSE)
     }
     if (is.atomic(val) && length(val) >= 1L) {
-      x[[nm]] <- paste(as.character(val), collapse = ",")
+      val_chr <- as.character(val)
+      if (any(grepl(";", val_chr, fixed = TRUE))) {
+        rlang::warn(
+          paste0(
+            "Field `", nm, "` contains a literal `;` which collides with the ",
+            "collapse separator. Joining anyway; downstream code that splits ",
+            "on `;` will see corrupted values. Please report this so we can ",
+            "switch the separator for this field."
+          ),
+          .frequency = "regularly",
+          .frequency_id = paste0("collapse_sep_collision_", nm)
+        )
+      }
+      x[[nm]] <- paste(val_chr, collapse = ";")
     }
   }
   return(x)
