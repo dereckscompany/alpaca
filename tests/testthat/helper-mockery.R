@@ -498,6 +498,10 @@ mock_watchlists_response <- function() {
 }
 
 mock_watchlist_response <- function() {
+  # Asset 1 has a populated `attributes` array; asset 2 has none. This
+  # mirrors the live response shape and exercises the empty-vs-populated
+  # branch in `parse_watchlist()` so the collapse keeps a character column
+  # instead of falling back to a list column.
   list(
     id = "wl-uuid-1",
     account_id = "acct-uuid-123",
@@ -505,8 +509,18 @@ mock_watchlist_response <- function() {
     created_at = "2024-01-10T10:00:00Z",
     updated_at = "2024-01-15T14:30:00Z",
     assets = list(
-      list(id = "uuid-1", symbol = "AAPL", name = "Apple Inc."),
-      list(id = "uuid-2", symbol = "MSFT", name = "Microsoft Corporation")
+      list(
+        id = "uuid-1",
+        symbol = "AAPL",
+        name = "Apple Inc.",
+        attributes = list("fractional_eh_enabled", "has_options")
+      ),
+      list(
+        id = "uuid-2",
+        symbol = "MSFT",
+        name = "Microsoft Corporation",
+        attributes = list()
+      )
     )
   )
 }

@@ -482,6 +482,10 @@ parse_news <- function(news_items) {
 #' by one row per asset. Watchlists with no assets get a single row with
 #' asset columns set to NA.
 #'
+#' Per-asset `attributes` arrays are collapsed to a `;`-separated character
+#' column (see `collapse_string_array_fields()`), so the returned table has
+#' no list columns even when some assets have empty `attributes`.
+#'
 #' @param wl A named list representing a single watchlist response from the
 #'   Alpaca API.
 #' @return A [data.table::data.table] in long format with asset columns
@@ -504,6 +508,10 @@ parse_watchlist <- function(wl) {
     parent[, asset_name := NA_character_]
     return(parent[])
   }
+  # Collapse each asset's `attributes` string array to a scalar character
+  # before binding. Without this, mixed empty/populated arrays make
+  # `rbindlist` warn and fall back to a list column.
+  assets <- lapply(assets, collapse_string_array_fields, "attributes")
   # Build the assets data.table
   assets_dt <- data.table::rbindlist(assets, fill = TRUE)
   data.table::setnames(assets_dt, to_snake_case(names(assets_dt)))

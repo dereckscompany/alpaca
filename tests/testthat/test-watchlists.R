@@ -42,6 +42,36 @@ test_that("get_watchlist returns long-format data.table with one row per asset",
   expect_setequal(result$asset_symbol, c("AAPL", "MSFT"))
 })
 
+test_that("get_watchlist collapses per-asset `attributes` to a character column (no list cols)", {
+  mock_perform <- function(req) {
+    mock_alpaca_response(mock_watchlist_response())
+  }
+
+  acct <- AlpacaAccount$new(
+    keys = list(api_key = "k", api_secret = "s"),
+    base_url = "https://paper-api.alpaca.markets"
+  )
+  acct$.__enclos_env__$private$.perform <- mock_perform
+
+  result <- acct$get_watchlist("wl-uuid-1")
+
+  # No list columns anywhere — populated and empty attribute arrays both
+  # must reduce to a plain character cell.
+  list_cols <- names(result)[vapply(result, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
+
+  expect_true("asset_attributes" %in% names(result))
+  expect_true(is.character(result$asset_attributes))
+
+  # Asset with attributes: `;`-joined character.
+  expect_equal(
+    result[asset_symbol == "AAPL", asset_attributes],
+    "fractional_eh_enabled;has_options"
+  )
+  # Asset with an empty array: NA character (not literal "" or "NA").
+  expect_true(is.na(result[asset_symbol == "MSFT", asset_attributes]))
+})
+
 test_that("add_watchlist sends POST with name and symbols", {
   captured_req <- NULL
   mock_perform <- function(req) {

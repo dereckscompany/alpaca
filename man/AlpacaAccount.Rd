@@ -1403,7 +1403,11 @@ Verified: 2026-05-21
 format with one row per asset in the watchlist. Columns include watchlist
 metadata (\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and
 asset columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
-\code{asset_name}, etc.).
+\code{asset_name}, \code{asset_attributes}, etc.). \code{asset_attributes} is a
+\verb{;}-separated character column (e.g.
+\code{"fractional_eh_enabled;has_options"}) — \code{NA} when the asset has
+no attributes. Recover the original vector with
+\code{strsplit(dt$asset_attributes, ";", fixed = TRUE)[[1]]}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

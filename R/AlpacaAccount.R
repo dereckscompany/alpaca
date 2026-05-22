@@ -1074,7 +1074,11 @@ AlpacaAccount <- R6::R6Class(
     #'   format with one row per asset in the watchlist. Columns include watchlist
     #'   metadata (`id`, `account_id`, `name`, `created_at`, `updated_at`) and
     #'   asset columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
-    #'   `asset_name`, etc.).
+    #'   `asset_name`, `asset_attributes`, etc.). `asset_attributes` is a
+    #'   `;`-separated character column (e.g.
+    #'   `"fractional_eh_enabled;has_options"`) — `NA` when the asset has
+    #'   no attributes. Recover the original vector with
+    #'   `strsplit(dt$asset_attributes, ";", fixed = TRUE)[[1]]`.
     #'
     #' @examples
     #' \dontrun{
