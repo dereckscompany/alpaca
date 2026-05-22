@@ -107,6 +107,26 @@ test_that("get_clock returns data.table with is_open field", {
   expect_true("is_open" %in% names(dt))
 })
 
+test_that("get_corporate_actions parses the four *_date fields to Date", {
+  resp <- mock_alpaca_response(mock_corporate_actions_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  # The endpoint emits a deprecation warning we don't care about here.
+  dt <- suppressWarnings(
+    new_market()$get_corporate_actions(
+      ca_types = "dividend",
+      since = "2024-01-01",
+      until = "2024-03-31"
+    )
+  )
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 2L)
+  for (col in c("declaration_date", "ex_date", "record_date", "payable_date")) {
+    expect_true(inherits(dt[[col]], "Date"), label = col)
+  }
+  expect_equal(format(dt$ex_date), c("2024-02-09", "2024-06-10"))
+})
+
 test_that("get_calendar returns data.table", {
   resp <- mock_alpaca_response(mock_calendar_response())
   httr2::local_mocked_responses(function(req) resp)

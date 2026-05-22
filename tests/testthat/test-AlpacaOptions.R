@@ -20,6 +20,8 @@ test_that("get_contracts returns data.table with contract fields", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
   expect_true(all(c("symbol", "type", "strike_price", "expiration_date") %in% names(dt)))
+  # expiration_date must parse to Date, not stay as "YYYY-MM-DD" string.
+  expect_s3_class(dt$expiration_date, "Date")
 })
 
 test_that("get_contracts uses trading base URL", {
@@ -42,6 +44,7 @@ test_that("get_contract returns single-row data.table", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
   expect_equal(dt$symbol, "AAPL240621C00200000")
+  expect_s3_class(dt$expiration_date, "Date")
 })
 
 test_that("get_contracts with show_deliverables explodes deliverables to long format", {

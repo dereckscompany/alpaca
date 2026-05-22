@@ -223,6 +223,7 @@ mock_calendar_response <- function() {
   ))
 }
 
+
 # ---- Trading Fixtures ----
 
 mock_order_response <- function() {
