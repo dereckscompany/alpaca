@@ -156,8 +156,19 @@ parse_date_cols <- function(dt, cols) {
 }
 
 # Exchange timezone used by Alpaca for naive market times (open/close,
-# session_open/session_close on /v2/calendar). Alpaca documents these
-# as ET; the named tz handles DST transitions automatically.
+# session_open/session_close on /v2/calendar). Alpaca does NOT
+# explicitly document the timezone of these fields on the calendar /
+# clock reference pages — the inference is:
+#   1. /v2 is US-only (NYSE/NASDAQ-equivalent venues).
+#   2. The market-data FAQ confirms NY tz is canonical for bar
+#      aggregation.
+#   3. `09:30` and `16:00` only make sense as ET wall-clock times.
+#   4. Every Alpaca SDK in other languages treats it as ET.
+# The named tz handles DST transitions automatically (a fixed `-05:00`
+# would be wrong half the year).
+#
+# TODO(v3): Alpaca's `/v3/calendar` exposes multiple markets and will
+# need per-market timezone lookup rather than this single constant.
 ALPACA_EXCHANGE_TZ <- "America/New_York"
 
 #' Combine a YYYY-MM-DD Date String with a HH:MM Time String

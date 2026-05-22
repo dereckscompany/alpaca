@@ -1,0 +1,234 @@
+- generic [ref=e2]:
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - navigation "Main" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Binance Logo" [ref=e7] [cursor=pointer]:
+          - /url: https://developers.binance.com/en
+          - img "Binance Logo" [ref=e9]
+        - button "Products ▼" [ref=e12] [cursor=pointer]:
+          - generic [ref=e13]: Products
+          - generic [ref=e14]: ▼
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - button "Search" [ref=e19] [cursor=pointer]:
+            - generic [ref=e20]:
+              - img [ref=e21]
+              - generic [ref=e23]: Search
+            - generic [ref=e24]:
+              - generic [ref=e25]: ⌘
+              - generic [ref=e26]: K
+          - generic [ref=e28]:
+            - button "Current" [ref=e29] [cursor=pointer]
+            - button "All" [ref=e30] [cursor=pointer]
+        - button "English" [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+          - text: English
+        - button "Switch between dark and light mode (currently light mode)" [ref=e36] [cursor=pointer]:
+          - img [ref=e37]
+  - generic [ref=e41]:
+    - complementary [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e45]: Simple Earn
+        - navigation "Docs sidebar" [ref=e47]:
+          - list [ref=e48]:
+            - listitem [ref=e49]:
+              - link "Change Log" [ref=e50] [cursor=pointer]:
+                - /url: /docs/simple_earn/change-log
+            - listitem [ref=e51]:
+              - link "Quick Start" [ref=e52] [cursor=pointer]:
+                - /url: /docs/simple_earn/quick-start
+            - listitem [ref=e53]:
+              - link "Introduction" [ref=e54] [cursor=pointer]:
+                - /url: /docs/simple_earn/Introduction
+            - listitem [ref=e55]:
+              - link "General Info" [ref=e56] [cursor=pointer]:
+                - /url: /docs/simple_earn/general-info
+            - listitem [ref=e57]:
+              - button "Flexible & Locked" [expanded] [ref=e59] [cursor=pointer]
+              - list [ref=e60]:
+                - listitem [ref=e61]:
+                  - button "Account" [expanded] [ref=e63] [cursor=pointer]
+                  - list [ref=e64]:
+                    - listitem [ref=e65]:
+                      - link "Simple Account (USER_DATA)" [ref=e66] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account
+                    - listitem [ref=e67]:
+                      - link "Get Simple Earn Flexible Product List (USER_DATA)" [ref=e68] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Flexible-Product-List
+                    - listitem [ref=e69]:
+                      - link "Get Simple Earn Locked Product List (USER_DATA)" [ref=e70] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List
+                    - listitem [ref=e71]:
+                      - link "Get Flexible Product Position (USER_DATA)" [ref=e72] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Flexible-Product-Position
+                    - listitem [ref=e73]:
+                      - link "Get Locked Product Position (USER_DATA)" [ref=e74] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Locked-Product-Position
+                    - listitem [ref=e75]:
+                      - link "Get Flexible Personal Left Quota (USER_DATA)" [ref=e76] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Flexible-Personal-Left-Quota
+                    - listitem [ref=e77]:
+                      - link "Get Locked Personal Left Quota (USER_DATA)" [ref=e78] [cursor=pointer]:
+                        - /url: /docs/simple_earn/flexible-locked/account/Get-Locked-Personal-Left-Quota
+                - listitem [ref=e79]:
+                  - button "Earn" [ref=e81] [cursor=pointer]
+                - listitem [ref=e82]:
+                  - button "History" [ref=e84] [cursor=pointer]
+            - listitem [ref=e85]:
+              - button "RWUSD" [ref=e87] [cursor=pointer]
+            - listitem [ref=e88]:
+              - button "BFUSD" [ref=e90] [cursor=pointer]
+            - listitem [ref=e91]:
+              - link "Error Code" [ref=e92] [cursor=pointer]:
+                - /url: /docs/simple_earn/error-code
+            - listitem [ref=e93]:
+              - link "Contact us" [ref=e94] [cursor=pointer]:
+                - /url: /docs/simple_earn/contact-us
+    - main [ref=e95]:
+      - generic [ref=e97]:
+        - generic [ref=e99]:
+          - article [ref=e100]:
+            - navigation "Breadcrumbs" [ref=e101]:
+              - list [ref=e102]:
+                - listitem [ref=e103]:
+                  - link "Home page" [ref=e104] [cursor=pointer]:
+                    - /url: /docs/
+                    - img [ref=e105]
+                - listitem [ref=e107]:
+                  - generic [ref=e108]: Flexible & Locked
+                - listitem [ref=e109]:
+                  - generic [ref=e110]: Account
+                - listitem [ref=e111]:
+                  - generic [ref=e112]: Get Simple Earn Locked Product List (USER_DATA)
+            - generic [ref=e113]:
+              - heading "Get Simple Earn Locked Product List(USER_DATA)" [level=1] [ref=e114]
+              - heading "API DescriptionDirect link to API Description" [level=2] [ref=e115]:
+                - text: API Description
+                - link "Direct link to API Description" [ref=e116] [cursor=pointer]:
+                  - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#api-description
+                  - text: "#"
+              - paragraph [ref=e117]: Get Simple Earn Locked Product List
+              - heading "HTTP RequestDirect link to HTTP Request" [level=2] [ref=e118]:
+                - text: HTTP Request
+                - link "Direct link to HTTP Request" [ref=e119] [cursor=pointer]:
+                  - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#http-request
+                  - text: "#"
+              - paragraph [ref=e120]:
+                - text: GET
+                - code [ref=e121]: /sapi/v1/simple-earn/locked/list
+              - heading "Request Weight(IP)Direct link to Request Weight(IP)" [level=2] [ref=e122]:
+                - text: Request Weight(IP)
+                - link "Direct link to Request Weight(IP)" [ref=e123] [cursor=pointer]:
+                  - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#request-weightip
+                  - text: "#"
+              - paragraph [ref=e124]:
+                - strong [ref=e125]: "150"
+              - heading "Request ParametersDirect link to Request Parameters" [level=2] [ref=e126]:
+                - text: Request Parameters
+                - link "Direct link to Request Parameters" [ref=e127] [cursor=pointer]:
+                  - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#request-parameters
+                  - text: "#"
+              - table [ref=e128]:
+                - rowgroup [ref=e129]:
+                  - row "Name Type Mandatory Description" [ref=e130]:
+                    - columnheader "Name" [ref=e131]
+                    - columnheader "Type" [ref=e132]
+                    - columnheader "Mandatory" [ref=e133]
+                    - columnheader "Description" [ref=e134]
+                - rowgroup [ref=e135]:
+                  - row "asset STRING NO" [ref=e136]:
+                    - cell "asset" [ref=e137]
+                    - cell "STRING" [ref=e138]
+                    - cell "NO" [ref=e139]
+                    - cell [ref=e140]
+                  - row "current LONG NO Currently querying page. Start from 1. Default:1" [ref=e141]:
+                    - cell "current" [ref=e142]
+                    - cell "LONG" [ref=e143]
+                    - cell "NO" [ref=e144]
+                    - cell "Currently querying page. Start from 1. Default:1" [ref=e145]
+                  - row "size LONG NO Default:10, Max:100" [ref=e146]:
+                    - cell "size" [ref=e147]
+                    - cell "LONG" [ref=e148]
+                    - cell "NO" [ref=e149]
+                    - cell "Default:10, Max:100" [ref=e150]
+                  - row "recvWindow LONG NO" [ref=e151]:
+                    - cell "recvWindow" [ref=e152]
+                    - cell "LONG" [ref=e153]
+                    - cell "NO" [ref=e154]
+                    - cell [ref=e155]
+                  - row "timestamp LONG YES" [ref=e156]:
+                    - cell "timestamp" [ref=e157]
+                    - cell "LONG" [ref=e158]
+                    - cell "YES" [ref=e159]
+                    - cell [ref=e160]
+              - blockquote [ref=e161]:
+                - list [ref=e162]:
+                  - listitem [ref=e163]: Get available Simple Earn locked product list
+              - heading "Response ExampleDirect link to Response Example" [level=2] [ref=e164]:
+                - text: Response Example
+                - link "Direct link to Response Example" [ref=e165] [cursor=pointer]:
+                  - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#response-example
+                  - text: "#"
+              - generic [ref=e167]:
+                - code [ref=e169]:
+                  - generic [ref=e170]: "{"
+                  - generic [ref=e171]: "\"rows\": ["
+                  - generic [ref=e172]: "{"
+                  - generic [ref=e173]: "\"projectId\": \"Axs*90\","
+                  - generic [ref=e174]: "\"detail\": {"
+                  - generic [ref=e175]: "\"asset\": \"AXS\","
+                  - generic [ref=e176]: "\"rewardAsset\": \"AXS\","
+                  - generic [ref=e177]: "\"duration\": 90,"
+                  - generic [ref=e178]: "\"renewable\": true,"
+                  - generic [ref=e179]: "\"isSoldOut\": true,"
+                  - generic [ref=e180]: "\"apr\": \"1.2069\","
+                  - generic [ref=e181]: "\"status\": \"CREATED\","
+                  - generic [ref=e182]: "\"subscriptionStartTime\": 1646182276000,"
+                  - generic [ref=e183]: "\"extraRewardAsset\": \"BNB\","
+                  - generic [ref=e184]: "\"extraRewardAPR\": \"0.23\","
+                  - generic [ref=e185]: "\"boostRewardAsset\": \"AXS\","
+                  - generic [ref=e186]: "\"boostApr\": \"0.0121\","
+                  - generic [ref=e187]: "\"boostEndTime\": 1646182276000"
+                  - generic [ref=e188]: "},"
+                  - generic [ref=e189]: "\"quota\": {"
+                  - generic [ref=e190]: "\"totalPersonalQuota\": \"2\","
+                  - generic [ref=e191]: "\"minimum\": \"0.001\""
+                  - generic [ref=e192]: "}"
+                  - generic [ref=e193]: "}"
+                  - generic [ref=e194]: "],"
+                  - generic [ref=e195]: "\"total\": 1"
+                  - generic [ref=e196]: "}"
+                - button "Copy code to clipboard" [ref=e198] [cursor=pointer]:
+                  - generic [ref=e199]:
+                    - img [ref=e200]
+                    - img [ref=e202]
+          - navigation "Docs pages" [ref=e204]:
+            - link "Previous « Get Simple Earn Flexible Product List (USER_DATA)" [ref=e205] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Flexible-Product-List
+              - generic [ref=e206]: Previous
+              - generic [ref=e207]: « Get Simple Earn Flexible Product List (USER_DATA)
+            - link "Next Get Flexible Product Position (USER_DATA) »" [ref=e208] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Flexible-Product-Position
+              - generic [ref=e209]: Next
+              - generic [ref=e210]: Get Flexible Product Position (USER_DATA) »
+        - list [ref=e213]:
+          - listitem [ref=e214]:
+            - link "API Description" [ref=e215] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#api-description
+          - listitem [ref=e216]:
+            - link "HTTP Request" [ref=e217] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#http-request
+          - listitem [ref=e218]:
+            - link "Request Weight(IP)" [ref=e219] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#request-weightip
+          - listitem [ref=e220]:
+            - link "Request Parameters" [ref=e221] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#request-parameters
+          - listitem [ref=e222]:
+            - link "Response Example" [ref=e223] [cursor=pointer]:
+              - /url: /docs/simple_earn/flexible-locked/account/Get-Simple-Earn-Locked-Product-List#response-example
+  - contentinfo [ref=e224]:
+    - generic [ref=e227]: Copyright © 2026 Binance.

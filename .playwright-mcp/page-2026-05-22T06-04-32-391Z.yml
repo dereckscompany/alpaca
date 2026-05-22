@@ -1,0 +1,1689 @@
+- generic [ref=e2]:
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - navigation "Main" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Binance Logo" [ref=e7] [cursor=pointer]:
+          - /url: https://developers.binance.com/en
+          - img "Binance Logo" [ref=e9]
+        - button "Products ▼" [ref=e12] [cursor=pointer]:
+          - generic [ref=e13]: Products
+          - generic [ref=e14]: ▼
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - button "Search" [ref=e19] [cursor=pointer]:
+            - generic [ref=e20]:
+              - img [ref=e21]
+              - generic [ref=e23]: Search
+          - generic [ref=e25]:
+            - button "Current" [ref=e26] [cursor=pointer]
+            - button "All" [ref=e27] [cursor=pointer]
+        - button "English" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+          - text: English
+        - button "Switch between dark and light mode (currently light mode)" [disabled] [ref=e33]:
+          - img [ref=e34]
+  - generic [ref=e38]:
+    - complementary [ref=e39]:
+      - generic [ref=e40]:
+        - generic [ref=e42]: Spot Trading
+        - navigation "Docs sidebar" [ref=e44]:
+          - list [ref=e45]:
+            - listitem [ref=e46]:
+              - link "Changelog" [ref=e47] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs
+            - listitem [ref=e48]:
+              - link "Readme" [ref=e49] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/README
+            - listitem [ref=e50]:
+              - link "Filters" [ref=e51] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/filters
+            - listitem [ref=e52]:
+              - link "Enums" [ref=e53] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/enums
+            - listitem [ref=e54]:
+              - button "REST API" [expanded] [ref=e56] [cursor=pointer]
+              - list [ref=e57]:
+                - listitem [ref=e58]:
+                  - link "General API Information" [ref=e59] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/general-api-information
+                - listitem [ref=e60]:
+                  - link "HTTP Return Codes" [ref=e61] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/http-return-codes
+                - listitem [ref=e62]:
+                  - link "Error Codes" [ref=e63] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/error-codes
+                - listitem [ref=e64]:
+                  - link "General Information on Endpoints" [ref=e65] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/general-information-on-endpoints
+                - listitem [ref=e66]:
+                  - link "LIMITS" [ref=e67] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/limits
+                - listitem [ref=e68]:
+                  - link "Data Sources" [ref=e69] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/data-sources
+                - listitem [ref=e70]:
+                  - link "Request Security" [ref=e71] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/request-security
+                - listitem [ref=e72]:
+                  - link "General endpoints" [ref=e73] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/general-endpoints
+                - listitem [ref=e74]:
+                  - link "Market Data endpoints" [ref=e75] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/market-data-endpoints
+                - listitem [ref=e76]:
+                  - link "Trading endpoints" [ref=e77] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/trading-endpoints
+                - listitem [ref=e78]:
+                  - link "Account Endpoints" [ref=e79] [cursor=pointer]:
+                    - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints
+            - listitem [ref=e80]:
+              - link "FIX API" [ref=e81] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/fix-api
+            - listitem [ref=e82]:
+              - link "WebSocket Streams" [ref=e83] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/web-socket-streams
+            - listitem [ref=e84]:
+              - link "SBE Market Data" [ref=e85] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/sbe-market-data-streams
+            - listitem [ref=e86]:
+              - link "User Data Stream" [ref=e87] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/user-data-stream
+            - listitem [ref=e88]:
+              - button "WebSocket API" [ref=e90] [cursor=pointer]
+            - listitem [ref=e91]:
+              - link "Terms of Use" [ref=e92] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/PROD-TERMS-OF-USE
+            - listitem [ref=e93]:
+              - button "Testnet" [ref=e95] [cursor=pointer]
+            - listitem [ref=e96]:
+              - button "Demo Mode" [ref=e98] [cursor=pointer]
+            - listitem [ref=e99]:
+              - link "Error" [ref=e100] [cursor=pointer]:
+                - /url: /docs/binance-spot-api-docs/errors
+            - listitem [ref=e101]:
+              - button "FAQs" [ref=e103] [cursor=pointer]
+    - main [ref=e104]:
+      - generic [ref=e106]:
+        - generic [ref=e108]:
+          - article [ref=e109]:
+            - navigation "Breadcrumbs" [ref=e110]:
+              - list [ref=e111]:
+                - listitem [ref=e112]:
+                  - link "Home page" [ref=e113] [cursor=pointer]:
+                    - /url: /docs/
+                    - img [ref=e114]
+                - listitem [ref=e116]:
+                  - generic [ref=e117]: REST API
+                - listitem [ref=e118]:
+                  - generic [ref=e119]: Account Endpoints
+            - generic [ref=e120]:
+              - heading "Account Endpoints" [level=1] [ref=e122]
+              - heading "Account information (USER_DATA)Direct link to Account information (USER_DATA)" [level=3] [ref=e123]:
+                - text: Account information (USER_DATA)
+                - link "Direct link to Account information (USER_DATA)" [ref=e124] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#account-information-user_data
+                  - text: "#"
+              - generic [ref=e126]:
+                - code [ref=e128]:
+                  - generic [ref=e129]: GET /api/v3/account
+                - button "Copy code to clipboard" [ref=e131] [cursor=pointer]:
+                  - generic [ref=e132]:
+                    - img [ref=e133]
+                    - img [ref=e135]
+              - paragraph [ref=e137]: Get current account information.
+              - paragraph [ref=e138]:
+                - strong [ref=e139]: "Weight:"
+                - text: "20"
+              - paragraph [ref=e140]:
+                - strong [ref=e141]: "Parameters:"
+              - table [ref=e142]:
+                - rowgroup [ref=e143]:
+                  - row "Name Type Mandatory Description" [ref=e144]:
+                    - columnheader "Name" [ref=e145]
+                    - columnheader "Type" [ref=e146]
+                    - columnheader "Mandatory" [ref=e147]
+                    - columnheader "Description" [ref=e148]
+                - rowgroup [ref=e149]:
+                  - 'row "omitZeroBalances BOOLEAN NO When set to true, emits only the non-zero balances of an account. Default value: false" [ref=e150]':
+                    - cell "omitZeroBalances" [ref=e151]
+                    - cell "BOOLEAN" [ref=e152]
+                    - cell "NO" [ref=e153]
+                    - 'cell "When set to true, emits only the non-zero balances of an account. Default value: false" [ref=e154]':
+                      - text: When set to
+                      - code [ref=e155]: "true"
+                      - text: ", emits only the non-zero balances of an account."
+                      - text: "Default value:"
+                      - code [ref=e156]: "false"
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e157]:
+                    - cell "recvWindow" [ref=e158]
+                    - cell "DECIMAL" [ref=e159]
+                    - cell "NO" [ref=e160]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e161]:
+                      - text: The value cannot be greater than
+                      - code [ref=e162]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e163]:
+                    - cell "timestamp" [ref=e164]
+                    - cell "LONG" [ref=e165]
+                    - cell "YES" [ref=e166]
+                    - cell [ref=e167]
+              - paragraph [ref=e168]:
+                - strong [ref=e169]: "Data Source:"
+                - text: Memory => Database
+              - paragraph [ref=e170]:
+                - strong [ref=e171]: "Response:"
+              - generic [ref=e173]:
+                - code [ref=e175]:
+                  - generic [ref=e176]: "{"
+                  - generic [ref=e177]: "\"makerCommission\": 15,"
+                  - generic [ref=e178]: "\"takerCommission\": 15,"
+                  - generic [ref=e179]: "\"buyerCommission\": 0,"
+                  - generic [ref=e180]: "\"sellerCommission\": 0,"
+                  - generic [ref=e181]: "\"commissionRates\": {"
+                  - generic [ref=e182]: "\"maker\": \"0.00150000\","
+                  - generic [ref=e183]: "\"taker\": \"0.00150000\","
+                  - generic [ref=e184]: "\"buyer\": \"0.00000000\","
+                  - generic [ref=e185]: "\"seller\": \"0.00000000\""
+                  - generic [ref=e186]: "},"
+                  - generic [ref=e187]: "\"canTrade\": true,"
+                  - generic [ref=e188]: "\"canWithdraw\": true,"
+                  - generic [ref=e189]: "\"canDeposit\": true,"
+                  - generic [ref=e190]: "\"brokered\": false,"
+                  - generic [ref=e191]: "\"requireSelfTradePrevention\": false,"
+                  - generic [ref=e192]: "\"preventSor\": false,"
+                  - generic [ref=e193]: "\"updateTime\": 123456789,"
+                  - generic [ref=e194]: "\"accountType\": \"SPOT\","
+                  - generic [ref=e195]: "\"balances\": ["
+                  - generic [ref=e196]: "{"
+                  - generic [ref=e197]: "\"asset\": \"BTC\","
+                  - generic [ref=e198]: "\"free\": \"4723846.89208129\","
+                  - generic [ref=e199]: "\"locked\": \"0.00000000\""
+                  - generic [ref=e200]: "},"
+                  - generic [ref=e201]: "{"
+                  - generic [ref=e202]: "\"asset\": \"LTC\","
+                  - generic [ref=e203]: "\"free\": \"4763368.68006011\","
+                  - generic [ref=e204]: "\"locked\": \"0.00000000\""
+                  - generic [ref=e205]: "}"
+                  - generic [ref=e206]: "],"
+                  - generic [ref=e207]: "\"permissions\": [\"SPOT\"],"
+                  - generic [ref=e208]: "\"uid\": 354937868"
+                  - generic [ref=e209]: "}"
+                - button "Copy code to clipboard" [ref=e211] [cursor=pointer]:
+                  - generic [ref=e212]:
+                    - img [ref=e213]
+                    - img [ref=e215]
+              - heading "Query order (USER_DATA)Direct link to Query order (USER_DATA)" [level=3] [ref=e217]:
+                - text: Query order (USER_DATA)
+                - link "Direct link to Query order (USER_DATA)" [ref=e218] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-user_data
+                  - text: "#"
+              - generic [ref=e220]:
+                - code [ref=e222]:
+                  - generic [ref=e223]: GET /api/v3/order
+                - button "Copy code to clipboard" [ref=e225] [cursor=pointer]:
+                  - generic [ref=e226]:
+                    - img [ref=e227]
+                    - img [ref=e229]
+              - paragraph [ref=e231]: Check an order's status.
+              - paragraph [ref=e232]:
+                - strong [ref=e233]: "Weight:"
+                - text: "4"
+              - paragraph [ref=e234]:
+                - strong [ref=e235]: "Parameters:"
+              - table [ref=e236]:
+                - rowgroup [ref=e237]:
+                  - row "Name Type Mandatory Description" [ref=e238]:
+                    - columnheader "Name" [ref=e239]
+                    - columnheader "Type" [ref=e240]
+                    - columnheader "Mandatory" [ref=e241]
+                    - columnheader "Description" [ref=e242]
+                - rowgroup [ref=e243]:
+                  - row "symbol STRING YES" [ref=e244]:
+                    - cell "symbol" [ref=e245]
+                    - cell "STRING" [ref=e246]
+                    - cell "YES" [ref=e247]
+                    - cell [ref=e248]
+                  - row "orderId LONG NO" [ref=e249]:
+                    - cell "orderId" [ref=e250]
+                    - cell "LONG" [ref=e251]
+                    - cell "NO" [ref=e252]
+                    - cell [ref=e253]
+                  - row "origClientOrderId STRING NO" [ref=e254]:
+                    - cell "origClientOrderId" [ref=e255]
+                    - cell "STRING" [ref=e256]
+                    - cell "NO" [ref=e257]
+                    - cell [ref=e258]
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e259]:
+                    - cell "recvWindow" [ref=e260]
+                    - cell "DECIMAL" [ref=e261]
+                    - cell "NO" [ref=e262]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e263]:
+                      - text: The value cannot be greater than
+                      - code [ref=e264]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e265]:
+                    - cell "timestamp" [ref=e266]
+                    - cell "LONG" [ref=e267]
+                    - cell "YES" [ref=e268]
+                    - cell [ref=e269]
+              - paragraph [ref=e270]:
+                - strong [ref=e271]: "Notes:"
+              - list [ref=e272]:
+                - listitem [ref=e273]:
+                  - text: Either
+                  - code [ref=e274]: orderId
+                  - text: or
+                  - code [ref=e275]: origClientOrderId
+                  - text: must be sent.
+                - listitem [ref=e276]:
+                  - text: If both
+                  - code [ref=e277]: orderId
+                  - text: and
+                  - code [ref=e278]: origClientOrderId
+                  - text: are provided, the
+                  - code [ref=e279]: orderId
+                  - text: is searched first, then the
+                  - code [ref=e280]: origClientOrderId
+                  - text: from that result is checked against that order. If both conditions are not met the request will be rejected.
+                - listitem [ref=e281]:
+                  - text: For some historical orders
+                  - code [ref=e282]: cummulativeQuoteQty
+                  - text: will be < 0, meaning the data is not available at this time.
+              - paragraph [ref=e283]:
+                - strong [ref=e284]: "Data Source:"
+                - text: Memory => Database
+              - paragraph [ref=e285]:
+                - strong [ref=e286]: "Response:"
+              - generic [ref=e288]:
+                - code [ref=e290]:
+                  - generic [ref=e291]: "{"
+                  - generic [ref=e292]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e293]: "\"orderId\": 1,"
+                  - generic [ref=e294]: "\"orderListId\": -1, // This field will always have a value of -1 if not an order list."
+                  - generic [ref=e295]: "\"clientOrderId\": \"myOrder1\","
+                  - generic [ref=e296]: "\"price\": \"0.1\","
+                  - generic [ref=e297]: "\"origQty\": \"1.0\","
+                  - generic [ref=e298]: "\"executedQty\": \"0.0\","
+                  - generic [ref=e299]: "\"cummulativeQuoteQty\": \"0.0\","
+                  - generic [ref=e300]: "\"status\": \"NEW\","
+                  - generic [ref=e301]: "\"timeInForce\": \"GTC\","
+                  - generic [ref=e302]: "\"type\": \"LIMIT\","
+                  - generic [ref=e303]: "\"side\": \"BUY\","
+                  - generic [ref=e304]: "\"stopPrice\": \"0.0\","
+                  - generic [ref=e305]: "\"icebergQty\": \"0.0\","
+                  - generic [ref=e306]: "\"time\": 1499827319559,"
+                  - generic [ref=e307]: "\"updateTime\": 1499827319559,"
+                  - generic [ref=e308]: "\"isWorking\": true,"
+                  - generic [ref=e309]: "\"workingTime\": 1499827319559,"
+                  - generic [ref=e310]: "\"origQuoteOrderQty\": \"0.000000\","
+                  - generic [ref=e311]: "\"selfTradePreventionMode\": \"NONE\""
+                  - generic [ref=e312]: "}"
+                - button "Copy code to clipboard" [ref=e314] [cursor=pointer]:
+                  - generic [ref=e315]:
+                    - img [ref=e316]
+                    - img [ref=e318]
+              - paragraph [ref=e320]:
+                - strong [ref=e321]: "Note:"
+                - text: The payload above does not show all fields that can appear. Please refer to
+                - link "Conditional fields in Order Responses" [ref=e322] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/trading-endpoints#conditional-fields-in-order-responses
+                - text: .
+              - heading "Current open orders (USER_DATA)Direct link to Current open orders (USER_DATA)" [level=3] [ref=e323]:
+                - text: Current open orders (USER_DATA)
+                - link "Direct link to Current open orders (USER_DATA)" [ref=e324] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#current-open-orders-user_data
+                  - text: "#"
+              - generic [ref=e326]:
+                - code [ref=e328]:
+                  - generic [ref=e329]: GET /api/v3/openOrders
+                - button "Copy code to clipboard" [ref=e331] [cursor=pointer]:
+                  - generic [ref=e332]:
+                    - img [ref=e333]
+                    - img [ref=e335]
+              - paragraph [ref=e337]:
+                - text: Get all open orders on a symbol.
+                - strong [ref=e338]: Careful
+                - text: when accessing this with no symbol.
+              - paragraph [ref=e339]:
+                - strong [ref=e340]: "Weight:"
+                - text: 6 for a single symbol;
+                - strong [ref=e341]: "80"
+                - text: when the symbol parameter is omitted
+              - paragraph [ref=e342]:
+                - strong [ref=e343]: "Parameters:"
+              - table [ref=e344]:
+                - rowgroup [ref=e345]:
+                  - row "Name Type Mandatory Description" [ref=e346]:
+                    - columnheader "Name" [ref=e347]
+                    - columnheader "Type" [ref=e348]
+                    - columnheader "Mandatory" [ref=e349]
+                    - columnheader "Description" [ref=e350]
+                - rowgroup [ref=e351]:
+                  - row "symbol STRING NO" [ref=e352]:
+                    - cell "symbol" [ref=e353]
+                    - cell "STRING" [ref=e354]
+                    - cell "NO" [ref=e355]
+                    - cell [ref=e356]
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e357]:
+                    - cell "recvWindow" [ref=e358]
+                    - cell "DECIMAL" [ref=e359]
+                    - cell "NO" [ref=e360]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e361]:
+                      - text: The value cannot be greater than
+                      - code [ref=e362]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e363]:
+                    - cell "timestamp" [ref=e364]
+                    - cell "LONG" [ref=e365]
+                    - cell "YES" [ref=e366]
+                    - cell [ref=e367]
+              - list [ref=e368]:
+                - listitem [ref=e369]: If the symbol is not sent, orders for all symbols will be returned in an array.
+              - paragraph [ref=e370]:
+                - strong [ref=e371]: "Data Source:"
+                - text: Memory => Database
+              - paragraph [ref=e372]:
+                - strong [ref=e373]: "Response:"
+              - generic [ref=e375]:
+                - code [ref=e377]:
+                  - generic [ref=e378]: "["
+                  - generic [ref=e379]: "{"
+                  - generic [ref=e380]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e381]: "\"orderId\": 1,"
+                  - generic [ref=e382]: "\"orderListId\": -1, // Unless it's part of an order list, value will be -1"
+                  - generic [ref=e383]: "\"clientOrderId\": \"myOrder1\","
+                  - generic [ref=e384]: "\"price\": \"0.1\","
+                  - generic [ref=e385]: "\"origQty\": \"1.0\","
+                  - generic [ref=e386]: "\"executedQty\": \"0.0\","
+                  - generic [ref=e387]: "\"cummulativeQuoteQty\": \"0.0\","
+                  - generic [ref=e388]: "\"status\": \"NEW\","
+                  - generic [ref=e389]: "\"timeInForce\": \"GTC\","
+                  - generic [ref=e390]: "\"type\": \"LIMIT\","
+                  - generic [ref=e391]: "\"side\": \"BUY\","
+                  - generic [ref=e392]: "\"stopPrice\": \"0.0\","
+                  - generic [ref=e393]: "\"icebergQty\": \"0.0\","
+                  - generic [ref=e394]: "\"time\": 1499827319559,"
+                  - generic [ref=e395]: "\"updateTime\": 1499827319559,"
+                  - generic [ref=e396]: "\"isWorking\": true,"
+                  - generic [ref=e397]: "\"origQuoteOrderQty\": \"0.000000\","
+                  - generic [ref=e398]: "\"workingTime\": 1499827319559,"
+                  - generic [ref=e399]: "\"selfTradePreventionMode\": \"NONE\""
+                  - generic [ref=e400]: "}"
+                  - generic [ref=e401]: "]"
+                - button "Copy code to clipboard" [ref=e403] [cursor=pointer]:
+                  - generic [ref=e404]:
+                    - img [ref=e405]
+                    - img [ref=e407]
+              - paragraph [ref=e409]:
+                - strong [ref=e410]: "Note:"
+                - text: The payload above does not show all fields that can appear. Please refer to
+                - link "Conditional fields in Order Responses" [ref=e411] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/trading-endpoints#conditional-fields-in-order-responses
+                - text: .
+              - heading "All orders (USER_DATA)Direct link to All orders (USER_DATA)" [level=3] [ref=e412]:
+                - text: All orders (USER_DATA)
+                - link "Direct link to All orders (USER_DATA)" [ref=e413] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#all-orders-user_data
+                  - text: "#"
+              - generic [ref=e415]:
+                - code [ref=e417]:
+                  - generic [ref=e418]: GET /api/v3/allOrders
+                - button "Copy code to clipboard" [ref=e420] [cursor=pointer]:
+                  - generic [ref=e421]:
+                    - img [ref=e422]
+                    - img [ref=e424]
+              - paragraph [ref=e426]: Get all account orders; active, canceled, or filled.
+              - paragraph [ref=e427]:
+                - strong [ref=e428]: "Weight:"
+                - text: "20"
+              - paragraph [ref=e429]:
+                - strong [ref=e430]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e431]:
+                - strong [ref=e432]: "Parameters:"
+              - table [ref=e433]:
+                - rowgroup [ref=e434]:
+                  - row "Name Type Mandatory Description" [ref=e435]:
+                    - columnheader "Name" [ref=e436]
+                    - columnheader "Type" [ref=e437]
+                    - columnheader "Mandatory" [ref=e438]
+                    - columnheader "Description" [ref=e439]
+                - rowgroup [ref=e440]:
+                  - row "symbol STRING YES" [ref=e441]:
+                    - cell "symbol" [ref=e442]
+                    - cell "STRING" [ref=e443]
+                    - cell "YES" [ref=e444]
+                    - cell [ref=e445]
+                  - row "orderId LONG NO" [ref=e446]:
+                    - cell "orderId" [ref=e447]
+                    - cell "LONG" [ref=e448]
+                    - cell "NO" [ref=e449]
+                    - cell [ref=e450]
+                  - row "startTime LONG NO" [ref=e451]:
+                    - cell "startTime" [ref=e452]
+                    - cell "LONG" [ref=e453]
+                    - cell "NO" [ref=e454]
+                    - cell [ref=e455]
+                  - row "endTime LONG NO" [ref=e456]:
+                    - cell "endTime" [ref=e457]
+                    - cell "LONG" [ref=e458]
+                    - cell "NO" [ref=e459]
+                    - cell [ref=e460]
+                  - 'row "limit INT NO Default: 500; Maximum: 1000." [ref=e461]':
+                    - cell "limit" [ref=e462]
+                    - cell "INT" [ref=e463]
+                    - cell "NO" [ref=e464]
+                    - 'cell "Default: 500; Maximum: 1000." [ref=e465]'
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e466]:
+                    - cell "recvWindow" [ref=e467]
+                    - cell "DECIMAL" [ref=e468]
+                    - cell "NO" [ref=e469]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e470]:
+                      - text: The value cannot be greater than
+                      - code [ref=e471]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e472]:
+                    - cell "timestamp" [ref=e473]
+                    - cell "LONG" [ref=e474]
+                    - cell "YES" [ref=e475]
+                    - cell [ref=e476]
+              - paragraph [ref=e477]:
+                - strong [ref=e478]: "Notes:"
+              - list [ref=e479]:
+                - listitem [ref=e480]:
+                  - text: If
+                  - code [ref=e481]: orderId
+                  - text: is set, it will get orders >= that
+                  - code [ref=e482]: orderId
+                  - text: . Otherwise most recent orders are returned.
+                - listitem [ref=e483]:
+                  - text: For some historical orders
+                  - code [ref=e484]: cummulativeQuoteQty
+                  - text: will be < 0, meaning the data is not available at this time.
+                - listitem [ref=e485]:
+                  - text: If
+                  - code [ref=e486]: startTime
+                  - text: and/or
+                  - code [ref=e487]: endTime
+                  - text: provided,
+                  - code [ref=e488]: orderId
+                  - text: is not required.
+                - listitem [ref=e489]:
+                  - text: The time between
+                  - code [ref=e490]: startTime
+                  - text: and
+                  - code [ref=e491]: endTime
+                  - text: can't be longer than 24 hours.
+              - paragraph [ref=e492]:
+                - strong [ref=e493]: "Response:"
+              - generic [ref=e495]:
+                - code [ref=e497]:
+                  - generic [ref=e498]: "["
+                  - generic [ref=e499]: "{"
+                  - generic [ref=e500]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e501]: "\"orderId\": 1,"
+                  - generic [ref=e502]: "\"orderListId\": -1, // Unless it's part of an order list, value will be -1"
+                  - generic [ref=e503]: "\"clientOrderId\": \"myOrder1\","
+                  - generic [ref=e504]: "\"price\": \"0.1\","
+                  - generic [ref=e505]: "\"origQty\": \"1.0\","
+                  - generic [ref=e506]: "\"executedQty\": \"0.0\","
+                  - generic [ref=e507]: "\"cummulativeQuoteQty\": \"0.0\","
+                  - generic [ref=e508]: "\"status\": \"NEW\","
+                  - generic [ref=e509]: "\"timeInForce\": \"GTC\","
+                  - generic [ref=e510]: "\"type\": \"LIMIT\","
+                  - generic [ref=e511]: "\"side\": \"BUY\","
+                  - generic [ref=e512]: "\"stopPrice\": \"0.0\","
+                  - generic [ref=e513]: "\"icebergQty\": \"0.0\","
+                  - generic [ref=e514]: "\"time\": 1499827319559,"
+                  - generic [ref=e515]: "\"updateTime\": 1499827319559,"
+                  - generic [ref=e516]: "\"isWorking\": true,"
+                  - generic [ref=e517]: "\"origQuoteOrderQty\": \"0.000000\","
+                  - generic [ref=e518]: "\"workingTime\": 1499827319559,"
+                  - generic [ref=e519]: "\"selfTradePreventionMode\": \"NONE\""
+                  - generic [ref=e520]: "}"
+                  - generic [ref=e521]: "]"
+                - button "Copy code to clipboard" [ref=e523] [cursor=pointer]:
+                  - generic [ref=e524]:
+                    - img [ref=e525]
+                    - img [ref=e527]
+              - paragraph [ref=e529]:
+                - strong [ref=e530]: "Note:"
+                - text: The payload above does not show all fields that can appear. Please refer to
+                - link "Conditional fields in Order Responses" [ref=e531] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/trading-endpoints#conditional-fields-in-order-responses
+                - text: .
+              - heading "Query Order list (USER_DATA)Direct link to Query Order list (USER_DATA)" [level=3] [ref=e532]:
+                - text: Query Order list (USER_DATA)
+                - link "Direct link to Query Order list (USER_DATA)" [ref=e533] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-list-user_data
+                  - text: "#"
+              - generic [ref=e535]:
+                - code [ref=e537]:
+                  - generic [ref=e538]: GET /api/v3/orderList
+                - button "Copy code to clipboard" [ref=e540] [cursor=pointer]:
+                  - generic [ref=e541]:
+                    - img [ref=e542]
+                    - img [ref=e544]
+              - paragraph [ref=e546]: Retrieves a specific order list based on provided optional parameters.
+              - paragraph [ref=e547]:
+                - strong [ref=e548]: "Weight:"
+                - text: "4"
+              - paragraph [ref=e549]:
+                - strong [ref=e550]: "Parameters:"
+              - table [ref=e551]:
+                - rowgroup [ref=e552]:
+                  - row "Name Type Mandatory Description" [ref=e553]:
+                    - columnheader "Name" [ref=e554]
+                    - columnheader "Type" [ref=e555]
+                    - columnheader "Mandatory" [ref=e556]
+                    - columnheader "Description" [ref=e557]
+                - rowgroup [ref=e558]:
+                  - row "orderListId LONG NO* Query order list by orderListId. orderListId or origClientOrderId must be provided." [ref=e559]:
+                    - cell "orderListId" [ref=e560]
+                    - cell "LONG" [ref=e561]
+                    - cell "NO*" [ref=e562]
+                    - cell "Query order list by orderListId. orderListId or origClientOrderId must be provided." [ref=e563]:
+                      - text: Query order list by
+                      - code [ref=e564]: orderListId
+                      - text: .
+                      - code [ref=e565]: orderListId
+                      - text: or
+                      - code [ref=e566]: origClientOrderId
+                      - text: must be provided.
+                  - row "origClientOrderId STRING NO* Query order list by listClientOrderId. orderListId or origClientOrderId must be provided." [ref=e567]:
+                    - cell "origClientOrderId" [ref=e568]
+                    - cell "STRING" [ref=e569]
+                    - cell "NO*" [ref=e570]
+                    - cell "Query order list by listClientOrderId. orderListId or origClientOrderId must be provided." [ref=e571]:
+                      - text: Query order list by
+                      - code [ref=e572]: listClientOrderId
+                      - text: .
+                      - code [ref=e573]: orderListId
+                      - text: or
+                      - code [ref=e574]: origClientOrderId
+                      - text: must be provided.
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e575]:
+                    - cell "recvWindow" [ref=e576]
+                    - cell "DECIMAL" [ref=e577]
+                    - cell "NO" [ref=e578]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e579]:
+                      - text: The value cannot be greater than
+                      - code [ref=e580]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e581]:
+                    - cell "timestamp" [ref=e582]
+                    - cell "LONG" [ref=e583]
+                    - cell "YES" [ref=e584]
+                    - cell [ref=e585]
+              - paragraph [ref=e586]:
+                - strong [ref=e587]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e588]:
+                - strong [ref=e589]: "Response:"
+              - generic [ref=e591]:
+                - code [ref=e593]:
+                  - generic [ref=e594]: "{"
+                  - generic [ref=e595]: "\"orderListId\": 27,"
+                  - generic [ref=e596]: "\"contingencyType\": \"OCO\","
+                  - generic [ref=e597]: "\"listStatusType\": \"EXEC_STARTED\","
+                  - generic [ref=e598]: "\"listOrderStatus\": \"EXECUTING\","
+                  - generic [ref=e599]: "\"listClientOrderId\": \"h2USkA5YQpaXHPIrkd96xE\","
+                  - generic [ref=e600]: "\"transactionTime\": 1565245656253,"
+                  - generic [ref=e601]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e602]: "\"orders\": ["
+                  - generic [ref=e603]: "{"
+                  - generic [ref=e604]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e605]: "\"orderId\": 4,"
+                  - generic [ref=e606]: "\"clientOrderId\": \"qD1gy3kc3Gx0rihm9Y3xwS\""
+                  - generic [ref=e607]: "},"
+                  - generic [ref=e608]: "{"
+                  - generic [ref=e609]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e610]: "\"orderId\": 5,"
+                  - generic [ref=e611]: "\"clientOrderId\": \"ARzZ9I00CPM8i3NhmU9Ega\""
+                  - generic [ref=e612]: "}"
+                  - generic [ref=e613]: "]"
+                  - generic [ref=e614]: "}"
+                - button "Copy code to clipboard" [ref=e616] [cursor=pointer]:
+                  - generic [ref=e617]:
+                    - img [ref=e618]
+                    - img [ref=e620]
+              - heading "Query all Order lists (USER_DATA)Direct link to Query all Order lists (USER_DATA)" [level=3] [ref=e622]:
+                - text: Query all Order lists (USER_DATA)
+                - link "Direct link to Query all Order lists (USER_DATA)" [ref=e623] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-all-order-lists-user_data
+                  - text: "#"
+              - generic [ref=e625]:
+                - code [ref=e627]:
+                  - generic [ref=e628]: GET /api/v3/allOrderList
+                - button "Copy code to clipboard" [ref=e630] [cursor=pointer]:
+                  - generic [ref=e631]:
+                    - img [ref=e632]
+                    - img [ref=e634]
+              - paragraph [ref=e636]: Retrieves all order lists based on provided optional parameters.
+              - paragraph [ref=e637]:
+                - text: Note that the time between
+                - code [ref=e638]: startTime
+                - text: and
+                - code [ref=e639]: endTime
+                - text: can't be longer than 24 hours.
+              - paragraph [ref=e640]:
+                - strong [ref=e641]: "Weight:"
+                - text: "20"
+              - paragraph [ref=e642]:
+                - strong [ref=e643]: "Parameters:"
+              - table [ref=e644]:
+                - rowgroup [ref=e645]:
+                  - row "Name Type Mandatory Description" [ref=e646]:
+                    - columnheader "Name" [ref=e647]
+                    - columnheader "Type" [ref=e648]
+                    - columnheader "Mandatory" [ref=e649]
+                    - columnheader "Description" [ref=e650]
+                - rowgroup [ref=e651]:
+                  - row "fromId LONG NO If supplied, neither startTime or endTime can be provided" [ref=e652]:
+                    - cell "fromId" [ref=e653]
+                    - cell "LONG" [ref=e654]
+                    - cell "NO" [ref=e655]
+                    - cell "If supplied, neither startTime or endTime can be provided" [ref=e656]:
+                      - text: If supplied, neither
+                      - code [ref=e657]: startTime
+                      - text: or
+                      - code [ref=e658]: endTime
+                      - text: can be provided
+                  - row "startTime LONG NO" [ref=e659]:
+                    - cell "startTime" [ref=e660]
+                    - cell "LONG" [ref=e661]
+                    - cell "NO" [ref=e662]
+                    - cell [ref=e663]
+                  - row "endTime LONG NO" [ref=e664]:
+                    - cell "endTime" [ref=e665]
+                    - cell "LONG" [ref=e666]
+                    - cell "NO" [ref=e667]
+                    - cell [ref=e668]
+                  - 'row "limit INT NO Default: 500; Maximum: 1000" [ref=e669]':
+                    - cell "limit" [ref=e670]
+                    - cell "INT" [ref=e671]
+                    - cell "NO" [ref=e672]
+                    - 'cell "Default: 500; Maximum: 1000" [ref=e673]'
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e674]:
+                    - cell "recvWindow" [ref=e675]
+                    - cell "DECIMAL" [ref=e676]
+                    - cell "NO" [ref=e677]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e678]:
+                      - text: The value cannot be greater than
+                      - code [ref=e679]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e680]:
+                    - cell "timestamp" [ref=e681]
+                    - cell "LONG" [ref=e682]
+                    - cell "YES" [ref=e683]
+                    - cell [ref=e684]
+              - paragraph [ref=e685]:
+                - strong [ref=e686]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e687]:
+                - strong [ref=e688]: "Response:"
+              - generic [ref=e690]:
+                - code [ref=e692]:
+                  - generic [ref=e693]: "["
+                  - generic [ref=e694]: "{"
+                  - generic [ref=e695]: "\"orderListId\": 29,"
+                  - generic [ref=e696]: "\"contingencyType\": \"OCO\","
+                  - generic [ref=e697]: "\"listStatusType\": \"EXEC_STARTED\","
+                  - generic [ref=e698]: "\"listOrderStatus\": \"EXECUTING\","
+                  - generic [ref=e699]: "\"listClientOrderId\": \"amEEAXryFzFwYF1FeRpUoZ\","
+                  - generic [ref=e700]: "\"transactionTime\": 1565245913483,"
+                  - generic [ref=e701]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e702]: "\"orders\": ["
+                  - generic [ref=e703]: "{"
+                  - generic [ref=e704]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e705]: "\"orderId\": 4,"
+                  - generic [ref=e706]: "\"clientOrderId\": \"oD7aesZqjEGlZrbtRpy5zB\""
+                  - generic [ref=e707]: "},"
+                  - generic [ref=e708]: "{"
+                  - generic [ref=e709]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e710]: "\"orderId\": 5,"
+                  - generic [ref=e711]: "\"clientOrderId\": \"Jr1h6xirOxgeJOUuYQS7V3\""
+                  - generic [ref=e712]: "}"
+                  - generic [ref=e713]: "]"
+                  - generic [ref=e714]: "},"
+                  - generic [ref=e715]: "{"
+                  - generic [ref=e716]: "\"orderListId\": 28,"
+                  - generic [ref=e717]: "\"contingencyType\": \"OCO\","
+                  - generic [ref=e718]: "\"listStatusType\": \"EXEC_STARTED\","
+                  - generic [ref=e719]: "\"listOrderStatus\": \"EXECUTING\","
+                  - generic [ref=e720]: "\"listClientOrderId\": \"hG7hFNxJV6cZy3Ze4AUT4d\","
+                  - generic [ref=e721]: "\"transactionTime\": 1565245913407,"
+                  - generic [ref=e722]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e723]: "\"orders\": ["
+                  - generic [ref=e724]: "{"
+                  - generic [ref=e725]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e726]: "\"orderId\": 2,"
+                  - generic [ref=e727]: "\"clientOrderId\": \"j6lFOfbmFMRjTYA7rRJ0LP\""
+                  - generic [ref=e728]: "},"
+                  - generic [ref=e729]: "{"
+                  - generic [ref=e730]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e731]: "\"orderId\": 3,"
+                  - generic [ref=e732]: "\"clientOrderId\": \"z0KCjOdditiLS5ekAFtK81\""
+                  - generic [ref=e733]: "}"
+                  - generic [ref=e734]: "]"
+                  - generic [ref=e735]: "}"
+                  - generic [ref=e736]: "]"
+                - button "Copy code to clipboard" [ref=e738] [cursor=pointer]:
+                  - generic [ref=e739]:
+                    - img [ref=e740]
+                    - img [ref=e742]
+              - heading "Query Open Order lists (USER_DATA)Direct link to Query Open Order lists (USER_DATA)" [level=3] [ref=e744]:
+                - text: Query Open Order lists (USER_DATA)
+                - link "Direct link to Query Open Order lists (USER_DATA)" [ref=e745] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-open-order-lists-user_data
+                  - text: "#"
+              - generic [ref=e747]:
+                - code [ref=e749]:
+                  - generic [ref=e750]: GET /api/v3/openOrderList
+                - button "Copy code to clipboard" [ref=e752] [cursor=pointer]:
+                  - generic [ref=e753]:
+                    - img [ref=e754]
+                    - img [ref=e756]
+              - paragraph [ref=e758]:
+                - strong [ref=e759]: "Weight:"
+                - text: "6"
+              - paragraph [ref=e760]:
+                - strong [ref=e761]: "Parameters:"
+              - table [ref=e762]:
+                - rowgroup [ref=e763]:
+                  - row "Name Type Mandatory Description" [ref=e764]:
+                    - columnheader "Name" [ref=e765]
+                    - columnheader "Type" [ref=e766]
+                    - columnheader "Mandatory" [ref=e767]
+                    - columnheader "Description" [ref=e768]
+                - rowgroup [ref=e769]:
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e770]:
+                    - cell "recvWindow" [ref=e771]
+                    - cell "DECIMAL" [ref=e772]
+                    - cell "NO" [ref=e773]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e774]:
+                      - text: The value cannot be greater than
+                      - code [ref=e775]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e776]:
+                    - cell "timestamp" [ref=e777]
+                    - cell "LONG" [ref=e778]
+                    - cell "YES" [ref=e779]
+                    - cell [ref=e780]
+              - paragraph [ref=e781]:
+                - strong [ref=e782]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e783]:
+                - strong [ref=e784]: "Response:"
+              - generic [ref=e786]:
+                - code [ref=e788]:
+                  - generic [ref=e789]: "["
+                  - generic [ref=e790]: "{"
+                  - generic [ref=e791]: "\"orderListId\": 31,"
+                  - generic [ref=e792]: "\"contingencyType\": \"OCO\","
+                  - generic [ref=e793]: "\"listStatusType\": \"EXEC_STARTED\","
+                  - generic [ref=e794]: "\"listOrderStatus\": \"EXECUTING\","
+                  - generic [ref=e795]: "\"listClientOrderId\": \"wuB13fmulKj3YjdqWEcsnp\","
+                  - generic [ref=e796]: "\"transactionTime\": 1565246080644,"
+                  - generic [ref=e797]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e798]: "\"orders\": ["
+                  - generic [ref=e799]: "{"
+                  - generic [ref=e800]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e801]: "\"orderId\": 4,"
+                  - generic [ref=e802]: "\"clientOrderId\": \"r3EH2N76dHfLoSZWIUw1bT\""
+                  - generic [ref=e803]: "},"
+                  - generic [ref=e804]: "{"
+                  - generic [ref=e805]: "\"symbol\": \"LTCBTC\","
+                  - generic [ref=e806]: "\"orderId\": 5,"
+                  - generic [ref=e807]: "\"clientOrderId\": \"Cv1SnyPD3qhqpbjpYEHbd2\""
+                  - generic [ref=e808]: "}"
+                  - generic [ref=e809]: "]"
+                  - generic [ref=e810]: "}"
+                  - generic [ref=e811]: "]"
+                - button "Copy code to clipboard" [ref=e813] [cursor=pointer]:
+                  - generic [ref=e814]:
+                    - img [ref=e815]
+                    - img [ref=e817]
+              - heading "Account trade list (USER_DATA)Direct link to Account trade list (USER_DATA)" [level=3] [ref=e819]:
+                - text: Account trade list (USER_DATA)
+                - link "Direct link to Account trade list (USER_DATA)" [ref=e820] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#account-trade-list-user_data
+                  - text: "#"
+              - generic [ref=e822]:
+                - code [ref=e824]:
+                  - generic [ref=e825]: GET /api/v3/myTrades
+                - button "Copy code to clipboard" [ref=e827] [cursor=pointer]:
+                  - generic [ref=e828]:
+                    - img [ref=e829]
+                    - img [ref=e831]
+              - paragraph [ref=e833]: Get trades for a specific account and symbol.
+              - paragraph [ref=e834]:
+                - strong [ref=e835]: "Weight:"
+              - table [ref=e836]:
+                - rowgroup [ref=e837]:
+                  - row "Condition Weight" [ref=e838]:
+                    - columnheader "Condition" [ref=e839]
+                    - columnheader "Weight" [ref=e840]
+                - rowgroup [ref=e841]:
+                  - row "Without orderId 20" [ref=e842]:
+                    - cell "Without orderId" [ref=e843]
+                    - cell "20" [ref=e844]
+                  - row "With orderId 5" [ref=e845]:
+                    - cell "With orderId" [ref=e846]
+                    - cell "5" [ref=e847]
+              - paragraph [ref=e848]:
+                - strong [ref=e849]: "Parameters:"
+              - table [ref=e850]:
+                - rowgroup [ref=e851]:
+                  - row "Name Type Mandatory Description" [ref=e852]:
+                    - columnheader "Name" [ref=e853]
+                    - columnheader "Type" [ref=e854]
+                    - columnheader "Mandatory" [ref=e855]
+                    - columnheader "Description" [ref=e856]
+                - rowgroup [ref=e857]:
+                  - row "symbol STRING YES" [ref=e858]:
+                    - cell "symbol" [ref=e859]
+                    - cell "STRING" [ref=e860]
+                    - cell "YES" [ref=e861]
+                    - cell [ref=e862]
+                  - row "orderId LONG NO This can only be used in combination with symbol." [ref=e863]:
+                    - cell "orderId" [ref=e864]
+                    - cell "LONG" [ref=e865]
+                    - cell "NO" [ref=e866]
+                    - cell "This can only be used in combination with symbol." [ref=e867]:
+                      - text: This can only be used in combination with
+                      - code [ref=e868]: symbol
+                      - text: .
+                  - row "startTime LONG NO" [ref=e869]:
+                    - cell "startTime" [ref=e870]
+                    - cell "LONG" [ref=e871]
+                    - cell "NO" [ref=e872]
+                    - cell [ref=e873]
+                  - row "endTime LONG NO" [ref=e874]:
+                    - cell "endTime" [ref=e875]
+                    - cell "LONG" [ref=e876]
+                    - cell "NO" [ref=e877]
+                    - cell [ref=e878]
+                  - row "fromId LONG NO TradeId to fetch from. Default gets most recent trades." [ref=e879]:
+                    - cell "fromId" [ref=e880]
+                    - cell "LONG" [ref=e881]
+                    - cell "NO" [ref=e882]
+                    - cell "TradeId to fetch from. Default gets most recent trades." [ref=e883]
+                  - 'row "limit INT NO Default: 500; Maximum: 1000." [ref=e884]':
+                    - cell "limit" [ref=e885]
+                    - cell "INT" [ref=e886]
+                    - cell "NO" [ref=e887]
+                    - 'cell "Default: 500; Maximum: 1000." [ref=e888]'
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e889]:
+                    - cell "recvWindow" [ref=e890]
+                    - cell "DECIMAL" [ref=e891]
+                    - cell "NO" [ref=e892]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e893]:
+                      - text: The value cannot be greater than
+                      - code [ref=e894]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e895]:
+                    - cell "timestamp" [ref=e896]
+                    - cell "LONG" [ref=e897]
+                    - cell "YES" [ref=e898]
+                    - cell [ref=e899]
+              - paragraph [ref=e900]:
+                - strong [ref=e901]: "Notes:"
+              - list [ref=e902]:
+                - listitem [ref=e903]:
+                  - text: If
+                  - code [ref=e904]: fromId
+                  - text: is set, it will get trades >= that
+                  - code [ref=e905]: fromId
+                  - text: . Otherwise most recent trades are returned.
+                - listitem [ref=e906]:
+                  - text: The time between
+                  - code [ref=e907]: startTime
+                  - text: and
+                  - code [ref=e908]: endTime
+                  - text: can't be longer than 24 hours.
+                - listitem [ref=e909]:
+                  - text: "These are the supported combinations of all parameters:"
+                  - list [ref=e910]:
+                    - listitem [ref=e911]:
+                      - code [ref=e912]: symbol
+                    - listitem [ref=e913]:
+                      - code [ref=e914]: symbol
+                      - text: +
+                      - code [ref=e915]: orderId
+                    - listitem [ref=e916]:
+                      - code [ref=e917]: symbol
+                      - text: +
+                      - code [ref=e918]: startTime
+                    - listitem [ref=e919]:
+                      - code [ref=e920]: symbol
+                      - text: +
+                      - code [ref=e921]: endTime
+                    - listitem [ref=e922]:
+                      - code [ref=e923]: symbol
+                      - text: +
+                      - code [ref=e924]: fromId
+                    - listitem [ref=e925]:
+                      - code [ref=e926]: symbol
+                      - text: +
+                      - code [ref=e927]: startTime
+                      - text: +
+                      - code [ref=e928]: endTime
+                    - listitem [ref=e929]:
+                      - code [ref=e930]: symbol
+                      - text: +
+                      - code [ref=e931]: orderId
+                      - text: +
+                      - code [ref=e932]: fromId
+              - paragraph [ref=e933]:
+                - strong [ref=e934]: "Data Source:"
+                - text: Memory => Database
+              - paragraph [ref=e935]:
+                - strong [ref=e936]: "Response:"
+              - generic [ref=e938]:
+                - code [ref=e940]:
+                  - generic [ref=e941]: "["
+                  - generic [ref=e942]: "{"
+                  - generic [ref=e943]: "\"symbol\": \"BNBBTC\","
+                  - generic [ref=e944]: "\"id\": 28457,"
+                  - generic [ref=e945]: "\"orderId\": 100234,"
+                  - generic [ref=e946]: "\"orderListId\": -1,"
+                  - generic [ref=e947]: "\"price\": \"4.00000100\","
+                  - generic [ref=e948]: "\"qty\": \"12.00000000\","
+                  - generic [ref=e949]: "\"quoteQty\": \"48.000012\","
+                  - generic [ref=e950]: "\"commission\": \"10.10000000\","
+                  - generic [ref=e951]: "\"commissionAsset\": \"BNB\","
+                  - generic [ref=e952]: "\"time\": 1499865549590,"
+                  - generic [ref=e953]: "\"isBuyer\": true,"
+                  - generic [ref=e954]: "\"isMaker\": false,"
+                  - generic [ref=e955]: "\"isBestMatch\": true"
+                  - generic [ref=e956]: "}"
+                  - generic [ref=e957]: "]"
+                - button "Copy code to clipboard" [ref=e959] [cursor=pointer]:
+                  - generic [ref=e960]:
+                    - img [ref=e961]
+                    - img [ref=e963]
+              - paragraph
+              - heading "Query Unfilled Order Count (USER_DATA)Direct link to Query Unfilled Order Count (USER_DATA)" [level=3] [ref=e965]:
+                - text: Query Unfilled Order Count (USER_DATA)
+                - link "Direct link to Query Unfilled Order Count (USER_DATA)" [ref=e966] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-unfilled-order-count-user_data
+                  - text: "#"
+              - generic [ref=e968]:
+                - code [ref=e970]:
+                  - generic [ref=e971]: GET /api/v3/rateLimit/order
+                - button "Copy code to clipboard" [ref=e973] [cursor=pointer]:
+                  - generic [ref=e974]:
+                    - img [ref=e975]
+                    - img [ref=e977]
+              - paragraph [ref=e979]: Displays the user's unfilled order count for all intervals.
+              - paragraph [ref=e980]:
+                - strong [ref=e981]: "Weight:"
+                - text: "40"
+              - paragraph [ref=e982]:
+                - strong [ref=e983]: "Parameters:"
+              - table [ref=e984]:
+                - rowgroup [ref=e985]:
+                  - row "Name Type Mandatory Description" [ref=e986]:
+                    - columnheader "Name" [ref=e987]
+                    - columnheader "Type" [ref=e988]
+                    - columnheader "Mandatory" [ref=e989]
+                    - columnheader "Description" [ref=e990]
+                - rowgroup [ref=e991]:
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e992]:
+                    - cell "recvWindow" [ref=e993]
+                    - cell "DECIMAL" [ref=e994]
+                    - cell "NO" [ref=e995]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e996]:
+                      - text: The value cannot be greater than
+                      - code [ref=e997]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e998]:
+                    - cell "timestamp" [ref=e999]
+                    - cell "LONG" [ref=e1000]
+                    - cell "YES" [ref=e1001]
+                    - cell [ref=e1002]
+              - paragraph [ref=e1003]:
+                - strong [ref=e1004]: "Data Source:"
+                - text: Memory
+              - paragraph [ref=e1005]:
+                - strong [ref=e1006]: "Response:"
+              - generic [ref=e1008]:
+                - code [ref=e1010]:
+                  - generic [ref=e1011]: "["
+                  - generic [ref=e1012]: "{"
+                  - generic [ref=e1013]: "\"rateLimitType\": \"ORDERS\","
+                  - generic [ref=e1014]: "\"interval\": \"SECOND\","
+                  - generic [ref=e1015]: "\"intervalNum\": 10,"
+                  - generic [ref=e1016]: "\"limit\": 50,"
+                  - generic [ref=e1017]: "\"count\": 0"
+                  - generic [ref=e1018]: "},"
+                  - generic [ref=e1019]: "{"
+                  - generic [ref=e1020]: "\"rateLimitType\": \"ORDERS\","
+                  - generic [ref=e1021]: "\"interval\": \"DAY\","
+                  - generic [ref=e1022]: "\"intervalNum\": 1,"
+                  - generic [ref=e1023]: "\"limit\": 160000,"
+                  - generic [ref=e1024]: "\"count\": 0"
+                  - generic [ref=e1025]: "}"
+                  - generic [ref=e1026]: "]"
+                - button "Copy code to clipboard" [ref=e1028] [cursor=pointer]:
+                  - generic [ref=e1029]:
+                    - img [ref=e1030]
+                    - img [ref=e1032]
+              - heading "Query Prevented Matches (USER_DATA)Direct link to Query Prevented Matches (USER_DATA)" [level=3] [ref=e1034]:
+                - text: Query Prevented Matches (USER_DATA)
+                - link "Direct link to Query Prevented Matches (USER_DATA)" [ref=e1035] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-prevented-matches-user_data
+                  - text: "#"
+              - generic [ref=e1037]:
+                - code [ref=e1039]:
+                  - generic [ref=e1040]: GET /api/v3/myPreventedMatches
+                - button "Copy code to clipboard" [ref=e1042] [cursor=pointer]:
+                  - generic [ref=e1043]:
+                    - img [ref=e1044]
+                    - img [ref=e1046]
+              - paragraph [ref=e1048]: Displays the list of orders that were expired due to STP.
+              - paragraph [ref=e1049]: "These are the combinations supported:"
+              - list [ref=e1050]:
+                - listitem [ref=e1051]:
+                  - code [ref=e1052]: symbol
+                  - text: +
+                  - code [ref=e1053]: preventedMatchId
+                - listitem [ref=e1054]:
+                  - code [ref=e1055]: symbol
+                  - text: +
+                  - code [ref=e1056]: orderId
+                - listitem [ref=e1057]:
+                  - code [ref=e1058]: symbol
+                  - text: +
+                  - code [ref=e1059]: orderId
+                  - text: +
+                  - code [ref=e1060]: fromPreventedMatchId
+                  - text: (
+                  - code [ref=e1061]: limit
+                  - text: will default to 500)
+                - listitem [ref=e1062]:
+                  - code [ref=e1063]: symbol
+                  - text: +
+                  - code [ref=e1064]: orderId
+                  - text: +
+                  - code [ref=e1065]: fromPreventedMatchId
+                  - text: +
+                  - code [ref=e1066]: limit
+              - paragraph [ref=e1067]:
+                - strong [ref=e1068]: "Parameters:"
+              - table [ref=e1069]:
+                - rowgroup [ref=e1070]:
+                  - row "Name Type Mandatory Description" [ref=e1071]:
+                    - columnheader "Name" [ref=e1072]
+                    - columnheader "Type" [ref=e1073]
+                    - columnheader "Mandatory" [ref=e1074]
+                    - columnheader "Description" [ref=e1075]
+                - rowgroup [ref=e1076]:
+                  - row "symbol STRING YES" [ref=e1077]:
+                    - cell "symbol" [ref=e1078]
+                    - cell "STRING" [ref=e1079]
+                    - cell "YES" [ref=e1080]
+                    - cell [ref=e1081]
+                  - row "preventedMatchId LONG NO" [ref=e1082]:
+                    - cell "preventedMatchId" [ref=e1083]
+                    - cell "LONG" [ref=e1084]
+                    - cell "NO" [ref=e1085]
+                    - cell [ref=e1086]
+                  - row "orderId LONG NO" [ref=e1087]:
+                    - cell "orderId" [ref=e1088]
+                    - cell "LONG" [ref=e1089]
+                    - cell "NO" [ref=e1090]
+                    - cell [ref=e1091]
+                  - row "fromPreventedMatchId LONG NO" [ref=e1092]:
+                    - cell "fromPreventedMatchId" [ref=e1093]
+                    - cell "LONG" [ref=e1094]
+                    - cell "NO" [ref=e1095]
+                    - cell [ref=e1096]
+                  - 'row "limit INT NO Default: 500; Maximum: 1000" [ref=e1097]':
+                    - cell "limit" [ref=e1098]
+                    - cell "INT" [ref=e1099]
+                    - cell "NO" [ref=e1100]
+                    - 'cell "Default: 500; Maximum: 1000" [ref=e1101]':
+                      - text: "Default:"
+                      - code [ref=e1102]: "500"
+                      - text: "; Maximum:"
+                      - code [ref=e1103]: "1000"
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1104]:
+                    - cell "recvWindow" [ref=e1105]
+                    - cell "DECIMAL" [ref=e1106]
+                    - cell "NO" [ref=e1107]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1108]:
+                      - text: The value cannot be greater than
+                      - code [ref=e1109]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e1110]:
+                    - cell "timestamp" [ref=e1111]
+                    - cell "LONG" [ref=e1112]
+                    - cell "YES" [ref=e1113]
+                    - cell [ref=e1114]
+              - paragraph [ref=e1115]:
+                - strong [ref=e1116]: "Weight:"
+              - table [ref=e1117]:
+                - rowgroup [ref=e1118]:
+                  - row "Case Weight" [ref=e1119]:
+                    - columnheader "Case" [ref=e1120]
+                    - columnheader "Weight" [ref=e1121]
+                - rowgroup [ref=e1122]:
+                  - row "If symbol is invalid 2" [ref=e1123]:
+                    - cell "If symbol is invalid" [ref=e1124]:
+                      - text: If
+                      - code [ref=e1125]: symbol
+                      - text: is invalid
+                    - cell "2" [ref=e1126]
+                  - row "Querying by preventedMatchId 2" [ref=e1127]:
+                    - cell "Querying by preventedMatchId" [ref=e1128]:
+                      - text: Querying by
+                      - code [ref=e1129]: preventedMatchId
+                    - cell "2" [ref=e1130]
+                  - row "Querying by orderId 20" [ref=e1131]:
+                    - cell "Querying by orderId" [ref=e1132]:
+                      - text: Querying by
+                      - code [ref=e1133]: orderId
+                    - cell "20" [ref=e1134]
+              - paragraph [ref=e1135]:
+                - strong [ref=e1136]: "Data Source:"
+              - paragraph [ref=e1137]: Database
+              - paragraph [ref=e1138]:
+                - strong [ref=e1139]: "Response:"
+              - generic [ref=e1141]:
+                - code [ref=e1143]:
+                  - generic [ref=e1144]: "["
+                  - generic [ref=e1145]: "{"
+                  - generic [ref=e1146]: "\"symbol\": \"BTCUSDT\","
+                  - generic [ref=e1147]: "\"preventedMatchId\": 1,"
+                  - generic [ref=e1148]: "\"takerOrderId\": 5,"
+                  - generic [ref=e1149]: "\"makerSymbol\": \"BTCUSDT\","
+                  - generic [ref=e1150]: "\"makerOrderId\": 3,"
+                  - generic [ref=e1151]: "\"tradeGroupId\": 1,"
+                  - generic [ref=e1152]: "\"selfTradePreventionMode\": \"EXPIRE_MAKER\","
+                  - generic [ref=e1153]: "\"price\": \"1.100000\","
+                  - generic [ref=e1154]: "\"makerPreventedQuantity\": \"1.300000\","
+                  - generic [ref=e1155]: "\"transactTime\": 1669101687094"
+                  - generic [ref=e1156]: "}"
+                  - generic [ref=e1157]: "]"
+                - button "Copy code to clipboard" [ref=e1159] [cursor=pointer]:
+                  - generic [ref=e1160]:
+                    - img [ref=e1161]
+                    - img [ref=e1163]
+              - heading "Query Allocations (USER_DATA)Direct link to Query Allocations (USER_DATA)" [level=3] [ref=e1165]:
+                - text: Query Allocations (USER_DATA)
+                - link "Direct link to Query Allocations (USER_DATA)" [ref=e1166] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-allocations-user_data
+                  - text: "#"
+              - generic [ref=e1168]:
+                - code [ref=e1170]:
+                  - generic [ref=e1171]: GET /api/v3/myAllocations
+                - button "Copy code to clipboard" [ref=e1173] [cursor=pointer]:
+                  - generic [ref=e1174]:
+                    - img [ref=e1175]
+                    - img [ref=e1177]
+              - paragraph [ref=e1179]: Retrieves allocations resulting from SOR order placement.
+              - paragraph [ref=e1180]:
+                - strong [ref=e1181]: "Weight:"
+                - text: "20"
+              - paragraph [ref=e1182]:
+                - strong [ref=e1183]: "Parameters:"
+              - table [ref=e1184]:
+                - rowgroup [ref=e1185]:
+                  - row "Name Type Mandatory Description" [ref=e1186]:
+                    - columnheader "Name" [ref=e1187]
+                    - columnheader "Type" [ref=e1188]
+                    - columnheader "Mandatory" [ref=e1189]
+                    - columnheader "Description" [ref=e1190]
+                - rowgroup [ref=e1191]:
+                  - row "symbol STRING Yes" [ref=e1192]:
+                    - cell "symbol" [ref=e1193]
+                    - cell "STRING" [ref=e1194]
+                    - cell "Yes" [ref=e1195]
+                    - cell [ref=e1196]
+                  - row "startTime LONG No" [ref=e1197]:
+                    - cell "startTime" [ref=e1198]
+                    - cell "LONG" [ref=e1199]
+                    - cell "No" [ref=e1200]
+                    - cell [ref=e1201]
+                  - row "endTime LONG No" [ref=e1202]:
+                    - cell "endTime" [ref=e1203]
+                    - cell "LONG" [ref=e1204]
+                    - cell "No" [ref=e1205]
+                    - cell [ref=e1206]
+                  - row "fromAllocationId INT No" [ref=e1207]:
+                    - cell "fromAllocationId" [ref=e1208]
+                    - cell "INT" [ref=e1209]
+                    - cell "No" [ref=e1210]
+                    - cell [ref=e1211]
+                  - 'row "limit INT No Default: 500; Maximum: 1000" [ref=e1212]':
+                    - cell "limit" [ref=e1213]
+                    - cell "INT" [ref=e1214]
+                    - cell "No" [ref=e1215]
+                    - 'cell "Default: 500; Maximum: 1000" [ref=e1216]'
+                  - row "orderId LONG No" [ref=e1217]:
+                    - cell "orderId" [ref=e1218]
+                    - cell "LONG" [ref=e1219]
+                    - cell "No" [ref=e1220]
+                    - cell [ref=e1221]
+                  - row "recvWindow DECIMAL No The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1222]:
+                    - cell "recvWindow" [ref=e1223]
+                    - cell "DECIMAL" [ref=e1224]
+                    - cell "No" [ref=e1225]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1226]:
+                      - text: The value cannot be greater than
+                      - code [ref=e1227]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG No" [ref=e1228]:
+                    - cell "timestamp" [ref=e1229]
+                    - cell "LONG" [ref=e1230]
+                    - cell "No" [ref=e1231]
+                    - cell [ref=e1232]
+              - paragraph [ref=e1233]: "Supported parameter combinations:"
+              - table [ref=e1234]:
+                - rowgroup [ref=e1235]:
+                  - row "Parameters Response" [ref=e1236]:
+                    - columnheader "Parameters" [ref=e1237]
+                    - columnheader "Response" [ref=e1238]
+                - rowgroup [ref=e1239]:
+                  - row "symbol allocations from oldest to newest" [ref=e1240]:
+                    - cell "symbol" [ref=e1241]:
+                      - code [ref=e1242]: symbol
+                    - cell "allocations from oldest to newest" [ref=e1243]
+                  - row "symbol + startTime oldest allocations since startTime" [ref=e1244]:
+                    - cell "symbol + startTime" [ref=e1245]:
+                      - code [ref=e1246]: symbol
+                      - text: +
+                      - code [ref=e1247]: startTime
+                    - cell "oldest allocations since startTime" [ref=e1248]:
+                      - text: oldest allocations since
+                      - code [ref=e1249]: startTime
+                  - row "symbol + endTime newest allocations until endTime" [ref=e1250]:
+                    - cell "symbol + endTime" [ref=e1251]:
+                      - code [ref=e1252]: symbol
+                      - text: +
+                      - code [ref=e1253]: endTime
+                    - cell "newest allocations until endTime" [ref=e1254]:
+                      - text: newest allocations until
+                      - code [ref=e1255]: endTime
+                  - row "symbol + startTime + endTime allocations within the time range" [ref=e1256]:
+                    - cell "symbol + startTime + endTime" [ref=e1257]:
+                      - code [ref=e1258]: symbol
+                      - text: +
+                      - code [ref=e1259]: startTime
+                      - text: +
+                      - code [ref=e1260]: endTime
+                    - cell "allocations within the time range" [ref=e1261]
+                  - row "symbol + fromAllocationId allocations by allocation ID" [ref=e1262]:
+                    - cell "symbol + fromAllocationId" [ref=e1263]:
+                      - code [ref=e1264]: symbol
+                      - text: +
+                      - code [ref=e1265]: fromAllocationId
+                    - cell "allocations by allocation ID" [ref=e1266]
+                  - row "symbol + orderId allocations related to an order starting with oldest" [ref=e1267]:
+                    - cell "symbol + orderId" [ref=e1268]:
+                      - code [ref=e1269]: symbol
+                      - text: +
+                      - code [ref=e1270]: orderId
+                    - cell "allocations related to an order starting with oldest" [ref=e1271]
+                  - row "symbol + orderId + fromAllocationId allocations related to an order by allocation ID" [ref=e1272]:
+                    - cell "symbol + orderId + fromAllocationId" [ref=e1273]:
+                      - code [ref=e1274]: symbol
+                      - text: +
+                      - code [ref=e1275]: orderId
+                      - text: +
+                      - code [ref=e1276]: fromAllocationId
+                    - cell "allocations related to an order by allocation ID" [ref=e1277]
+              - paragraph [ref=e1278]:
+                - strong [ref=e1279]: "Note:"
+                - text: The time between
+                - code [ref=e1280]: startTime
+                - text: and
+                - code [ref=e1281]: endTime
+                - text: can't be longer than 24 hours.
+              - paragraph [ref=e1282]:
+                - strong [ref=e1283]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e1284]:
+                - strong [ref=e1285]: "Response:"
+              - generic [ref=e1287]:
+                - code [ref=e1289]:
+                  - generic [ref=e1290]: "["
+                  - generic [ref=e1291]: "{"
+                  - generic [ref=e1292]: "\"symbol\": \"BTCUSDT\","
+                  - generic [ref=e1293]: "\"allocationId\": 0,"
+                  - generic [ref=e1294]: "\"allocationType\": \"SOR\","
+                  - generic [ref=e1295]: "\"orderId\": 1,"
+                  - generic [ref=e1296]: "\"orderListId\": -1,"
+                  - generic [ref=e1297]: "\"price\": \"1.00000000\","
+                  - generic [ref=e1298]: "\"qty\": \"5.00000000\","
+                  - generic [ref=e1299]: "\"quoteQty\": \"5.00000000\","
+                  - generic [ref=e1300]: "\"commission\": \"0.00000000\","
+                  - generic [ref=e1301]: "\"commissionAsset\": \"BTC\","
+                  - generic [ref=e1302]: "\"time\": 1687506878118,"
+                  - generic [ref=e1303]: "\"isBuyer\": true,"
+                  - generic [ref=e1304]: "\"isMaker\": false,"
+                  - generic [ref=e1305]: "\"isAllocator\": false"
+                  - generic [ref=e1306]: "}"
+                  - generic [ref=e1307]: "]"
+                - button "Copy code to clipboard" [ref=e1309] [cursor=pointer]:
+                  - generic [ref=e1310]:
+                    - img [ref=e1311]
+                    - img [ref=e1313]
+              - heading "Query Commission Rates (USER_DATA)Direct link to Query Commission Rates (USER_DATA)" [level=3] [ref=e1315]:
+                - text: Query Commission Rates (USER_DATA)
+                - link "Direct link to Query Commission Rates (USER_DATA)" [ref=e1316] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-commission-rates-user_data
+                  - text: "#"
+              - generic [ref=e1318]:
+                - code [ref=e1320]:
+                  - generic [ref=e1321]: GET /api/v3/account/commission
+                - button "Copy code to clipboard" [ref=e1323] [cursor=pointer]:
+                  - generic [ref=e1324]:
+                    - img [ref=e1325]
+                    - img [ref=e1327]
+              - paragraph [ref=e1329]: Get current account commission rates.
+              - paragraph [ref=e1330]:
+                - strong [ref=e1331]: "Weight:"
+                - text: "20"
+              - paragraph [ref=e1332]:
+                - strong [ref=e1333]: "Parameters:"
+              - table [ref=e1334]:
+                - rowgroup [ref=e1335]:
+                  - row "Name Type Mandatory Description" [ref=e1336]:
+                    - columnheader "Name" [ref=e1337]
+                    - columnheader "Type" [ref=e1338]
+                    - columnheader "Mandatory" [ref=e1339]
+                    - columnheader "Description" [ref=e1340]
+                - rowgroup [ref=e1341]:
+                  - row "symbol STRING YES" [ref=e1342]:
+                    - cell "symbol" [ref=e1343]
+                    - cell "STRING" [ref=e1344]
+                    - cell "YES" [ref=e1345]
+                    - cell [ref=e1346]
+              - paragraph [ref=e1347]:
+                - strong [ref=e1348]: "Data Source:"
+                - text: Database
+              - paragraph [ref=e1349]:
+                - strong [ref=e1350]: "Response:"
+              - generic [ref=e1352]:
+                - code [ref=e1354]:
+                  - generic [ref=e1355]: "{"
+                  - generic [ref=e1356]: "\"symbol\": \"BTCUSDT\","
+                  - generic [ref=e1357]: "\"standardCommission\": { // Commission rates on trades from the order."
+                  - generic [ref=e1358]: "\"maker\": \"0.00000010\","
+                  - generic [ref=e1359]: "\"taker\": \"0.00000020\","
+                  - generic [ref=e1360]: "\"buyer\": \"0.00000030\","
+                  - generic [ref=e1361]: "\"seller\": \"0.00000040\""
+                  - generic [ref=e1362]: "},"
+                  - generic [ref=e1363]: "\"specialCommission\": { // Special commission rates from the order."
+                  - generic [ref=e1364]: "\"maker\": \"0.01000000\","
+                  - generic [ref=e1365]: "\"taker\": \"0.02000000\","
+                  - generic [ref=e1366]: "\"buyer\": \"0.03000000\","
+                  - generic [ref=e1367]: "\"seller\": \"0.04000000\""
+                  - generic [ref=e1368]: "},"
+                  - generic [ref=e1369]: "\"taxCommission\": { // Tax commission rates for trades from the order."
+                  - generic [ref=e1370]: "\"maker\": \"0.00000112\","
+                  - generic [ref=e1371]: "\"taker\": \"0.00000114\","
+                  - generic [ref=e1372]: "\"buyer\": \"0.00000118\","
+                  - generic [ref=e1373]: "\"seller\": \"0.00000116\""
+                  - generic [ref=e1374]: "},"
+                  - generic [ref=e1375]: "\"discount\": { // Discount commission when paying in BNB"
+                  - generic [ref=e1376]: "\"enabledForAccount\": true,"
+                  - generic [ref=e1377]: "\"enabledForSymbol\": true,"
+                  - generic [ref=e1378]: "\"discountAsset\": \"BNB\","
+                  - generic [ref=e1379]: "\"discount\": \"0.75000000\" // Standard commission is reduced by this rate when paying commission in BNB."
+                  - generic [ref=e1380]: "}"
+                  - generic [ref=e1381]: "}"
+                - button "Copy code to clipboard" [ref=e1383] [cursor=pointer]:
+                  - generic [ref=e1384]:
+                    - img [ref=e1385]
+                    - img [ref=e1387]
+              - heading "Query Order Amendments (USER_DATA)Direct link to Query Order Amendments (USER_DATA)" [level=3] [ref=e1389]:
+                - text: Query Order Amendments (USER_DATA)
+                - link "Direct link to Query Order Amendments (USER_DATA)" [ref=e1390] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-amendments-user_data
+                  - text: "#"
+              - generic [ref=e1392]:
+                - code [ref=e1394]:
+                  - generic [ref=e1395]: GET /api/v3/order/amendments
+                - button "Copy code to clipboard" [ref=e1397] [cursor=pointer]:
+                  - generic [ref=e1398]:
+                    - img [ref=e1399]
+                    - img [ref=e1401]
+              - paragraph [ref=e1403]: Queries all amendments of a single order.
+              - paragraph [ref=e1404]:
+                - strong [ref=e1405]: Weight
+                - text: ": 4"
+              - paragraph [ref=e1406]:
+                - strong [ref=e1407]: "Parameters:"
+              - table [ref=e1408]:
+                - rowgroup [ref=e1409]:
+                  - row "Name Type Mandatory Description" [ref=e1410]:
+                    - columnheader "Name" [ref=e1411]
+                    - columnheader "Type" [ref=e1412]
+                    - columnheader "Mandatory" [ref=e1413]
+                    - columnheader "Description" [ref=e1414]
+                - rowgroup [ref=e1415]:
+                  - row "symbol STRING YES" [ref=e1416]:
+                    - cell "symbol" [ref=e1417]
+                    - cell "STRING" [ref=e1418]
+                    - cell "YES" [ref=e1419]
+                    - cell [ref=e1420]
+                  - row "orderId LONG YES" [ref=e1421]:
+                    - cell "orderId" [ref=e1422]
+                    - cell "LONG" [ref=e1423]
+                    - cell "YES" [ref=e1424]
+                    - cell [ref=e1425]
+                  - row "fromExecutionId LONG NO" [ref=e1426]:
+                    - cell "fromExecutionId" [ref=e1427]
+                    - cell "LONG" [ref=e1428]
+                    - cell "NO" [ref=e1429]
+                    - cell [ref=e1430]
+                  - 'row "limit LONG NO Default:500; Maximum: 1000" [ref=e1431]':
+                    - cell "limit" [ref=e1432]
+                    - cell "LONG" [ref=e1433]
+                    - cell "NO" [ref=e1434]
+                    - 'cell "Default:500; Maximum: 1000" [ref=e1435]'
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1436]:
+                    - cell "recvWindow" [ref=e1437]
+                    - cell "DECIMAL" [ref=e1438]
+                    - cell "NO" [ref=e1439]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1440]:
+                      - text: The value cannot be greater than
+                      - code [ref=e1441]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e1442]:
+                    - cell "timestamp" [ref=e1443]
+                    - cell "LONG" [ref=e1444]
+                    - cell "YES" [ref=e1445]
+                    - cell [ref=e1446]
+              - paragraph [ref=e1447]:
+                - strong [ref=e1448]: "Data Source:"
+              - paragraph [ref=e1449]: Database
+              - paragraph [ref=e1450]:
+                - strong [ref=e1451]: "Response:"
+              - generic [ref=e1453]:
+                - code [ref=e1455]:
+                  - generic [ref=e1456]: "["
+                  - generic [ref=e1457]: "{"
+                  - generic [ref=e1458]: "\"symbol\": \"BTCUSDT\","
+                  - generic [ref=e1459]: "\"orderId\": 9,"
+                  - generic [ref=e1460]: "\"executionId\": 22,"
+                  - generic [ref=e1461]: "\"origClientOrderId\": \"W0fJ9fiLKHOJutovPK3oJp\","
+                  - generic [ref=e1462]: "\"newClientOrderId\": \"UQ1Np3bmQ71jJzsSDW9Vpi\","
+                  - generic [ref=e1463]: "\"origQty\": \"5.00000000\","
+                  - generic [ref=e1464]: "\"newQty\": \"4.00000000\","
+                  - generic [ref=e1465]: "\"time\": 1741669661670"
+                  - generic [ref=e1466]: "},"
+                  - generic [ref=e1467]: "{"
+                  - generic [ref=e1468]: "\"symbol\": \"BTCUDST\","
+                  - generic [ref=e1469]: "\"orderId\": 9,"
+                  - generic [ref=e1470]: "\"executionId\": 25,"
+                  - generic [ref=e1471]: "\"origClientOrderId\": \"UQ1Np3bmQ71jJzsSDW9Vpi\","
+                  - generic [ref=e1472]: "\"newClientOrderId\": \"5uS0r35ohuQyDlCzZuYXq2\","
+                  - generic [ref=e1473]: "\"origQty\": \"4.00000000\","
+                  - generic [ref=e1474]: "\"newQty\": \"3.00000000\","
+                  - generic [ref=e1475]: "\"time\": 1741672924895"
+                  - generic [ref=e1476]: "}"
+                  - generic [ref=e1477]: "]"
+                - button "Copy code to clipboard" [ref=e1479] [cursor=pointer]:
+                  - generic [ref=e1480]:
+                    - img [ref=e1481]
+                    - img [ref=e1483]
+              - paragraph
+              - heading "Query relevant filters (USER_DATA)Direct link to Query relevant filters (USER_DATA)" [level=3] [ref=e1485]:
+                - text: Query relevant filters (USER_DATA)
+                - link "Direct link to Query relevant filters (USER_DATA)" [ref=e1486] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-relevant-filters-user_data
+                  - text: "#"
+              - generic [ref=e1488]:
+                - code [ref=e1490]:
+                  - generic [ref=e1491]: GET /api/v3/myFilters
+                - button "Copy code to clipboard" [ref=e1493] [cursor=pointer]:
+                  - generic [ref=e1494]:
+                    - img [ref=e1495]
+                    - img [ref=e1497]
+              - paragraph [ref=e1499]:
+                - text: Retrieves the list of
+                - link "filters" [ref=e1500] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/filters
+                - text: relevant to an account on a given symbol. This is the only endpoint that shows if an account has
+                - link "MAX_ASSET" [ref=e1501] [cursor=pointer]:
+                  - /url: /docs/binance-spot-api-docs/filters#max_asset
+                  - code [ref=e1502]: MAX_ASSET
+                - text: filters applied to it.
+              - paragraph [ref=e1503]:
+                - strong [ref=e1504]: "Weight:"
+                - text: "40"
+              - paragraph [ref=e1505]:
+                - strong [ref=e1506]: "Parameters:"
+              - table [ref=e1507]:
+                - rowgroup [ref=e1508]:
+                  - row "Name Type Mandatory Description" [ref=e1509]:
+                    - columnheader "Name" [ref=e1510]
+                    - columnheader "Type" [ref=e1511]
+                    - columnheader "Mandatory" [ref=e1512]
+                    - columnheader "Description" [ref=e1513]
+                - rowgroup [ref=e1514]:
+                  - row "symbol STRING YES" [ref=e1515]:
+                    - cell "symbol" [ref=e1516]
+                    - cell "STRING" [ref=e1517]
+                    - cell "YES" [ref=e1518]
+                    - cell [ref=e1519]
+                  - row "recvWindow DECIMAL NO The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1520]:
+                    - cell "recvWindow" [ref=e1521]
+                    - cell "DECIMAL" [ref=e1522]
+                    - cell "NO" [ref=e1523]
+                    - cell "The value cannot be greater than 60000. Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified." [ref=e1524]:
+                      - text: The value cannot be greater than
+                      - code [ref=e1525]: "60000"
+                      - text: .
+                      - text: Supports up to three decimal places of precision (e.g., 6000.346) so that microseconds may be specified.
+                  - row "timestamp LONG YES" [ref=e1526]:
+                    - cell "timestamp" [ref=e1527]
+                    - cell "LONG" [ref=e1528]
+                    - cell "YES" [ref=e1529]
+                    - cell [ref=e1530]
+              - paragraph [ref=e1531]:
+                - strong [ref=e1532]: "Data Source:"
+                - text: Memory
+              - paragraph [ref=e1533]:
+                - strong [ref=e1534]: "Response:"
+              - generic [ref=e1536]:
+                - code [ref=e1538]:
+                  - generic [ref=e1539]: "{"
+                  - generic [ref=e1540]: "\"exchangeFilters\": ["
+                  - generic [ref=e1541]: "{"
+                  - generic [ref=e1542]: "\"filterType\": \"EXCHANGE_MAX_NUM_ORDERS\","
+                  - generic [ref=e1543]: "\"maxNumOrders\": 1000"
+                  - generic [ref=e1544]: "}"
+                  - generic [ref=e1545]: "],"
+                  - generic [ref=e1546]: "\"symbolFilters\": ["
+                  - generic [ref=e1547]: "{"
+                  - generic [ref=e1548]: "\"filterType\": \"MAX_NUM_ORDER_LISTS\","
+                  - generic [ref=e1549]: "\"maxNumOrderLists\": 20"
+                  - generic [ref=e1550]: "}"
+                  - generic [ref=e1551]: "],"
+                  - generic [ref=e1552]: "\"assetFilters\": ["
+                  - generic [ref=e1553]: "{"
+                  - generic [ref=e1554]: "\"filterType\": \"MAX_ASSET\","
+                  - generic [ref=e1555]: "\"asset\": \"JPY\","
+                  - generic [ref=e1556]: "\"limit\": \"1000000.00000000\""
+                  - generic [ref=e1557]: "}"
+                  - generic [ref=e1558]: "]"
+                  - generic [ref=e1559]: "}"
+                - button "Copy code to clipboard" [ref=e1561] [cursor=pointer]:
+                  - generic [ref=e1562]:
+                    - img [ref=e1563]
+                    - img [ref=e1565]
+          - navigation "Docs pages" [ref=e1567]:
+            - link "Previous « Trading endpoints" [ref=e1568] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/trading-endpoints
+              - generic [ref=e1569]: Previous
+              - generic [ref=e1570]: « Trading endpoints
+            - link "Next FIX API »" [ref=e1571] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/fix-api
+              - generic [ref=e1572]: Next
+              - generic [ref=e1573]: FIX API »
+        - list [ref=e1576]:
+          - listitem [ref=e1577]:
+            - link "Account information (USER_DATA)" [ref=e1578] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#account-information-user_data
+          - listitem [ref=e1579]:
+            - link "Query order (USER_DATA)" [ref=e1580] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-user_data
+          - listitem [ref=e1581]:
+            - link "Current open orders (USER_DATA)" [ref=e1582] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#current-open-orders-user_data
+          - listitem [ref=e1583]:
+            - link "All orders (USER_DATA)" [ref=e1584] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#all-orders-user_data
+          - listitem [ref=e1585]:
+            - link "Query Order list (USER_DATA)" [ref=e1586] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-list-user_data
+          - listitem [ref=e1587]:
+            - link "Query all Order lists (USER_DATA)" [ref=e1588] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-all-order-lists-user_data
+          - listitem [ref=e1589]:
+            - link "Query Open Order lists (USER_DATA)" [ref=e1590] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-open-order-lists-user_data
+          - listitem [ref=e1591]:
+            - link "Account trade list (USER_DATA)" [ref=e1592] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#account-trade-list-user_data
+          - listitem [ref=e1593]:
+            - link "Query Unfilled Order Count (USER_DATA)" [ref=e1594] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-unfilled-order-count-user_data
+          - listitem [ref=e1595]:
+            - link "Query Prevented Matches (USER_DATA)" [ref=e1596] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-prevented-matches-user_data
+          - listitem [ref=e1597]:
+            - link "Query Allocations (USER_DATA)" [ref=e1598] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-allocations-user_data
+          - listitem [ref=e1599]:
+            - link "Query Commission Rates (USER_DATA)" [ref=e1600] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-commission-rates-user_data
+          - listitem [ref=e1601]:
+            - link "Query Order Amendments (USER_DATA)" [ref=e1602] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-order-amendments-user_data
+          - listitem [ref=e1603]:
+            - link "Query relevant filters (USER_DATA)" [ref=e1604] [cursor=pointer]:
+              - /url: /docs/binance-spot-api-docs/rest-api/account-endpoints#query-relevant-filters-user_data
+  - contentinfo [ref=e1605]:
+    - generic [ref=e1608]: Copyright © 2026 Binance.

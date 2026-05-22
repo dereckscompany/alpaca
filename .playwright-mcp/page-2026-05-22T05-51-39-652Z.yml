@@ -1,0 +1,266 @@
+- generic [ref=e2]:
+  - region "Skip to main content":
+    - link "Skip to main content" [ref=e3] [cursor=pointer]:
+      - /url: "#__docusaurus_skipToContent_fallback"
+  - navigation "Main" [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Binance Logo" [ref=e7] [cursor=pointer]:
+          - /url: https://developers.binance.com/en
+          - img "Binance Logo" [ref=e9]
+        - button "Products ▼" [ref=e12] [cursor=pointer]:
+          - generic [ref=e13]: Products
+          - generic [ref=e14]: ▼
+      - generic [ref=e15]:
+        - generic [ref=e18]:
+          - button "Search" [ref=e19] [cursor=pointer]:
+            - generic [ref=e20]:
+              - img [ref=e21]
+              - generic [ref=e23]: Search
+            - generic [ref=e24]:
+              - generic [ref=e25]: ⌘
+              - generic [ref=e26]: K
+          - generic [ref=e28]:
+            - button "Current" [ref=e29] [cursor=pointer]
+            - button "All" [ref=e30] [cursor=pointer]
+        - button "English" [ref=e32] [cursor=pointer]:
+          - img [ref=e33]
+          - text: English
+        - button "Switch between dark and light mode (currently light mode)" [ref=e36] [cursor=pointer]:
+          - img [ref=e37]
+  - generic [ref=e41]:
+    - complementary [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e45]: Derivatives Trading
+        - navigation "Docs sidebar" [ref=e47]:
+          - list [ref=e48]:
+            - listitem [ref=e49]:
+              - link "Change Log" [ref=e50] [cursor=pointer]:
+                - /url: /docs/derivatives/change-log
+            - listitem [ref=e51]:
+              - link "Introduction" [ref=e52] [cursor=pointer]:
+                - /url: /docs/derivatives/Introduction
+            - listitem [ref=e53]:
+              - link "Quick Start" [ref=e54] [cursor=pointer]:
+                - /url: /docs/derivatives/quick-start
+            - listitem [ref=e55]:
+              - button "USDⓈ-M Futures" [expanded] [ref=e57] [cursor=pointer]
+              - list [ref=e58]:
+                - listitem [ref=e59]:
+                  - link "General Info" [ref=e60] [cursor=pointer]:
+                    - /url: /docs/derivatives/usds-margined-futures/general-info
+                - listitem [ref=e61]:
+                  - link "Websocket API General Info" [ref=e62] [cursor=pointer]:
+                    - /url: /docs/derivatives/usds-margined-futures/websocket-api-general-info
+                - listitem [ref=e63]:
+                  - link "Common Definition" [ref=e64] [cursor=pointer]:
+                    - /url: /docs/derivatives/usds-margined-futures/common-definition
+                - listitem [ref=e65]:
+                  - button "Market Data" [ref=e67] [cursor=pointer]
+                - listitem [ref=e68]:
+                  - button "Trade" [ref=e70] [cursor=pointer]
+                - listitem [ref=e71]:
+                  - button "Websocket Market Streams" [ref=e73] [cursor=pointer]
+                - listitem [ref=e74]:
+                  - button "User Data Streams" [ref=e76] [cursor=pointer]
+                - listitem [ref=e77]:
+                  - button "Account" [expanded] [ref=e79] [cursor=pointer]
+                  - list [ref=e80]:
+                    - listitem [ref=e81]:
+                      - button "REST API" [expanded] [ref=e83] [cursor=pointer]
+                      - list [ref=e84]:
+                        - listitem [ref=e85]:
+                          - link "New Future Account Transfer" [ref=e86] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api
+                        - listitem [ref=e87]:
+                          - link "Futures Account Balance V3" [ref=e88] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Futures-Account-Balance-V3
+                        - listitem [ref=e89]:
+                          - link "Futures Account Balance" [ref=e90] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Futures-Account-Balance-V2
+                        - listitem [ref=e91]:
+                          - link "Account Information V3" [ref=e92] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V3
+                        - listitem [ref=e93]:
+                          - link "Account Information" [ref=e94] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Account-Information-V2
+                        - listitem [ref=e95]:
+                          - link "Get Future Account Transaction History List" [ref=e96] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Future-Account-Transaction-History-List
+                        - listitem [ref=e97]:
+                          - link "User Commission Rate" [ref=e98] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/User-Commission-Rate
+                        - listitem [ref=e99]:
+                          - link "Query Account Configuration" [ref=e100] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Account-Config
+                        - listitem [ref=e101]:
+                          - link "Query Symbol Configuration" [ref=e102] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Symbol-Config
+                        - listitem [ref=e103]:
+                          - link "Query Order Rate Limit" [ref=e104] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Query-Rate-Limit
+                        - listitem [ref=e105]:
+                          - link "Notional And Leverage Brackets" [ref=e106] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Notional-and-Leverage-Brackets
+                        - listitem [ref=e107]:
+                          - link "Get Current Multi Assets Mode" [ref=e108] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Multi-Assets-Mode
+                        - listitem [ref=e109]:
+                          - link "Get Current Position Mode" [ref=e110] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode
+                        - listitem [ref=e111]:
+                          - link "Get Income History" [ref=e112] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Income-History
+                        - listitem [ref=e113]:
+                          - link "Futures Trading Quantitative Rules Indicators" [ref=e114] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Futures-Trading-Quantitative-Rules-Indicators
+                        - listitem [ref=e115]:
+                          - link "Get Download Id For Futures Transaction History" [ref=e116] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Download-Id-For-Futures-Transaction-History
+                        - listitem [ref=e117]:
+                          - link "Get Futures Transaction History Download Link By Id" [ref=e118] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Futures-Transaction-History-Download-Link-by-Id
+                        - listitem [ref=e119]:
+                          - link "Get Download Id For Futures Order History" [ref=e120] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Download-Id-For-Futures-Order-History
+                        - listitem [ref=e121]:
+                          - link "Get Futures Order History Download Link By Id" [ref=e122] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Futures-Order-History-Download-Link-by-Id
+                        - listitem [ref=e123]:
+                          - link "Get Download Id For Futures Trade History" [ref=e124] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Download-Id-For-Futures-Trade-History
+                        - listitem [ref=e125]:
+                          - link "Get Futures Trade Download Link By Id" [ref=e126] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Futures-Trade-Download-Link-by-Id
+                        - listitem [ref=e127]:
+                          - link "Toggle BNB Burn On Futures Trade" [ref=e128] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Toggle-BNB-Burn-On-Futures-Trade
+                        - listitem [ref=e129]:
+                          - link "Get BNB Burn Status" [ref=e130] [cursor=pointer]:
+                            - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-BNB-Burn-Status
+                    - listitem [ref=e131]:
+                      - button "WebSocket API" [ref=e133] [cursor=pointer]
+                - listitem [ref=e134]:
+                  - button "Convert" [ref=e136] [cursor=pointer]
+                - listitem [ref=e137]:
+                  - button "Portfolio Margin Endpoints" [ref=e139] [cursor=pointer]
+                - listitem [ref=e140]:
+                  - button "FAQ" [ref=e142] [cursor=pointer]
+                - listitem [ref=e143]:
+                  - link "Error Code" [ref=e144] [cursor=pointer]:
+                    - /url: /docs/derivatives/usds-margined-futures/error-code
+            - listitem [ref=e145]:
+              - button "COIN-M Futures" [ref=e147] [cursor=pointer]
+            - listitem [ref=e148]:
+              - button "Portfolio Margin" [ref=e150] [cursor=pointer]
+            - listitem [ref=e151]:
+              - button "Portfolio Margin Pro" [ref=e153] [cursor=pointer]
+            - listitem [ref=e154]:
+              - button "Options Trading" [ref=e156] [cursor=pointer]
+    - main [ref=e157]:
+      - generic [ref=e159]:
+        - generic [ref=e161]:
+          - article [ref=e162]:
+            - navigation "Breadcrumbs" [ref=e163]:
+              - list [ref=e164]:
+                - listitem [ref=e165]:
+                  - link "Home page" [ref=e166] [cursor=pointer]:
+                    - /url: /docs/
+                    - img [ref=e167]
+                - listitem [ref=e169]:
+                  - generic [ref=e170]: USDⓈ-M Futures
+                - listitem [ref=e171]:
+                  - generic [ref=e172]: Account
+                - listitem [ref=e173]:
+                  - generic [ref=e174]: REST API
+                - listitem [ref=e175]:
+                  - generic [ref=e176]: Get Current Position Mode
+            - generic [ref=e177]:
+              - heading "Get Current Position Mode(USER_DATA)" [level=1] [ref=e178]
+              - heading "API DescriptionDirect link to API Description" [level=2] [ref=e179]:
+                - text: API Description
+                - link "Direct link to API Description" [ref=e180] [cursor=pointer]:
+                  - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#api-description
+                  - text: "#"
+              - paragraph [ref=e181]:
+                - text: Get user's position mode (Hedge Mode or One-way Mode ) on
+                - emphasis [ref=e182]:
+                  - strong [ref=e183]: EVERY symbol
+              - heading "HTTP RequestDirect link to HTTP Request" [level=2] [ref=e184]:
+                - text: HTTP Request
+                - link "Direct link to HTTP Request" [ref=e185] [cursor=pointer]:
+                  - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#http-request
+                  - text: "#"
+              - paragraph [ref=e186]:
+                - text: GET
+                - code [ref=e187]: /fapi/v1/positionSide/dual
+              - heading "Request WeightDirect link to Request Weight" [level=2] [ref=e188]:
+                - text: Request Weight
+                - link "Direct link to Request Weight" [ref=e189] [cursor=pointer]:
+                  - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#request-weight
+                  - text: "#"
+              - paragraph [ref=e190]: "30"
+              - heading "Request ParametersDirect link to Request Parameters" [level=2] [ref=e191]:
+                - text: Request Parameters
+                - link "Direct link to Request Parameters" [ref=e192] [cursor=pointer]:
+                  - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#request-parameters
+                  - text: "#"
+              - table [ref=e193]:
+                - rowgroup [ref=e194]:
+                  - row "Name Type Mandatory Description" [ref=e195]:
+                    - columnheader "Name" [ref=e196]
+                    - columnheader "Type" [ref=e197]
+                    - columnheader "Mandatory" [ref=e198]
+                    - columnheader "Description" [ref=e199]
+                - rowgroup [ref=e200]:
+                  - row "recvWindow LONG NO" [ref=e201]:
+                    - cell "recvWindow" [ref=e202]
+                    - cell "LONG" [ref=e203]
+                    - cell "NO" [ref=e204]
+                    - cell [ref=e205]
+                  - row "timestamp LONG YES" [ref=e206]:
+                    - cell "timestamp" [ref=e207]
+                    - cell "LONG" [ref=e208]
+                    - cell "YES" [ref=e209]
+                    - cell [ref=e210]
+              - heading "Response ExampleDirect link to Response Example" [level=2] [ref=e211]:
+                - text: Response Example
+                - link "Direct link to Response Example" [ref=e212] [cursor=pointer]:
+                  - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#response-example
+                  - text: "#"
+              - generic [ref=e214]:
+                - code [ref=e216]:
+                  - generic [ref=e217]: "{"
+                  - generic [ref=e218]: "\"dualSidePosition\": true // \"true\": Hedge Mode; \"false\": One-way Mode"
+                  - generic [ref=e219]: "}"
+                - button "Copy code to clipboard" [ref=e221] [cursor=pointer]:
+                  - generic [ref=e222]:
+                    - img [ref=e223]
+                    - img [ref=e225]
+          - navigation "Docs pages" [ref=e227]:
+            - link "Previous « Get Current Multi Assets Mode" [ref=e228] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Multi-Assets-Mode
+              - generic [ref=e229]: Previous
+              - generic [ref=e230]: « Get Current Multi Assets Mode
+            - link "Next Get Income History »" [ref=e231] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Income-History
+              - generic [ref=e232]: Next
+              - generic [ref=e233]: Get Income History »
+        - list [ref=e236]:
+          - listitem [ref=e237]:
+            - link "API Description" [ref=e238] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#api-description
+          - listitem [ref=e239]:
+            - link "HTTP Request" [ref=e240] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#http-request
+          - listitem [ref=e241]:
+            - link "Request Weight" [ref=e242] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#request-weight
+          - listitem [ref=e243]:
+            - link "Request Parameters" [ref=e244] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#request-parameters
+          - listitem [ref=e245]:
+            - link "Response Example" [ref=e246] [cursor=pointer]:
+              - /url: /docs/derivatives/usds-margined-futures/account/rest-api/Get-Current-Position-Mode#response-example
+  - contentinfo [ref=e247]:
+    - generic [ref=e250]: Copyright © 2026 Binance.

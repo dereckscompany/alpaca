@@ -66,6 +66,14 @@ character columns for dates and times. Instead:
 The previous `@return` documentation also omitted `session_open`,
 `session_close`, and `settlement_date`; those are now enumerated.
 
+The class-level `AlpacaMarketData` docs now carry a "Timezones"
+section spelling out the ET-by-inference assumption for calendar
+times (Alpaca does not state it explicitly on the reference page) and
+flagging that `/v3` multi-market endpoints will need per-market
+timezone lookup. A `TODO(v3)` marker sits next to the
+`ALPACA_EXCHANGE_TZ` constant in `R/helpers_parse.R` so a future
+migration is hard to miss.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

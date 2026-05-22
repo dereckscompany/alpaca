@@ -69,6 +69,33 @@ base URL. Both are configurable via constructor parameters.
 }
 
 }
+
+\subsection{Timezones}{
+
+This client wraps Alpaca's \verb{/v2/} market-data endpoints, which are
+US-only. All returned date / time columns are coerced to \code{Date} or
+\code{POSIXct} for ergonomic use:
+\itemize{
+\item Endpoints whose JSON carries an explicit RFC-3339 offset (bars,
+trades, quotes, news, snapshots, clock) are parsed at the exact
+instant. Clock is displayed in \code{America/New_York}; bars / trades
+/ quotes / news in UTC. Use \code{\link[lubridate:with_tz]{lubridate::with_tz()}} to view in any
+other timezone.
+\item The calendar endpoint returns \emph{naive} wall-clock times (\code{"09:30"},
+\code{"0400"}) with no offset in the payload. Alpaca does \strong{not}
+explicitly document the timezone on the calendar reference page,
+but the values are Eastern Time by inference (US-only venues,
+\code{09:30} matches the NYSE/NASDAQ open, every other SDK treats them
+as ET, and the market-data FAQ confirms NY tz for bar
+aggregation). We localise with the named tz \code{America/New_York},
+so DST transitions flip automatically.
+}
+
+This assumption is safe for \verb{/v2/}. When Alpaca's \verb{/v3/} multi-market
+endpoints are adopted, per-market timezone lookup will replace the
+single hard-coded tz. The constant lives in \code{R/helpers_parse.R}
+(search for \code{TODO(v3)}).
+}
 }
 \examples{
 \dontrun{

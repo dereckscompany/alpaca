@@ -55,6 +55,30 @@
 #' | get_most_actives | `GET /v1beta1/screener/stocks/most-actives` | data |
 #' | get_movers | `GET /v1beta1/screener/\{market_type\}/movers` | data |
 #'
+#' ### Timezones
+#' This client wraps Alpaca's `/v2/` market-data endpoints, which are
+#' US-only. All returned date / time columns are coerced to `Date` or
+#' `POSIXct` for ergonomic use:
+#'
+#' - Endpoints whose JSON carries an explicit RFC-3339 offset (bars,
+#'   trades, quotes, news, snapshots, clock) are parsed at the exact
+#'   instant. Clock is displayed in `America/New_York`; bars / trades
+#'   / quotes / news in UTC. Use [lubridate::with_tz()] to view in any
+#'   other timezone.
+#' - The calendar endpoint returns *naive* wall-clock times (`"09:30"`,
+#'   `"0400"`) with no offset in the payload. Alpaca does **not**
+#'   explicitly document the timezone on the calendar reference page,
+#'   but the values are Eastern Time by inference (US-only venues,
+#'   `09:30` matches the NYSE/NASDAQ open, every other SDK treats them
+#'   as ET, and the market-data FAQ confirms NY tz for bar
+#'   aggregation). We localise with the named tz `America/New_York`,
+#'   so DST transitions flip automatically.
+#'
+#' This assumption is safe for `/v2/`. When Alpaca's `/v3/` multi-market
+#' endpoints are adopted, per-market timezone lookup will replace the
+#' single hard-coded tz. The constant lives in `R/helpers_parse.R`
+#' (search for `TODO(v3)`).
+#'
 #' @examples
 #' \dontrun{
 #' # Synchronous usage
