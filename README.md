@@ -30,7 +30,7 @@ a bug or wish to make an improvement.
 
 ## Design Philosophy
 
-All API responses are returned as `data.table` objects with two
+All API responses are returned as `data.table` objects with three
 transformations applied:
 
 1.  **snake_case column names** – camelCase keys from the JSON response
@@ -42,10 +42,73 @@ transformations applied:
     or epoch seconds are converted to `POSIXct` in-place under their
     snake_case name.
 
-That’s it. **No fields are dropped and no columns are renamed** beyond
-the camelCase-to-snake_case conversion. If a column exists in the Alpaca
-API response, it will exist in the returned `data.table`. If you don’t
-need a column, drop it yourself.
+3.  **One entity = one row, no list columns** – The package never
+    returns a `data.table` with a list column. See *Data-shape
+    conventions* below for the exact rules per nested-data shape.
+
+**No fields are dropped and no columns are renamed** beyond the
+camelCase-to-snake_case conversion and the shape transforms above. If a
+column exists in the Alpaca API response, it will exist in the returned
+`data.table`. If you don’t need a column, drop it yourself.
+
+## Data-shape conventions
+
+Alpaca’s JSON responses sometimes contain nested arrays and objects. To
+keep returns intuitive (and consistent across the `alpaca` / `binance` /
+`kucoin` packages), every method follows one rule: **identify the entity
+for the endpoint, and return one row per entity**. The four cases:
+
+| Nested shape | Treatment | Example |
+|----|----|----|
+| Array of plain strings (`conditions`, `attributes`, `permissions`, `symbols`, `image_urls`) | Collapsed into a single character column joined by `;`. | `dt$attributes` -\> `"fractional_eh_enabled;has_options;overnight_tradable"` |
+| Array of objects (orderbook levels, watchlist assets, multi-leg orders) | Exploded to long format with parent fields replicated. A position-index column is added when order matters (`level`, `leg_index`). | `get_crypto_orderbook("BTC/USD")` -\> one row per `(side, level)`. |
+| Fixed-schema nested object (snapshot bars, account configurations) | Flattened to wide `parent_child` columns. | `get_account()` -\> `admin_configurations_max_options_trading_level`. |
+| Empty / null array | `NA_character_` (no list cells). Empty responses -\> empty `data.table` (not stub rows). | An asset with no attributes -\> `attributes = NA`. |
+
+### Recovering the original values
+
+Filter with `grepl`:
+
+``` r
+# All assets that support options trading
+options_assets <- assets[grepl("has_options", attributes)]
+
+# All trades reported on the consolidated tape
+trades_on_tape <- trades[grepl("T", conditions)]
+```
+
+Split back into the original character vector:
+
+``` r
+strsplit(dt$attributes[1], ";", fixed = TRUE)[[1]]
+# [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
+```
+
+URL-encoded fields (currently just news `image_urls`, where Alpaca
+legitimately uses `;` inside some URLs) round-trip via `URLdecode()`:
+
+``` r
+urls <- strsplit(news$image_urls[1], ";", fixed = TRUE)[[1]]
+urls <- vapply(urls, URLdecode, character(1))
+```
+
+### Multi-leg orders (`bracket` / `oco` / `oto`)
+
+Multi-leg orders return a flat `data.table` with one row per “order”
+(parent and legs treated equally). Two helper columns disambiguate:
+
+- `leg_index` (integer) – `NA` on the parent row; `1, 2, ...` on each
+  leg.
+- `parent_order_id` (character) – `NA` on the parent row; the parent’s
+  `id` on each leg.
+
+``` r
+# Just the parent orders (filter out legs)
+dt[is.na(parent_order_id)]
+
+# All legs of one specific bracket
+dt[parent_order_id == "<parent-uuid>"]
+```
 
 ## Installation
 
@@ -131,9 +194,9 @@ trade <- market$get_latest_trade(symbol = "AAPL")
 trade[]
 ```
 
-    #>              timestamp price  size exchange   tape    id condition
-    #>                 <POSc> <num> <int>   <char> <char> <int>    <char>
-    #> 1: 2024-01-15 14:30:00 185.5   100        V      C 12345         @
+    #>              timestamp price  size exchange   tape    id conditions
+    #>                 <POSc> <num> <int>   <char> <char> <int>     <char>
+    #> 1: 2024-01-15 14:30:00 185.5   100        V      C 12345          @
 
 ### Latest Quote (NBBO)
 
@@ -145,9 +208,9 @@ quote[]
     #>              timestamp ask_exchange ask_price ask_size bid_exchange bid_price
     #>                 <POSc>       <char>     <num>    <int>       <char>     <num>
     #> 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5
-    #>    bid_size conditions   tape
-    #>       <int>     <list> <char>
-    #> 1:      300  <list[1]>      C
+    #>    bid_size   tape conditions
+    #>       <int> <char>     <char>
+    #> 1:      300      C          R
 
 ### Market Clock
 
@@ -177,6 +240,10 @@ assets[]
     #>        <lgcl>    <lgcl>       <lgcl>
     #> 1:       TRUE      TRUE         TRUE
     #> 2:       TRUE      TRUE         TRUE
+    #>                                              attributes
+    #>                                                  <char>
+    #> 1: fractional_eh_enabled;has_options;overnight_tradable
+    #> 2:                                                 <NA>
 
 ### Market News
 
@@ -189,8 +256,8 @@ news[, .(headline, source, created_at)]
     #>                                <char>   <char>               <char>
     #> 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
     #> 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
-    #> 3: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
-    #> 4: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
+    #> 3:      Some Generic Markets Headline     wire 2024-01-25T15:00:00Z
+    #> 4:                URL with semicolons     test 2024-01-25T14:00:00Z
 
 ## Account
 
@@ -271,6 +338,10 @@ trading$get_orders(status = "open")
     #>     <char> <char> <char> <char> <char> <char>     <char>               <char>
     #> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z
     #> 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z
+    #>    leg_index parent_order_id
+    #>        <int>          <char>
+    #> 1:        NA            <NA>
+    #> 2:        NA            <NA>
 
 ### Cancel an Order
 
@@ -413,57 +484,11 @@ while (!later::loop_empty()) {
 }
 ```
 
-    #>      close     high      low trade_count    open           timestamp   volume
-    #>      <num>    <num>    <num>       <int>   <num>              <POSc>    <int>
-    #>  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943
-    #>  2: 184.25 185.8800 183.4300      656956 184.220 2024-01-03 05:00:00 58418916
-    #>  3: 181.91 183.0872 180.8800      712850 182.150 2024-01-04 05:00:00 71992243
-    #>  4: 181.18 182.7600 180.1700      682335 181.990 2024-01-05 05:00:00 62379661
-    #>  5: 185.56 185.6000 181.5000      669304 182.085 2024-01-08 05:00:00 59151720
-    #>  6: 185.14 185.1500 182.7300      538297 183.920 2024-01-09 05:00:00 42848219
-    #>  7: 186.19 186.4000 183.9200      554884 184.350 2024-01-10 05:00:00 46797681
-    #>  8: 185.59 187.0500 183.6200      584114 186.540 2024-01-11 05:00:00 49133996
-    #>  9: 185.92 186.7400 185.1900      477050 186.060 2024-01-12 05:00:00 40477782
-    #> 10: 183.63 184.2600 180.9340      767431 182.160 2024-01-16 05:00:00 65612289
-    #> 11: 182.68 182.9300 180.3000      594725 181.270 2024-01-17 05:00:00 47321545
-    #> 12: 188.63 189.1400 185.8300      787472 186.090 2024-01-18 05:00:00 78031784
-    #> 13: 191.56 191.9500 188.8200      682664 189.330 2024-01-19 05:00:00 68902985
-    #> 14: 193.89 195.3300 192.2600      718256 192.300 2024-01-22 05:00:00 60139948
-    #> 15: 195.18 195.7500 193.8299      533198 195.020 2024-01-23 05:00:00 42360151
-    #> 16: 194.50 196.3800 194.3400      594907 195.420 2024-01-24 05:00:00 53636461
-    #> 17: 194.17 196.2675 193.1125      644776 195.220 2024-01-25 05:00:00 54834147
-    #> 18: 192.42 194.7600 191.9400      534166 194.270 2024-01-26 05:00:00 44594011
-    #> 19: 191.73 192.2000 189.5800      599512 192.010 2024-01-29 05:00:00 47145521
-    #> 20: 188.04 191.8000 187.4700      690706 190.940 2024-01-30 05:00:00 55854611
-    #> 21: 184.40 187.0950 184.3500      679844 187.040 2024-01-31 05:00:00 55467803
-    #>      close     high      low trade_count    open           timestamp   volume
-    #>      <num>    <num>    <num>       <int>   <num>              <POSc>    <int>
-    #>         vwap
-    #>        <num>
-    #>  1: 185.8462
-    #>  2: 184.3197
-    #>  3: 182.0131
-    #>  4: 181.4839
-    #>  5: 184.4009
-    #>  6: 184.3641
-    #>  7: 185.2238
-    #>  8: 185.0222
-    #>  9: 185.8182
-    #> 10: 182.8303
-    #> 11: 181.8952
-    #> 12: 187.9687
-    #> 13: 190.6088
-    #> 14: 194.0135
-    #> 15: 194.8158
-    #> 16: 195.2364
-    #> 17: 194.7833
-    #> 18: 193.1369
-    #> 19: 191.2808
-    #> 20: 188.8236
-    #> 21: 185.3675
-    #>         vwap
-    #>        <num>
-    #> Market open: FALSE
+    #>              timestamp   open   high    low  close   volume trade_count    vwap
+    #>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
+    #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
+    #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
+    #> Market open: TRUE
 
 ## Available Classes
 

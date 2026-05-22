@@ -420,19 +420,31 @@ parse_news <- function(news_items) {
     imgs <- item[["images"]]
     if (is.null(imgs) || length(imgs) == 0L) {
       item$image_sizes <- NA_character_
-      item$image_urls  <- NA_character_
+      item$image_urls <- NA_character_
     } else {
-      sizes <- vapply(imgs, function(img) {
-        if (is.null(img$size)) NA_character_ else as.character(img$size)
-      }, character(1))
-      urls <- vapply(imgs, function(img) {
-        if (is.null(img$url)) NA_character_ else as.character(img$url)
-      }, character(1))
-      urls_safe <- vapply(urls, function(u) {
-        if (is.na(u)) NA_character_ else gsub(";", "%3B", u, fixed = TRUE)
-      }, character(1))
+      sizes <- vapply(
+        imgs,
+        function(img) {
+          if (is.null(img$size)) NA_character_ else as.character(img$size)
+        },
+        character(1)
+      )
+      urls <- vapply(
+        imgs,
+        function(img) {
+          if (is.null(img$url)) NA_character_ else as.character(img$url)
+        },
+        character(1)
+      )
+      urls_safe <- vapply(
+        urls,
+        function(u) {
+          if (is.na(u)) NA_character_ else gsub(";", "%3B", u, fixed = TRUE)
+        },
+        character(1)
+      )
       item$image_sizes <- paste(sizes, collapse = ";")
-      item$image_urls  <- paste(urls_safe, collapse = ";")
+      item$image_urls <- paste(urls_safe, collapse = ";")
     }
     item[["images"]] <- NULL
     return(item)
@@ -554,7 +566,9 @@ collapse_string_array_fields <- function(x, fields) {
       if (any(grepl(";", val_chr, fixed = TRUE))) {
         rlang::warn(
           paste0(
-            "Field `", nm, "` contains a literal `;` which collides with the ",
+            "Field `",
+            nm,
+            "` contains a literal `;` which collides with the ",
             "collapse separator. Joining anyway; downstream code that splits ",
             "on `;` will see corrupted values. Please report this so we can ",
             "switch the separator for this field."
@@ -571,7 +585,7 @@ collapse_string_array_fields <- function(x, fields) {
 
 #' Parse an Alpaca Asset Record to a Single-Row data.table
 #'
-#' Like [as_dt_row()] but collapses the `attributes` string array to a
+#' Like `as_dt_row()` but collapses the `attributes` string array to a
 #' single comma-separated character column (e.g.
 #' `"fractional_eh_enabled,has_options,overnight_tradable"`). One asset
 #' stays one row.
@@ -591,7 +605,7 @@ parse_asset <- function(x) {
 
 #' Parse an Alpaca Asset List to a data.table
 #'
-#' Like [as_dt_list()] but applies [parse_asset()] per record so the
+#' Like `as_dt_list()` but applies `parse_asset()` per record so the
 #' `attributes` array column is collapsed instead of arriving as a list
 #' column.
 #'
@@ -669,7 +683,7 @@ parse_order <- function(x) {
 
 #' Parse a List of Order Responses to data.table
 #'
-#' Applies [parse_order()] to each item and row-binds.
+#' Applies `parse_order()` to each item and row-binds.
 #'
 #' @param items A list of order named lists.
 #' @return A [data.table::data.table].

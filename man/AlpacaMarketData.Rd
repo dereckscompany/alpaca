@@ -650,8 +650,8 @@ Retrieves the most recent trade for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatesttrade}{Latest Trade}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1}{Latest Trade}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -691,8 +691,9 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade} (a single row for this single-trade method).
+Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -700,7 +701,11 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}. Recover
+the original vector with
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+the trade carries no condition codes.
 }
 }
 \subsection{Examples}{
@@ -730,8 +735,8 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestquote}{Latest Quote}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1}{Latest Quote}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -773,7 +778,9 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote} (a single row for this single-quote method).
+Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -782,6 +789,9 @@ Verifieid: 2026-03-10
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
 \item \code{bid_size} (integer): Bid size.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"R"} or \code{"R;A"}). Filter with \code{dt[grepl("R", conditions)]}.
+\code{NA} when the quote carries no condition codes.
 }
 }
 \subsection{Examples}{
@@ -812,8 +822,8 @@ latest quote, minute bar, daily bar, and previous daily bar.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocksnapshot}{Stock Snapshot}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocksnapshotsingle}{Stock Snapshot}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -849,7 +859,19 @@ Verifieid: 2026-03-10
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-flattened snapshot fields (prefixed by section name).
+\strong{one row} containing the flattened snapshot. Each nested section
+is unrolled into prefixed columns:
+\itemize{
+\item \verb{latest_trade_*} — latest trade fields (timestamp, price, size,
+exchange, id, tape, ...) plus
+\code{latest_trade_conditions} (character, \verb{;}-joined trade condition
+codes, e.g. \code{"@;T"}).
+\item \verb{latest_quote_*} — bid/ask fields plus
+\code{latest_quote_conditions} (character, \verb{;}-joined quote condition
+codes).
+\item \verb{minute_bar_*}, \verb{daily_bar_*}, \verb{prev_daily_bar_*} — OHLCV bar
+fields.
+}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -943,8 +965,8 @@ Retrieves the most recent trade for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatesttrades}{Latest Multi Trades}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatesttrades-1}{Latest Multi Trades}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -996,8 +1018,8 @@ Retrieves the most recent NBBO quote for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocklatestquotes}{Latest Multi Quotes}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocklatestquotes-1}{Latest Multi Quotes}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1031,8 +1053,10 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and quote columns.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per symbol} (the latest quote for each). Columns include
+\code{symbol} plus the quote fields documented on \code{get_latest_quote()},
+including a \verb{;}-separated \code{conditions} character column.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1049,8 +1073,8 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocksnapshots}{Multi Stock Snapshots}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocksnapshots-1}{Multi Stock Snapshots}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1094,8 +1118,11 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and flattened snapshot fields.
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per symbol}. Columns are the same flattened snapshot
+fields as \code{get_snapshot()} plus a leading \code{symbol} column.
+\code{latest_trade_conditions} and \code{latest_quote_conditions} are
+\verb{;}-joined character columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1124,8 +1151,8 @@ Retrieves historical trade data for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stocktrades}{Historical Stock Trades}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stocktradesingle-1}{Historical Stock Trades}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1180,8 +1207,8 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per trade condition. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per trade}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Trade timestamp.
 \item \code{price} (numeric): Trade price.
@@ -1189,7 +1216,8 @@ format with one row per trade condition. Columns:
 \item \code{exchange} (character): Exchange code.
 \item \code{tape} (character): SIP tape.
 \item \code{id} (integer): Trade ID.
-\item \code{condition} (character): Trade condition code.
+\item \code{conditions} (character): Semicolon-separated condition codes
+(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}.
 }
 }
 }
@@ -1207,8 +1235,8 @@ Retrieves historical quote (NBBO) data for a symbol.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/stockquotes}{Historical Stock Quotes}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/stockquotesingle-1}{Historical Stock Quotes}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1262,7 +1290,8 @@ Verifieid: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per quote}. Columns:
 \itemize{
 \item \code{timestamp} (POSIXct): Quote timestamp.
 \item \code{ask_exchange} (character): Ask exchange code.
@@ -1270,6 +1299,11 @@ Verifieid: 2026-03-10
 \item \code{ask_size} (integer): Ask size.
 \item \code{bid_exchange} (character): Bid exchange code.
 \item \code{bid_price} (numeric): Bid price.
+\item \code{conditions} (character): Semicolon-separated condition codes.
+Filter with \code{dt[grepl("R", conditions)]}; recover the original
+character vector with
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
+the quote carries no condition codes.
 \item \code{bid_size} (integer): Bid size.
 }
 }
@@ -1288,8 +1322,8 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-assets}{Assets}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/get-v2-assets-1}{Assets}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1348,6 +1382,13 @@ Verifieid: 2026-03-10
 \item \code{marginable} (logical): Whether margin is available.
 \item \code{shortable} (logical): Whether short selling is available.
 \item \code{fractionable} (logical): Whether fractional shares are available.
+\item \code{attributes} (character): Semicolon-separated attribute flags, e.g.
+\code{"fractional_eh_enabled;has_options;overnight_tradable"}. Filter
+with \code{dt[grepl("has_options", attributes)]}. Semicolon is used as
+the separator so values that may contain commas (URLs in other
+endpoints) join safely; the convention is consistent across the
+package. Recover the original character vector via
+\code{strsplit(dt$attributes, ";", fixed = TRUE)[[1]]}.
 }
 }
 \subsection{Examples}{
@@ -1377,8 +1418,8 @@ Retrieves metadata for a single asset.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id}{Asset by ID or Symbol}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1700,8 +1741,8 @@ date range, or content. Useful for event-driven trading strategies.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/news-1}{News}
-Verifieid: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/news-3}{News}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -1769,8 +1810,8 @@ without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per related symbol. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per article}. Columns:
 \itemize{
 \item \code{id} (integer): Article ID.
 \item \code{headline} (character): Article headline.
@@ -1780,7 +1821,20 @@ format with one row per related symbol. Columns:
 \item \code{url} (character): Article URL.
 \item \code{created_at} (character): Publication timestamp.
 \item \code{updated_at} (character): Last update timestamp.
-\item \code{symbol} (character): Related ticker symbol.
+\item \code{symbols} (character): Semicolon-separated related tickers, e.g.
+\code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]} or recover
+the original vector with
+\code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
+\item \code{image_sizes} (character): Semicolon-separated image size labels
+(e.g. \code{"large;small;thumb"}) parallel to \code{image_urls}. \code{NA} when
+the article has no images.
+\item \code{image_urls} (character): Semicolon-separated image URLs. Literal
+\verb{;} characters that appear inside individual URLs are percent-
+encoded as \verb{\%3B} before joining. Recover the original URLs with:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{urls <- strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]]
+urls <- vapply(urls, URLdecode, character(1))
+}\if{html}{\out{</div>}}
 }
 }
 \subsection{Examples}{

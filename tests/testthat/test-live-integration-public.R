@@ -67,7 +67,11 @@ test_that("[LIVE] get_latest_quote returns bid/ask data", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1)
   expect_true(all(c("ask_price", "bid_price") %in% names(dt)))
-  expect_true(dt$ask_price >= dt$bid_price)
+  # Don't assert ask >= bid. Outside core trading hours one side of the
+  # NBBO can be 0 or NA, and quotes can briefly cross during volatility.
+  # Type check is enough proof the wrapper round-trip works.
+  expect_true(is.numeric(dt$ask_price))
+  expect_true(is.numeric(dt$bid_price))
   throttle()
 })
 

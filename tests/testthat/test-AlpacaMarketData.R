@@ -69,8 +69,7 @@ test_that("parse_trades collapses multiple condition codes with `;`", {
   expect_equal(nrow(dt), 1L)
   expect_equal(dt$conditions, "@;T")
   # Round-trip back to the original vector.
-  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]],
-               c("@", "T"))
+  expect_equal(strsplit(dt$conditions, ";", fixed = TRUE)[[1]], c("@", "T"))
 })
 
 test_that("parse_trades handles a trade with no condition codes as NA", {
@@ -103,8 +102,12 @@ test_that("get_latest_quote returns single-row data.table with conditions collap
 test_that("parse_quotes collapses multiple condition codes with `;`", {
   quotes <- list(list(
     t = "2024-01-15T20:00:00Z",
-    ax = "V", ap = 185.55, "as" = 200L,
-    bx = "Q", bp = 185.50, bs = 300L,
+    ax = "V",
+    ap = 185.55,
+    "as" = 200L,
+    bx = "Q",
+    bp = 185.50,
+    bs = 300L,
     c = list("R", "A"),
     z = "C"
   ))
@@ -117,8 +120,12 @@ test_that("parse_quotes collapses multiple condition codes with `;`", {
 test_that("parse_quotes handles a quote with no condition codes as NA", {
   quotes <- list(list(
     t = "2024-01-15T20:00:00Z",
-    ax = "V", ap = 185.55, "as" = 200L,
-    bx = "Q", bp = 185.50, bs = 300L,
+    ax = "V",
+    ap = 185.55,
+    "as" = 200L,
+    bx = "Q",
+    bp = 185.50,
+    bs = 300L,
     z = "C"
   ))
   dt <- parse_quotes(quotes)
@@ -219,8 +226,7 @@ test_that("get_assets keeps one row per asset (no list columns)", {
   expect_equal(nrow(dt), 2L)
   list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
   expect_equal(length(list_cols), 0L)
-  expect_equal(dt[symbol == "AAPL", attributes],
-               "fractional_eh_enabled;has_options;overnight_tradable")
+  expect_equal(dt[symbol == "AAPL", attributes], "fractional_eh_enabled;has_options;overnight_tradable")
 })
 
 test_that("get_clock returns data.table with is_open field", {

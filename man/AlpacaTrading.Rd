@@ -184,8 +184,8 @@ advanced order classes (bracket, OCO, OTO).
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/postorder}{Create Order}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/postorder}{Create Order}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -314,12 +314,35 @@ Verified: 2026-03-10
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+\strong{One row per order, plus one row per leg for multi-leg orders.}
+A simple order returns one row. A bracket / OCO / OTO returns one
+parent row and one row for each leg. The two columns below tell
+parents apart from legs:
+\itemize{
+\item \code{leg_index} (integer): \code{NA} for the parent row; \verb{1, 2, ...} for
+each leg in submission order.
+\item \code{parent_order_id} (character): \code{NA} for the parent row; the
+parent's \code{id} for each leg row.
+}
+
+Useful query patterns:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# Just the parent orders (filter out legs):
+dt[is.na(parent_order_id)]
+# All legs of one specific bracket:
+dt[parent_order_id == "<parent-uuid>"]
+}\if{html}{\out{</div>}}
+
+Other columns (present on every row — each leg has its own values
+independent of the parent's):
 \itemize{
 \item \code{id} (character): Order UUID.
 \item \code{client_order_id} (character): Client order ID.
 \item \code{symbol} (character): Ticker symbol.
-\item \code{side} (character): \code{"buy"} or \code{"sell"}.
+\item \code{side} (character): \code{"buy"} or \code{"sell"} (often differs between a
+parent and its legs — e.g. a bracket parent's \code{buy} leg has
+\code{sell} take-profit and stop-loss legs).
 \item \code{type} (character): Order type.
 \item \code{time_in_force} (character): Time in force.
 \item \code{status} (character): Order status (e.g., \code{"accepted"}, \code{"new"}, \code{"filled"}).
@@ -377,8 +400,8 @@ side, and date range. Supports pagination.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getallorders}{List Orders}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getallorders-1}{List Orders}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -493,8 +516,8 @@ Retrieves a single order by its UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getorderbyorderid}{Get Order}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getorderbyorderid-1}{Get Order}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -586,8 +609,8 @@ order tracking in production systems.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/getorderbyclientorderid}{Get Order by Client ID}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/getorderbyclientorderid}{Get Order by Client ID}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -677,8 +700,8 @@ is cancelled and a new order is created atomically.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/patchorder}{Replace Order}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/patchorderbyorderid-1}{Replace Order}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -803,8 +826,8 @@ Cancels a single open order by its UUID.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteorderbyorderid}{Cancel Order}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1}{Cancel Order}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{
@@ -869,8 +892,8 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 
 \subsection{Official Documentation}{
 
-\href{https://docs.alpaca.markets/reference/deleteallorders}{Cancel All Orders}
-Verified: 2026-03-10
+\href{https://docs.alpaca.markets/us/reference/deleteallorders-1}{Cancel All Orders}
+Verified: 2026-05-22
 }
 
 \subsection{curl}{

@@ -40,8 +40,12 @@ test_that("add_order on a bracket returns one parent row + N leg rows", {
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_trading()$add_order(
-    symbol = "AAPL", side = "buy", type = "limit",
-    time_in_force = "gtc", qty = 1, limit_price = 1,
+    symbol = "AAPL",
+    side = "buy",
+    type = "limit",
+    time_in_force = "gtc",
+    qty = 1,
+    limit_price = 1,
     order_class = "bracket",
     take_profit = list(limit_price = 500),
     stop_loss = list(stop_price = 0.5, limit_price = 0.4)
@@ -63,7 +67,7 @@ test_that("add_order on a bracket returns one parent row + N leg rows", {
   # Legs carry their own field values, not the parent's.
   expect_equal(legs$side, c("sell", "sell"))
   expect_equal(legs[leg_index == 1L]$limit_price, "500.00")
-  expect_equal(legs[leg_index == 2L]$stop_price,  "0.50")
+  expect_equal(legs[leg_index == 2L]$stop_price, "0.50")
 })
 
 test_that("get_order on a bracket exposes parent + legs via parent_order_id", {
@@ -92,7 +96,7 @@ test_that("get_orders rbinds simple + bracket orders into a single flat table", 
 
   dt <- new_trading()$get_orders()
   expect_equal(nrow(dt), 4L)
-  expect_equal(sum(is.na(dt$parent_order_id)), 2L)  # simple + bracket-parent
+  expect_equal(sum(is.na(dt$parent_order_id)), 2L) # simple + bracket-parent
   expect_equal(sum(!is.na(dt$parent_order_id)), 2L) # 2 legs
 })
 

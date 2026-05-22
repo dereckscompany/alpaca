@@ -28,14 +28,14 @@ test_that("get_news returns one row per article (no cartesian inflation)", {
   expect_equal(nrow(result), 4)
 
   # Layout: original `symbols` column is gone-then-renamed to one column.
-  expect_true(all(c("headline", "source", "author", "created_at", "symbols",
-                    "image_sizes", "image_urls") %in% names(result)))
+  expect_true(all(
+    c("headline", "source", "author", "created_at", "symbols", "image_sizes", "image_urls") %in% names(result)
+  ))
 
   # Article 1: single symbol, single image
   expect_equal(result[id == 12345L]$symbols, "AAPL")
   expect_equal(result[id == 12345L]$image_sizes, "large")
-  expect_equal(result[id == 12345L]$image_urls,
-               "https://cdn.example.com/12345-large.jpg")
+  expect_equal(result[id == 12345L]$image_urls, "https://cdn.example.com/12345-large.jpg")
 })
 
 test_that("get_news joins multiple symbols with `;` on a single row", {
@@ -52,10 +52,10 @@ test_that("get_news joins multiple symbols with `;` on a single row", {
   expect_equal(nrow(row), 1L)
   expect_equal(row$symbols, "AAPL;MSFT;NVDA")
   expect_equal(row$image_sizes, "large;thumb")
-  expect_equal(row$image_urls,
-               paste("https://cdn.example.com/12346-large.jpg",
-                     "https://cdn.example.com/12346-thumb.jpg",
-                     sep = ";"))
+  expect_equal(
+    row$image_urls,
+    paste("https://cdn.example.com/12346-large.jpg", "https://cdn.example.com/12346-thumb.jpg", sep = ";")
+  )
 })
 
 test_that("get_news represents empty arrays as NA on the article row", {
@@ -89,13 +89,11 @@ test_that("get_news percent-encodes literal `;` inside image URLs", {
   expect_equal(nrow(row), 1L)
   # Original URL contained `;`; collapsed value should contain `%3B` for that
   # one character only.
-  expect_equal(row$image_urls,
-               "https://cdn.example.com/12348.jpg?w=2048%3Bh=1536")
+  expect_equal(row$image_urls, "https://cdn.example.com/12348.jpg?w=2048%3Bh=1536")
   # Round-trip: split on `;`, URLdecode each piece, get back the original URL.
   pieces <- strsplit(row$image_urls, ";", fixed = TRUE)[[1]]
   decoded <- vapply(pieces, URLdecode, character(1))
-  expect_equal(unname(decoded[1]),
-               "https://cdn.example.com/12348.jpg?w=2048;h=1536")
+  expect_equal(unname(decoded[1]), "https://cdn.example.com/12348.jpg?w=2048;h=1536")
 })
 
 test_that("get_news returns no list columns", {

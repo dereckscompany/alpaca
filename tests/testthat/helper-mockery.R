@@ -141,10 +141,8 @@ mock_snapshot_response <- function() {
     # latestQuote.c is the single-condition path (collapse to "R").
     # The bar sections also have a `c` field but it's the close price
     # (scalar number) — must NOT be touched by the conditions-collapse path.
-    latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L,
-                      c = list("@", "T")),
-    latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50,
-                       "as" = 200L, bs = 300L, c = list("R")),
+    latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L, c = list("@", "T")),
+    latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L, c = list("R")),
     minuteBar = list(
       t = "2024-01-15T14:30:00Z",
       o = 185.40,
@@ -612,8 +610,7 @@ mock_news_response <- function() {
         created_at = "2024-01-25T14:00:00Z",
         updated_at = "2024-01-25T14:00:00Z",
         images = list(
-          list(size = "large",
-               url = "https://cdn.example.com/12348.jpg?w=2048;h=1536")
+          list(size = "large", url = "https://cdn.example.com/12348.jpg?w=2048;h=1536")
         )
       )
     ),
