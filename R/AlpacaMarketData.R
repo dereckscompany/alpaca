@@ -218,7 +218,7 @@ AlpacaMarketData <- R6::R6Class(
           currency = currency
         ),
         .parser = function(data) {
-          parse_bars(data$bars)
+          return(parse_bars(data$bars))
         }
       ))
     },
@@ -364,7 +364,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed),
         .parser = function(data) {
-          parse_bars(list(data$bar))
+          return(parse_bars(list(data$bar)))
         }
       ))
     },
@@ -434,7 +434,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
-          parse_trades(list(data$trade))
+          return(parse_trades(list(data$trade)))
         }
       ))
     },
@@ -507,7 +507,7 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
-          parse_quotes(list(data$quote))
+          return(parse_quotes(list(data$quote)))
         }
       ))
     },
@@ -1586,7 +1586,7 @@ AlpacaMarketData <- R6::R6Class(
             if (length(rows) == 0) {
               return(data.table::data.table())
             }
-            data.table::rbindlist(rows, fill = TRUE)
+            return(data.table::rbindlist(rows, fill = TRUE))
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if (nrow(dt) > 0 && "symbol" %in% names(dt)) {

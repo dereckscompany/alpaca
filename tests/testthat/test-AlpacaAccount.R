@@ -2,7 +2,7 @@ KEYS <- get_api_keys(api_key = "k", api_secret = "s")
 BASE <- "https://paper-api.alpaca.markets"
 
 new_account <- function() {
-  AlpacaAccount$new(keys = KEYS, base_url = BASE)
+  return(AlpacaAccount$new(keys = KEYS, base_url = BASE))
 }
 
 test_that("AlpacaAccount inherits from AlpacaBase", {

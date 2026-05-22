@@ -45,7 +45,7 @@ mock_no_content_response <- function() {
 # ---- Market Data Fixtures ----
 
 mock_bars_response <- function() {
-  list(
+  return(list(
     bars = list(
       list(
         t = "2024-01-02T05:00:00Z",
@@ -70,11 +70,11 @@ mock_bars_response <- function() {
     ),
     symbol = "AAPL",
     next_page_token = NULL
-  )
+  ))
 }
 
 mock_multi_bars_response <- function() {
-  list(
+  return(list(
     bars = list(
       AAPL = list(
         list(
@@ -102,11 +102,11 @@ mock_multi_bars_response <- function() {
       )
     ),
     next_page_token = NULL
-  )
+  ))
 }
 
 mock_trade_response <- function() {
-  list(
+  return(list(
     trade = list(
       t = "2024-01-15T14:30:00.123Z",
       p = 185.50,
@@ -116,11 +116,11 @@ mock_trade_response <- function() {
       z = "C",
       i = 12345L
     )
-  )
+  ))
 }
 
 mock_quote_response <- function() {
-  list(
+  return(list(
     quote = list(
       t = "2024-01-15T14:30:00.456Z",
       ax = "V",
@@ -132,11 +132,11 @@ mock_quote_response <- function() {
       c = list("R"),
       z = "C"
     )
-  )
+  ))
 }
 
 mock_snapshot_response <- function() {
-  list(
+  return(list(
     # latestTrade.c is the multi-condition path (collapse to "@;T").
     # latestQuote.c is the single-condition path (collapse to "R").
     # The bar sections also have a `c` field but it's the close price
@@ -173,11 +173,11 @@ mock_snapshot_response <- function() {
       n = 450000L,
       vw = 183.80
     )
-  )
+  ))
 }
 
 mock_assets_response <- function() {
-  list(
+  return(list(
     list(
       id = "uuid-1",
       class = "us_equity",
@@ -204,29 +204,29 @@ mock_assets_response <- function() {
       fractionable = TRUE,
       attributes = list()
     )
-  )
+  ))
 }
 
 mock_clock_response <- function() {
-  list(
+  return(list(
     timestamp = "2024-01-15T14:30:00.000-05:00",
     is_open = TRUE,
     next_open = "2024-01-16T09:30:00-05:00",
     next_close = "2024-01-15T16:00:00-05:00"
-  )
+  ))
 }
 
 mock_calendar_response <- function() {
-  list(
+  return(list(
     list(date = "2024-01-02", open = "09:30", close = "16:00"),
     list(date = "2024-01-03", open = "09:30", close = "16:00")
-  )
+  ))
 }
 
 # ---- Trading Fixtures ----
 
 mock_order_response <- function() {
-  list(
+  return(list(
     id = "order-uuid-123",
     client_order_id = "client-123",
     symbol = "AAPL",
@@ -241,7 +241,7 @@ mock_order_response <- function() {
     stop_price = NULL,
     created_at = "2024-01-15T14:30:00Z",
     submitted_at = "2024-01-15T14:30:00Z"
-  )
+  ))
 }
 
 # Bracket-order response: parent order with two child legs (take-profit
@@ -249,7 +249,7 @@ mock_order_response <- function() {
 # captured during PR verification — each leg is itself a full order
 # object with its own id, side ("sell"), limit/stop prices, and status.
 mock_bracket_order_response <- function() {
-  list(
+  return(list(
     id = "bracket-parent",
     client_order_id = "client-bracket-parent",
     symbol = "AAPL",
@@ -300,11 +300,11 @@ mock_bracket_order_response <- function() {
         legs = NULL
       )
     )
-  )
+  ))
 }
 
 mock_orders_list_response <- function() {
-  list(
+  return(list(
     list(
       id = "order-1",
       symbol = "AAPL",
@@ -325,7 +325,7 @@ mock_orders_list_response <- function() {
       filled_qty = "10",
       created_at = "2024-01-15T14:31:00Z"
     )
-  )
+  ))
 }
 
 # ---- Account Fixtures ----
@@ -336,7 +336,7 @@ mock_account_response <- function() {
   # wide `admin_configurations_*` / `user_configurations_*` columns;
   # the fixture exists in this shape so the flatten branch is exercised
   # by unit tests (live tests already hit it).
-  list(
+  return(list(
     id = "acct-uuid-123",
     account_number = "PA1234567",
     status = "ACTIVE",
@@ -370,11 +370,11 @@ mock_account_response <- function() {
       suspend_trade = FALSE,
       trade_confirm_email = "all"
     )
-  )
+  ))
 }
 
 mock_positions_response <- function() {
-  list(
+  return(list(
     list(
       asset_id = "uuid-aapl",
       symbol = "AAPL",
@@ -391,22 +391,22 @@ mock_positions_response <- function() {
       lastday_price = "186.00",
       change_today = "0.005"
     )
-  )
+  ))
 }
 
 mock_portfolio_history_response <- function() {
-  list(
+  return(list(
     timestamp = list(1704067200L, 1704153600L, 1704240000L),
     equity = list(100000.0, 100150.5, 99800.25),
     profit_loss = list(0.0, 150.5, -200.25),
     profit_loss_pct = list(0.0, 0.001505, -0.002),
     base_value = 100000.0,
     timeframe = "1D"
-  )
+  ))
 }
 
 mock_activities_response <- function() {
-  list(
+  return(list(
     list(
       id = "act-1",
       activity_type = "FILL",
@@ -425,13 +425,13 @@ mock_activities_response <- function() {
       price = "374.00",
       transaction_time = "2024-01-15T14:31:00Z"
     )
-  )
+  ))
 }
 
 # ---- Options Fixtures ----
 
 mock_option_contracts_response <- function() {
-  list(
+  return(list(
     option_contracts = list(
       list(
         id = "opt-uuid-1",
@@ -469,14 +469,14 @@ mock_option_contracts_response <- function() {
       )
     ),
     next_page_token = NULL
-  )
+  ))
 }
 
 mock_option_contracts_with_deliverables_response <- function() {
   # Exercises `show_deliverables = TRUE`: one contract with a single
   # deliverable (typical equity option), one contract with two
   # deliverables (e.g. a post-corporate-action contract).
-  list(
+  return(list(
     option_contracts = list(
       list(
         id = "opt-uuid-1",
@@ -548,11 +548,11 @@ mock_option_contracts_with_deliverables_response <- function() {
       )
     ),
     next_page_token = NULL
-  )
+  ))
 }
 
 mock_option_contract_response <- function() {
-  list(
+  return(list(
     id = "opt-uuid-1",
     symbol = "AAPL240621C00200000",
     name = "AAPL Jun 21 2024 200.00 Call",
@@ -567,13 +567,13 @@ mock_option_contract_response <- function() {
     size = "100",
     open_interest = "1234",
     close_price = "5.50"
-  )
+  ))
 }
 
 # ---- Watchlist Fixtures ----
 
 mock_watchlists_response <- function() {
-  list(
+  return(list(
     list(
       id = "wl-uuid-1",
       account_id = "acct-uuid-123",
@@ -588,7 +588,7 @@ mock_watchlists_response <- function() {
       created_at = "2024-01-12T08:00:00Z",
       updated_at = "2024-01-14T09:00:00Z"
     )
-  )
+  ))
 }
 
 mock_watchlist_response <- function() {
@@ -596,7 +596,7 @@ mock_watchlist_response <- function() {
   # mirrors the live response shape and exercises the empty-vs-populated
   # branch in `parse_watchlist()` so the collapse keeps a character column
   # instead of falling back to a list column.
-  list(
+  return(list(
     id = "wl-uuid-1",
     account_id = "acct-uuid-123",
     name = "Tech Stocks",
@@ -616,13 +616,13 @@ mock_watchlist_response <- function() {
         attributes = list()
       )
     )
-  )
+  ))
 }
 
 # ---- Corporate Actions Fixtures ----
 
 mock_corporate_actions_response <- function() {
-  list(
+  return(list(
     list(
       id = "ca-uuid-1",
       corporate_action_id = "CA123",
@@ -653,13 +653,13 @@ mock_corporate_actions_response <- function() {
       old_rate = "1",
       new_rate = "10"
     )
-  )
+  ))
 }
 
 # ---- News Fixtures ----
 
 mock_news_response <- function() {
-  list(
+  return(list(
     news = list(
       # Article 1: 1 symbol, 1 image (regular case)
       list(
@@ -758,13 +758,13 @@ mock_news_response <- function() {
       )
     ),
     next_page_token = NULL
-  )
+  ))
 }
 
 # ---- Pagination Fixtures ----
 
 mock_bars_page1_response <- function() {
-  list(
+  return(list(
     bars = list(
       list(
         t = "2024-01-02T05:00:00Z",
@@ -779,11 +779,11 @@ mock_bars_page1_response <- function() {
     ),
     symbol = "AAPL",
     next_page_token = "token-page-2"
-  )
+  ))
 }
 
 mock_bars_page2_response <- function() {
-  list(
+  return(list(
     bars = list(
       list(
         t = "2024-01-03T05:00:00Z",
@@ -798,13 +798,13 @@ mock_bars_page2_response <- function() {
     ),
     symbol = "AAPL",
     next_page_token = NULL
-  )
+  ))
 }
 
 # ---- Account Config Fixtures ----
 
 mock_account_config_response <- function() {
-  list(
+  return(list(
     dtbp_check = "both",
     no_shorting = FALSE,
     suspend_trade = FALSE,
@@ -813,13 +813,13 @@ mock_account_config_response <- function() {
     max_margin_multiplier = "4",
     pdt_check = "both",
     max_options_trading_level = 2L
-  )
+  ))
 }
 
 # ---- Multi-Symbol Latest Fixtures ----
 
 mock_latest_bars_multi_response <- function() {
-  list(
+  return(list(
     bars = list(
       AAPL = list(
         t = "2024-01-15T14:30:00Z",
@@ -842,11 +842,11 @@ mock_latest_bars_multi_response <- function() {
         vw = 373.25
       )
     )
-  )
+  ))
 }
 
 mock_latest_trades_multi_response <- function() {
-  list(
+  return(list(
     trades = list(
       AAPL = list(
         t = "2024-01-15T14:30:00.123Z",
@@ -867,11 +867,11 @@ mock_latest_trades_multi_response <- function() {
         i = 12346L
       )
     )
-  )
+  ))
 }
 
 mock_latest_quotes_multi_response <- function() {
-  list(
+  return(list(
     quotes = list(
       AAPL = list(
         t = "2024-01-15T14:30:00.456Z",
@@ -896,7 +896,7 @@ mock_latest_quotes_multi_response <- function() {
         z = "C"
       )
     )
-  )
+  ))
 }
 
 mock_snapshots_multi_response <- function() {
@@ -904,7 +904,7 @@ mock_snapshots_multi_response <- function() {
   # below omits them entirely. The parser must emit
   # latest_trade_conditions / latest_quote_conditions on BOTH rows
   # (NA for MSFT) so the schema is stable.
-  list(
+  return(list(
     AAPL = list(
       latestTrade = list(t = "2024-01-15T14:30:00Z", p = 185.50, s = 100L, c = list("@", "T")),
       latestQuote = list(t = "2024-01-15T14:30:00Z", ap = 185.55, bp = 185.50, "as" = 200L, bs = 300L, c = list("R")),
@@ -973,23 +973,23 @@ mock_snapshots_multi_response <- function() {
         vw = 371.50
       )
     )
-  )
+  ))
 }
 
 # ---- Screener Fixtures ----
 
 mock_most_actives_response <- function() {
-  list(
+  return(list(
     most_actives = list(
       list(symbol = "TSLA", volume = 150000000, trade_count = 2000000),
       list(symbol = "AAPL", volume = 80000000, trade_count = 1000000),
       list(symbol = "NVDA", volume = 70000000, trade_count = 900000)
     )
-  )
+  ))
 }
 
 mock_movers_response <- function() {
-  list(
+  return(list(
     gainers = list(
       list(symbol = "XYZ", percent_change = 15.5, change = 3.20, price = 23.85),
       list(symbol = "ABC", percent_change = 12.3, change = 5.10, price = 46.55)
@@ -998,13 +998,13 @@ mock_movers_response <- function() {
       list(symbol = "DEF", percent_change = -10.2, change = -4.50, price = 39.60),
       list(symbol = "GHI", percent_change = -8.5, change = -2.10, price = 22.60)
     )
-  )
+  ))
 }
 
 # ---- Crypto Orderbook Fixtures ----
 
 mock_crypto_orderbook_response <- function() {
-  list(
+  return(list(
     orderbooks = list(
       "BTC/USD" = list(
         t = "2024-01-15T20:00:00.123456Z",
@@ -1018,13 +1018,13 @@ mock_crypto_orderbook_response <- function() {
         )
       )
     )
-  )
+  ))
 }
 
 # ---- Option Latest Trades / Chain Fixtures ----
 
 mock_option_latest_trades_response <- function() {
-  list(
+  return(list(
     trades = list(
       AAPL240621C00200000 = list(
         t = "2024-06-15T14:30:00.123Z",
@@ -1035,7 +1035,7 @@ mock_option_latest_trades_response <- function() {
         i = 99999L
       )
     )
-  )
+  ))
 }
 
 mock_option_chain_response <- function() {
@@ -1043,7 +1043,7 @@ mock_option_chain_response <- function() {
   # as scalar characters (e.g. "g", "A"), not arrays. The first
   # contract has both conditions; the second omits them so we exercise
   # the always-emit-NA branch on the chain path.
-  list(
+  return(list(
     snapshots = list(
       AAPL240621C00200000 = list(
         latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L, c = "g"),
@@ -1054,14 +1054,14 @@ mock_option_chain_response <- function() {
         latestQuote = list(t = "2024-06-15T14:30:00Z", ap = 3.30, bp = 3.10, "as" = 30L, bs = 25L)
       )
     )
-  )
+  ))
 }
 
 mock_option_chain_with_greeks_response <- function() {
   # Includes the top-level `impliedVolatility` scalar and nested
   # `greeks` object that Alpaca returns for options snapshots — both
   # were being silently dropped before the parser fix.
-  list(
+  return(list(
     snapshots = list(
       AAPL240621C00200000 = list(
         latestTrade = list(t = "2024-06-15T14:30:00Z", p = 5.50, s = 10L, c = list("a")),
@@ -1076,5 +1076,5 @@ mock_option_chain_with_greeks_response <- function() {
         )
       )
     )
-  )
+  ))
 }

@@ -12,7 +12,7 @@
 
 test_that("get_news returns one row per article (no cartesian inflation)", {
   mock_perform <- function(req) {
-    mock_alpaca_response(mock_news_response())
+    return(mock_alpaca_response(mock_news_response()))
   }
 
   market <- AlpacaMarketData$new(
@@ -116,7 +116,7 @@ test_that("get_news uses data base URL", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_news_response())
+    return(mock_alpaca_response(mock_news_response()))
   }
 
   market <- AlpacaMarketData$new(
@@ -136,7 +136,7 @@ test_that("get_news passes query parameters", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_news_response())
+    return(mock_alpaca_response(mock_news_response()))
   }
 
   market <- AlpacaMarketData$new(
@@ -154,7 +154,7 @@ test_that("get_news passes query parameters", {
 
 test_that("get_news handles empty response", {
   mock_perform <- function(req) {
-    mock_alpaca_response(list(news = list(), next_page_token = NULL))
+    return(mock_alpaca_response(list(news = list(), next_page_token = NULL)))
   }
 
   market <- AlpacaMarketData$new(

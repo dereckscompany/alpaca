@@ -197,7 +197,7 @@ parse_trades <- function(trades) {
       tr[["conditions"]] <- tr[["c"]]
       tr[["c"]] <- NULL
     }
-    collapse_string_array_fields(tr, "conditions")
+    return(collapse_string_array_fields(tr, "conditions"))
   })
   dt <- data.table::rbindlist(trades_clean, fill = TRUE)
   name_map <- c(
@@ -249,7 +249,7 @@ parse_quotes <- function(quotes) {
       q[["conditions"]] <- q[["c"]]
       q[["c"]] <- NULL
     }
-    collapse_string_array_fields(q, "conditions")
+    return(collapse_string_array_fields(q, "conditions"))
   })
   dt <- data.table::rbindlist(quotes_clean, fill = TRUE)
   name_map <- c(
@@ -473,14 +473,14 @@ parse_news <- function(news_items) {
       sizes <- vapply(
         imgs,
         function(img) {
-          if (is.null(img$size)) "" else as.character(img$size)
+          return(if (is.null(img$size)) "" else as.character(img$size))
         },
         character(1)
       )
       urls <- vapply(
         imgs,
         function(img) {
-          if (is.null(img$url)) "" else as.character(img$url)
+          return(if (is.null(img$url)) "" else as.character(img$url))
         },
         character(1)
       )
@@ -725,7 +725,7 @@ parse_contract <- function(x) {
   # length-0 columns when one deliverable omits a field that another
   # has (e.g. a cash deliverable with no `asset_id`).
   delivs <- lapply(delivs, function(d) {
-    lapply(d, function(v) if (is.null(v)) NA else v)
+    return(lapply(d, function(v) if (is.null(v)) NA else v))
   })
   deliv_dt <- data.table::rbindlist(delivs, fill = TRUE)
   data.table::setnames(deliv_dt, to_snake_case(names(deliv_dt)))

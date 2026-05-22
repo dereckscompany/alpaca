@@ -3,7 +3,7 @@ BASE <- "https://paper-api.alpaca.markets"
 DATA_BASE <- "https://data.alpaca.markets"
 
 new_market <- function() {
-  AlpacaMarketData$new(keys = KEYS, base_url = BASE, data_base_url = DATA_BASE)
+  return(AlpacaMarketData$new(keys = KEYS, base_url = BASE, data_base_url = DATA_BASE))
 }
 
 test_that("AlpacaMarketData inherits from AlpacaBase", {

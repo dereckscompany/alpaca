@@ -253,7 +253,7 @@ AlpacaOptions <- R6::R6Class(
           ppind = ppind
         ),
         .parser = function(data) {
-          parse_contracts(data$option_contracts)
+          return(parse_contracts(data$option_contracts))
         }
       ))
     },

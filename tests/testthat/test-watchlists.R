@@ -2,7 +2,7 @@
 
 test_that("get_watchlists returns data.table of watchlists", {
   mock_perform <- function(req) {
-    mock_alpaca_response(mock_watchlists_response())
+    return(mock_alpaca_response(mock_watchlists_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -21,7 +21,7 @@ test_that("get_watchlists returns data.table of watchlists", {
 
 test_that("get_watchlist returns long-format data.table with one row per asset", {
   mock_perform <- function(req) {
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -71,7 +71,7 @@ test_that("get_watchlist on an empty watchlist returns the full asset_* schema (
 
 test_that("get_watchlist collapses per-asset `attributes` to a character column (no list cols)", {
   mock_perform <- function(req) {
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -103,7 +103,7 @@ test_that("add_watchlist sends POST with name and symbols", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -123,7 +123,7 @@ test_that("modify_watchlist sends PUT request", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -141,7 +141,7 @@ test_that("add_watchlist_symbol sends POST to watchlist/{id}", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -160,7 +160,7 @@ test_that("cancel_watchlist_symbol sends DELETE for symbol", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_watchlist_response())
+    return(mock_alpaca_response(mock_watchlist_response()))
   }
 
   acct <- AlpacaAccount$new(
@@ -177,7 +177,7 @@ test_that("cancel_watchlist_symbol sends DELETE for symbol", {
 
 test_that("cancel_watchlist sends DELETE and returns confirmation dt", {
   mock_perform <- function(req) {
-    mock_no_content_response()
+    return(mock_no_content_response())
   }
 
   acct <- AlpacaAccount$new(

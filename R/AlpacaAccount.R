@@ -1351,7 +1351,7 @@ AlpacaAccount <- R6::R6Class(
               status = "removed"
             )[])
           }
-          parse_watchlist(data)
+          return(parse_watchlist(data))
         }
       ))
     },

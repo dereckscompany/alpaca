@@ -108,8 +108,10 @@ validate_order_params <- function(
       !vapply(
         legs,
         function(leg) {
-          is.list(leg) &&
-            all(c("symbol", "side", "ratio_qty") %in% names(leg))
+          return(
+            is.list(leg) &&
+              all(c("symbol", "side", "ratio_qty") %in% names(leg))
+          )
         },
         logical(1)
       )
