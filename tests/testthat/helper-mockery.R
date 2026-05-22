@@ -223,6 +223,7 @@ mock_calendar_response <- function() {
   ))
 }
 
+
 # ---- Trading Fixtures ----
 
 mock_order_response <- function() {
@@ -566,7 +567,9 @@ mock_option_contract_response <- function() {
     root_symbol = "AAPL",
     size = "100",
     open_interest = "1234",
-    close_price = "5.50"
+    open_interest_date = "2025-03-07",
+    close_price = "5.50",
+    close_price_date = "2025-03-07"
   ))
 }
 

@@ -48,3 +48,34 @@ test_that("rfc3339_to_datetime returns NA for NULL input", {
   result <- rfc3339_to_datetime(NULL)
   expect_true(is.na(result))
 })
+
+test_that("parse_date_cols converts present columns to Date", {
+  dt <- data.table::data.table(
+    id = c("a", "b"),
+    ex_date = c("2024-02-09", "2024-06-10"),
+    other = c(1, 2)
+  )
+  parse_date_cols(dt, c("ex_date", "record_date"))
+  expect_s3_class(dt$ex_date, "Date")
+  expect_equal(format(dt$ex_date), c("2024-02-09", "2024-06-10"))
+  expect_true(is.numeric(dt$other))
+  # Missing column silently skipped.
+  expect_false("record_date" %in% names(dt))
+})
+
+test_that("parse_date_cols is a no-op on a 0-row data.table", {
+  dt <- data.table::data.table(ex_date = character())
+  parse_date_cols(dt, "ex_date")
+  expect_equal(nrow(dt), 0L)
+  expect_true("ex_date" %in% names(dt))
+})
+
+test_that("parse_date_cols preserves NA values inside a real column", {
+  dt <- data.table::data.table(
+    payable_date = c("2024-02-15", NA_character_)
+  )
+  parse_date_cols(dt, "payable_date")
+  expect_s3_class(dt$payable_date, "Date")
+  expect_false(is.na(dt$payable_date[1]))
+  expect_true(is.na(dt$payable_date[2]))
+})

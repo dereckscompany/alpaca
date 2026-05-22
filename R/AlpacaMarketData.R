@@ -1300,8 +1300,11 @@ AlpacaMarketData <- R6::R6Class(
     #' @param until Character; end date (`"YYYY-MM-DD"`). Required.
     #' @param symbol Character or NULL; filter by ticker symbol.
     #' @param cusip Character or NULL; filter by CUSIP.
-    #' @param date_type Character or NULL; which date field `since`/`until` refer to:
-    #'   `"declaration"`, `"ex"`, `"record"`, `"payable"`. Default `"ex"`.
+    #' @param date_type Character or NULL; which date field `since`/`until` refer
+    #'   to. Alpaca's documented / SDK values are
+    #'   `"declaration_date"`, `"ex_date"`, `"record_date"`, `"payable_date"`
+    #'   (default server-side: `"ex_date"`). Validated client-side; invalid
+    #'   values abort before the request.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `id` (character): Announcement UUID.
     #'   - `corporate_action_id` (character): Corporate action ID.
@@ -1309,10 +1312,10 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `ca_sub_type` (character): Action sub-type.
     #'   - `initiating_symbol` (character): Symbol initiating the action.
     #'   - `target_symbol` (character): Target symbol (for mergers).
-    #'   - `declaration_date` (character): Declaration date.
-    #'   - `ex_date` (character): Ex-date.
-    #'   - `record_date` (character): Record date.
-    #'   - `payable_date` (character): Payable date.
+    #'   - `declaration_date` (Date): Declaration date.
+    #'   - `ex_date` (Date): Ex-date.
+    #'   - `record_date` (Date): Record date.
+    #'   - `payable_date` (Date): Payable date.
     #'   - `cash` (character): Cash amount (for dividends).
     #'   - `old_rate` (character): Old rate (for splits).
     #'   - `new_rate` (character): New rate (for splits).
@@ -1341,6 +1344,12 @@ AlpacaMarketData <- R6::R6Class(
       cusip = NULL,
       date_type = NULL
     ) {
+      if (!is.null(date_type)) {
+        rlang::arg_match0(
+          date_type,
+          c("declaration_date", "ex_date", "record_date", "payable_date")
+        )
+      }
       rlang::warn(
         paste0(
           "`get_corporate_actions()` wraps `/v2/corporate_actions/announcements`, ",
@@ -1361,7 +1370,14 @@ AlpacaMarketData <- R6::R6Class(
           cusip = cusip,
           date_type = date_type
         ),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          parse_date_cols(dt, c(
+            "declaration_date", "ex_date",
+            "record_date", "payable_date"
+          ))
+          return(dt)
+        }
       ))
     },
 

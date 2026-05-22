@@ -336,13 +336,15 @@ Columns (contract):
 \item \code{tradable} (logical): Whether the contract is tradable.
 \item \code{type} (character): \code{"call"} or \code{"put"}.
 \item \code{strike_price} (character): Strike price.
-\item \code{expiration_date} (character): Expiration date.
+\item \code{expiration_date} (Date): Expiration date.
 \item \code{underlying_symbol} (character): Underlying ticker symbol.
 \item \code{style} (character): Option style.
 \item \code{root_symbol} (character): Root symbol.
 \item \code{size} (character): Contract size (typically \code{"100"}).
 \item \code{open_interest} (character): Open interest.
+\item \code{open_interest_date} (Date): Date of the open-interest snapshot.
 \item \code{close_price} (character): Last close price.
+\item \code{close_price_date} (Date): Date of the last close price.
 }
 
 Columns (deliverables, only when \code{show_deliverables = TRUE}):

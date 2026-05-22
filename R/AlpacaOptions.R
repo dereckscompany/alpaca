@@ -182,13 +182,15 @@ AlpacaOptions <- R6::R6Class(
     #'   - `tradable` (logical): Whether the contract is tradable.
     #'   - `type` (character): `"call"` or `"put"`.
     #'   - `strike_price` (character): Strike price.
-    #'   - `expiration_date` (character): Expiration date.
+    #'   - `expiration_date` (Date): Expiration date.
     #'   - `underlying_symbol` (character): Underlying ticker symbol.
     #'   - `style` (character): Option style.
     #'   - `root_symbol` (character): Root symbol.
     #'   - `size` (character): Contract size (typically `"100"`).
     #'   - `open_interest` (character): Open interest.
+    #'   - `open_interest_date` (Date): Date of the open-interest snapshot.
     #'   - `close_price` (character): Last close price.
+    #'   - `close_price_date` (Date): Date of the last close price.
     #'
     #'   Columns (deliverables, only when `show_deliverables = TRUE`):
     #'   `deliverable_index`, `deliverable_type`, `deliverable_symbol`,

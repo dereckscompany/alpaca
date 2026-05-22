@@ -398,7 +398,7 @@ contracts[, .(symbol, type, strike_price, expiration_date)]
 ```
 
     #>                 symbol   type strike_price expiration_date
-    #>                 <char> <char>       <char>          <char>
+    #>                 <char> <char>       <char>          <Date>
     #> 1: AAPL240621C00200000   call       200.00      2024-06-21
     #> 2: AAPL240621P00180000    put       180.00      2024-06-21
 
