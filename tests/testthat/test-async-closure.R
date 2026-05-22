@@ -15,16 +15,16 @@ test_that("async bar fetch captures each segment independently (Reduce fix)", {
   )
 
   fetch_segment <- function(seg) {
-    promises::promise(function(resolve, reject) {
-      resolve(data.table::data.table(
+    return(promises::promise(function(resolve, reject) {
+      return(resolve(data.table::data.table(
         start = format(seg$start, "%Y-%m-%d"),
         end = format(seg$end, "%Y-%m-%d")
-      ))
-    })
+      )))
+    }))
   }
 
   combine_results <- function(results) {
-    data.table::rbindlist(results)
+    return(data.table::rbindlist(results))
   }
 
   # NOTE: Reduce() is used instead of a for-loop to avoid the closure capture
@@ -34,11 +34,11 @@ test_that("async bar fetch captures each segment independently (Reduce fix)", {
   seed <- promises::promise_resolve(list())
   chain <- Reduce(
     function(acc_promise, seg) {
-      promises::then(acc_promise, function(acc) {
-        promises::then(fetch_segment(seg), function(result) {
-          c(acc, list(result))
-        })
-      })
+      return(promises::then(acc_promise, function(acc) {
+        return(promises::then(fetch_segment(seg), function(result) {
+          return(c(acc, list(result)))
+        }))
+      }))
     },
     segments,
     accumulate = FALSE,
@@ -50,6 +50,7 @@ test_that("async bar fetch captures each segment independently (Reduce fix)", {
   result <- NULL
   promises::then(final_promise, function(val) {
     result <<- val
+    return(invisible(NULL))
   })
   for (i in 1:20) {
     later::run_now(0.1)

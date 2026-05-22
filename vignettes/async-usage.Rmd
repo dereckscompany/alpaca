@@ -63,6 +63,7 @@ main <- async(function() {
 
   cat("Got", nrow(bars), "bars for AAPL\n")
   cat("Market is", if (clock$is_open) "OPEN" else "CLOSED", "\n")
+  return(invisible(NULL))
 })
 
 main()
@@ -85,16 +86,17 @@ symbols <- c("AAPL", "MSFT", "GOOGL", "AMZN", "TSLA")
 
 # Launch all requests in parallel
 bar_promises <- lapply(symbols, function(sym) {
-  md$get_latest_bar(symbol = sym)
+  return(md$get_latest_bar(symbol = sym))
 })
 
 # Collect results as they arrive
 results <- list()
 for (i in seq_along(bar_promises)) {
   bar_promises[[i]] %...>% (function(idx) {
-    function(data) {
+    return(function(data) {
       results[[idx]] <<- data
-    }
+      return(invisible(NULL))
+    })
   })(i)
 }
 
@@ -138,6 +140,7 @@ main <- async(function() {
   # Check positions
   positions <- await(acct$get_positions())
   cat("Open positions:", nrow(positions), "\n")
+  return(invisible(NULL))
 })
 
 main()
@@ -159,26 +162,27 @@ md <- AlpacaMarketData$new(async = TRUE)
 
 server <- function(input, output, session) {
   bars <- reactive({
-    md$get_bars(
+    return(md$get_bars(
       symbol = input$symbol,
       timeframe = "1Day",
       start = input$start,
       end = input$end
-    )
+    ))
   })
 
   output$chart <- renderPlot({
     bars() %...>% function(data) {
-      plot(
+      return(plot(
         data$t,
         data$c,
         type = "l",
         main = paste(input$symbol, "Close Price"),
         xlab = "Date",
         ylab = "Price"
-      )
+      ))
     }
   })
+  return(invisible(NULL))
 }
 ```
 
@@ -199,9 +203,11 @@ md$get_bars(
 ) %...>%
   function(data) {
     cat("Got", nrow(data), "bars\n")
+    return(invisible(NULL))
   } %...!%
   function(err) {
     cat("Error:", conditionMessage(err), "\n")
+    return(invisible(NULL))
   }
 
 while (!later::loop_empty()) {

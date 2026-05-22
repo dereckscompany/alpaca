@@ -260,6 +260,7 @@ AlpacaOptions <- R6::R6Class(
       ))
     },
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Option Contract by Symbol or ID
     #'
@@ -318,9 +319,11 @@ AlpacaOptions <- R6::R6Class(
         .parser = parse_contract
       ))
     },
+    # nolint end
 
     # ---- Options Market Data ----
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Options Bars (OHLCV)
     #'
@@ -421,6 +424,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = parse_multi_bars
       ))
     },
+    # nolint end
 
     #' @description
     #' Get Options Trades
@@ -883,6 +887,7 @@ AlpacaOptions <- R6::R6Class(
       return(self$get_option_chain(underlying_symbol = symbol, feed = feed))
     },
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Options Chain
     #'
@@ -1053,6 +1058,7 @@ AlpacaOptions <- R6::R6Class(
         }
       ))
     }
+    # nolint end
   ),
   private = list(
     .data_base_url = NULL,
