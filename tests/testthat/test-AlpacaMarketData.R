@@ -107,7 +107,7 @@ test_that("get_asset returns single-row data.table", {
   expect_equal(nrow(dt), 1L)
 })
 
-test_that("get_clock returns data.table with is_open field", {
+test_that("get_clock returns POSIXct columns in America/New_York", {
   resp <- mock_alpaca_response(mock_clock_response())
   httr2::local_mocked_responses(function(req) resp)
 
@@ -115,6 +115,17 @@ test_that("get_clock returns data.table with is_open field", {
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 1L)
   expect_true("is_open" %in% names(dt))
+  expect_true(is.logical(dt$is_open))
+  for (col in c("timestamp", "next_open", "next_close")) {
+    expect_true(inherits(dt[[col]], "POSIXct"), label = col)
+    expect_equal(attr(dt[[col]], "tzone"), "America/New_York", label = col)
+  }
+  # Wall-clock instant preserved across the offset parse: the mock
+  # carries `-05:00` so 14:30 ET maps to itself once displayed in ET.
+  expect_equal(
+    format(dt$timestamp, "%Y-%m-%dT%H:%M:%S", tz = "America/New_York"),
+    "2024-01-15T14:30:00"
+  )
 })
 
 test_that("get_corporate_actions parses the four *_date fields to Date", {
@@ -138,9 +149,6 @@ test_that("get_corporate_actions parses the four *_date fields to Date", {
 })
 
 test_that("get_corporate_actions rejects unknown date_type values", {
-  # The Alpaca server expects the suffixed forms (declaration_date, ex_date, ...)
-  # — the short forms "declaration"/"ex" used to be documented but are not
-  # accepted. The wrapper now validates client-side.
   expect_error(
     suppressWarnings(
       new_market()$get_corporate_actions(
@@ -167,14 +175,33 @@ test_that("get_corporate_actions accepts all four documented date_type values", 
   }
 })
 
-test_that("get_calendar returns data.table", {
+test_that("get_calendar returns Date + POSIXct(ET) columns", {
   resp <- mock_alpaca_response(mock_calendar_response())
   httr2::local_mocked_responses(function(req) resp)
 
   dt <- new_market()$get_calendar()
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
-  expect_true(all(c("date", "open", "close") %in% names(dt)))
+  expect_true(all(c(
+    "date", "open", "close",
+    "session_open", "session_close", "settlement_date"
+  ) %in% names(dt)))
+  expect_s3_class(dt$date, "Date")
+  expect_s3_class(dt$settlement_date, "Date")
+  for (col in c("open", "close", "session_open", "session_close")) {
+    expect_true(inherits(dt[[col]], "POSIXct"), label = col)
+    expect_equal(attr(dt[[col]], "tzone"), "America/New_York", label = col)
+  }
+  # `09:30` ET on 2024-01-02 must localise correctly (EST, -05:00).
+  expect_equal(
+    format(dt$open[1], "%Y-%m-%d %H:%M %Z", tz = "America/New_York"),
+    "2024-01-02 09:30 EST"
+  )
+  # `0400` HHMM must parse via hhmm_to_hh_mm() into `04:00` ET.
+  expect_equal(
+    format(dt$session_open[1], "%H:%M", tz = "America/New_York"),
+    "04:00"
+  )
 })
 
 test_that("get_bars uses data base URL", {

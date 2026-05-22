@@ -56,8 +56,13 @@ character columns for dates and times. Instead:
 
 - `get_calendar()` returns `date`/`settlement_date` as `Date` and
   `open`/`close`/`session_open`/`session_close` as `POSIXct` localised
-  to `America/New_York` (Alpaca's documented exchange timezone, with
-  DST handled automatically by the named tz).
+  to `America/New_York`. Alpaca's `/v2/calendar` reference page does
+  not state a timezone explicitly; ET is inferred from `/v2` being
+  US-only, the market-data FAQ using NY tz as canonical for bar
+  aggregation, and `09:30` only making sense as ET wall-clock. The
+  named tz handles DST automatically (a fixed `-05:00` would be wrong
+  half the year). See the `AlpacaMarketData` class docs for the full
+  reasoning.
 - `get_clock()` returns `timestamp`/`next_open`/`next_close` as
   `POSIXct` in `America/New_York`. The wall-clock instant is preserved
   exactly — only the display tz is normalised. Use

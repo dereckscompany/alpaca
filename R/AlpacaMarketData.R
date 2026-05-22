@@ -1303,7 +1303,7 @@ AlpacaMarketData <- R6::R6Class(
           if (nrow(dt) == 0L) return(dt)
           for (col in c("timestamp", "next_open", "next_close")) {
             if (col %in% names(dt)) {
-              parsed <- lubridate::ymd_hms(dt[[col]], quiet = TRUE)
+              parsed <- rfc3339_to_datetime(dt[[col]])
               dt[, (col) := lubridate::with_tz(parsed, ALPACA_EXCHANGE_TZ)]
             }
           }

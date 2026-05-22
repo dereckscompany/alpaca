@@ -43,16 +43,23 @@ transformations applied:
     self-describing. The full mapping per endpoint is documented in the
     method-level `@return` blocks.
 
-2.  **All RFC-3339 timestamps are `POSIXct`** – Every timestamp the
-    Alpaca API emits in RFC-3339 form is parsed for you, regardless of
-    endpoint: bars, trades, quotes, snapshots (incl. the five nested
-    `*_timestamp` fields), orderbooks, news (`created_at`,
+2.  **Date / time fields parse to `Date` or `POSIXct`** – Every
+    timestamp the Alpaca API emits in RFC-3339 form is parsed for you,
+    regardless of endpoint: bars, trades, quotes, snapshots (incl. the
+    five nested `*_timestamp` fields), orderbooks, news (`created_at`,
     `updated_at`), orders (`created_at`, `updated_at`, `submitted_at`,
     `filled_at`, `expired_at`, `canceled_at`, `failed_at`,
     `replaced_at`), account `created_at`, watchlist
     `created_at` / `updated_at`, and activities `transaction_time`.
-    POSIXct columns are displayed in UTC by default. See each method's
-    `@return` for the per-column types.
+    POSIXct columns are displayed in UTC by default.
+    `get_calendar()` additionally returns `date` / `settlement_date`
+    as `Date` and `open` / `close` / `session_open` / `session_close`
+    as `POSIXct` localised to `America/New_York` (the inferred
+    exchange tz for `/v2`). `get_clock()` displays its three
+    timestamps in `America/New_York`; the wall-clock instant is
+    preserved exactly. Use `lubridate::with_tz()` to view in any
+    other timezone. See each method's `@return` for the per-column
+    types.
 
 3.  **One entity = one row, no list columns** – For every endpoint
     normalised under the shape policy (see *Data-shape conventions*
@@ -245,12 +252,11 @@ quote[]
 market$get_clock()
 ```
 
-    #>                        timestamp is_open                 next_open
-    #>                           <char>  <lgcl>                    <char>
-    #> 1: 2024-01-15T14:30:00.000-05:00    TRUE 2024-01-16T09:30:00-05:00
-    #>                   next_close
-    #>                       <char>
-    #> 1: 2024-01-15T16:00:00-05:00
+    #>              timestamp is_open           next_open          next_close
+    #>                 <POSc>  <lgcl>              <POSc>              <POSc>
+    #> 1: 2024-01-15 14:30:00    TRUE 2024-01-16 09:30:00 2024-01-15 16:00:00
+    #> # POSIXct columns are displayed in America/New_York (Alpaca's exchange tz).
+    #> # Use lubridate::with_tz() to view in another timezone.
 
 ### Available Assets
 
