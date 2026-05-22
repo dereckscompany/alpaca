@@ -1,5 +1,22 @@
 # alpaca 0.1.0.9000
 
+## Calendar and clock return parsed datetimes (breaking)
+
+`AlpacaMarketData$get_calendar()` and `$get_clock()` no longer return
+character columns for dates and times. Instead:
+
+- `get_calendar()` returns `date`/`settlement_date` as `Date` and
+  `open`/`close`/`session_open`/`session_close` as `POSIXct` localised
+  to `America/New_York` (Alpaca's documented exchange timezone, with
+  DST handled automatically by the named tz).
+- `get_clock()` returns `timestamp`/`next_open`/`next_close` as
+  `POSIXct` in `America/New_York`. The wall-clock instant is preserved
+  exactly — only the display tz is normalised. Use
+  `lubridate::with_tz()` to view elsewhere.
+
+The previous `@return` documentation also omitted `session_open`,
+`session_close`, and `settlement_date`; those are now enumerated.
+
 ## Data-shape convention: one entity = one row
 
 Every method that returns nested API data now follows a single guiding

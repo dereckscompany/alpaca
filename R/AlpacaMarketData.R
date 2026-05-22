@@ -1176,9 +1176,16 @@ AlpacaMarketData <- R6::R6Class(
     #'   Determines whether `start`/`end` are interpreted as trading dates
     #'   (default) or settlement dates.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `date` (character): Trading date.
-    #'   - `open` (character): Market open time (ET).
-    #'   - `close` (character): Market close time (ET).
+    #'   - `date` (Date): Trading date.
+    #'   - `open` (POSIXct, `America/New_York`): Regular-hours market open.
+    #'   - `close` (POSIXct, `America/New_York`): Regular-hours market close.
+    #'   - `session_open` (POSIXct, `America/New_York`): Extended-hours session open.
+    #'   - `session_close` (POSIXct, `America/New_York`): Extended-hours session close.
+    #'   - `settlement_date` (Date): Settlement date for trades executed on `date`.
+    #'
+    #' Alpaca's API returns market times without an offset; per the
+    #' Alpaca docs they are Eastern Time. We localise to
+    #' `America/New_York` (the named tz handles DST automatically).
     #'
     #' @examples
     #' \dontrun{
@@ -1193,7 +1200,28 @@ AlpacaMarketData <- R6::R6Class(
       return(private$.request(
         endpoint = "/v2/calendar",
         query = list(start = start, end = end, date_type = date_type),
-        .parser = as_dt_list
+        .parser = function(items) {
+          dt <- as_dt_list(items)
+          if (nrow(dt) == 0L) return(dt)
+          d <- dt$date
+          if ("open" %in% names(dt)) {
+            dt[, open := combine_et_datetime(d, open)]
+          }
+          if ("close" %in% names(dt)) {
+            dt[, close := combine_et_datetime(d, close)]
+          }
+          if ("session_open" %in% names(dt)) {
+            dt[, session_open := combine_et_datetime(d, hhmm_to_hh_mm(session_open))]
+          }
+          if ("session_close" %in% names(dt)) {
+            dt[, session_close := combine_et_datetime(d, hhmm_to_hh_mm(session_close))]
+          }
+          dt[, date := lubridate::ymd(d, quiet = TRUE)]
+          if ("settlement_date" %in% names(dt)) {
+            dt[, settlement_date := lubridate::ymd(settlement_date, quiet = TRUE)]
+          }
+          return(dt[])
+        }
       ))
     },
 
@@ -1227,10 +1255,15 @@ AlpacaMarketData <- R6::R6Class(
     #' ```
     #'
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `timestamp` (character): Current server timestamp.
+    #'   - `timestamp` (POSIXct, `America/New_York`): Current server timestamp.
     #'   - `is_open` (logical): Whether the market is currently open.
-    #'   - `next_open` (character): Next market open time.
-    #'   - `next_close` (character): Next market close time.
+    #'   - `next_open` (POSIXct, `America/New_York`): Next market open time.
+    #'   - `next_close` (POSIXct, `America/New_York`): Next market close time.
+    #'
+    #' The Alpaca clock endpoint returns ISO-8601 timestamps with an
+    #' explicit offset; we parse the instant exactly and display it in
+    #' `America/New_York` for consistency with `get_calendar()`. Use
+    #' `lubridate::with_tz()` to view in another timezone.
     #'
     #' @examples
     #' \dontrun{
@@ -1241,7 +1274,17 @@ AlpacaMarketData <- R6::R6Class(
     get_clock = function() {
       return(private$.request(
         endpoint = "/v2/clock",
-        .parser = as_dt_row
+        .parser = function(x) {
+          dt <- as_dt_row(x)
+          if (nrow(dt) == 0L) return(dt)
+          for (col in c("timestamp", "next_open", "next_close")) {
+            if (col %in% names(dt)) {
+              parsed <- lubridate::ymd_hms(dt[[col]], quiet = TRUE)
+              dt[, (col) := lubridate::with_tz(parsed, ALPACA_EXCHANGE_TZ)]
+            }
+          }
+          return(dt[])
+        }
       ))
     },
 
