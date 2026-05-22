@@ -1845,8 +1845,8 @@ without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per related symbol. Columns:
+\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
+\strong{one row per article}. Columns:
 \itemize{
 \item \code{id} (integer): Article ID.
 \item \code{headline} (character): Article headline.
@@ -1856,7 +1856,15 @@ format with one row per related symbol. Columns:
 \item \code{url} (character): Article URL.
 \item \code{created_at} (character): Publication timestamp.
 \item \code{updated_at} (character): Last update timestamp.
-\item \code{symbol} (character): Related ticker symbol.
+\item \code{symbols} (character): Semicolon-separated related tickers, e.g.
+\code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]}; recover
+the original vector via
+\code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
+\item \code{image_sizes} (character): Semicolon-separated image size labels
+parallel to \code{image_urls}. \code{NA} when the article has no images.
+\item \code{image_urls} (character): Semicolon-separated image URLs. Any
+literal \verb{;} inside a URL is percent-encoded as \verb{\%3B} before
+joining; recover via \code{vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))}.
 }
 }
 \subsection{Examples}{
@@ -1936,11 +1944,14 @@ Verified: 2026-05-22
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-one row per \verb{(side, price-level)}. Columns:
+one row per \verb{(symbol, side, level)}. Columns:
 \itemize{
 \item \code{symbol} (character): Crypto symbol.
 \item \code{side} (character): \code{"bid"} or \code{"ask"}.
-\item \code{price} (numeric): Price level.
+\item \code{level} (integer): 1-based depth within the side. \code{level = 1} is
+top of book (best bid / best ask); \code{level = 2} is the next-best,
+and so on. Ordering is preserved from the Alpaca response.
+\item \code{price} (numeric): Price at this level.
 \item \code{size} (numeric): Quantity at this level.
 \item \code{timestamp} (POSIXct): Orderbook timestamp.
 }

@@ -1393,8 +1393,8 @@ AlpacaMarketData <- R6::R6Class(
     #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
     #'   without content.
     #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per related symbol. Columns:
+    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
+    #'   **one row per article**. Columns:
     #'   - `id` (integer): Article ID.
     #'   - `headline` (character): Article headline.
     #'   - `author` (character): Author name.
@@ -1403,7 +1403,16 @@ AlpacaMarketData <- R6::R6Class(
     #'   - `url` (character): Article URL.
     #'   - `created_at` (character): Publication timestamp.
     #'   - `updated_at` (character): Last update timestamp.
-    #'   - `symbol` (character): Related ticker symbol.
+    #'   - `symbols` (character): Semicolon-separated related tickers, e.g.
+    #'     `"AAPL;MSFT"`. Filter with `dt[grepl("AAPL", symbols)]`; recover
+    #'     the original vector via
+    #'     `strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]`.
+    #'   - `image_sizes` (character): Semicolon-separated image size labels
+    #'     parallel to `image_urls`. `NA` when the article has no images.
+    #'   - `image_urls` (character): Semicolon-separated image URLs. Any
+    #'     literal `;` inside a URL is percent-encoded as `%3B` before
+    #'     joining; recover via `vapply(strsplit(dt$image_urls[1], ";",
+    #'     fixed = TRUE)[[1]], URLdecode, character(1))`.
     #'
     #' @examples
     #' \dontrun{
@@ -1488,10 +1497,13 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbols Character vector; crypto symbols (e.g. `"BTC/USD"`).
     #' @param loc Character; location code, `"us"` (default).
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   one row per `(side, price-level)`. Columns:
+    #'   one row per `(symbol, side, level)`. Columns:
     #'   - `symbol` (character): Crypto symbol.
     #'   - `side` (character): `"bid"` or `"ask"`.
-    #'   - `price` (numeric): Price level.
+    #'   - `level` (integer): 1-based depth within the side. `level = 1` is
+    #'     top of book (best bid / best ask); `level = 2` is the next-best,
+    #'     and so on. Ordering is preserved from the Alpaca response.
+    #'   - `price` (numeric): Price at this level.
     #'   - `size` (numeric): Quantity at this level.
     #'   - `timestamp` (POSIXct): Orderbook timestamp.
     #'
@@ -1515,6 +1527,7 @@ AlpacaMarketData <- R6::R6Class(
             return(data.table::data.table(
               symbol = character(),
               side = character(),
+              level = integer(),
               price = numeric(),
               size = numeric(),
               timestamp = as.POSIXct(character())
@@ -1527,13 +1540,15 @@ AlpacaMarketData <- R6::R6Class(
             if (!is.null(ob$b) && length(ob$b) > 0) {
               bids <- data.table::rbindlist(ob$b)
               data.table::setnames(bids, c("p", "s"), c("price", "size"))
-              bids[, `:=`(symbol = sym, side = "bid", timestamp = ts)]
+              # `level` is 1-based depth from the top of book. .I after
+              # rbindlist preserves the Alpaca response's level ordering.
+              bids[, `:=`(symbol = sym, side = "bid", level = .I, timestamp = ts)]
               rows <- c(rows, list(bids))
             }
             if (!is.null(ob$a) && length(ob$a) > 0) {
               asks <- data.table::rbindlist(ob$a)
               data.table::setnames(asks, c("p", "s"), c("price", "size"))
-              asks[, `:=`(symbol = sym, side = "ask", timestamp = ts)]
+              asks[, `:=`(symbol = sym, side = "ask", level = .I, timestamp = ts)]
               rows <- c(rows, list(asks))
             }
             if (length(rows) == 0) {
@@ -1543,7 +1558,7 @@ AlpacaMarketData <- R6::R6Class(
           })
           dt <- data.table::rbindlist(dts, fill = TRUE)
           if (nrow(dt) > 0 && "symbol" %in% names(dt)) {
-            data.table::setcolorder(dt, c("symbol", "side", "price", "size", "timestamp"))
+            data.table::setcolorder(dt, c("symbol", "side", "level", "price", "size", "timestamp"))
           }
           return(dt[])
         }

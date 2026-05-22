@@ -14,5 +14,10 @@ utils::globalVariables(c(
   "asset_name",
   "asset_symbol",
   "image_sizes",
-  "image_urls"
+  "image_urls",
+  # Crypto orderbook NSE columns
+  "level",
+  "side",
+  "price",
+  "size"
 ))

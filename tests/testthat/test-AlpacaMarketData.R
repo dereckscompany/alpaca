@@ -280,3 +280,70 @@ test_that("get_calendar rejects unknown date_type", {
     "date_type"
   )
 })
+
+# ---- get_crypto_orderbook -------------------------------------------------
+
+test_that("get_crypto_orderbook returns long format with `level` position index", {
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+
+  expect_s3_class(dt, "data.table")
+  # Mock fixture has 2 bids + 2 asks for one symbol -> 4 rows.
+  expect_equal(nrow(dt), 4L)
+  # Column set + ordering match the documented `(symbol, side, level, ...)`.
+  expect_equal(names(dt),
+               c("symbol", "side", "level", "price", "size", "timestamp"))
+  # No list columns sneak through.
+  list_cols <- names(dt)[vapply(dt, is.list, logical(1))]
+  expect_equal(length(list_cols), 0L)
+})
+
+test_that("get_crypto_orderbook indexes each side from 1 (top of book)", {
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+  # level 1 is the best bid / best ask.
+  expect_equal(dt[side == "bid"]$level, c(1L, 2L))
+  expect_equal(dt[side == "ask"]$level, c(1L, 2L))
+  # Prices are preserved in Alpaca-response order (bids descend from best,
+  # asks ascend from best).
+  expect_equal(dt[side == "bid"]$price, c(42950.50, 42949.00))
+  expect_equal(dt[side == "ask"]$price, c(42951.00, 42952.50))
+})
+
+test_that("get_crypto_orderbook parses timestamp as POSIXct", {
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+  expect_s3_class(dt$timestamp, "POSIXct")
+  # All four rows share the snapshot timestamp.
+  expect_equal(length(unique(dt$timestamp)), 1L)
+})
+
+test_that("get_crypto_orderbook returns empty data.table with full schema on empty response", {
+  resp <- mock_alpaca_response(list(orderbooks = list()))
+  httr2::local_mocked_responses(function(req) resp)
+
+  dt <- new_market()$get_crypto_orderbook("BTC/USD")
+  expect_s3_class(dt, "data.table")
+  expect_equal(nrow(dt), 0L)
+  expect_equal(names(dt),
+               c("symbol", "side", "level", "price", "size", "timestamp"))
+})
+
+test_that("get_crypto_orderbook builds the right URL", {
+  captured_url <- NULL
+  resp <- mock_alpaca_response(mock_crypto_orderbook_response())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_market()$get_crypto_orderbook(c("BTC/USD", "ETH/USD"), loc = "us")
+  expect_true(grepl("/v1beta3/crypto/us/latest/orderbooks", captured_url, fixed = TRUE))
+  expect_true(grepl("symbols=", captured_url, fixed = TRUE))
+})

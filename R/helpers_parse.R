@@ -524,10 +524,11 @@ parse_watchlist <- function(wl) {
 #' #> [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
 #' ```
 #'
-#' For URL fields (e.g. `image_urls` returned by `get_news()`, handled by
-#' the news parser with `url_encode = TRUE`) the individual URLs are
-#' percent-encoded *before* joining so they are round-trippable. To recover
-#' the original URLs:
+#' For URL fields (e.g. `image_urls` returned by `get_news()`) `parse_news()`
+#' itself percent-encodes any literal `;` inside each URL *before* it
+#' calls this helper — so the joined string can be split on `;` cleanly
+#' and the original URLs recovered via `URLdecode()` per element. This
+#' helper itself does no encoding; it only joins. To recover the URLs:
 #'
 #' ```r
 #' news <- market$get_news(symbols = "AAPL", limit = 1)
@@ -586,8 +587,8 @@ collapse_string_array_fields <- function(x, fields) {
 #' Parse an Alpaca Asset Record to a Single-Row data.table
 #'
 #' Like `as_dt_row()` but collapses the `attributes` string array to a
-#' single comma-separated character column (e.g.
-#' `"fractional_eh_enabled,has_options,overnight_tradable"`). One asset
+#' single semicolon-separated character column (e.g.
+#' `"fractional_eh_enabled;has_options;overnight_tradable"`). One asset
 #' stays one row.
 #'
 #' @param x A named list representing a single Alpaca asset.
