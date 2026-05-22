@@ -399,11 +399,11 @@ Verified: 2026-05-21
   end = NULL,
   limit = NULL,
   adjustment = NULL,
-  asof = NULL,
   feed = NULL,
-  currency = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -426,19 +426,19 @@ Verified: 2026-05-21
 comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
 \code{"spin-off"}, \code{"all"}. Default \code{"raw"}.}
 
-\item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
-identify the underlying entity when symbols have been renamed
-(e.g. FB -> META). Pass \code{"-"} to skip symbol mapping.}
-
 \item{\code{feed}}{Character or NULL; data feed source:
 \code{"sip"} (default, all US exchanges), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
-
-\item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
-Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
+identify the underlying entity when symbols have been renamed
+(e.g. FB -> META). Pass \code{"-"} to skip symbol mapping.}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
+Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -516,11 +516,11 @@ Verified: 2026-05-21
   end = NULL,
   limit = NULL,
   adjustment = NULL,
-  asof = NULL,
   feed = NULL,
-  currency = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -540,16 +540,16 @@ Verified: 2026-05-21
 \item{\code{adjustment}}{Character or NULL; one or comma-separated combination
 of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
-or \code{"-"} to skip).}
-
 \item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
-
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
+or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1181,11 +1181,11 @@ Verified: 2026-05-21
   start = NULL,
   end = NULL,
   limit = NULL,
-  asof = NULL,
   feed = NULL,
-  currency = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1200,17 +1200,17 @@ Verified: 2026-05-21
 
 \item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
-(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
-
 \item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
 \code{"boats"}.}
-
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1271,11 +1271,11 @@ Verified: 2026-05-21
   start = NULL,
   end = NULL,
   limit = NULL,
-  asof = NULL,
   feed = NULL,
-  currency = NULL,
   sort = NULL,
-  page_token = NULL
+  page_token = NULL,
+  asof = NULL,
+  currency = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1290,17 +1290,17 @@ Verified: 2026-05-21
 
 \item{\code{limit}}{Integer or NULL; max quotes (1-10000, default 1000).}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
-(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
-
 \item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
 \code{"boats"}.}
-
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
+
+\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }

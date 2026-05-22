@@ -1059,8 +1059,8 @@ Verified: 2026-05-21
   root_symbol = NULL,
   feed = NULL,
   limit = NULL,
-  updated_since = NULL,
-  page_token = NULL
+  page_token = NULL,
+  updated_since = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1087,10 +1087,10 @@ Verified: 2026-05-21
 
 \item{\code{limit}}{Integer or NULL; max results (1-1000, default 100).}
 
+\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
 \item{\code{updated_since}}{Character or NULL; only snapshots updated at or
 after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
-
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }

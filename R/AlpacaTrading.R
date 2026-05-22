@@ -617,12 +617,12 @@ AlpacaTrading <- R6::R6Class(
     modify_order = function(
       order_id,
       qty = NULL,
-      notional = NULL,
       time_in_force = NULL,
       limit_price = NULL,
       stop_price = NULL,
       trail = NULL,
       client_order_id = NULL,
+      notional = NULL,
       advanced_instructions = NULL
     ) {
       if (!is.null(qty) && !is.null(notional)) {
@@ -650,12 +650,12 @@ AlpacaTrading <- R6::R6Class(
         method = "PATCH",
         body = list(
           qty = qty,
-          notional = notional,
           time_in_force = time_in_force,
           limit_price = limit_price,
           stop_price = stop_price,
           trail = trail,
           client_order_id = client_order_id,
+          notional = notional,
           advanced_instructions = advanced_instructions
         ),
         .parser = as_dt_row

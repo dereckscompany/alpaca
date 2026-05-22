@@ -694,6 +694,11 @@ AlpacaAccount <- R6::R6Class(
     #'   `"extended_hours"`, or `"continuous"` (for 24/7 crypto charts).
     #' @param pnl_reset Character or NULL; `"per_day"` (default) or `"no_reset"`.
     #'   Set to `"no_reset"` for continuous crypto PnL.
+    #' @param date_start Deprecated alias for `start`. Earlier releases used
+    #'   this name but it was silently ignored by the API. Now forwarded to
+    #'   `start` with a deprecation warning. Will be removed in a future
+    #'   release.
+    #' @param date_end Deprecated alias for `end`. Same notes as `date_start`.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `timestamp` (POSIXct): Snapshot timestamp in UTC.
     #'   - `equity` (numeric): Portfolio equity value.
@@ -712,8 +717,23 @@ AlpacaAccount <- R6::R6Class(
       start = NULL,
       end = NULL,
       intraday_reporting = NULL,
-      pnl_reset = NULL
+      pnl_reset = NULL,
+      date_start = NULL,
+      date_end = NULL
     ) {
+      # Deprecated aliases — forward to the new names with a warning.
+      if (!is.null(date_start)) {
+        rlang::warn(
+          "`date_start` is deprecated as of alpaca 0.1.0; use `start` instead. Forwarding the value."
+        )
+        if (is.null(start)) start <- date_start
+      }
+      if (!is.null(date_end)) {
+        rlang::warn(
+          "`date_end` is deprecated as of alpaca 0.1.0; use `end` instead. Forwarding the value."
+        )
+        if (is.null(end)) end <- date_end
+      }
       if (!is.null(period) && !is.null(start) && !is.null(end)) {
         rlang::abort("Only two of `start`, `end`, and `period` may be supplied at once.")
       }
@@ -807,13 +827,13 @@ AlpacaAccount <- R6::R6Class(
     #' }
     get_activities = function(
       activity_types = NULL,
-      category = NULL,
       date = NULL,
       until = NULL,
       after = NULL,
       direction = NULL,
       page_size = NULL,
-      page_token = NULL
+      page_token = NULL,
+      category = NULL
     ) {
       if (!is.null(activity_types) && !is.null(category)) {
         rlang::abort("`activity_types` and `category` are mutually exclusive.")
@@ -822,13 +842,13 @@ AlpacaAccount <- R6::R6Class(
         endpoint = "/v2/account/activities",
         query = list(
           activity_types = activity_types,
-          category = category,
           date = date,
           until = until,
           after = after,
           direction = direction,
           page_size = page_size,
-          page_token = page_token
+          page_token = page_token,
+          category = category
         ),
         .parser = as_dt_list
       ))

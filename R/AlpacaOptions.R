@@ -911,8 +911,8 @@ AlpacaOptions <- R6::R6Class(
       root_symbol = NULL,
       feed = NULL,
       limit = NULL,
-      updated_since = NULL,
-      page_token = NULL
+      page_token = NULL,
+      updated_since = NULL
     ) {
       if (!is.null(strike_price_gte)) {
         strike_price_gte <- as.character(strike_price_gte)
@@ -933,8 +933,8 @@ AlpacaOptions <- R6::R6Class(
           root_symbol = root_symbol,
           feed = feed,
           limit = limit,
-          updated_since = updated_since,
-          page_token = page_token
+          page_token = page_token,
+          updated_since = updated_since
         ),
         .parser = function(data) {
           snaps <- data$snapshots

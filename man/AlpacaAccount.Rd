@@ -1008,7 +1008,9 @@ Verified: 2026-05-21
   start = NULL,
   end = NULL,
   intraday_reporting = NULL,
-  pnl_reset = NULL
+  pnl_reset = NULL,
+  date_start = NULL,
+  date_end = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1032,6 +1034,13 @@ Defaults to \code{end} minus \code{period}.}
 
 \item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.
 Set to \code{"no_reset"} for continuous crypto PnL.}
+
+\item{\code{date_start}}{Deprecated alias for \code{start}. Earlier releases used
+this name but it was silently ignored by the API. Now forwarded to
+\code{start} with a deprecation warning. Will be removed in a future
+release.}
+
+\item{\code{date_end}}{Deprecated alias for \code{end}. Same notes as \code{date_start}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -1106,13 +1115,13 @@ Verified: 2026-05-21
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaAccount$get_activities(
   activity_types = NULL,
-  category = NULL,
   date = NULL,
   until = NULL,
   after = NULL,
   direction = NULL,
   page_size = NULL,
-  page_token = NULL
+  page_token = NULL,
+  category = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -1122,10 +1131,6 @@ Verified: 2026-05-21
 \item{\code{activity_types}}{Character or NULL; comma-separated activity types to
 filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.
 Mutually exclusive with \code{category}.}
-
-\item{\code{category}}{Character or NULL; broad category filter:
-\code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
-\code{activity_types}.}
 
 \item{\code{date}}{Character or NULL; filter to a specific date (\code{"YYYY-MM-DD"}).}
 
@@ -1138,6 +1143,10 @@ Mutually exclusive with \code{category}.}
 \item{\code{page_size}}{Integer or NULL; max results per page (default 100, max 100).}
 
 \item{\code{page_token}}{Character or NULL; cursor for pagination.}
+
+\item{\code{category}}{Character or NULL; broad category filter:
+\code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
+\code{activity_types}.}
 }
 \if{html}{\out{</div>}}
 }

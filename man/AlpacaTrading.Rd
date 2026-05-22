@@ -772,12 +772,12 @@ Verified: 2026-05-21
 \if{html}{\out{<div class="r">}}\preformatted{AlpacaTrading$modify_order(
   order_id,
   qty = NULL,
-  notional = NULL,
   time_in_force = NULL,
   limit_price = NULL,
   stop_price = NULL,
   trail = NULL,
   client_order_id = NULL,
+  notional = NULL,
   advanced_instructions = NULL
 )}\if{html}{\out{</div>}}
 }
@@ -789,9 +789,6 @@ Verified: 2026-05-21
 
 \item{\code{qty}}{Numeric or NULL; new quantity. Mutually exclusive with \code{notional}.}
 
-\item{\code{notional}}{Numeric or NULL; new notional (dollar) amount. Only valid
-for IPO indications of interest (\code{asset_class = "ipo"}).}
-
 \item{\code{time_in_force}}{Character or NULL; new time in force.}
 
 \item{\code{limit_price}}{Numeric or NULL; new limit price.}
@@ -801,6 +798,9 @@ for IPO indications of interest (\code{asset_class = "ipo"}).}
 \item{\code{trail}}{Numeric or NULL; new trail value (for \code{type = "trailing_stop"}).}
 
 \item{\code{client_order_id}}{Character or NULL; new client order ID.}
+
+\item{\code{notional}}{Numeric or NULL; new notional (dollar) amount. Only valid
+for IPO indications of interest (\code{asset_class = "ipo"}).}
 
 \item{\code{advanced_instructions}}{List or NULL; routing instructions for
 Alpaca Elite Smart Router.}

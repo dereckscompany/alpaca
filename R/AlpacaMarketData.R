@@ -196,11 +196,11 @@ AlpacaMarketData <- R6::R6Class(
       end = NULL,
       limit = NULL,
       adjustment = NULL,
-      asof = NULL,
       feed = NULL,
-      currency = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/bars")
       return(private$.data_request(
@@ -211,11 +211,11 @@ AlpacaMarketData <- R6::R6Class(
           end = end,
           limit = limit,
           adjustment = adjustment,
-          asof = asof,
           feed = feed,
-          currency = currency,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) {
           parse_bars(data$bars)
@@ -285,11 +285,11 @@ AlpacaMarketData <- R6::R6Class(
       end = NULL,
       limit = NULL,
       adjustment = NULL,
-      asof = NULL,
       feed = NULL,
-      currency = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       return(private$.data_request(
         endpoint = "/v2/stocks/bars",
@@ -300,11 +300,11 @@ AlpacaMarketData <- R6::R6Class(
           end = end,
           limit = limit,
           adjustment = adjustment,
-          asof = asof,
           feed = feed,
-          currency = currency,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = parse_multi_bars
       ))
@@ -885,11 +885,11 @@ AlpacaMarketData <- R6::R6Class(
       start = NULL,
       end = NULL,
       limit = NULL,
-      asof = NULL,
       feed = NULL,
-      currency = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/trades")
       return(private$.data_request(
@@ -898,11 +898,11 @@ AlpacaMarketData <- R6::R6Class(
           start = start,
           end = end,
           limit = limit,
-          asof = asof,
           feed = feed,
-          currency = currency,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) parse_trades(data$trades)
       ))
@@ -962,11 +962,11 @@ AlpacaMarketData <- R6::R6Class(
       start = NULL,
       end = NULL,
       limit = NULL,
-      asof = NULL,
       feed = NULL,
-      currency = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes")
       return(private$.data_request(
@@ -975,11 +975,11 @@ AlpacaMarketData <- R6::R6Class(
           start = start,
           end = end,
           limit = limit,
-          asof = asof,
           feed = feed,
-          currency = currency,
           sort = sort,
-          page_token = page_token
+          page_token = page_token,
+          asof = asof,
+          currency = currency
         ),
         .parser = function(data) parse_quotes(data$quotes)
       ))

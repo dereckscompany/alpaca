@@ -1,8 +1,14 @@
 # alpaca 0.1.0
 
-## BREAKING CHANGES
+## DEPRECATIONS
 
-* `AlpacaAccount$get_portfolio_history()`: the date-range parameters were renamed from `date_start` / `date_end` to `start` / `end` to match the Alpaca API. The old names were ignored by the API silently, so any code passing them was already broken; the new names actually take effect.
+* `AlpacaAccount$get_portfolio_history()`: the date-range parameters `date_start` / `date_end` are deprecated in favour of `start` / `end`. The old names were silently ignored by the Alpaca API (so any code that "worked" with them was already returning data from the wrong date range). The old argument names are kept as deprecated aliases that forward to `start` / `end` and emit a deprecation warning. They will be removed in a future release.
+
+## COMPATIBILITY NOTES
+
+* This release adds many new optional parameters to existing methods. They are NULL-defaulted, so **named-argument calls are unaffected**.
+* For four methods (`get_bars`, `get_bars_multi`, `get_trades`, `get_quotes`) the new params (`asof`, `currency`) are appended at the end of the signature to preserve positional ordering. The same care was taken for `get_option_chain` (`updated_since` now last), `modify_order` (`notional` moved last), and `get_activities` (`category` moved last) so that callers using positional arguments don't break.
+* As a general rule, named arguments are the safer idiom in R — code that calls these wrapper methods positionally is fragile against any future addition.
 
 ## DOCUMENTATION FIXES
 
