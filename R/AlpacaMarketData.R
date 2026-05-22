@@ -994,7 +994,8 @@ AlpacaMarketData <- R6::R6Class(
     #'     with `dt[grepl("has_options", attributes)]`. Semicolon is used as
     #'     the separator so values that may contain commas (URLs in other
     #'     endpoints) join safely; the convention is consistent across the
-    #'     package.
+    #'     package. Recover the original character vector via
+    #'     `strsplit(dt$attributes, ";", fixed = TRUE)[[1]]`.
     #'
     #' @examples
     #' \dontrun{

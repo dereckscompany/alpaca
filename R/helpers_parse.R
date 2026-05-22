@@ -471,6 +471,29 @@ parse_watchlist <- function(wl) {
 #' the data on a subsequent split. To make any future shape change loud,
 #' we emit a once-per-session warning when that happens.
 #'
+#' ### Recovering the original values
+#' Splitting on `;` gives back the original vector:
+#'
+#' ```r
+#' dt <- market$get_asset("AAPL")
+#' strsplit(dt$attributes, ";", fixed = TRUE)[[1]]
+#' #> [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
+#' ```
+#'
+#' For URL fields (e.g. `image_urls` returned by `get_news()`, handled by
+#' the news parser with `url_encode = TRUE`) the individual URLs are
+#' percent-encoded *before* joining so they are round-trippable. To recover
+#' the original URLs:
+#'
+#' ```r
+#' news <- market$get_news(symbols = "AAPL", limit = 1)
+#' urls  <- strsplit(news$image_urls, ";", fixed = TRUE)[[1]]
+#' urls  <- vapply(urls, URLdecode, character(1))
+#' ```
+#'
+#' Plain-string fields (everything other than URLs) are NOT encoded, so
+#' `URLdecode()` on them is a no-op.
+#'
 #' Only fields in `fields` are touched; nested objects elsewhere are left
 #' alone so they can be flattened by their own parser.
 #'
