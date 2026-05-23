@@ -149,3 +149,61 @@ test_that("collapse_string_array_fields preserves the existing null/empty/normal
     "a;b;c"
   )
 })
+
+# -- coerce_cols --
+
+test_that("coerce_cols applies fn to each column present, in place", {
+  dt <- data.table::data.table(
+    a = c("2024-01-15T14:30:00Z", "2024-01-16T09:30:00Z"),
+    b = c("x", "y"),
+    c = c("2024-02-01T00:00:00Z", "2024-02-02T00:00:00Z")
+  )
+  invisible(coerce_cols(dt, c("a", "c"), rfc3339_to_datetime))
+  expect_s3_class(dt$a, "POSIXct")
+  expect_s3_class(dt$c, "POSIXct")
+  expect_equal(dt$b, c("x", "y"))
+})
+
+test_that("coerce_cols silently skips columns not in the data.table", {
+  dt <- data.table::data.table(a = "2024-01-15T14:30:00Z")
+  invisible(coerce_cols(dt, c("a", "missing"), rfc3339_to_datetime))
+  expect_s3_class(dt$a, "POSIXct")
+  expect_false("missing" %in% names(dt))
+})
+
+test_that("coerce_cols is a no-op on an empty data.table", {
+  dt <- data.table::data.table(a = character())
+  invisible(coerce_cols(dt, "a", rfc3339_to_datetime))
+  expect_equal(nrow(dt), 0L)
+  expect_type(dt$a, "character")
+})
+
+test_that("coerce_cols works with arbitrary functions, not just timestamp parsers", {
+  dt <- data.table::data.table(price = c("100.5", "200.5"), qty = c("1", "2"))
+  invisible(coerce_cols(dt, c("price", "qty"), as.numeric))
+  expect_type(dt$price, "double")
+  expect_type(dt$qty, "double")
+  expect_equal(dt$price, c(100.5, 200.5))
+})
+
+# -- rfc3339_to_datetime all-NA shape regression --
+
+test_that("rfc3339_to_datetime returns full-length POSIXct vector for all-NA input", {
+  # Pre-fix: returned length-1 NA_POSIXct_ on all-NA input. Piped back
+  # through `coerce_cols()` -> `data.table::set()` that scalar got
+  # coerced into the existing column's type, leaving documented-POSIXct
+  # columns as numeric / character. Now returns a length-matching
+  # POSIXct vector.
+  result <- rfc3339_to_datetime(c(NA_character_, NA_character_))
+  expect_s3_class(result, "POSIXct")
+  expect_length(result, 2L)
+  expect_true(all(is.na(result)))
+})
+
+test_that("coerce_cols + rfc3339_to_datetime converts an all-NA column to POSIXct (regression)", {
+  dt <- data.table::data.table(filled_at = c(NA_character_, NA_character_))
+  invisible(coerce_cols(dt, "filled_at", rfc3339_to_datetime))
+  expect_s3_class(dt$filled_at, "POSIXct")
+  expect_length(dt$filled_at, 2L)
+  expect_true(all(is.na(dt$filled_at)))
+})

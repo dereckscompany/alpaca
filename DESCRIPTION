@@ -1,7 +1,7 @@
 Package: alpaca
 Type: Package
 Title: API Wrapper to Alpaca Trading Platform
-Version: 0.2.1
+Version: 0.2.2
 URL: https://dereckscompany.github.io/alpaca/
 BugReports: https://github.com/dereckscompany/alpaca/issues
 Authors@R:
@@ -11,7 +11,7 @@ Authors@R:
            email = "dereck@mezquita.io",
            comment = c(ORCID = "0000-0002-9307-6762"))
 Description: R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Wraps the US equities and options surfaces of Alpaca's REST API. Some shared endpoints (e.g. assets, screener movers) accept `"crypto"` as a filter value and pass it through, but dedicated crypto, forex and international-market endpoints are tracked as planned follow-on work.
-License: MIT + file LICENSE
+License: MIT
 Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr

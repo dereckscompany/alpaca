@@ -1250,18 +1250,14 @@ AlpacaMarketData <- R6::R6Class(
           # the time-combine calls need the original "YYYY-MM-DD" character.
           d <- dt$date
           # Regular-hours open/close arrive as "HH:MM".
-          for (col in c("open", "close")) {
-            if (col %in% names(dt)) {
-              dt[, (col) := combine_et_datetime(d, get(col))]
-            }
-          }
+          coerce_cols(dt, c("open", "close"), function(x) combine_et_datetime(d, x))
           # Extended-hours session_open/session_close arrive as "HHMM"
           # (no colon) — normalise before combining.
-          for (col in c("session_open", "session_close")) {
-            if (col %in% names(dt)) {
-              dt[, (col) := combine_et_datetime(d, hhmm_to_hh_mm(get(col)))]
-            }
-          }
+          coerce_cols(
+            dt,
+            c("session_open", "session_close"),
+            function(x) combine_et_datetime(d, hhmm_to_hh_mm(x))
+          )
           parse_date_cols(dt, c("date", "settlement_date"))
           return(dt[])
         }

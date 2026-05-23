@@ -1,3 +1,38 @@
+# alpaca 0.2.2
+
+## Bug fixes
+
+* **`rfc3339_to_datetime()` was returning a length-1 `NA_POSIXct_` on
+  all-NA input.** When that result flowed through `parse_timestamp_cols()`
+  /`coerce_cols()` -> `data.table::set()`, the length-1 POSIXct got
+  coerced into the existing column's type (character / numeric / logical)
+  rather than replacing the column with a POSIXct one. Endpoints whose
+  `@return` blocks documented `POSIXct` could therefore quietly return
+  character columns when every upstream row had a missing timestamp.
+  Dropped the `all(is.na(x))` short-circuit —
+  `lubridate::as_datetime()` already returns a full-length POSIXct
+  vector on all-NA input. Mirrors the binance `ms_to_datetime` fix
+  caught in binance PR #9 review.
+
+## Refactor
+
+* **New internal `coerce_cols(dt, cols, fn)` helper** in
+  `R/helpers_parse.R`. Generalises the existing `parse_timestamp_cols`
+  and `parse_date_cols` to any per-column coercion function. Both
+  specialised helpers now delegate to `coerce_cols` so there's a
+  single core implementation. Same shape and contract as the binance
+  package's `coerce_cols`. Internal `@noRd`.
+
+## Tooling
+
+* **`DESCRIPTION` License field** changed from `License: MIT + file LICENSE`
+  to `License: MIT`. The previous form required `LICENSE` to be a 2-line
+  DCF stub (`YEAR:` / `COPYRIGHT HOLDER:`), but the file carries the
+  full MIT text — which is what GitHub's licensee detector wants for
+  the MIT badge. The two requirements conflict; dropping `+ file LICENSE`
+  lets R CMD check skip the DCF parse of the LICENSE file while leaving
+  the GitHub-visible MIT detection intact. Non-CRAN form.
+
 # alpaca 0.2.1
 
 ## Bug fixes
