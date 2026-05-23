@@ -1,3 +1,27 @@
+# alpaca 0.2.1
+
+## Bug fixes
+
+* **`collapse_string_array_fields` is now NA-safe.** A scalar
+  `NA_character_` input would crash the helper —
+  `grepl(";", NA_character_, fixed = TRUE)` returns `NA`, which
+  propagates through `any(NA)` and then crashes `if (NA)`. Mixed
+  vectors like `c("real", NA)` were also wrong:
+  `paste(c("real", NA), collapse = ";")` produced the literal string
+  `"real;NA"`, indistinguishable from a genuine `"NA"` value. The
+  helper now filters NAs before joining, returns `NA_character_`
+  when every element is NA, and uses `na.rm = TRUE` defensively on
+  the separator-collision check. Ported from the binance package.
+
+* **`alpaca_backfill_bars()` no longer hides failures on a return
+  attribute.** Per-`(symbol, timeframe)` errors are now surfaced as
+  `rlang::warn()` warnings during the run, and a final summary
+  warning lists the failure count plus affected pairs at the end.
+  The previous `attr(combined, "failures")` was easy to miss; the
+  return value is now just the data.table with no hidden state.
+  Code that read `attr(result, "failures")` should capture warnings
+  with `withCallingHandlers()` or `tryCatch()` instead.
+
 # alpaca 0.2.0
 
 ## Pure-date fields are now `Date` (breaking)

@@ -42,7 +42,12 @@ Default \code{0.25}.}
 }
 \value{
 \code{data.table} with all downloaded data (invisibly). Also writes to CSV.
-Has a \code{"failures"} attribute listing any symbol-timeframe combos that failed.
+
+Per-combo failures are surfaced as warnings during the run (one
+\code{rlang::warn()} per failed \verb{(symbol, timeframe)} pair, with the
+underlying error message). After the loop, if any combinations
+failed, a final summary warning lists the count and the affected
+pairs. No failure data is hidden on the return value.
 }
 \description{
 Downloads historical OHLCV bar data for one or more symbols and timeframes,

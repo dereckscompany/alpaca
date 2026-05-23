@@ -20,7 +20,12 @@
 #' @param keys List; API credentials. Defaults to [get_api_keys()].
 #' @param data_base_url Character; market data base URL. Defaults to [get_data_base_url()].
 #' @return `data.table` with all downloaded data (invisibly). Also writes to CSV.
-#'   Has a `"failures"` attribute listing any symbol-timeframe combos that failed.
+#'
+#'   Per-combo failures are surfaced as warnings during the run (one
+#'   `rlang::warn()` per failed `(symbol, timeframe)` pair, with the
+#'   underlying error message). After the loop, if any combinations
+#'   failed, a final summary warning lists the count and the affected
+#'   pairs. No failure data is hidden on the return value.
 #'
 #' @examples
 #' \dontrun{
@@ -107,7 +112,14 @@ alpaca_backfill_bars <- function(
         )
       },
       error = function(e) {
-        message(sprintf("    ERROR: %s", conditionMessage(e)))
+        rlang::warn(sprintf(
+          "[%d/%d] %s %s: FAILED - %s",
+          i,
+          nrow(tasks),
+          sym,
+          tf,
+          conditionMessage(e)
+        ))
         return(NULL)
       }
     )
@@ -140,10 +152,17 @@ alpaca_backfill_bars <- function(
   data.table::fwrite(combined, path)
   message(sprintf("\nDone. %d total rows written to %s", nrow(combined), path))
 
+  # Final summary warning if anything failed. Per-combo warnings already
+  # fired inside the tryCatch above; this gives a single line the user
+  # can't miss if the verbose per-combo output scrolled past.
   if (length(failures) > 0) {
-    message(sprintf("Failed: %s", paste(failures, collapse = ", ")))
+    rlang::warn(sprintf(
+      "alpaca_backfill_bars: %d of %d (symbol, timeframe) combinations failed: %s",
+      length(failures),
+      nrow(tasks),
+      paste(failures, collapse = ", ")
+    ))
   }
 
-  attr(combined, "failures") <- failures
   return(invisible(combined))
 }

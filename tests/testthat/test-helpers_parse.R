@@ -108,3 +108,44 @@ test_that("parse_date_cols preserves NA values inside a real column", {
   expect_false(is.na(dt$payable_date[1]))
   expect_true(is.na(dt$payable_date[2]))
 })
+
+# -- collapse_string_array_fields NA-safety --
+
+test_that("collapse_string_array_fields handles scalar NA_character_ input without crashing", {
+  # Regression: previously crashed on scalar NA. `grepl(";", NA_character_)`
+  # returns NA, propagates through `any(NA)`, and crashes `if (NA)`.
+  result <- collapse_string_array_fields(list(x = NA_character_), "x")
+  expect_true(is.na(result$x))
+  expect_type(result$x, "character")
+})
+
+test_that("collapse_string_array_fields filters NA elements before joining", {
+  # `paste(c("real", NA), collapse = ";")` would produce the literal
+  # `"real;NA"`, indistinguishable from a real "NA" value. NAs must
+  # be filtered out first.
+  result <- collapse_string_array_fields(
+    list(x = c("a", NA_character_, "b")),
+    "x"
+  )
+  expect_equal(result$x, "a;b")
+})
+
+test_that("collapse_string_array_fields returns NA_character_ for all-NA vectors", {
+  # When every element is NA, the joined string would be empty; round
+  # this back to NA_character_ so all-missing arrays match the
+  # null / empty-array case.
+  result <- collapse_string_array_fields(
+    list(x = c(NA_character_, NA_character_)),
+    "x"
+  )
+  expect_true(is.na(result$x))
+})
+
+test_that("collapse_string_array_fields preserves the existing null/empty/normal behaviour", {
+  expect_true(is.na(collapse_string_array_fields(list(x = NULL), "x")$x))
+  expect_true(is.na(collapse_string_array_fields(list(x = character(0)), "x")$x))
+  expect_equal(
+    collapse_string_array_fields(list(x = c("a", "b", "c")), "x")$x,
+    "a;b;c"
+  )
+})
