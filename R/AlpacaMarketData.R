@@ -1316,15 +1316,11 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = "/v2/clock",
         .parser = function(x) {
           dt <- as_dt_row(x)
-          if (nrow(dt) == 0L) {
-            return(dt)
-          }
-          for (col in c("timestamp", "next_open", "next_close")) {
-            if (col %in% names(dt)) {
-              parsed <- rfc3339_to_datetime(dt[[col]])
-              dt[, (col) := lubridate::with_tz(parsed, ALPACA_EXCHANGE_TZ)]
-            }
-          }
+          coerce_cols(
+            dt,
+            c("timestamp", "next_open", "next_close"),
+            function(v) lubridate::with_tz(rfc3339_to_datetime(v), ALPACA_EXCHANGE_TZ)
+          )
           return(dt[])
         }
       ))
