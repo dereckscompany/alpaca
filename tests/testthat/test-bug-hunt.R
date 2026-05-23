@@ -28,9 +28,9 @@ test_that("alpaca_fetch_bars works correctly in async mode", {
 
   # Use a custom .perform that returns a promise (async mode)
   async_perform <- function(req) {
-    promises::promise(function(resolve, reject) {
-      resolve(resp)
-    })
+    return(promises::promise(function(resolve, reject) {
+      return(resolve(resp))
+    }))
   }
 
   # This should return a promise that resolves to a data.table
@@ -58,9 +58,11 @@ test_that("alpaca_fetch_bars works correctly in async mode", {
     result_promise,
     onFulfilled = function(val) {
       resolved <<- val
+      return(invisible(NULL))
     },
     onRejected = function(err) {
       error_msg <<- conditionMessage(err)
+      return(invisible(NULL))
     }
   )
 
@@ -269,7 +271,7 @@ test_that("get_news joins symbols with comma like other multi-symbol methods", {
   resp <- mock_alpaca_response(mock_news)
   httr2::local_mocked_responses(function(req) {
     captured_url <<- req$url
-    resp
+    return(resp)
   })
 
   market$get_news(symbols = c("AAPL", "MSFT"))
@@ -309,7 +311,7 @@ test_that("alpaca_paginate accepts and forwards custom timeout", {
   captured_req <- NULL
   httr2::local_mocked_responses(function(req) {
     captured_req <<- req
-    resp
+    return(resp)
   })
 
   result <- alpaca:::alpaca_paginate(

@@ -63,6 +63,7 @@ main <- async(function() {
 
   cat("Got", nrow(bars), "bars for AAPL\n")
   cat("Market is", if (clock$is_open) "OPEN" else "CLOSED", "\n")
+  return(invisible(NULL))
 })
 
 main()
@@ -77,34 +78,31 @@ Fire off multiple requests simultaneously and collect results:
 
 ```{r parallel-requests}
 library(alpaca)
-library(promises)
+library(coro)
 library(later)
 
 md <- AlpacaMarketData$new(async = TRUE)
 symbols <- c("AAPL", "MSFT", "GOOGL", "AMZN", "TSLA")
 
-# Launch all requests in parallel
-bar_promises <- lapply(symbols, function(sym) {
-  md$get_latest_bar(symbol = sym)
+# Launch all requests in parallel, then await each in sequence inside
+# a single async() block. The requests run concurrently — only the
+# awaits are sequential.
+collect <- async(function() {
+  bar_promises <- lapply(symbols, function(sym) {
+    return(md$get_latest_bar(symbol = sym))
+  })
+  results <- vector("list", length(bar_promises))
+  for (i in seq_along(bar_promises)) {
+    results[[i]] <- await(bar_promises[[i]])
+  }
+  return(data.table::rbindlist(results, fill = TRUE))
 })
 
-# Collect results as they arrive
-results <- list()
-for (i in seq_along(bar_promises)) {
-  bar_promises[[i]] %...>% (function(idx) {
-    function(data) {
-      results[[idx]] <<- data
-    }
-  })(i)
-}
-
+result_promise <- collect()
 while (!later::loop_empty()) {
   later::run_now()
 }
-
-# Combine into a single data.table
-all_bars <- data.table::rbindlist(results, fill = TRUE)
-print(all_bars)
+print(await(result_promise))
 ```
 
 ## Async Trading
@@ -138,6 +136,7 @@ main <- async(function() {
   # Check positions
   positions <- await(acct$get_positions())
   cat("Open positions:", nrow(positions), "\n")
+  return(invisible(NULL))
 })
 
 main()
@@ -159,51 +158,61 @@ md <- AlpacaMarketData$new(async = TRUE)
 
 server <- function(input, output, session) {
   bars <- reactive({
-    md$get_bars(
+    return(md$get_bars(
       symbol = input$symbol,
       timeframe = "1Day",
       start = input$start,
       end = input$end
-    )
+    ))
   })
 
   output$chart <- renderPlot({
-    bars() %...>% function(data) {
-      plot(
+    coro::async(function() {
+      data <- await(bars())
+      return(plot(
         data$t,
         data$c,
         type = "l",
         main = paste(input$symbol, "Close Price"),
         xlab = "Date",
         ylab = "Price"
-      )
-    }
+      ))
+    })()
   })
+  return(invisible(NULL))
 }
 ```
 
 ## Error Handling
 
-Use `promises::catch()` to handle errors in async chains:
+Use `tryCatch()` inside an `async()` block — `await()` re-throws the
+promise rejection as a normal R error, so the JS try/catch pattern
+works directly:
 
 ```{r error-handling}
 library(alpaca)
-library(promises)
+library(coro)
 library(later)
 
 md <- AlpacaMarketData$new(async = TRUE)
 
-md$get_bars(
-  symbol = "INVALID_SYMBOL",
-  timeframe = "1Day"
-) %...>%
-  function(data) {
-    cat("Got", nrow(data), "bars\n")
-  } %...!%
-  function(err) {
-    cat("Error:", conditionMessage(err), "\n")
-  }
+main <- async(function() {
+  return(tryCatch(
+    {
+      data <- await(md$get_bars(
+        symbol = "INVALID_SYMBOL",
+        timeframe = "1Day"
+      ))
+      cat("Got", nrow(data), "bars\n")
+    },
+    error = function(err) {
+      cat("Error:", conditionMessage(err), "\n")
+      return(invisible(NULL))
+    }
+  ))
+})
 
+main()
 while (!later::loop_empty()) {
   later::run_now()
 }

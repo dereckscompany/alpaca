@@ -363,9 +363,11 @@ AlpacaTrading <- R6::R6Class(
         (!is.null(before_order_id) || !is.null(after_order_id)) &&
           (!is.null(after) || !is.null(until))
       ) {
-        rlang::abort(
-          "Order-ID pagination (`before_order_id` / `after_order_id`) cannot be combined with timestamp pagination (`after` / `until`)."
-        )
+        rlang::abort(paste(
+          "Order-ID pagination (`before_order_id` / `after_order_id`)",
+          "cannot be combined with timestamp pagination",
+          "(`after` / `until`)."
+        ))
       }
       if (!is.null(status)) {
         rlang::arg_match0(status, c("open", "closed", "all"))

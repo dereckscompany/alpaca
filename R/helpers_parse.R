@@ -207,8 +207,7 @@ ALPACA_EXCHANGE_TZ <- "America/New_York"
 #' @keywords internal
 #' @noRd
 combine_et_datetime <- function(date, time) {
-  joined <- ifelse(is.na(date) | is.na(time), NA_character_,
-                   paste(date, time))
+  joined <- ifelse(is.na(date) | is.na(time), NA_character_, paste(date, time))
   return(lubridate::ymd_hm(joined, tz = ALPACA_EXCHANGE_TZ, quiet = TRUE))
 }
 
@@ -223,8 +222,7 @@ combine_et_datetime <- function(date, time) {
 #' @keywords internal
 #' @noRd
 hhmm_to_hh_mm <- function(x) {
-  out <- ifelse(is.na(x) | nchar(x) != 4L, NA_character_,
-                paste0(substr(x, 1L, 2L), ":", substr(x, 3L, 4L)))
+  out <- ifelse(is.na(x) | nchar(x) != 4L, NA_character_, paste0(substr(x, 1L, 2L), ":", substr(x, 3L, 4L)))
   return(out)
 }
 
@@ -530,13 +528,16 @@ parse_snapshot <- function(snapshot) {
     data.table::setnames(dt, names(dt)[idx], snapshot_name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  parse_timestamp_cols(dt, c(
-    "latest_trade_timestamp",
-    "latest_quote_timestamp",
-    "minute_bar_timestamp",
-    "daily_bar_timestamp",
-    "prev_daily_bar_timestamp"
-  ))
+  parse_timestamp_cols(
+    dt,
+    c(
+      "latest_trade_timestamp",
+      "latest_quote_timestamp",
+      "minute_bar_timestamp",
+      "daily_bar_timestamp",
+      "prev_daily_bar_timestamp"
+    )
+  )
   return(dt[])
 }
 
@@ -846,11 +847,14 @@ parse_contract <- function(x) {
   delivs <- x[["deliverables"]]
   x[["deliverables"]] <- NULL
   contract_row <- as_dt_row(x)
-  parse_date_cols(contract_row, c(
-    "expiration_date",
-    "open_interest_date",
-    "close_price_date"
-  ))
+  parse_date_cols(
+    contract_row,
+    c(
+      "expiration_date",
+      "open_interest_date",
+      "close_price_date"
+    )
+  )
   if (is.null(delivs) || length(delivs) == 0L) {
     return(contract_row[])
   }
@@ -955,9 +959,14 @@ parse_order <- function(x) {
 # (filled_at, canceled_at, ...) are NA on records that never reached
 # that state; parse_timestamp_cols() skips missing columns.
 ORDER_TIMESTAMP_COLS <- c(
-  "created_at", "updated_at", "submitted_at",
-  "filled_at", "expired_at", "canceled_at",
-  "failed_at", "replaced_at"
+  "created_at",
+  "updated_at",
+  "submitted_at",
+  "filled_at",
+  "expired_at",
+  "canceled_at",
+  "failed_at",
+  "replaced_at"
 )
 
 #' Parse a List of Order Responses to data.table

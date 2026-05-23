@@ -219,13 +219,19 @@ mock_clock_response <- function() {
 mock_calendar_response <- function() {
   return(list(
     list(
-      date = "2024-01-02", open = "09:30", close = "16:00",
-      session_open = "0400", session_close = "2000",
+      date = "2024-01-02",
+      open = "09:30",
+      close = "16:00",
+      session_open = "0400",
+      session_close = "2000",
       settlement_date = "2024-01-04"
     ),
     list(
-      date = "2024-01-03", open = "09:30", close = "16:00",
-      session_open = "0400", session_close = "2000",
+      date = "2024-01-03",
+      open = "09:30",
+      close = "16:00",
+      session_open = "0400",
+      session_close = "2000",
       settlement_date = "2024-01-05"
     )
   ))

@@ -148,6 +148,7 @@ AlpacaMarketData <- R6::R6Class(
 
     # ---- Historical Bars ----
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Historical Bars (OHLCV)
     #'
@@ -246,7 +247,9 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Historical Bars for Multiple Symbols
     #'
@@ -333,6 +336,7 @@ AlpacaMarketData <- R6::R6Class(
         .parser = parse_multi_bars
       ))
     },
+    # nolint end
 
     # ---- Latest Data ----
 
@@ -536,6 +540,7 @@ AlpacaMarketData <- R6::R6Class(
       ))
     },
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Snapshot
     #'
@@ -587,7 +592,9 @@ AlpacaMarketData <- R6::R6Class(
         .parser = parse_snapshot
       ))
     },
+    # nolint end
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Latest Bars for Multiple Symbols
     #'
@@ -657,7 +664,9 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Latest Trades for Multiple Symbols
     #'
@@ -722,7 +731,9 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Latest Quotes for Multiple Symbols
     #'
@@ -787,7 +798,9 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Snapshots for Multiple Symbols
     #'
@@ -866,6 +879,7 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
     # ---- Historical Trades & Quotes ----
 
@@ -949,6 +963,7 @@ AlpacaMarketData <- R6::R6Class(
       ))
     },
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Historical Quotes
     #'
@@ -1032,6 +1047,7 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) parse_quotes(data$quotes)
       ))
     },
+    # nolint end
 
     # ---- Assets ----
 
@@ -1165,6 +1181,7 @@ AlpacaMarketData <- R6::R6Class(
 
     # ---- Calendar & Clock ----
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Market Calendar
     #'
@@ -1226,7 +1243,9 @@ AlpacaMarketData <- R6::R6Class(
         query = list(start = start, end = end, date_type = date_type),
         .parser = function(items) {
           dt <- as_dt_list(items)
-          if (nrow(dt) == 0L) return(dt)
+          if (nrow(dt) == 0L) {
+            return(dt)
+          }
           # Snapshot the date column before we reassign it to Date below;
           # the time-combine calls need the original "YYYY-MM-DD" character.
           d <- dt$date
@@ -1248,6 +1267,7 @@ AlpacaMarketData <- R6::R6Class(
         }
       ))
     },
+    # nolint end
 
     #' @description
     #' Get Market Clock
@@ -1300,7 +1320,9 @@ AlpacaMarketData <- R6::R6Class(
         endpoint = "/v2/clock",
         .parser = function(x) {
           dt <- as_dt_row(x)
-          if (nrow(dt) == 0L) return(dt)
+          if (nrow(dt) == 0L) {
+            return(dt)
+          }
           for (col in c("timestamp", "next_open", "next_close")) {
             if (col %in% names(dt)) {
               parsed <- rfc3339_to_datetime(dt[[col]])
@@ -1314,6 +1336,7 @@ AlpacaMarketData <- R6::R6Class(
 
     # ---- Corporate Actions ----
 
+    # nolint start: line_length_linter.
     #' @description
     #' Get Corporate Action Announcements
     #'
@@ -1439,14 +1462,20 @@ AlpacaMarketData <- R6::R6Class(
         ),
         .parser = function(items) {
           dt <- as_dt_list(items)
-          parse_date_cols(dt, c(
-            "declaration_date", "ex_date",
-            "record_date", "payable_date"
-          ))
+          parse_date_cols(
+            dt,
+            c(
+              "declaration_date",
+              "ex_date",
+              "record_date",
+              "payable_date"
+            )
+          )
           return(dt)
         }
       ))
     },
+    # nolint end
 
     # ---- News ----
 

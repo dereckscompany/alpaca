@@ -4,7 +4,7 @@ test_that("get_corporate_actions returns data.table of announcements", {
   mock_perform <- function(req) {
     expect_true(grepl("corporate_actions/announcements", req$url))
     expect_true(grepl("ca_types=dividend", req$url))
-    mock_alpaca_response(mock_corporate_actions_response())
+    return(mock_alpaca_response(mock_corporate_actions_response()))
   }
 
   market <- AlpacaMarketData$new(
@@ -32,7 +32,7 @@ test_that("get_corporate_actions passes symbol filter", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(mock_corporate_actions_response())
+    return(mock_alpaca_response(mock_corporate_actions_response()))
   }
 
   market <- AlpacaMarketData$new(
@@ -56,7 +56,7 @@ test_that("get_corporate_actions uses trading base URL", {
   captured_req <- NULL
   mock_perform <- function(req) {
     captured_req <<- req
-    mock_alpaca_response(list())
+    return(mock_alpaca_response(list()))
   }
 
   market <- AlpacaMarketData$new(
