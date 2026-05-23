@@ -123,14 +123,71 @@ as_dt_list <- function(items) {
 #' @keywords internal
 #' @noRd
 rfc3339_to_datetime <- function(x) {
-  if (is.null(x) || all(is.na(x))) {
+  if (is.null(x)) {
     return(lubridate::NA_POSIXct_)
   }
+  # Don't short-circuit on `all(is.na(x))` — returning the length-1
+  # `NA_POSIXct_` from there would, when fed back through
+  # `coerce_cols()` -> `data.table::set()`, get recycled into the
+  # existing column's type rather than replacing the column with a
+  # POSIXct one. The helper must return a vector the same length as
+  # `x` so the column lands as POSIXct regardless of whether every
+  # value is NA. `lubridate::as_datetime()` does the right thing on
+  # all-NA input on its own. Mirrors the binance fix in
+  # `ms_to_datetime`.
   return(lubridate::as_datetime(x))
+}
+
+#' Apply a Function to Selected Columns of a data.table by Reference
+#'
+#' Walks `cols`; for each that exists in `dt`, replaces it in place with the
+#' result of `fn(dt[[col]])`. Columns that are not in `dt` are silently
+#' skipped — useful for endpoints whose payload sometimes omits optional
+#' fields. A zero-row `dt` short-circuits, so the caller can pipe through
+#' this without a separate `nrow(dt) > 0` guard.
+#'
+#' Replaces the repeated boilerplate of:
+#'
+#' ```r
+#' if (nrow(dt) > 0 && "created_at" %in% names(dt)) {
+#'   dt[, created_at := rfc3339_to_datetime(created_at)]
+#' }
+#' ```
+#'
+#' with:
+#'
+#' ```r
+#' coerce_cols(dt, "created_at", rfc3339_to_datetime)
+#' ```
+#'
+#' Modifies `dt` by reference via `data.table::set()`; returns `dt`
+#' invisibly so the call can be the last line of a parser. Converter-
+#' agnostic — pass any `fn(vec) -> vec` function. Mirrors the same-named
+#' helper in the binance package.
+#'
+#' @param dt A [data.table::data.table].
+#' @param cols Character; candidate column names to convert.
+#' @param fn Function; takes a column vector, returns the coerced vector.
+#'
+#' @return `dt`, modified by reference and returned invisibly.
+#'
+#' @keywords internal
+#' @noRd
+coerce_cols <- function(dt, cols, fn) {
+  if (nrow(dt) == 0L) {
+    return(invisible(dt))
+  }
+  for (col in cols) {
+    if (col %in% names(dt)) {
+      data.table::set(dt, j = col, value = fn(dt[[col]]))
+    }
+  }
+  return(invisible(dt))
 }
 
 #' Convert Named Character Columns of a data.table to POSIXct
 #'
+#' Thin wrapper over [coerce_cols()] specialised to `rfc3339_to_datetime`.
 #' Walks the given column names; for each that exists in `dt`, replaces
 #' it in place with the result of `rfc3339_to_datetime()`. Columns that
 #' do not exist are silently skipped — endpoints frequently omit
@@ -144,25 +201,15 @@ rfc3339_to_datetime <- function(x) {
 #' @keywords internal
 #' @noRd
 parse_timestamp_cols <- function(dt, cols) {
-  if (nrow(dt) == 0L) {
-    return(invisible(dt))
-  }
-  for (col in cols) {
-    if (col %in% names(dt)) {
-      dt[, (col) := rfc3339_to_datetime(get(col))]
-    }
-  }
-  return(invisible(dt))
+  return(coerce_cols(dt, cols, rfc3339_to_datetime))
 }
 
 #' Convert Named Character Columns of a data.table to Date
 #'
-#' Walks the given column names; for each that exists in `dt`, parses
-#' `"YYYY-MM-DD"` strings to `Date` via `lubridate::ymd()`. Columns
-#' that do not exist in `dt` are silently skipped — endpoints
-#' frequently omit optional date fields (e.g. `payable_date` on a
-#' freshly declared dividend), and we want the parser to handle the
-#' present subset without erroring.
+#' Thin wrapper over [coerce_cols()] specialised to
+#' `lubridate::ymd(x, quiet = TRUE)`. Walks the given column names;
+#' for each that exists in `dt`, parses `"YYYY-MM-DD"` strings to
+#' `Date`. Columns that do not exist in `dt` are silently skipped.
 #'
 #' @param dt A [data.table::data.table].
 #' @param cols Character; candidate column names to convert.
@@ -171,15 +218,7 @@ parse_timestamp_cols <- function(dt, cols) {
 #' @keywords internal
 #' @noRd
 parse_date_cols <- function(dt, cols) {
-  if (nrow(dt) == 0L) {
-    return(invisible(dt))
-  }
-  for (col in cols) {
-    if (col %in% names(dt)) {
-      dt[, (col) := lubridate::ymd(get(col), quiet = TRUE)]
-    }
-  }
-  return(invisible(dt))
+  return(coerce_cols(dt, cols, function(x) lubridate::ymd(x, quiet = TRUE)))
 }
 
 # Exchange timezone used by Alpaca for naive market times (open/close,
