@@ -2,6 +2,15 @@
 
 ## Bug fixes
 
+* **`coerce_cols(dt, cols, fn)` deduplicates `cols`**. Previously passing
+  the same column name twice — e.g. `coerce_cols(dt, c("created_at",
+  "created_at"), rfc3339_to_datetime)` — would re-feed the
+  already-coerced POSIXct vector back through `lubridate::as_datetime()`,
+  silently producing year-56,000+ values (POSIXct numerics reinterpreted
+  as RFC-3339 strings). Now uses `for (col in unique(cols))`, so each
+  column is coerced at most once regardless of how callers spell their
+  input. Mirrors the kucoin and binance fixes.
+
 * **`rfc3339_to_datetime()` was returning a length-1 `NA_POSIXct_` on
   all-NA input.** When that result flowed through `parse_timestamp_cols()`
   /`coerce_cols()` -> `data.table::set()`, the length-1 POSIXct got

@@ -186,6 +186,60 @@ test_that("coerce_cols works with arbitrary functions, not just timestamp parser
   expect_equal(dt$price, c(100.5, 200.5))
 })
 
+test_that("coerce_cols deduplicates `cols` so each column is coerced once", {
+  # Regression: passing the same column name twice used to feed the
+  # already-converted POSIXct vector back through `rfc3339_to_datetime`.
+  # `lubridate::as_datetime()` interprets the POSIXct's numeric
+  # representation as an RFC-3339 string parse target, silently
+  # producing year-56,000+ values with no warning. With `unique(cols)`
+  # the second pass is skipped and the timestamp survives intact.
+  dt <- data.table::data.table(
+    created_at = c("2024-01-15T14:30:00Z", "2024-01-16T09:30:00Z")
+  )
+  invisible(coerce_cols(
+    dt,
+    c("created_at", "created_at"),
+    rfc3339_to_datetime
+  ))
+  expect_s3_class(dt$created_at, "POSIXct")
+  expect_equal(
+    format(dt$created_at, "%Y-%m-%dT%H:%M:%SZ", tz = "UTC"),
+    c("2024-01-15T14:30:00Z", "2024-01-16T09:30:00Z")
+  )
+})
+
+# -- datetime helpers do not emit spurious warnings on all-NA input --
+#
+# Alpaca's datetime helpers funnel through `lubridate::as_datetime` /
+# `lubridate::ymd*(... , quiet = TRUE)`, none of which warn on
+# all-`NA_character_` input today. The kucoin equivalents do warn
+# (they use `as.numeric()` on an epoch-ms string, which emits "NAs
+# introduced by coercion") and required wrapping in
+# `suppressWarnings()`. Alpaca needs no wrapping, but we still pin
+# the no-warning contract here so a future lubridate behaviour
+# change or helper rewrite is caught loudly.
+
+test_that("rfc3339_to_datetime does not warn on all-NA character input", {
+  expect_warning(rfc3339_to_datetime(c(NA_character_, NA_character_)), NA)
+})
+
+test_that("parse_timestamp_cols does not warn on an all-NA character column", {
+  dt <- data.table::data.table(created_at = c(NA_character_, NA_character_))
+  expect_warning(parse_timestamp_cols(dt, "created_at"), NA)
+})
+
+test_that("parse_date_cols does not warn on an all-NA character column", {
+  dt <- data.table::data.table(ex_date = c(NA_character_, NA_character_))
+  expect_warning(parse_date_cols(dt, "ex_date"), NA)
+})
+
+test_that("combine_et_datetime does not warn on all-NA character input", {
+  expect_warning(
+    combine_et_datetime(c(NA_character_, NA_character_), c(NA_character_, NA_character_)),
+    NA
+  )
+})
+
 # -- rfc3339_to_datetime all-NA shape regression --
 
 test_that("rfc3339_to_datetime returns full-length POSIXct vector for all-NA input", {

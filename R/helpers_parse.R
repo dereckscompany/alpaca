@@ -177,7 +177,15 @@ coerce_cols <- function(dt, cols, fn) {
   if (nrow(dt) == 0L) {
     return(invisible(dt))
   }
-  for (col in cols) {
+  # `unique()` prevents double-coercion when a caller passes the same
+  # column name twice (e.g. `coerce_cols(dt, c("created_at",
+  # "created_at"), rfc3339_to_datetime)` would otherwise re-feed the
+  # already-converted POSIXct vector back through
+  # `lubridate::as_datetime`, silently producing wildly wrong values
+  # — POSIXct numerics reinterpreted as RFC-3339 strings parse to
+  # year-56,000+ timestamps with no warning). Mirrors the kucoin and
+  # binance fixes.
+  for (col in unique(cols)) {
     if (col %in% names(dt)) {
       data.table::set(dt, j = col, value = fn(dt[[col]]))
     }
