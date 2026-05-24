@@ -2,7 +2,7 @@
 
 ## Bug fixes
 
-* **`AlpacaAccount$get_activities()` and `$get_activities_by_type()` now reject `page_size > 100` at the boundary** with a clear R error instead of letting Alpaca's `HTTP 422: "tried to set the page size to N, but the maximum is 100"` leak through. Surfaced by a downstream production cycle (`tradebot-mini`) that had been silently passing `page_size = 500L` until Alpaca enforced the cap, at which point the obscure vendor 422 was only debuggable by reading server logs. Closes [#7](https://github.com/dereckscompany/alpaca/issues/7).
+* **`AlpacaAccount$get_activities()` and `$get_activities_by_type()` now reject `page_size > 100` at the boundary** with a clear R error instead of letting Alpaca's `HTTP 422: "tried to set the page size to N, but the maximum is 100"` leak through. Surfaced by a downstream production cycle (`tradebot-mini`) that had been silently passing `page_size = 500L` until Alpaca enforced the cap, at which point the obscure vendor 422 was only debuggable by reading server logs. The validation also rejects `NA`, non-scalar, and non-numeric `page_size` with the same clean `rlang::abort()` — otherwise a bare `if (page_size > 100L)` would error with `"missing value where TRUE/FALSE needed"` on `NA` input, undermining the boundary-check itself. Closes [#7](https://github.com/dereckscompany/alpaca/issues/7).
 
 ## Documentation
 

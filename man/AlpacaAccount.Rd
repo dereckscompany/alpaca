@@ -91,13 +91,6 @@ all_fills <- rbindlist(pages, use.names = TRUE, fill = TRUE)
 Automated pagination (drop \code{page_size}, add \code{n} / \code{max_total}) is
 planned for a follow-up release; this method's public API will
 remain backward-compatible.
-
-
-Same id-cursor recipe as \code{get_activities()} — pass the last row's
-\code{id} back in as \code{page_token}, stop when a returned page is shorter
-than \code{page_size}. See \code{?AlpacaAccount$get_activities} -> Pagination
-for the full example. Automated pagination is planned for a
-follow-up release.
 }
 
 \examples{
@@ -295,6 +288,11 @@ acct$cancel_watchlist_symbol("some-uuid", "AAPL")
 acct <- AlpacaAccount$new()
 acct$cancel_watchlist("some-uuid")
 }
+}
+\seealso{
+\code{\link[=AlpacaAccount$get_activities]{AlpacaAccount$get_activities()}} — the sibling method
+includes the worked id-cursor pagination loop in its
+\verb{@section Pagination}. This method follows the same contract.
 }
 \section{Super class}{
 \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaAccount}
@@ -1183,8 +1181,9 @@ Mutually exclusive with \code{category}.}
 this at \strong{100} for \verb{/v2/account/activities}; values above 100
 return HTTP 422 server-side. This method validates the cap up-front
 and \code{abort()}s with a clear message rather than letting the vendor
-error leak through. Default \code{NULL} lets Alpaca pick its server-side
-default (currently 100).}
+error leak through. Must be a single non-NA integerish value when
+provided. Default \code{NULL} lets Alpaca pick its server-side default
+(currently 100).}
 
 \item{\code{page_token}}{Character or NULL; cursor for the next page. For
 activities this is the \strong{\code{id} of the last row from the previous
@@ -1199,8 +1198,10 @@ tokens). See the "Pagination" section below.}
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details. Columns vary by activity type. Always includes
-\code{id} (the per-activity cursor — see "Pagination").
+activity details. Columns vary by activity type. Includes \code{id} when
+non-empty — the per-activity cursor used for paging (see
+"Pagination"). An empty response returns an empty \code{data.table} with
+no columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1290,8 +1291,11 @@ Verified: 2026-05-21
 this at \strong{100} for \verb{/v2/account/activities/\{type\}}; values above
 100 return HTTP 422 server-side. This method validates the cap
 up-front and \code{abort()}s with a clear message rather than letting
-the vendor error leak through. Default \code{NULL} lets Alpaca pick its
-server-side default (currently 100).}
+the vendor error leak through. Must be a single non-NA integerish
+value when provided. Default \code{NULL} lets Alpaca pick its
+server-side default (currently 100). For multi-page walks see the
+"Pagination" section on \code{get_activities()} — the id-cursor recipe
+is identical for this method.}
 
 \item{\code{page_token}}{Character or NULL; cursor for the next page —
 the \strong{\code{id} of the last row from the previous page}. See the
@@ -1302,7 +1306,9 @@ the recipe is identical for this method.}
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details. Always includes \code{id} (the per-activity cursor).
+activity details. Includes \code{id} when non-empty (the per-activity
+cursor used for paging). An empty response returns an empty
+\code{data.table} with no columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

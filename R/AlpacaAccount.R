@@ -849,15 +849,18 @@ AlpacaAccount <- R6::R6Class(
     #'   this at **100** for `/v2/account/activities`; values above 100
     #'   return HTTP 422 server-side. This method validates the cap up-front
     #'   and `abort()`s with a clear message rather than letting the vendor
-    #'   error leak through. Default `NULL` lets Alpaca pick its server-side
-    #'   default (currently 100).
+    #'   error leak through. Must be a single non-NA integerish value when
+    #'   provided. Default `NULL` lets Alpaca pick its server-side default
+    #'   (currently 100).
     #' @param page_token Character or NULL; cursor for the next page. For
     #'   activities this is the **`id` of the last row from the previous
     #'   page** (Alpaca's activity IDs are sortable cursors, not opaque
     #'   tokens). See the "Pagination" section below.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details. Columns vary by activity type. Always includes
-    #'   `id` (the per-activity cursor — see "Pagination").
+    #'   activity details. Columns vary by activity type. Includes `id` when
+    #'   non-empty — the per-activity cursor used for paging (see
+    #'   "Pagination"). An empty response returns an empty `data.table` with
+    #'   no columns.
     #'
     #' @section Pagination:
     #' This method does **not** auto-paginate. To walk every activity that
@@ -915,13 +918,20 @@ AlpacaAccount <- R6::R6Class(
       if (!is.null(direction)) {
         rlang::arg_match0(direction, c("asc", "desc"))
       }
-      if (!is.null(page_size) && page_size > 100L) {
-        rlang::abort(paste0(
-          "`page_size` must be <= 100 (Alpaca's documented cap for ",
-          "/v2/account/activities). Got: ", page_size,
-          ". See `?AlpacaAccount$get_activities` -> Pagination for how to ",
-          "walk multiple pages via `page_token`."
-        ))
+      if (!is.null(page_size)) {
+        if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
+          rlang::abort(
+            "`page_size` must be a single non-NA integerish value, or NULL."
+          )
+        }
+        if (page_size > 100L) {
+          rlang::abort(paste0(
+            "`page_size` must be <= 100 (Alpaca's documented cap for ",
+            "/v2/account/activities). Got: ", page_size,
+            ". See `?AlpacaAccount` -> Pagination for how to walk multiple ",
+            "pages via `page_token`."
+          ))
+        }
       }
       return(private$.request(
         endpoint = "/v2/account/activities",
@@ -991,21 +1001,23 @@ AlpacaAccount <- R6::R6Class(
     #'   this at **100** for `/v2/account/activities/{type}`; values above
     #'   100 return HTTP 422 server-side. This method validates the cap
     #'   up-front and `abort()`s with a clear message rather than letting
-    #'   the vendor error leak through. Default `NULL` lets Alpaca pick its
-    #'   server-side default (currently 100).
+    #'   the vendor error leak through. Must be a single non-NA integerish
+    #'   value when provided. Default `NULL` lets Alpaca pick its
+    #'   server-side default (currently 100). For multi-page walks see the
+    #'   "Pagination" section on `get_activities()` — the id-cursor recipe
+    #'   is identical for this method.
     #' @param page_token Character or NULL; cursor for the next page —
     #'   the **`id` of the last row from the previous page**. See the
     #'   "Pagination" section on `get_activities()` for a worked example;
     #'   the recipe is identical for this method.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details. Always includes `id` (the per-activity cursor).
+    #'   activity details. Includes `id` when non-empty (the per-activity
+    #'   cursor used for paging). An empty response returns an empty
+    #'   `data.table` with no columns.
     #'
-    #' @section Pagination:
-    #' Same id-cursor recipe as `get_activities()` — pass the last row's
-    #' `id` back in as `page_token`, stop when a returned page is shorter
-    #' than `page_size`. See `?AlpacaAccount$get_activities` -> Pagination
-    #' for the full example. Automated pagination is planned for a
-    #' follow-up release.
+    #' @seealso [AlpacaAccount$get_activities()] — the sibling method
+    #'   includes the worked id-cursor pagination loop in its
+    #'   `@section Pagination`. This method follows the same contract.
     #'
     #' @examples
     #' \dontrun{
@@ -1022,13 +1034,20 @@ AlpacaAccount <- R6::R6Class(
       page_size = NULL,
       page_token = NULL
     ) {
-      if (!is.null(page_size) && page_size > 100L) {
-        rlang::abort(paste0(
-          "`page_size` must be <= 100 (Alpaca's documented cap for ",
-          "/v2/account/activities/{type}). Got: ", page_size,
-          ". See `?AlpacaAccount$get_activities` -> Pagination for how to ",
-          "walk multiple pages via `page_token`."
-        ))
+      if (!is.null(page_size)) {
+        if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
+          rlang::abort(
+            "`page_size` must be a single non-NA integerish value, or NULL."
+          )
+        }
+        if (page_size > 100L) {
+          rlang::abort(paste0(
+            "`page_size` must be <= 100 (Alpaca's documented cap for ",
+            "/v2/account/activities/{type}). Got: ", page_size,
+            ". See `?AlpacaAccount` -> Pagination for how to walk multiple ",
+            "pages via `page_token`."
+          ))
+        }
       }
       endpoint <- paste0("/v2/account/activities/", activity_type)
       return(private$.request(
