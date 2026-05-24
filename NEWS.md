@@ -1,3 +1,13 @@
+# alpaca 0.2.3
+
+## Bug fixes
+
+* **`AlpacaAccount$get_activities()` and `$get_activities_by_type()` now reject `page_size > 100` at the boundary** with a clear R error instead of letting Alpaca's `HTTP 422: "tried to set the page size to N, but the maximum is 100"` leak through. Surfaced by a downstream production cycle (`tradebot-mini`) that had been silently passing `page_size = 500L` until Alpaca enforced the cap, at which point the obscure vendor 422 was only debuggable by reading server logs. Closes [#7](https://github.com/dereckscompany/alpaca/issues/7).
+
+## Documentation
+
+* **`get_activities()` and `get_activities_by_type()` now document Alpaca's id-cursor pagination model.** A new `@section Pagination` block on `get_activities()` walks through the recipe — pass the previous page's last `id` back in as `page_token`, stop when a returned page is shorter than `page_size` — with a worked example. `get_activities_by_type()` cross-references the same section. Automated pagination (replacing `page_size` with `n` / `max_total`) is planned for a follow-up release; the public API will remain backward-compatible.
+
 # alpaca 0.2.2
 
 ## Bug fixes

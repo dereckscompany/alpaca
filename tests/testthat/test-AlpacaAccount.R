@@ -116,6 +116,51 @@ test_that("get_activities rejects both activity_types and category", {
   )
 })
 
+test_that("get_activities rejects page_size > 100 (Alpaca's documented cap)", {
+  # Regression for github.com/dereckscompany/alpaca/issues/7 — Alpaca
+  # caps `/v2/account/activities` page_size at 100 server-side and
+  # returns a confusing HTTP 422. Reject at the boundary so callers get
+  # a clear R error instead of the vendor leak.
+  expect_error(
+    new_account()$get_activities(activity_types = "FILL", page_size = 500L),
+    "must be <= 100"
+  )
+})
+
+test_that("get_activities_by_type rejects page_size > 100", {
+  expect_error(
+    new_account()$get_activities_by_type("FILL", page_size = 200L),
+    "must be <= 100"
+  )
+})
+
+test_that("get_activities accepts page_size = 100 (boundary still allowed)", {
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) return(resp))
+
+  # Must not raise — 100 is the documented cap, not >100.
+  expect_no_error(new_account()$get_activities(page_size = 100L))
+})
+
+test_that("get_activities still forwards page_token unchanged (manual pagination)", {
+  # Pin the cursor pattern documented in the Pagination section: callers
+  # pass the previous page's last `id` as `page_token` and we forward it.
+  captured_url <- NULL
+  resp <- mock_alpaca_response(list())
+  httr2::local_mocked_responses(function(req) {
+    captured_url <<- req$url
+    return(resp)
+  })
+
+  new_account()$get_activities(
+    activity_types = "FILL",
+    page_size = 100L,
+    page_token = "20260310120000000::abc-123"
+  )
+  expect_true(grepl("page_token=", captured_url, fixed = TRUE))
+  expect_true(grepl("abc-123", captured_url, fixed = TRUE))
+})
+
 test_that("get_position uses correct endpoint", {
   captured_url <- NULL
   resp <- mock_alpaca_response(mock_positions_response()[[1]])

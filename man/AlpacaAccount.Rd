@@ -61,6 +61,45 @@ asynchronous execution depending on the \code{async} parameter at construction.
 
 }
 }
+\section{Pagination}{
+
+This method does \strong{not} auto-paginate. To walk every activity that
+matches your filters, pass the last row's \code{id} back in as
+\code{page_token}; stop when a returned page is shorter than \code{page_size}
+(i.e. you've reached the tail). A worked example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{library(data.table)
+acct <- AlpacaAccount$new()
+
+pages <- list()
+token <- NULL
+repeat \{
+  dt <- acct$get_activities(
+    activity_types = "FILL",
+    direction = "desc",
+    page_size = 100L,        # the hard server-side cap
+    page_token = token
+  )
+  if (nrow(dt) == 0L) break
+  pages[[length(pages) + 1L]] <- dt
+  if (nrow(dt) < 100L) break # short page == last page
+  token <- tail(dt$id, 1L)
+\}
+all_fills <- rbindlist(pages, use.names = TRUE, fill = TRUE)
+}\if{html}{\out{</div>}}
+
+Automated pagination (drop \code{page_size}, add \code{n} / \code{max_total}) is
+planned for a follow-up release; this method's public API will
+remain backward-compatible.
+
+
+Same id-cursor recipe as \code{get_activities()} — pass the last row's
+\code{id} back in as \code{page_token}, stop when a returned page is shorter
+than \code{page_size}. See \code{?AlpacaAccount$get_activities} -> Pagination
+for the full example. Automated pagination is planned for a
+follow-up release.
+}
+
 \examples{
 \dontrun{
 acct <- AlpacaAccount$new()
@@ -1140,9 +1179,17 @@ Mutually exclusive with \code{category}.}
 
 \item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max results per page (default 100, max 100).}
+\item{\code{page_size}}{Integer or NULL; max results per page. Alpaca caps
+this at \strong{100} for \verb{/v2/account/activities}; values above 100
+return HTTP 422 server-side. This method validates the cap up-front
+and \code{abort()}s with a clear message rather than letting the vendor
+error leak through. Default \code{NULL} lets Alpaca pick its server-side
+default (currently 100).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{Character or NULL; cursor for the next page. For
+activities this is the \strong{\code{id} of the last row from the previous
+page} (Alpaca's activity IDs are sortable cursors, not opaque
+tokens). See the "Pagination" section below.}
 
 \item{\code{category}}{Character or NULL; broad category filter:
 \code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
@@ -1152,7 +1199,8 @@ Mutually exclusive with \code{category}.}
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details. Columns vary by activity type.
+activity details. Columns vary by activity type. Always includes
+\code{id} (the per-activity cursor — see "Pagination").
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1238,15 +1286,23 @@ Verified: 2026-05-21
 
 \item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max results per page.}
+\item{\code{page_size}}{Integer or NULL; max results per page. Alpaca caps
+this at \strong{100} for \verb{/v2/account/activities/\{type\}}; values above
+100 return HTTP 422 server-side. This method validates the cap
+up-front and \code{abort()}s with a clear message rather than letting
+the vendor error leak through. Default \code{NULL} lets Alpaca pick its
+server-side default (currently 100).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{Character or NULL; cursor for the next page —
+the \strong{\code{id} of the last row from the previous page}. See the
+"Pagination" section on \code{get_activities()} for a worked example;
+the recipe is identical for this method.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 \code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details.
+activity details. Always includes \code{id} (the per-activity cursor).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

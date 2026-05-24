@@ -845,10 +845,50 @@ AlpacaAccount <- R6::R6Class(
     #' @param until Character or NULL; only activities before this timestamp.
     #' @param after Character or NULL; only activities after this timestamp.
     #' @param direction Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_size Integer or NULL; max results per page (default 100, max 100).
-    #' @param page_token Character or NULL; cursor for pagination.
+    #' @param page_size Integer or NULL; max results per page. Alpaca caps
+    #'   this at **100** for `/v2/account/activities`; values above 100
+    #'   return HTTP 422 server-side. This method validates the cap up-front
+    #'   and `abort()`s with a clear message rather than letting the vendor
+    #'   error leak through. Default `NULL` lets Alpaca pick its server-side
+    #'   default (currently 100).
+    #' @param page_token Character or NULL; cursor for the next page. For
+    #'   activities this is the **`id` of the last row from the previous
+    #'   page** (Alpaca's activity IDs are sortable cursors, not opaque
+    #'   tokens). See the "Pagination" section below.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details. Columns vary by activity type.
+    #'   activity details. Columns vary by activity type. Always includes
+    #'   `id` (the per-activity cursor — see "Pagination").
+    #'
+    #' @section Pagination:
+    #' This method does **not** auto-paginate. To walk every activity that
+    #' matches your filters, pass the last row's `id` back in as
+    #' `page_token`; stop when a returned page is shorter than `page_size`
+    #' (i.e. you've reached the tail). A worked example:
+    #'
+    #' ```r
+    #' library(data.table)
+    #' acct <- AlpacaAccount$new()
+    #'
+    #' pages <- list()
+    #' token <- NULL
+    #' repeat {
+    #'   dt <- acct$get_activities(
+    #'     activity_types = "FILL",
+    #'     direction = "desc",
+    #'     page_size = 100L,        # the hard server-side cap
+    #'     page_token = token
+    #'   )
+    #'   if (nrow(dt) == 0L) break
+    #'   pages[[length(pages) + 1L]] <- dt
+    #'   if (nrow(dt) < 100L) break # short page == last page
+    #'   token <- tail(dt$id, 1L)
+    #' }
+    #' all_fills <- rbindlist(pages, use.names = TRUE, fill = TRUE)
+    #' ```
+    #'
+    #' Automated pagination (drop `page_size`, add `n` / `max_total`) is
+    #' planned for a follow-up release; this method's public API will
+    #' remain backward-compatible.
     #'
     #' @examples
     #' \dontrun{
@@ -874,6 +914,14 @@ AlpacaAccount <- R6::R6Class(
       }
       if (!is.null(direction)) {
         rlang::arg_match0(direction, c("asc", "desc"))
+      }
+      if (!is.null(page_size) && page_size > 100L) {
+        rlang::abort(paste0(
+          "`page_size` must be <= 100 (Alpaca's documented cap for ",
+          "/v2/account/activities). Got: ", page_size,
+          ". See `?AlpacaAccount$get_activities` -> Pagination for how to ",
+          "walk multiple pages via `page_token`."
+        ))
       }
       return(private$.request(
         endpoint = "/v2/account/activities",
@@ -939,10 +987,25 @@ AlpacaAccount <- R6::R6Class(
     #' @param until Character or NULL; only activities before this timestamp.
     #' @param after Character or NULL; only activities after this timestamp.
     #' @param direction Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_size Integer or NULL; max results per page.
-    #' @param page_token Character or NULL; cursor for pagination.
+    #' @param page_size Integer or NULL; max results per page. Alpaca caps
+    #'   this at **100** for `/v2/account/activities/{type}`; values above
+    #'   100 return HTTP 422 server-side. This method validates the cap
+    #'   up-front and `abort()`s with a clear message rather than letting
+    #'   the vendor error leak through. Default `NULL` lets Alpaca pick its
+    #'   server-side default (currently 100).
+    #' @param page_token Character or NULL; cursor for the next page —
+    #'   the **`id` of the last row from the previous page**. See the
+    #'   "Pagination" section on `get_activities()` for a worked example;
+    #'   the recipe is identical for this method.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details.
+    #'   activity details. Always includes `id` (the per-activity cursor).
+    #'
+    #' @section Pagination:
+    #' Same id-cursor recipe as `get_activities()` — pass the last row's
+    #' `id` back in as `page_token`, stop when a returned page is shorter
+    #' than `page_size`. See `?AlpacaAccount$get_activities` -> Pagination
+    #' for the full example. Automated pagination is planned for a
+    #' follow-up release.
     #'
     #' @examples
     #' \dontrun{
@@ -959,6 +1022,14 @@ AlpacaAccount <- R6::R6Class(
       page_size = NULL,
       page_token = NULL
     ) {
+      if (!is.null(page_size) && page_size > 100L) {
+        rlang::abort(paste0(
+          "`page_size` must be <= 100 (Alpaca's documented cap for ",
+          "/v2/account/activities/{type}). Got: ", page_size,
+          ". See `?AlpacaAccount$get_activities` -> Pagination for how to ",
+          "walk multiple pages via `page_token`."
+        ))
+      }
       endpoint <- paste0("/v2/account/activities/", activity_type)
       return(private$.request(
         endpoint = endpoint,
