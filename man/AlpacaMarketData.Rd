@@ -435,13 +435,15 @@ Verified: 2026-05-21
   timeframe = "1Day",
   start = NULL,
   end = NULL,
-  limit = NULL,
+  limit = 10000L,
   adjustment = NULL,
   feed = NULL,
   sort = NULL,
   page_token = NULL,
   asof = NULL,
-  currency = NULL
+  currency = NULL,
+  max_pages = 1000L,
+  sleep = 0.3
 )}\if{html}{\out{</div>}}
 }
 
@@ -458,7 +460,10 @@ Verified: 2026-05-21
 
 \item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
+\item{\code{limit}}{Integer or NULL; max bars \strong{per page} (1-10000, default
+10000). The method auto-paginates via \code{next_page_token}, so the full
+\code{start}..\code{end} range is returned regardless of \code{limit}; this only sets
+the page size (and thus the number of requests).}
 
 \item{\code{adjustment}}{Character or NULL; price adjustment type. One or a
 comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
@@ -469,7 +474,8 @@ comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{Character or NULL; starting cursor. Normally left NULL —
+auto-pagination begins at \code{start} and follows the cursor itself.}
 
 \item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
 identify the underlying entity when symbols have been renamed
@@ -477,6 +483,14 @@ identify the underlying entity when symbols have been renamed
 
 \item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
 Default \code{"USD"}.}
+
+\item{\code{max_pages}}{Integer; cap on pages fetched (runaway guard). Default
+1000 — high enough that real requests complete, low enough to bound a
+fat-fingered pull. Pass \code{Inf} for unbounded. If hit while more data
+remains, the partial result is returned with a \code{warning()}.}
+
+\item{\code{sleep}}{Numeric; seconds to pause between page requests (rate-limit
+throttle; sync only). Default 0.3.}
 }
 \if{html}{\out{</div>}}
 }
@@ -552,13 +566,15 @@ Verified: 2026-05-21
   timeframe = "1Day",
   start = NULL,
   end = NULL,
-  limit = NULL,
+  limit = 10000L,
   adjustment = NULL,
   feed = NULL,
   sort = NULL,
   page_token = NULL,
   asof = NULL,
-  currency = NULL
+  currency = NULL,
+  max_pages = 1000L,
+  sleep = 0.3
 )}\if{html}{\out{</div>}}
 }
 
@@ -573,7 +589,11 @@ Verified: 2026-05-21
 
 \item{\code{end}}{Character or NULL; end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars per symbol (1-10000, default 1000).}
+\item{\code{limit}}{Integer or NULL; max bars \strong{per page} (1-10000, default
+10000). NOTE: Alpaca applies this as a \emph{total row budget across all
+requested symbols per page} (not per symbol), filling symbols
+alphabetically. The method auto-paginates via \code{next_page_token}, so the
+full range for every symbol is returned regardless of \code{limit}.}
 
 \item{\code{adjustment}}{Character or NULL; one or comma-separated combination
 of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
@@ -582,12 +602,20 @@ of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"al
 
 \item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{Character or NULL; starting cursor. Normally left NULL —
+auto-pagination begins at \code{start} and follows the cursor itself.}
 
 \item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
 or \code{"-"} to skip).}
 
 \item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+
+\item{\code{max_pages}}{Integer; cap on pages fetched (runaway guard). Default
+1000; pass \code{Inf} for unbounded. If hit while more data remains, the
+partial result is returned with a \code{warning()}.}
+
+\item{\code{sleep}}{Numeric; seconds to pause between page requests (rate-limit
+throttle; sync only). Default 0.3.}
 }
 \if{html}{\out{</div>}}
 }
