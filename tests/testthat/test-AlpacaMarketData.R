@@ -36,6 +36,53 @@ test_that("get_bars_multi returns data.table with symbol column", {
   expect_setequal(unique(dt$symbol), c("AAPL", "MSFT"))
 })
 
+test_that("get_bars_multi follows next_page_token and merges symbols across pages", {
+  # Page 1: INTC + MRVL, more available. Page 2: MRVL (continues) + RKLB, done.
+  # Reproduces the production bug shape: a symbol split across the page boundary
+  # plus a symbol that only appears on page 2.
+  bar <- function(t, o) list(t = t, o = o, h = o, l = o, c = o, v = 1L, n = 1L, vw = o)
+  page1 <- list(
+    bars = list(
+      INTC = list(bar("2024-01-02T05:00:00Z", 1)),
+      MRVL = list(bar("2024-01-02T05:00:00Z", 2))
+    ),
+    next_page_token = "tok-2"
+  )
+  page2 <- list(
+    bars = list(
+      MRVL = list(bar("2024-01-03T05:00:00Z", 3)),
+      RKLB = list(bar("2024-01-02T05:00:00Z", 4))
+    ),
+    next_page_token = NULL
+  )
+  calls <- 0L
+  httr2::local_mocked_responses(function(req) {
+    calls <<- calls + 1L
+    if (grepl("page_token=tok-2", req$url)) {
+      return(mock_alpaca_response(page2))
+    }
+    return(mock_alpaca_response(page1))
+  })
+
+  dt <- new_market()$get_bars_multi(c("INTC", "MRVL", "RKLB"), timeframe = "1Day", sleep = 0)
+  expect_equal(calls, 2L) # followed the cursor to page 2
+  expect_equal(nrow(dt), 4L)
+  expect_setequal(unique(dt$symbol), c("INTC", "MRVL", "RKLB")) # incl. page-2-only RKLB
+  expect_equal(nrow(dt[symbol == "MRVL"]), 2L) # MRVL merged across both pages
+})
+
+test_that("get_bars_multi warns and returns partial when max_pages is hit", {
+  bar <- list(t = "2024-01-02T05:00:00Z", o = 1, h = 1, l = 1, c = 1, v = 1L, n = 1L, vw = 1)
+  always_more <- list(bars = list(AAA = list(bar)), next_page_token = "more")
+  httr2::local_mocked_responses(function(req) mock_alpaca_response(always_more))
+
+  expect_warning(
+    dt <- new_market()$get_bars_multi("AAA", max_pages = 2L, sleep = 0),
+    "max_pages"
+  )
+  expect_equal(nrow(dt), 2L) # kept both fetched pages, did not throw them away
+})
+
 test_that("get_latest_trade returns long-format data.table with condition column", {
   resp <- mock_alpaca_response(mock_trade_response())
   httr2::local_mocked_responses(function(req) resp)

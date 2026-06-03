@@ -37,15 +37,18 @@ test_that("alpaca_paginate stops at max_pages", {
     return(mock_alpaca_response(mock_bars_page1_response()))
   }
 
-  result <- alpaca_paginate(
-    base_url = "https://data.alpaca.markets",
-    endpoint = "/v2/stocks/AAPL/bars",
-    query = list(timeframe = "1Day"),
-    keys = list(api_key = "k", api_secret = "s"),
-    .perform = mock_perform,
-    items_field = "bars",
-    max_pages = 3,
-    .parser = parse_bars
+  expect_warning(
+    result <- alpaca_paginate(
+      base_url = "https://data.alpaca.markets",
+      endpoint = "/v2/stocks/AAPL/bars",
+      query = list(timeframe = "1Day"),
+      keys = list(api_key = "k", api_secret = "s"),
+      .perform = mock_perform,
+      items_field = "bars",
+      max_pages = 3,
+      .parser = parse_bars
+    ),
+    "max_pages"
   )
 
   expect_equal(call_count, 3L)

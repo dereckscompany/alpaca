@@ -15,6 +15,7 @@ alpaca_paginate(
   is_async = FALSE,
   items_field = NULL,
   max_pages = Inf,
+  sleep = 0,
   timeout = 10
 )
 }
@@ -42,6 +43,10 @@ entire response list is accumulated (for endpoints returning top-level arrays).}
 
 \item{max_pages}{Integer; maximum number of pages to fetch. Default \code{Inf}.}
 
+\item{sleep}{Numeric; seconds to pause between page requests, to respect
+rate limits (Alpaca's free/Basic data tier caps at 200 req/min). Applied
+in synchronous mode only. Default \code{0}.}
+
 \item{timeout}{Numeric; request timeout in seconds. Default \code{10}.}
 }
 \value{
@@ -57,6 +62,12 @@ Alpaca endpoints return a \code{next_page_token} field when more results are
 available. This function loops through pages until no more tokens remain
 or \code{max_pages} is reached, then applies \code{.parser} to the combined result
 list.
+
+If \code{max_pages} is hit while the server still reports more data
+(\code{next_page_token} present), the accumulated pages are returned anyway —
+fetched work is never thrown away — but an \code{rlang::warn()} fires so the
+truncation can never pass silently. Resume by re-requesting with a later
+\code{start} (bars/trades/quotes are time-ordered) or by raising \code{max_pages}.
 }
 \examples{
 \dontrun{

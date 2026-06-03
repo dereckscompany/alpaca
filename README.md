@@ -221,6 +221,11 @@ bars[]
     #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
     #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
 
+`get_bars()` and `get_bars_multi()` **auto-paginate**: they follow Alpaca’s
+`next_page_token` and return the full date range as one `data.table`, not
+just the first ~1,000-row page the API caps each response at. Tune the page
+size, throttle and page cap with `limit` / `sleep` / `max_pages`.
+
 ### Latest Trade
 
 ``` r

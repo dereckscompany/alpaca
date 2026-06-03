@@ -185,7 +185,10 @@ AlpacaMarketData <- R6::R6Class(
     #'   `"1Month"` to `"12Month"`.
     #' @param start Character or NULL; start date/time (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max bars (1-10000, default 1000).
+    #' @param limit Integer or NULL; max bars **per page** (1-10000, default
+    #'   10000). The method auto-paginates via `next_page_token`, so the full
+    #'   `start`..`end` range is returned regardless of `limit`; this only sets
+    #'   the page size (and thus the number of requests).
     #' @param adjustment Character or NULL; price adjustment type. One or a
     #'   comma-separated combination of: `"raw"`, `"split"`, `"dividend"`,
     #'   `"spin-off"`, `"all"`. Default `"raw"`.
@@ -197,7 +200,14 @@ AlpacaMarketData <- R6::R6Class(
     #' @param currency Character or NULL; ISO 4217 currency for returned prices.
     #'   Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
-    #' @param page_token Character or NULL; cursor for pagination.
+    #' @param page_token Character or NULL; starting cursor. Normally left NULL —
+    #'   auto-pagination begins at `start` and follows the cursor itself.
+    #' @param max_pages Integer; cap on pages fetched (runaway guard). Default
+    #'   1000 — high enough that real requests complete, low enough to bound a
+    #'   fat-fingered pull. Pass `Inf` for unbounded. If hit while more data
+    #'   remains, the partial result is returned with a `warning()`.
+    #' @param sleep Numeric; seconds to pause between page requests (rate-limit
+    #'   throttle; sync only). Default 0.3.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
     #'   - `timestamp` (POSIXct): Bar timestamp in UTC.
     #'   - `open` (numeric): Opening price.
@@ -219,16 +229,19 @@ AlpacaMarketData <- R6::R6Class(
       timeframe = "1Day",
       start = NULL,
       end = NULL,
-      limit = NULL,
+      limit = 10000L,
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
       page_token = NULL,
       asof = NULL,
-      currency = NULL
+      currency = NULL,
+      max_pages = 1000L,
+      sleep = 0.3
     ) {
       endpoint <- paste0("/v2/stocks/", symbol, "/bars")
-      return(private$.data_request(
+      return(alpaca_paginate(
+        base_url = private$.data_base_url,
         endpoint = endpoint,
         query = list(
           timeframe = timeframe,
@@ -242,9 +255,14 @@ AlpacaMarketData <- R6::R6Class(
           asof = asof,
           currency = currency
         ),
-        .parser = function(data) {
-          return(parse_bars(data$bars))
-        }
+        keys = private$.keys,
+        .perform = private$.perform,
+        is_async = private$.is_async,
+        items_field = "bars",
+        .parser = parse_bars,
+        max_pages = max_pages,
+        sleep = sleep,
+        timeout = 30
       ))
     },
     # nolint end
@@ -287,7 +305,11 @@ AlpacaMarketData <- R6::R6Class(
     #' @param timeframe Character; bar timeframe (see `get_bars()` for valid values).
     #' @param start Character or NULL; start date/time.
     #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max bars per symbol (1-10000, default 1000).
+    #' @param limit Integer or NULL; max bars **per page** (1-10000, default
+    #'   10000). NOTE: Alpaca applies this as a *total row budget across all
+    #'   requested symbols per page* (not per symbol), filling symbols
+    #'   alphabetically. The method auto-paginates via `next_page_token`, so the
+    #'   full range for every symbol is returned regardless of `limit`.
     #' @param adjustment Character or NULL; one or comma-separated combination
     #'   of `"raw"`, `"split"`, `"dividend"`, `"spin-off"`, `"all"`.
     #' @param asof Character or NULL; as-of date for symbol mapping (`"YYYY-MM-DD"`
@@ -295,7 +317,13 @@ AlpacaMarketData <- R6::R6Class(
     #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`, `"boats"`.
     #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
     #' @param sort Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_token Character or NULL; cursor for pagination.
+    #' @param page_token Character or NULL; starting cursor. Normally left NULL —
+    #'   auto-pagination begins at `start` and follows the cursor itself.
+    #' @param max_pages Integer; cap on pages fetched (runaway guard). Default
+    #'   1000; pass `Inf` for unbounded. If hit while more data remains, the
+    #'   partial result is returned with a `warning()`.
+    #' @param sleep Numeric; seconds to pause between page requests (rate-limit
+    #'   throttle; sync only). Default 0.3.
     #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
     #'   `symbol` column prepended plus the same columns as `get_bars()`.
     #'
@@ -310,15 +338,18 @@ AlpacaMarketData <- R6::R6Class(
       timeframe = "1Day",
       start = NULL,
       end = NULL,
-      limit = NULL,
+      limit = 10000L,
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
       page_token = NULL,
       asof = NULL,
-      currency = NULL
+      currency = NULL,
+      max_pages = 1000L,
+      sleep = 0.3
     ) {
-      return(private$.data_request(
+      return(alpaca_paginate(
+        base_url = private$.data_base_url,
         endpoint = "/v2/stocks/bars",
         query = list(
           symbols = paste(symbols, collapse = ","),
@@ -333,7 +364,14 @@ AlpacaMarketData <- R6::R6Class(
           asof = asof,
           currency = currency
         ),
-        .parser = parse_multi_bars
+        keys = private$.keys,
+        .perform = private$.perform,
+        is_async = private$.is_async,
+        items_field = "bars",
+        .parser = parse_multi_bars_items,
+        max_pages = max_pages,
+        sleep = sleep,
+        timeout = 30
       ))
     },
     # nolint end
