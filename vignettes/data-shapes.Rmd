@@ -90,6 +90,17 @@ bars <- market$get_bars("AAPL", "1Day",
                         start = "2024-01-01", end = "2024-01-31")
 ```
 
+Both methods **auto-paginate**: they follow Alpaca's `next_page_token`
+across pages and return the full `start`..`end` range as one `data.table`,
+rather than the single ~1,000-row page the API returns by default. (For
+`get_bars_multi()` that 1,000-row cap is a *total budget across all
+requested symbols*, filled alphabetically — so without pagination later
+symbols silently came back empty.) Tune with `limit` (page size, default
+`10000`), `sleep` (between-page throttle in seconds, default `0.3`), and
+`max_pages` (runaway guard, default `1000`; pass `Inf` for unbounded). If
+`max_pages` is hit while more data remains, the partial result is returned
+**with a warning** — never silently truncated.
+
 ### Latest data (single + multi)
 
 | Method | Endpoint | Shape |
@@ -242,7 +253,7 @@ The multi-leg shape uses `leg_index` (NA on parent, 1..N on legs) +
 | Function | What it does |
 |---|---|
 | `alpaca_backfill_bars(symbols, timeframes, start, path)` | Bulk download bars for many symbols × timeframes to CSV with resume support. Used for backtests / pre-computing features |
-| `alpaca_paginate(base_url, endpoint, ...)` | Low-level cursor-based pagination loop. Most methods use this internally; expose to users who want fine-grained control |
+| `alpaca_paginate(base_url, endpoint, ...)` | Low-level cursor-based pagination loop with a `sleep` throttle and `max_pages` guard (warns + returns the partial result on truncation, never discards fetched pages). `get_bars()` / `get_bars_multi()` use it to fetch every page automatically; exposed for users who want fine-grained control |
 | `alpaca_build_request(base_url, endpoint, ...)` | Low-level single-request HTTP primitive. The single point through which all Alpaca calls flow |
 | `time_convert_to_alpaca(x)` / `time_convert_from_alpaca(x)` | RFC-3339 ↔ `POSIXct` |
 | `alpaca_aapl_1day_bars` (data) | Bundled sample of simulated AAPL daily bars — useful for examples and tests without hitting the API |

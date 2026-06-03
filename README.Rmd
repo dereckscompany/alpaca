@@ -166,6 +166,11 @@ bars <- market$get_bars(
 bars[]
 ```
 
+`get_bars()` and `get_bars_multi()` **auto-paginate**: they follow Alpaca's
+`next_page_token` and return the full date range as one `data.table`, not
+just the first ~1,000-row page the API caps each response at. Tune the page
+size, throttle and page cap with `limit` / `sleep` / `max_pages`.
+
 ### Latest Trade
 
 ```{r}
