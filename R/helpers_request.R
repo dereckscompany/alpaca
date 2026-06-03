@@ -121,6 +121,12 @@ alpaca_build_request <- function(
 #' or `max_pages` is reached, then applies `.parser` to the combined result
 #' list.
 #'
+#' If `max_pages` is hit while the server still reports more data
+#' (`next_page_token` present), the accumulated pages are returned anyway —
+#' fetched work is never thrown away — but an `rlang::warn()` fires so the
+#' truncation can never pass silently. Resume by re-requesting with a later
+#' `start` (bars/trades/quotes are time-ordered) or by raising `max_pages`.
+#'
 #' @param base_url Character; the API base URL.
 #' @param endpoint Character; the API path (e.g., `"/v2/orders"`).
 #' @param method Character; HTTP method. Default `"GET"`.
@@ -134,6 +140,9 @@ alpaca_build_request <- function(
 #'   of items (e.g., `"bars"`, `"trades"`, `"quotes"`). If `NULL`, the
 #'   entire response list is accumulated (for endpoints returning top-level arrays).
 #' @param max_pages Integer; maximum number of pages to fetch. Default `Inf`.
+#' @param sleep Numeric; seconds to pause between page requests, to respect
+#'   rate limits (Alpaca's free/Basic data tier caps at 200 req/min). Applied
+#'   in synchronous mode only. Default `0`.
 #' @param timeout Numeric; request timeout in seconds. Default `10`.
 #' @return Parsed and post-processed API response data, or a promise thereof.
 #'
@@ -162,6 +171,7 @@ alpaca_paginate <- function(
   is_async = FALSE,
   items_field = NULL,
   max_pages = Inf,
+  sleep = 0,
   timeout = 10
 ) {
   accumulator <- list()
@@ -200,8 +210,29 @@ alpaca_paginate <- function(
         }
 
         next_token <- data$next_page_token
-        if (!is.null(next_token) && nzchar(next_token) && page_count < max_pages) {
+        has_more <- !is.null(next_token) && nzchar(next_token)
+
+        if (has_more && page_count < max_pages) {
+          # Throttle between pages (sync only; a blocking sleep would stall the
+          # event loop in async mode).
+          if (!is_async && sleep > 0) {
+            Sys.sleep(sleep)
+          }
           return(fetch_page(next_token))
+        }
+
+        # Stopped with the server still reporting more data: keep what we have
+        # but make the truncation impossible to miss.
+        if (has_more) {
+          rlang::warn(sprintf(
+            paste0(
+              "alpaca_paginate: stopped at max_pages = %s with more data ",
+              "still available (fetched %d page(s)). Returning a partial ",
+              "result. Resume from a later `start`, or raise `max_pages`."
+            ),
+            format(max_pages),
+            page_count
+          ))
         }
 
         return(.parser(accumulator))
