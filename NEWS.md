@@ -1,3 +1,44 @@
+# alpaca 0.3.0
+
+## Bug fixes
+
+* **`get_bars()` and `get_bars_multi()` now auto-paginate**, returning the full
+  `start`..`end` range instead of a single truncated page. Previously both
+  issued one request and dropped Alpaca's `next_page_token`, so any request
+  whose result exceeded the page size was silently cut off. For
+  `get_bars_multi()` this was especially damaging: Alpaca applies the page
+  `limit` as a **total row budget across all requested symbols** (filling
+  symbols alphabetically), so a single call for 9 symbols × `1Day` × 365 days
+  came back as exactly 1,000 rows covering only the first 4 symbols
+  alphabetically — the other 5 returned **no data at all**. Surfaced by a
+  `tradebot-mini` production cycle that requested a full-year multi-symbol book
+  "for 200-period MAs" and unknowingly made decisions on symbols it had zero
+  bars for. Both methods now route through `alpaca_paginate()`, following the
+  cursor to completion; per-symbol bars split across a page boundary are merged
+  back together.
+
+## Features
+
+* **`alpaca_paginate()` gains a `sleep` argument** — seconds to pause between
+  page requests (synchronous mode only), to stay under Alpaca's free/Basic
+  data-tier rate limit of 200 requests/min. `get_bars()` / `get_bars_multi()`
+  expose it (default `0.3`) alongside `max_pages` (default `1000`, a runaway
+  guard; pass `Inf` for unbounded).
+
+* **`alpaca_paginate()` warns on truncation rather than silently stopping.** If
+  `max_pages` is reached while the server still reports `next_page_token`, the
+  pages already fetched are returned (no work discarded) and an `rlang::warn()`
+  fires telling the caller to resume from a later `start` or raise `max_pages`.
+  This is the deliberate convention over erroring (which would throw away the
+  data) or stopping silently (the original bug class).
+
+## Documentation
+
+* **Corrected the `get_bars_multi()` `limit` documentation.** It previously
+  claimed `limit` was "max bars per symbol"; it is in fact a per-page total
+  across all requested symbols. The new text spells this out and notes that
+  auto-pagination returns every symbol's full range regardless of `limit`.
+
 # alpaca 0.2.3
 
 ## Bug fixes
