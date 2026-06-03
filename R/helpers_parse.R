@@ -321,12 +321,35 @@ parse_bars <- function(bars) {
 #' @keywords internal
 #' @noRd
 parse_multi_bars <- function(data) {
-  bars_map <- data$bars
-  if (is.null(bars_map) || length(bars_map) == 0) {
+  return(parse_multi_bars_items(data$bars))
+}
+
+#' Parse Accumulated Multi-Symbol Bar Items (Across Pages)
+#'
+#' The pagination loop ([alpaca_paginate()]) accumulates the `bars` field of
+#' each page via `c()`. For the multi-symbol endpoint that field is a *map*
+#' (`{"AAPL": [...], "MSFT": [...]}`), so the accumulator is a named list of
+#' per-symbol bar arrays in which the **same symbol may appear more than once**
+#' (once per page it spanned). This parser groups by symbol name, concatenates
+#' each symbol's arrays back together, and flattens to a single `data.table`
+#' with a `symbol` column.
+#'
+#' Single-page callers pass one page's map directly; the duplicate-name
+#' handling is a harmless superset of that case.
+#'
+#' @param items Named list; accumulated per-symbol bar arrays.
+#' @return A [data.table::data.table] with a `symbol` column prepended.
+#'
+#' @keywords internal
+#' @noRd
+parse_multi_bars_items <- function(items) {
+  if (is.null(items) || length(items) == 0) {
     return(data.table::data.table()[])
   }
-  dts <- lapply(names(bars_map), function(sym) {
-    dt <- parse_bars(bars_map[[sym]])
+  syms <- unique(names(items))
+  dts <- lapply(syms, function(sym) {
+    sym_bars <- do.call(c, unname(items[names(items) == sym]))
+    dt <- parse_bars(sym_bars)
     if (nrow(dt) > 0) {
       dt[, symbol := sym]
       data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
