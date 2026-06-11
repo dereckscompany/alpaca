@@ -1,7 +1,7 @@
 {
   "template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-  "commit": "1e9a1bf5eb5275ede6047dcd188ddf919fce73a6",
-  "checkout": "1e9a1bf5",
+  "commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73",
+  "checkout": null,
   "context": {
     "cookiecutter": {
       "package_name": "alpaca",
@@ -14,8 +14,12 @@
       "github_org": "dereckscompany",
       "license": "MIT",
       "use_rcpp": false,
+      "_copy_without_render": [
+        "renv/*",
+        "renv.lock"
+      ],
       "_template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-      "_commit": "1e9a1bf5eb5275ede6047dcd188ddf919fce73a6"
+      "_commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73"
     }
   },
   "directory": "template-r-package",

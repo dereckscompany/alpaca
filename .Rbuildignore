@@ -1,6 +1,6 @@
 .github
-.lintr
-README.Rmd
+^\.lintr$
+^README\.Rmd$
 TODO.md
 ^.*\.Rproj$
 ^\.Rproj\.user$
@@ -40,3 +40,6 @@ log.txt
 ^doc$
 ^Meta$
 ^local$
+^\.cruft\.json$
+^\.clang-format$
+^LICENSE$

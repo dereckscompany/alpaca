@@ -1,12 +1,20 @@
+# Citation is built from DESCRIPTION metadata — R supplies `meta` (the parsed
+# DESCRIPTION) when this file is evaluated, so package name, title, version,
+# authors, year, and URL are never hard-coded and this file never goes stale.
+# Add bibentry() calls below for published papers.
+
+year <- if (is.null(meta$Date)) format(Sys.Date(), "%Y") else sub("-.*", "", meta$Date)
+url <- if (is.null(meta$URL)) NULL else trimws(strsplit(meta$URL, ",")[[1]][1])
+authors <- eval(parse(text = meta$`Authors@R`))
+
+citHeader(sprintf("To cite %s in publications use:", meta$Package))
+
 bibentry(
-  bibtype  = "Manual",
-  title    = "alpaca: R API Wrapper to Alpaca Trading Platform",
-  author   = "Dereck Mezquita",
-  year     = "2026",
-  note     = "R package version 0.1.0",
-  textVersion = paste(
-    "Mezquita, D. (2026).",
-    "alpaca: R API Wrapper to Alpaca Trading Platform.",
-    "R package version 0.1.0."
-  )
+  bibtype = "Manual",
+  title   = sprintf("%s: %s", meta$Package, meta$Title),
+  author  = authors,
+  year    = year,
+  note    = sprintf("R package version %s", meta$Version),
+  url     = url,
+  key     = sprintf("%s-%s", meta$Package, year)
 )

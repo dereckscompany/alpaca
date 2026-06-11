@@ -1,5 +1,8 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+#
+# renv is the package manager everywhere: dependencies come from
+# renv.lock via setup-renv (pkgdown included as a dev dependency).
 on:
   release:
     types: [published]
@@ -29,10 +32,7 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
+      - uses: r-lib/actions/setup-renv@v2
 
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)

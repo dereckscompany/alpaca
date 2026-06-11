@@ -1,6 +1,11 @@
 # Runs R CMD check (validates package structure, NAMESPACE, docs, tests).
 # Based on r-lib/actions check-release template — single platform is sufficient
 # for a pure-R package with no compiled code.
+#
+# renv is the package manager everywhere: dependencies come from
+# renv.lock via setup-renv (renv::restore() + cache) — the same
+# versions you develop against locally. Dev tooling (rcmdcheck etc.)
+# is recorded in the lockfile via `renv::snapshot(dev = TRUE)`.
 on:
   workflow_dispatch:
 
@@ -25,10 +30,7 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+      - uses: r-lib/actions/setup-renv@v2
 
       - uses: r-lib/actions/check-r-package@v2
         with:
