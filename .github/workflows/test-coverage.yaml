@@ -1,5 +1,8 @@
 # Runs test coverage and deploys HTML report to GitHub Pages.
 # Coverage report: https://dereckscompany.github.io/alpaca/coverage/
+#
+# renv is the package manager everywhere: dependencies come from
+# renv.lock via setup-renv (covr + DT included as dev dependencies).
 on:
   push:
     branches: [master, main]
@@ -29,10 +32,7 @@ jobs:
         with:
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::covr, any::DT
-          needs: coverage
+      - uses: r-lib/actions/setup-renv@v2
 
       - name: Run coverage and generate report
         run: |

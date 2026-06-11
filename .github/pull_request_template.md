@@ -1,7 +1,7 @@
-# jira ticket
-
-https://dereckmezquita.atlassian.net/browse/<TICKET-ID>
-
 # todo list
 
 -   [ ] Version bump
+-   [ ] Format
+-   [ ] Lint
+
+Check the ./scripts folder for helper scripts.

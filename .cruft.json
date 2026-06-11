@@ -1,0 +1,41 @@
+{
+  "template": "https://github.com/dereckscompany/templates-cookiecutter.git",
+  "commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "package_name": "alpaca",
+      "package_title": "API Wrapper to Alpaca Trading Platform",
+      "description": "What the package does (one paragraph).",
+      "author_given": "Dereck",
+      "author_family": "Mezquita",
+      "author_email": "dereck@mezquita.io",
+      "author_orcid": "0000-0002-9307-6762",
+      "github_org": "dereckscompany",
+      "license": "MIT",
+      "use_rcpp": false,
+      "_copy_without_render": [
+        "renv/*",
+        "renv.lock"
+      ],
+      "_template": "https://github.com/dereckscompany/templates-cookiecutter.git",
+      "_commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73"
+    }
+  },
+  "directory": "template-r-package",
+  "skip": [
+    "R/**",
+    "src/**",
+    "man/**",
+    "tests/testthat/**",
+    "vignettes/**",
+    "DESCRIPTION",
+    "NAMESPACE",
+    ".lintr",
+    "_pkgdown.yml",
+    "README.Rmd",
+    "inst/WORDLIST",
+    "renv/**",
+    "renv.lock"
+  ]
+}

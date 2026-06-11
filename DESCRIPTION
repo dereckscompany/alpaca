@@ -26,13 +26,18 @@ Imports:
     httr2 (>= 1.0.0),
     lubridate
 Suggests:
-    promises,
-    coro,
-    later,
     box,
-    testthat (>= 3.0.0),
-    withr,
+    coro,
+    covr,
     diffviewer,
+    DT,
     knitr,
-    rmarkdown
+    later,
+    lintr,
+    pkgdown,
+    promises,
+    rcmdcheck,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    withr
 Config/testthat/edition: 3

@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
-# Pre-compile vignettes that depend on external data (local/ohlcv.rda)
+# Pre-compile vignettes that depend on external data or resources
+# unavailable during R CMD check.
 #
 # Usage: Rscript scripts/VIGNETTES.R        (all vignettes)
 #        Rscript scripts/VIGNETTES.R intro   (only matching vignettes)
@@ -17,18 +18,6 @@ if (!file.exists("DESCRIPTION")) {
   stop("Run this script from the package root directory")
 }
 
-if (!file.exists("local/ohlcv.rda")) {
-  warning("local/ohlcv.rda not found — vignettes using real data will fail")
-}
-
-# Attach namespaces so data() finds datasets and data.table's [.data.table
-# dispatches `:=` correctly inside the knitr::knit() environment.
-# Vignette code uses box::use() for the user-facing API; attachNamespace()
-# simply ensures the search path is set up for the pre-compilation step.
-for (pkg in c("alpaca")) {
-  attachNamespace(loadNamespace(pkg))
-}
-
 # --- discover files -----------------------------------------------------
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -43,6 +32,14 @@ if (length(orig_files) == 0) {
   message("No .Rmd.orig files found")
   quit(status = 0)
 }
+
+# Attach this package's namespace so data() finds datasets and method
+# dispatch works inside the knitr::knit() environment. Vignette code uses
+# box::use() for the user-facing API; attachNamespace() simply ensures the
+# search path is set up for the pre-compilation step. Add vignette-only
+# dependencies here as the package grows.
+pkg <- read.dcf("DESCRIPTION")[1, "Package"]
+attachNamespace(loadNamespace(pkg))
 
 # --- knit ---------------------------------------------------------------
 
