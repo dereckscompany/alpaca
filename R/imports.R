@@ -1,4 +1,6 @@
+#' @import assert
 #' @import data.table
+#' @import promises
 NULL
 
 # Generic transport + JSON->data.table helpers come from connectcore. Importing
