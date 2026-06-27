@@ -51,7 +51,9 @@ Parsed and post-processed API response data, or a promise thereof.
 \description{
 Constructs an \link[httr2:request]{httr2::request}, adds authentication headers, performs it via
 the supplied \code{.perform} function, and parses the JSON response. This is the
-single point through which all Alpaca API calls flow.
+single point through which the bulk-bar and market-data paths flow; it
+delegates the transport to \code{\link[connectcore:build_request]{connectcore::build_request()}} and supplies the
+Alpaca header signer and error-envelope parser.
 }
 \details{
 \subsection{Authentication}{

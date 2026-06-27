@@ -1,31 +1,40 @@
 # File: R/helpers_request.R
-# Core HTTP request infrastructure for the alpaca package.
-# Provides alpaca_build_request() and response parsing.
+# Free-function request helpers for the alpaca package. The single request
+# funnel and the sync/async branch point come from connectcore; this file keeps
+# the Alpaca-specific error envelope, the header-auth signer, the cursor
+# paginator, and the thin `alpaca_build_request()` wrapper the bulk-bar and
+# market-data paths use directly.
 
-#' Apply Continuation to a Value or Promise
+#' Sign an Alpaca request with API-key headers
 #'
-#' Routes a value through `fn` either synchronously or asynchronously depending
-#' on whether the caller is in async mode. This is the single sync/async
-#' branching point in the package.
+#' Adds Alpaca's two authentication headers (`APCA-API-KEY-ID`,
+#' `APCA-API-SECRET-KEY`) from the supplied credentials. Alpaca uses plain
+#' header credentials, not request signing, so this is the connector's `.sign()`
+#' seam: no timestamp or HMAC is involved.
 #'
-#' @param x A value or a [promises::promise].
-#' @param fn A function to apply to the resolved value of `x`.
-#' @param is_async Logical; whether the caller is in async mode.
-#' @return If `is_async`, returns `promises::then(x, fn)`. Otherwise returns `fn(x)`.
+#' @param req An [httr2::request].
+#' @param keys List with `api_key` and `api_secret`.
+#' @param ctx List; signing context (unused — Alpaca needs no server clock).
+#' @return The request with the two API-key headers added.
+#'
+#' @importFrom httr2 req_headers
 #' @keywords internal
 #' @noRd
-then_or_now <- function(x, fn, is_async = FALSE) {
-  if (is_async) {
-    return(promises::then(x, fn))
-  }
-  return(fn(x))
+alpaca_sign <- function(req, keys, ctx = list()) {
+  return(httr2::req_headers(
+    req,
+    `APCA-API-KEY-ID` = keys$api_key,
+    `APCA-API-SECRET-KEY` = keys$api_secret
+  ))
 }
 
 #' Build and Execute an Alpaca API Request
 #'
 #' Constructs an [httr2::request], adds authentication headers, performs it via
 #' the supplied `.perform` function, and parses the JSON response. This is the
-#' single point through which all Alpaca API calls flow.
+#' single point through which the bulk-bar and market-data paths flow; it
+#' delegates the transport to [connectcore::build_request()] and supplies the
+#' Alpaca header signer and error-envelope parser.
 #'
 #' ### Authentication
 #' Alpaca uses header-based authentication with two headers:
@@ -49,9 +58,7 @@ then_or_now <- function(x, fn, is_async = FALSE) {
 #'   nulls become NA in atomic vectors.
 #' @return Parsed and post-processed API response data, or a promise thereof.
 #'
-#' @importFrom httr2 request req_method req_url_path_append req_url_query
-#'   req_body_json req_timeout req_perform req_headers req_error
-#' @importFrom jsonlite toJSON
+#' @importFrom httr2 req_perform
 #' @export
 alpaca_build_request <- function(
   base_url,
@@ -66,47 +73,20 @@ alpaca_build_request <- function(
   timeout = 10,
   simplifyVector = FALSE
 ) {
-  req <- httr2::request(base_url)
-  req <- httr2::req_url_path_append(req, endpoint)
-  req <- httr2::req_method(req, method)
-  req <- httr2::req_timeout(req, timeout)
-
-  # Add query parameters (drop NULLs)
-  query <- query[!vapply(query, is.null, logical(1))]
-  if (length(query) > 0) {
-    req <- httr2::req_url_query(req, !!!query)
-  }
-
-  # Add JSON body for POST/PATCH/PUT
-  if (!is.null(body)) {
-    body <- body[!vapply(body, is.null, logical(1))]
-    if (length(body) > 0) {
-      req <- httr2::req_body_json(req, body)
-    }
-  }
-
-  # Suppress httr2 auto-error so parse_alpaca_response handles errors
-  req <- httr2::req_error(req, is_error = function(resp) FALSE)
-
-  # Add authentication headers
-  if (!is.null(keys)) {
-    req <- httr2::req_headers(
-      req,
-      `APCA-API-KEY-ID` = keys$api_key,
-      `APCA-API-SECRET-KEY` = keys$api_secret
-    )
-  }
-
-  result <- .perform(req)
-
-  # Single branching point: parse response then apply .parser
-  return(then_or_now(
-    result,
-    function(resp) {
-      data <- parse_alpaca_response(resp, simplifyVector = simplifyVector)
-      return(.parser(data))
-    },
-    is_async = is_async
+  return(connectcore::build_request(
+    base_url = base_url,
+    endpoint = endpoint,
+    method = method,
+    query = query,
+    body = body,
+    keys = keys,
+    sign = alpaca_sign,
+    parse_envelope = function(resp) parse_alpaca_response(resp, simplifyVector = simplifyVector),
+    body_format = "json",
+    .perform = .perform,
+    .parser = .parser,
+    is_async = is_async,
+    timeout = timeout
   ))
 }
 
@@ -159,6 +139,7 @@ alpaca_build_request <- function(
 #' )
 #' }
 #'
+#' @importFrom httr2 req_perform
 #' @export
 alpaca_paginate <- function(
   base_url,
@@ -194,7 +175,7 @@ alpaca_paginate <- function(
       timeout = timeout
     )
 
-    return(then_or_now(
+    return(connectcore::then_or_now(
       result,
       function(data) {
         page_count <<- page_count + 1L
@@ -248,7 +229,7 @@ alpaca_paginate <- function(
 #'
 #' Extracts JSON from an [httr2::response], validates the HTTP status, and
 #' returns the parsed data. Alpaca returns error details in the JSON body
-#' with a `message` field.
+#' with a `message` field. This is the connector's `.parse_envelope()` seam.
 #'
 #' @param resp An [httr2::response] object.
 #' @param simplifyVector Logical; passed to [httr2::resp_body_json]. Default

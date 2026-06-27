@@ -11,7 +11,12 @@ AlpacaBase: Abstract Base Class for Alpaca API Clients
 \details{
 Provides shared infrastructure for all Alpaca R6 classes, including API
 credential management, sync/async execution mode, and a standardised
-method for calling implementation functions.
+request funnel.
+
+Inherits the transport from \link[connectcore:RestClient]{connectcore::RestClient} and customises the two
+venue-specific seams: \code{.sign()} adds Alpaca's API-key headers, and
+\code{.parse_envelope()} reads Alpaca's error shape. Every endpoint method on a
+subclass delegates to the inherited \code{private$.request()}.
 \subsection{Sync vs Async}{
 
 The \code{async} parameter controls execution mode for all API methods:
@@ -32,7 +37,8 @@ Alpaca uses header-based authentication with two headers:
 \item \code{APCA-API-SECRET-KEY}: Your API secret key
 }
 
-No HMAC signing is required — credentials are sent directly in headers.
+No HMAC signing is required — credentials are sent directly in headers, which
+is exactly what the \code{.sign()} override does.
 }
 
 \subsection{Design}{
@@ -42,17 +48,6 @@ This class is not meant to be instantiated directly. Subclasses (e.g.,
 own public methods that delegate to \code{private$.request()}.
 }
 }
-\section{Fields}{
-
-All fields are private:
-\itemize{
-\item \code{.keys}: List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
-\item \code{.base_url}: Character; API base URL from \code{\link[=get_base_url]{get_base_url()}}.
-\item \code{.perform}: Function; either \link[httr2:req_perform]{httr2::req_perform} or \link[httr2:req_perform_promise]{httr2::req_perform_promise}.
-\item \code{.is_async}: Logical; whether the instance is in async mode.
-}
-}
-
 \examples{
 \dontrun{
 # Not instantiated directly; use subclasses:
@@ -61,13 +56,8 @@ market_async <- AlpacaMarketData$new(async = TRUE)  # async
 }
 
 }
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
-\item{\code{is_async}}{Logical; read-only flag indicating whether this instance
-operates in async mode.}
-}
-\if{html}{\out{</div>}}
+\section{Super class}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{AlpacaBase}
 }
 \section{Methods}{
 \subsection{Public methods}{

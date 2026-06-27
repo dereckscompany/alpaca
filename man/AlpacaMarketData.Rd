@@ -300,8 +300,8 @@ movers <- market$get_movers(top = 5)
 print(movers)
 }
 }
-\section{Super class}{
-\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaMarketData}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaMarketData}
 }
 \section{Methods}{
 \subsection{Public methods}{

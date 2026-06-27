@@ -778,16 +778,22 @@ AlpacaAccount <- R6::R6Class(
           intraday_reporting = intraday_reporting,
           pnl_reset = pnl_reset
         ),
-        simplifyVector = TRUE,
         .parser = function(data) {
           if (is.null(data) || is.null(data$timestamp) || length(data$timestamp) == 0) {
             return(data.table::data.table()[])
           }
+          # The response carries parallel arrays (timestamp, equity, ...).
+          # Parsed with simplifyVector = FALSE each is a list whose JSON
+          # `null` elements are NULL; `nums()` coerces to a numeric vector
+          # mapping NULL -> NA so the columns stay aligned.
+          nums <- function(x) {
+            return(vapply(x, function(v) if (is.null(v)) NA_real_ else as.numeric(v), numeric(1L)))
+          }
           dt <- data.table::data.table(
-            timestamp = lubridate::as_datetime(as.integer(data$timestamp), tz = "UTC"),
-            equity = as.numeric(data$equity),
-            profit_loss = as.numeric(data$profit_loss),
-            profit_loss_pct = as.numeric(data$profit_loss_pct)
+            timestamp = lubridate::as_datetime(as.integer(nums(data$timestamp)), tz = "UTC"),
+            equity = nums(data$equity),
+            profit_loss = nums(data$profit_loss),
+            profit_loss_pct = nums(data$profit_loss_pct)
           )
           return(dt[])
         }
@@ -927,7 +933,8 @@ AlpacaAccount <- R6::R6Class(
         if (page_size > 100L) {
           rlang::abort(paste0(
             "`page_size` must be <= 100 (Alpaca's documented cap for ",
-            "/v2/account/activities). Got: ", page_size,
+            "/v2/account/activities). Got: ",
+            page_size,
             ". See `?AlpacaAccount` -> Pagination for how to walk multiple ",
             "pages via `page_token`."
           ))
@@ -1043,7 +1050,8 @@ AlpacaAccount <- R6::R6Class(
         if (page_size > 100L) {
           rlang::abort(paste0(
             "`page_size` must be <= 100 (Alpaca's documented cap for ",
-            "/v2/account/activities/{type}). Got: ", page_size,
+            "/v2/account/activities/{type}). Got: ",
+            page_size,
             ". See `?AlpacaAccount` -> Pagination for how to walk multiple ",
             "pages via `page_token`."
           ))

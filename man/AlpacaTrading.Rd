@@ -146,8 +146,8 @@ cancelled <- trading$cancel_all_orders()
 print(cancelled)
 }
 }
-\section{Super class}{
-\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaTrading}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaTrading}
 }
 \section{Methods}{
 \subsection{Public methods}{
