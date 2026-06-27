@@ -1037,6 +1037,24 @@ empty_dt_quotes_multi <- function() {
 #' @keywords internal
 #' @noRd
 #' @noassert
+empty_dt_option_trades_multi <- function() {
+  dt <- empty_dt_trades_multi()
+  dt[, tape := NULL]
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_option_quotes_multi <- function() {
+  dt <- empty_dt_quotes_multi()
+  dt[, tape := NULL]
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
 empty_dt_snapshot <- function() {
   return(data.table::data.table(
     latest_trade_timestamp = empty_dt_empty_posixct(),

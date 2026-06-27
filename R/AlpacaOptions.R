@@ -172,7 +172,7 @@ AlpacaOptions <- R6::R6Class(
     #'   `deliverables` array in the response.
     #' @param ppind (scalar<logical> | NULL) filter by Penny Program Indicator.
     #'   `TRUE` returns only contracts eligible for penny price increments.
-    #' @return (data.table | promise<data.table>) the contracts. With
+    #' @return (Contract | promise<Contract>) the contracts. With
     #'   `show_deliverables = NULL` (default) or `FALSE`, returns one row per
     #'   contract. With `show_deliverables = TRUE`, the nested `deliverables`
     #'   array is exploded to one row per `(contract, deliverable)`; contract
@@ -314,7 +314,7 @@ AlpacaOptions <- R6::R6Class(
     #' ```
     #'
     #' @param symbol_or_id (scalar<character>) OCC option symbol or contract UUID.
-    #' @return (data.table | promise<data.table>) the contract, with the same
+    #' @return (Contract | promise<Contract>) the contract, with the same
     #'   columns as `get_contracts()`, single row.
     #'
     #' @examples
@@ -400,7 +400,7 @@ AlpacaOptions <- R6::R6Class(
     #'   default 1000).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @param sort (scalar<character> | NULL) `"asc"` (default) or `"desc"`.
-    #' @return (data.table | promise<data.table>) **one row per bar** with a
+    #' @return (BarsMulti | promise<BarsMulti>) **one row per bar** with a
     #'   leading `symbol` column. Bar columns mirror the equity `get_bars()`
     #'   output: `timestamp` (POSIXct), `open`, `high`, `low`, `close`, `vwap`
     #'   (numeric), `volume`, `trade_count` (integer).
@@ -503,11 +503,13 @@ AlpacaOptions <- R6::R6Class(
     #'   default 1000).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @param sort (scalar<character> | NULL) `"asc"` (default) or `"desc"`.
-    #' @return (data.table | promise<data.table>) **one row per trade** with a
-    #'   leading `symbol` column. Columns: `timestamp` (POSIXct), `price`
-    #'   (numeric), `size` (integer), `exchange` (character), `conditions`
-    #'   (character, `;`-separated trade condition codes or a single-character
-    #'   code; `NA` when none reported), `tape` (character), `id` (integer).
+    #' @return (OptionTradesMulti | promise<OptionTradesMulti>) **one row per
+    #'   trade** with a leading `symbol` column. Columns: `timestamp` (POSIXct),
+    #'   `price` (numeric), `size` (integer), `exchange` (character),
+    #'   `conditions` (character, `;`-separated trade condition codes or a
+    #'   single-character code; `NA` when none reported), `id` (integer). The
+    #'   options trade payload carries no consolidated tape, so there is no
+    #'   `tape` column (unlike the equity trade shape).
     get_option_trades = function(
       symbols,
       start = NULL,
@@ -537,7 +539,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = function(data) {
           trades_map <- data$trades
           if (is.null(trades_map) || length(trades_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_option_trades_multi())
           }
           dts <- lapply(names(trades_map), function(sym) {
             dt <- parse_trades(trades_map[[sym]])
@@ -596,11 +598,12 @@ AlpacaOptions <- R6::R6Class(
     #' @param symbols (scalar<character>) comma-separated OCC option symbols.
     #' @param feed (scalar<character> | NULL) `"opra"` (default, official OPRA
     #'   feed) or `"indicative"` (free, delayed/modified).
-    #' @return (data.table | promise<data.table>) **one row per contract** with a
-    #'   leading `symbol` column. Columns: `timestamp` (POSIXct); `ask_exchange`,
-    #'   `ask_price`, `ask_size`, `bid_exchange`, `bid_price`, `bid_size`; and
-    #'   `conditions` (character, `;`-separated quote condition codes or a
-    #'   single-character code; `NA` when none reported).
+    #' @return (OptionQuotesMulti | promise<OptionQuotesMulti>) **one row per
+    #'   contract** with a leading `symbol` column. Columns: `timestamp`
+    #'   (POSIXct); `ask_exchange`, `ask_price`, `ask_size`, `bid_exchange`,
+    #'   `bid_price`, `bid_size`; and `conditions` (character, `;`-separated
+    #'   quote condition codes or a single-character code; `NA` when none
+    #'   reported).
     get_option_latest_quotes = function(symbols, feed = NULL) {
       assert_args_AlpacaOptions__get_option_latest_quotes(symbols, feed)
       result <- private$.data_request(
@@ -609,7 +612,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = function(data) {
           quotes_map <- data$quotes
           if (is.null(quotes_map) || length(quotes_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_option_quotes_multi())
           }
           dts <- lapply(names(quotes_map), function(sym) {
             dt <- parse_quotes(list(quotes_map[[sym]]))
@@ -667,11 +670,13 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' @param symbols (scalar<character>) comma-separated OCC option symbols.
     #' @param feed (scalar<character> | NULL) data feed.
-    #' @return (data.table | promise<data.table>) **one row per contract** with a
-    #'   leading `symbol` column. Columns: `timestamp` (POSIXct), `price`
-    #'   (numeric), `size` (integer), `exchange` (character), `conditions`
-    #'   (character, `;`-separated trade condition codes or a single-character
-    #'   code; `NA` when none reported), `tape` (character), `id` (integer).
+    #' @return (OptionTradesMulti | promise<OptionTradesMulti>) **one row per
+    #'   contract** with a leading `symbol` column. Columns: `timestamp`
+    #'   (POSIXct), `price` (numeric), `size` (integer), `exchange` (character),
+    #'   `conditions` (character, `;`-separated trade condition codes or a
+    #'   single-character code; `NA` when none reported), `id` (integer). The
+    #'   options trade payload carries no consolidated tape, so there is no
+    #'   `tape` column (unlike the equity trade shape).
     get_option_latest_trades = function(symbols, feed = NULL) {
       assert_args_AlpacaOptions__get_option_latest_trades(symbols, feed)
       result <- private$.data_request(
@@ -680,7 +685,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = function(data) {
           trades_map <- data$trades
           if (is.null(trades_map) || length(trades_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_option_trades_multi())
           }
           dts <- lapply(names(trades_map), function(sym) {
             dt <- parse_trades(list(trades_map[[sym]]))
@@ -792,7 +797,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param limit (scalar<count in [1, 1000]> | NULL) max snapshots (1-1000,
     #'   default 100).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
-    #' @return (data.table | promise<data.table>) **one row per contract**.
+    #' @return (SnapshotMulti | promise<SnapshotMulti>) **one row per contract**.
     #'   Columns: `symbol` (character, OCC option symbol); the flattened
     #'   `latest_trade_*` / `latest_quote_*` / `minute_bar_*` / `daily_bar_*` /
     #'   `prev_daily_bar_*` sections (see `get_snapshot()` for the per-field
@@ -824,7 +829,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = function(data) {
           snaps <- data$snapshots
           if (is.null(snaps) || length(snaps) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_snapshots_multi())
           }
           dts <- lapply(names(snaps), function(sym) {
             dt <- parse_snapshot(snaps[[sym]])
@@ -903,7 +908,7 @@ AlpacaOptions <- R6::R6Class(
     #'
     #' @param symbol (scalar<character>) OCC option symbol.
     #' @param feed (scalar<character> | NULL) data feed.
-    #' @return (data.table | promise<data.table>) the same shape as
+    #' @return (SnapshotMulti | promise<SnapshotMulti>) the same shape as
     #'   `get_option_chain()` — one row per contract in the chain rooted at
     #'   `symbol`. Despite the legacy name, this is **not** a single-contract
     #'   snapshot; for that, use `get_option_snapshots(symbols = "<OCC>")`.
@@ -1033,8 +1038,8 @@ AlpacaOptions <- R6::R6Class(
     #' @param updated_since (scalar<character> | NULL) only snapshots updated at
     #'   or after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
-    #' @return (data.table | promise<data.table>) **one row per contract in the
-    #'   chain**. Columns mirror `get_option_snapshots()`: a `symbol` key, the
+    #' @return (SnapshotMulti | promise<SnapshotMulti>) **one row per contract in
+    #'   the chain**. Columns mirror `get_option_snapshots()`: a `symbol` key, the
     #'   flattened `latest_trade_*` / `latest_quote_*` / `minute_bar_*` /
     #'   `daily_bar_*` / `prev_daily_bar_*` blocks (including
     #'   `latest_trade_conditions` / `latest_quote_conditions`), and — when the
@@ -1104,7 +1109,7 @@ AlpacaOptions <- R6::R6Class(
         .parser = function(data) {
           snaps <- data$snapshots
           if (is.null(snaps) || length(snaps) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_snapshots_multi())
           }
           dts <- lapply(names(snaps), function(sym) {
             dt <- parse_snapshot(snaps[[sym]])
