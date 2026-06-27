@@ -432,6 +432,17 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "connectcore": {
+      "Package": "connectcore",
+      "Version": "0.1.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "dereckscompany",
+      "RemoteRepo": "connectcore",
+      "RemoteRef": "v0.1.0",
+      "RemoteSha": "2213ad8c7b56ebedf83c82226a37da50168aa2ce"
+    },
     "coro": {
       "Package": "coro",
       "Version": "1.1.0",

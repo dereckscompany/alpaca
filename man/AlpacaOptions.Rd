@@ -128,8 +128,8 @@ chain <- opts$get_option_chain("AAPL", type = "call",
 print(chain)
 }
 }
-\section{Super class}{
-\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaOptions}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaOptions}
 }
 \section{Methods}{
 \subsection{Public methods}{

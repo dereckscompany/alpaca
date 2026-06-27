@@ -1,7 +1,7 @@
 Package: alpaca
 Type: Package
 Title: API Wrapper to Alpaca Trading Platform
-Version: 0.3.0
+Version: 0.3.1
 URL: https://dereckscompany.github.io/alpaca/
 BugReports: https://github.com/dereckscompany/alpaca/issues
 Authors@R:
@@ -21,10 +21,13 @@ Depends: R (>= 4.1.0)
 Imports:
     R6,
     rlang,
-    jsonlite,
     data.table,
     httr2 (>= 1.0.0),
-    lubridate
+    lubridate,
+    jsonlite,
+    connectcore
+Remotes:
+    dereckscompany/connectcore@v0.1.0
 Suggests:
     box,
     coro,

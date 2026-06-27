@@ -120,8 +120,8 @@ test_that("as_dt_row wraps length-1 list fields consistently", {
   row1 <- list(name = "A", tags = list("stock"))
   row2 <- list(name = "B", tags = list("stock", "etf"))
 
-  dt1 <- alpaca:::as_dt_row(row1)
-  dt2 <- alpaca:::as_dt_row(row2)
+  dt1 <- as_dt_row(row1)
+  dt2 <- as_dt_row(row2)
 
   expect_true(is.list(dt1$tags), info = "Single-element list field should remain a list column")
 

@@ -294,8 +294,8 @@ acct$cancel_watchlist("some-uuid")
 includes the worked id-cursor pagination loop in its
 \verb{@section Pagination}. This method follows the same contract.
 }
-\section{Super class}{
-\code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaAccount}
+\section{Super classes}{
+\code{\link[connectcore:RestClient]{connectcore::RestClient}} -> \code{\link[alpaca:AlpacaBase]{alpaca::AlpacaBase}} -> \code{AlpacaAccount}
 }
 \section{Methods}{
 \subsection{Public methods}{

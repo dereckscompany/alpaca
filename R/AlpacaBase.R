@@ -5,7 +5,12 @@
 #'
 #' Provides shared infrastructure for all Alpaca R6 classes, including API
 #' credential management, sync/async execution mode, and a standardised
-#' method for calling implementation functions.
+#' request funnel.
+#'
+#' Inherits the transport from [connectcore::RestClient] and customises the two
+#' venue-specific seams: `.sign()` adds Alpaca's API-key headers, and
+#' `.parse_envelope()` reads Alpaca's error shape. Every endpoint method on a
+#' subclass delegates to the inherited `private$.request()`.
 #'
 #' ### Sync vs Async
 #' The `async` parameter controls execution mode for all API methods:
@@ -20,19 +25,13 @@
 #' - `APCA-API-KEY-ID`: Your API key ID
 #' - `APCA-API-SECRET-KEY`: Your API secret key
 #'
-#' No HMAC signing is required — credentials are sent directly in headers.
+#' No HMAC signing is required — credentials are sent directly in headers, which
+#' is exactly what the `.sign()` override does.
 #'
 #' ### Design
 #' This class is not meant to be instantiated directly. Subclasses (e.g.,
 #' [AlpacaMarketData], [AlpacaTrading]) inherit from it and define their
 #' own public methods that delegate to `private$.request()`.
-#'
-#' @section Fields:
-#' All fields are private:
-#' - `.keys`: List; API credentials from [get_api_keys()].
-#' - `.base_url`: Character; API base URL from [get_base_url()].
-#' - `.perform`: Function; either [httr2::req_perform] or [httr2::req_perform_promise].
-#' - `.is_async`: Logical; whether the instance is in async mode.
 #'
 #' @examples
 #' \dontrun{
@@ -42,10 +41,11 @@
 #' }
 #'
 #' @importFrom R6 R6Class
-#' @importFrom httr2 req_perform
+#' @importFrom httr2 req_headers
 #' @export
 AlpacaBase <- R6::R6Class(
   "AlpacaBase",
+  inherit = connectcore::RestClient,
   public = list(
     #' @description
     #' Initialise an AlpacaBase Object
@@ -60,63 +60,68 @@ AlpacaBase <- R6::R6Class(
       base_url = get_base_url(),
       async = FALSE
     ) {
-      private$.keys <- keys
-      private$.base_url <- base_url
-      private$.is_async <- isTRUE(async)
-
-      if (private$.is_async) {
-        if (!requireNamespace("promises", quietly = TRUE)) {
-          rlang::abort(
-            "Package 'promises' is required for async mode. Install with: install.packages('promises')"
-          )
-        }
-        private$.perform <- httr2::req_perform_promise
-      } else {
-        private$.perform <- httr2::req_perform
+      if (isTRUE(async) && !requireNamespace("promises", quietly = TRUE)) {
+        rlang::abort(
+          "Package 'promises' is required for async mode. Install with: install.packages('promises')"
+        )
       }
-
+      super$initialize(
+        keys = keys,
+        base_url = base_url,
+        async = async,
+        body_format = "json"
+      )
       return(invisible(self))
     }
   ),
-  active = list(
-    #' @field is_async Logical; read-only flag indicating whether this instance
-    #'   operates in async mode.
-    is_async = function() {
-      return(private$.is_async)
-    }
-  ),
   private = list(
-    .keys = NULL,
-    .base_url = NULL,
-    .perform = NULL,
-    .is_async = FALSE,
+    # Authenticate an Alpaca request by adding the two API-key headers. Alpaca
+    # uses plain header credentials, not request signing, so this seam just
+    # forwards the stored keys onto the request.
+    .sign = function(req, keys, ctx) {
+      return(httr2::req_headers(
+        req,
+        `APCA-API-KEY-ID` = keys$api_key,
+        `APCA-API-SECRET-KEY` = keys$api_secret
+      ))
+    },
 
-    # Execute an Alpaca API Request
-    #
-    # Convenience wrapper around alpaca_build_request() that injects the
-    # instance's base URL, credentials, and perform function.
-    .request = function(
-      endpoint,
-      method = "GET",
-      query = list(),
-      body = NULL,
-      auth = TRUE,
-      .parser = identity,
-      timeout = 30,
-      simplifyVector = FALSE
-    ) {
-      return(alpaca_build_request(
-        base_url = private$.base_url,
+    # Turn a response into data and raise on error, using Alpaca's error shape:
+    # 204 No Content -> empty list; non-2xx carries a `message` (or `msg`) field
+    # in the JSON body. Parses with simplifyVector = FALSE (the package default);
+    # the one endpoint needing parallel-array simplification handles it in its
+    # own parser.
+    .parse_envelope = function(resp) {
+      return(parse_alpaca_response(resp, simplifyVector = FALSE))
+    },
+
+    # Pre-serialise the body to its exact pre-migration wire bytes, then hand it
+    # to the shared funnel verbatim via connectcore's raw path. The default JSON
+    # path would re-serialise with `auto_unbox = TRUE` and collapse a
+    # single-symbol watchlist `symbols` to a scalar; `alpaca_serialize_body()`
+    # owns the serialisation instead and keeps `symbols` a JSON array. Bodyless
+    # requests fall straight through to the inherited funnel unchanged.
+    .request = function(endpoint, method = "GET", query = list(), body = NULL, ...) {
+      raw_body <- if (is.null(body)) NULL else alpaca_serialize_body(body)
+      # A body that prunes to nothing sent no bytes pre-migration; fall through
+      # to the bodyless funnel path rather than emitting an empty-object body.
+      if (is.null(raw_body)) {
+        return(super$.request(
+          endpoint = endpoint,
+          method = method,
+          query = query,
+          body = NULL,
+          ...
+        ))
+      }
+      return(super$.request(
         endpoint = endpoint,
         method = method,
         query = query,
-        body = body,
-        keys = if (auth) private$.keys else NULL,
-        .perform = private$.perform,
-        .parser = .parser,
-        is_async = private$.is_async,
-        timeout = timeout,
-        simplifyVector = simplifyVector
+        body = raw_body,
+        body_format = "raw",
+        raw_content_type = "application/json",
+        ...
       ))
     }
   )

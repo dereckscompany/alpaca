@@ -1,3 +1,38 @@
+# alpaca 0.3.1
+
+## Internal
+
+* **Transport migrated onto [connectcore](https://github.com/dereckscompany/connectcore).** The
+  Alpaca clients now build on connectcore's shared transport base instead of a
+  private copy. `AlpacaBase` inherits `connectcore::RestClient` and customises
+  only the two venue-specific seams: `.sign()` adds Alpaca's
+  `APCA-API-KEY-ID` / `APCA-API-SECRET-KEY` headers (Alpaca authenticates with
+  plain API-key headers — no request signing), and `.parse_envelope()` reads
+  Alpaca's error shape (204 No Content, `message` / `msg` body fields). Every
+  endpoint method still routes through the inherited `private$.request()`
+  funnel, so retry, throttle, timeout, and the sync/async branch now come from
+  one shared place.
+* **Duplicated transport and generic helpers deleted.** The package's own
+  `then_or_now()` and the request-funnel internals are gone, replaced by
+  `connectcore::build_request()` / `connectcore::then_or_now()`. The generic
+  JSON->data.table helpers (`to_snake_case()`, `as_dt_row()`, `as_dt_list()`,
+  `collapse_string_array_fields()`) are now imported from connectcore; the
+  Alpaca-specific parsers and time coercions are unchanged.
+* **Public API, return shapes, and behaviour are unchanged.** `alpaca_build_request()`
+  and `alpaca_paginate()` keep their signatures (now thin wrappers over the
+  shared funnel), and every existing test continues to pass. The one endpoint
+  that relied on `simplifyVector = TRUE` (portfolio history) now coerces the
+  parallel arrays itself, preserving `null -> NA` alignment.
+* **Request bodies are byte-identical to the pre-migration transport.** Bodies
+  are pre-serialised by `alpaca_serialize_body()` (the exact options the old
+  `httr2::req_body_json()` funnel used — `auto_unbox = TRUE`, `digits = 22`,
+  `null = "null"`) and sent verbatim through connectcore's `body_format = "raw"`
+  path, so the wire bytes for orders and every other POST/PUT/PATCH match the
+  previous release exactly. The single deliberate departure also fixes a
+  long-standing bug: a one-symbol watchlist now serialises `symbols` as a JSON
+  array (`["AAPL"]`) instead of a bare scalar (`"AAPL"`), which Alpaca's
+  watchlist endpoints require. New tests pin these body bytes.
+
 # alpaca 0.3.0
 
 ## Bug fixes

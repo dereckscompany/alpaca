@@ -1,19 +1,9 @@
 # File: R/helpers_parse.R
-# Response parsing and data.table construction helpers.
-
-#' Convert camelCase Names to snake_case
-#'
-#' @param names Character vector; names to convert.
-#' @return Character vector; converted snake_case names.
-#'
-#' @keywords internal
-#' @noRd
-to_snake_case <- function(names) {
-  out <- gsub("([a-z0-9])([A-Z])", "\\1_\\2", names)
-  out <- gsub("([A-Z])([A-Z][a-z])", "\\1_\\2", out)
-  out <- tolower(out)
-  return(out)
-}
+# Alpaca-specific response parsing and data.table construction helpers. The
+# generic toolkit (to_snake_case, as_dt_row, as_dt_list,
+# collapse_string_array_fields) is imported from connectcore (see imports.R);
+# this file holds the Alpaca-specific time coercions and the per-endpoint
+# parsers built on top of both.
 
 #' Wrap Multi-Element List Fields
 #'
@@ -34,57 +24,6 @@ wrap_list_fields <- function(x) {
     }
   }
   return(x)
-}
-
-#' Convert a Named List to a Single-Row data.table
-#'
-#' Converts a flat named list (typically from an Alpaca API JSON response)
-#' into a single-row [data.table::data.table]. NULL values become NA.
-#' Column names are converted to snake_case.
-#'
-#' @param x A named list.
-#' @return A single-row [data.table::data.table] with snake_case column names.
-#'
-#' @keywords internal
-#' @noRd
-as_dt_row <- function(x) {
-  if (is.null(x) || length(x) == 0) {
-    return(data.table::data.table()[])
-  }
-  x <- lapply(x, function(val) {
-    if (is.null(val)) {
-      return(NA)
-    }
-    if (is.list(val) && length(val) == 0) {
-      return(NA)
-    }
-    if (is.list(val) && length(val) >= 1) {
-      return(list(val))
-    }
-    return(val)
-  })
-  dt <- data.table::as.data.table(x)
-  data.table::setnames(dt, to_snake_case(names(dt)))
-  return(dt[])
-}
-
-#' Convert a List of Lists to a data.table
-#'
-#' Takes a list where each element is a named list (e.g., from a JSON array)
-#' and row-binds them into a [data.table::data.table] with snake_case columns.
-#'
-#' @param items A list of named lists, or NULL.
-#' @return A [data.table::data.table]. Returns an empty data.table if `items`
-#'   is NULL or empty.
-#'
-#' @keywords internal
-#' @noRd
-as_dt_list <- function(items) {
-  if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
-  }
-  dt <- data.table::rbindlist(lapply(items, as_dt_row), fill = TRUE)
-  return(dt[])
 }
 
 # ----------------------------------------------------------------------
@@ -761,114 +700,6 @@ parse_watchlist <- function(wl) {
   parent_rep <- parent[rep(1L, nrow(assets_dt)), ]
   dt <- cbind(parent_rep, assets_dt)
   return(dt[])
-}
-
-#' Collapse a Plain-String Array Field on a Single Record
-#'
-#' Walks the named list `x` and replaces any named field whose value is a
-#' length >= 1 list of plain character strings (or atomic character vector)
-#' with a single semicolon-separated character scalar. Used by the asset /
-#' news / trade / quote parsers so we get one row per entity instead of a
-#' list column or an exploded long row count.
-#'
-#' ### Separator choice
-#' We use `;` rather than `,` because semicolon is far less likely to appear
-#' inside any of the values themselves (the array elements are all
-#' short codes / snake_case identifiers / tickers — none of which contain
-#' semicolons). Commas can legitimately appear inside URL query strings, so
-#' a future URL-valued field would need either URL-encoding or a different
-#' separator entirely. Semicolon sidesteps that.
-#'
-#' If any individual value contains a literal `;`, we'd silently corrupt
-#' the data on a subsequent split. To make any future shape change loud,
-#' we emit a once-per-session warning when that happens.
-#'
-#' ### Recovering the original values
-#' Splitting on `;` gives back the original vector:
-#'
-#' ```r
-#' dt <- market$get_asset("AAPL")
-#' strsplit(dt$attributes, ";", fixed = TRUE)[[1]]
-#' #> [1] "fractional_eh_enabled" "has_options" "overnight_tradable"
-#' ```
-#'
-#' For URL fields (e.g. `image_urls` returned by `get_news()`) `parse_news()`
-#' itself percent-encodes any literal `;` inside each URL *before* it
-#' calls this helper — so the joined string can be split on `;` cleanly
-#' and the original URLs recovered via `URLdecode()` per element. This
-#' helper itself does no encoding; it only joins. To recover the URLs:
-#'
-#' ```r
-#' news <- market$get_news(symbols = "AAPL", limit = 1)
-#' urls  <- strsplit(news$image_urls, ";", fixed = TRUE)[[1]]
-#' urls  <- vapply(urls, URLdecode, character(1))
-#' ```
-#'
-#' Plain-string fields (everything other than URLs) are NOT encoded, so
-#' `URLdecode()` on them is a no-op.
-#'
-#' Only fields in `fields` are touched; nested objects elsewhere are left
-#' alone so they can be flattened by their own parser.
-#'
-#' @param x A named list representing a single API record.
-#' @param fields Character vector; names of fields to collapse.
-#' @return The same named list with the matching fields collapsed in place.
-#'
-#' @keywords internal
-#' @noRd
-collapse_string_array_fields <- function(x, fields) {
-  for (nm in fields) {
-    val <- x[[nm]]
-    # Empty / missing -> NA_character_ rather than `list()`. This unifies
-    # the column type so downstream `data.table::rbindlist()` builds a
-    # character column instead of falling back to a list column when some
-    # records have arrays and others don't.
-    if (is.null(val) || length(val) == 0L) {
-      x[[nm]] <- NA_character_
-      next
-    }
-    if (is.list(val)) {
-      val <- unlist(val, use.names = FALSE)
-    }
-    if (is.atomic(val) && length(val) >= 1L) {
-      val_chr <- as.character(val)
-      # Drop NA elements BEFORE joining. `paste(c("real", NA),
-      # collapse = ";")` would produce the literal string `"real;NA"`,
-      # indistinguishable from a real "NA" value. Also, a scalar
-      # `NA_character_` input would otherwise reach the `grepl(";", NA)`
-      # check, which returns NA, propagates through `any(NA)`, and
-      # crashes the `if (NA)`. Filtering up front avoids both traps;
-      # if every element was NA, fall back to `NA_character_` so
-      # all-missing arrays round-trip to NA cleanly.
-      val_chr <- val_chr[!is.na(val_chr)]
-      if (length(val_chr) == 0L) {
-        x[[nm]] <- NA_character_
-        next
-      }
-      # `na.rm = TRUE` is defensive — by here `val_chr` has no NAs,
-      # but it's cheap insurance against future refactors that might
-      # add an `NA` element back upstream.
-      if (any(grepl(";", val_chr, fixed = TRUE), na.rm = TRUE)) {
-        rlang::warn(
-          paste0(
-            "Field `",
-            nm,
-            "` contains a literal `;` which collides with the ",
-            "collapse separator. Joining anyway; downstream code that splits ",
-            "on `;` will see corrupted values. Please report this so we can ",
-            "switch the separator for this field."
-          ),
-          # Fire once per session per field — once the user has seen the
-          # warning for a given field they know that field's shape is
-          # changing, and there's no value in repeating.
-          .frequency = "once",
-          .frequency_id = paste0("collapse_sep_collision_", nm)
-        )
-      }
-      x[[nm]] <- paste(val_chr, collapse = ";")
-    }
-  }
-  return(x)
 }
 
 #' Parse an Alpaca Asset Record to a Single-Row data.table
