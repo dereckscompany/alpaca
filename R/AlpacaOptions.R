@@ -165,7 +165,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param root_symbol (scalar<character> | NULL) options root symbol.
     #' @param style (scalar<character> | NULL) option style (`"american"`,
     #'   `"european"`).
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max contracts to return
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max contracts to return
     #'   (default 100, max 10000).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @param show_deliverables (scalar<logical> | NULL) if `TRUE`, include the
@@ -325,6 +325,7 @@ AlpacaOptions <- R6::R6Class(
     #' }
     get_contract = function(symbol_or_id) {
       assert_args_AlpacaOptions__get_contract(symbol_or_id)
+      assert::assert_nonempty_strings(symbol_or_id)
       endpoint <- paste0("/v2/options/contracts/", symbol_or_id)
       result <- private$.request(
         endpoint = endpoint,
@@ -396,7 +397,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param start (scalar<character> | NULL) start date/time (RFC-3339 or
     #'   `"YYYY-MM-DD"`).
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max bars (1-10000,
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max bars (1-10000,
     #'   default 1000).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @param sort (scalar<character> | NULL) `"asc"` (default) or `"desc"`.
@@ -499,7 +500,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param symbols (scalar<character>) comma-separated OCC option symbols.
     #' @param start (scalar<character> | NULL) start date/time.
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max trades (1-10000,
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max trades (1-10000,
     #'   default 1000).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @param sort (scalar<character> | NULL) `"asc"` (default) or `"desc"`.
@@ -794,7 +795,7 @@ AlpacaOptions <- R6::R6Class(
     #'   `"indicative"`.
     #' @param updated_since (scalar<character> | NULL) only return snapshots
     #'   updated at or after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
-    #' @param limit (scalar<count in [1, 1000]> | NULL) max snapshots (1-1000,
+    #' @param limit (scalar<count in [1, 1001[> | NULL) max snapshots (1-1000,
     #'   default 100).
     #' @param page_token (scalar<character> | NULL) cursor for pagination.
     #' @return (SnapshotMulti | promise<SnapshotMulti>) **one row per contract**.
@@ -1033,7 +1034,7 @@ AlpacaOptions <- R6::R6Class(
     #' @param root_symbol (scalar<character> | NULL) options root symbol.
     #' @param feed (scalar<character> | NULL) `"opra"` (default) or
     #'   `"indicative"`.
-    #' @param limit (scalar<count in [1, 1000]> | NULL) max results (1-1000,
+    #' @param limit (scalar<count in [1, 1001[> | NULL) max results (1-1000,
     #'   default 100).
     #' @param updated_since (scalar<character> | NULL) only snapshots updated at
     #'   or after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
@@ -1084,6 +1085,7 @@ AlpacaOptions <- R6::R6Class(
         updated_since,
         page_token
       )
+      assert::assert_nonempty_strings(underlying_symbol)
       if (!is.null(strike_price_gte)) {
         strike_price_gte <- as.character(strike_price_gte)
       }

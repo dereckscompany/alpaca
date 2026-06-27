@@ -514,6 +514,7 @@ AlpacaTrading <- R6::R6Class(
     #' }
     get_order = function(order_id, nested = NULL) {
       assert_args_AlpacaTrading__get_order(order_id, nested)
+      assert::assert_nonempty_strings(order_id)
       endpoint <- paste0("/v2/orders/", order_id)
       return(connectcore::then_or_now(
         private$.request(
@@ -598,6 +599,7 @@ AlpacaTrading <- R6::R6Class(
     #' }
     get_order_by_client_id = function(client_order_id) {
       assert_args_AlpacaTrading__get_order_by_client_id(client_order_id)
+      assert::assert_nonempty_strings(client_order_id)
       return(connectcore::then_or_now(
         private$.request(
           endpoint = "/v2/orders:by_client_order_id",
@@ -725,6 +727,7 @@ AlpacaTrading <- R6::R6Class(
         client_order_id,
         advanced_instructions
       )
+      assert::assert_nonempty_strings(order_id)
       if (!is.null(qty) && !is.null(notional)) {
         rlang::abort("`qty` and `notional` are mutually exclusive on a single replace request.")
       }
@@ -797,9 +800,9 @@ AlpacaTrading <- R6::R6Class(
     #' ```
     #'
     #' @param order_id (scalar<character>) order UUID to cancel.
-    #' @return (data.table | promise<data.table>) a single-row confirmation with
-    #'   `order_id` (character, the cancelled order UUID) and `status`
-    #'   (character, `"cancelled"`).
+    #' @return (CancelOrderAck | promise<CancelOrderAck>) a single-row
+    #'   confirmation with `order_id` (the cancelled order UUID) and `status`
+    #'   (always `"cancelled"`).
     #'
     #' @examples
     #' \dontrun{
@@ -808,6 +811,7 @@ AlpacaTrading <- R6::R6Class(
     #' }
     cancel_order = function(order_id) {
       assert_args_AlpacaTrading__cancel_order(order_id)
+      assert::assert_nonempty_strings(order_id)
       endpoint <- paste0("/v2/orders/", order_id)
       return(connectcore::then_or_now(
         private$.request(

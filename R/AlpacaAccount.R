@@ -453,6 +453,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     get_position = function(symbol_or_id) {
       assert_args_AlpacaAccount__get_position(symbol_or_id)
+      assert::assert_nonempty_strings(symbol_or_id)
       endpoint <- paste0("/v2/positions/", symbol_or_id)
       result <- private$.request(
         endpoint = endpoint,
@@ -508,7 +509,11 @@ AlpacaAccount <- R6::R6Class(
     #'   exclusive with `percentage`.
     #' @param percentage (scalar<numeric> | NULL) percentage of position to close
     #'   (0-100). Mutually exclusive with `qty`.
-    #' @return (data.table | promise<data.table>) the closing order details.
+    #' @return (OrderCore | promise<OrderCore>) the closing order as a single row
+    #'   (the core order columns; the venue returns the richer single-order
+    #'   fields as un-asserted extras). Unlike the list/single-order endpoints
+    #'   this path bypasses `parse_order()`, so it carries no `leg_index` /
+    #'   `parent_order_id` columns.
     #'
     #' @examples
     #' \dontrun{
@@ -525,6 +530,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     close_position = function(symbol_or_id, qty = NULL, percentage = NULL) {
       assert_args_AlpacaAccount__close_position(symbol_or_id, qty, percentage)
+      assert::assert_nonempty_strings(symbol_or_id)
       if (!is.null(qty) && !is.null(percentage)) {
         rlang::abort("`qty` and `percentage` are mutually exclusive.")
       }
@@ -681,9 +687,9 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param symbol_or_id (scalar<character>) OCC option symbol or asset UUID.
-    #' @return (data.table | promise<data.table>) a single-row confirmation with
-    #'   `symbol` (character, the exercised option symbol or asset UUID) and
-    #'   `status` (character, `"exercised"`).
+    #' @return (ExerciseAck | promise<ExerciseAck>) a single-row confirmation
+    #'   with `symbol` (the exercised option symbol or asset UUID) and `status`
+    #'   (always `"exercised"`).
     #'
     #' @examples
     #' \dontrun{
@@ -692,6 +698,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     exercise_option = function(symbol_or_id) {
       assert_args_AlpacaAccount__exercise_option(symbol_or_id)
+      assert::assert_nonempty_strings(symbol_or_id)
       endpoint <- paste0("/v2/positions/", symbol_or_id, "/exercise")
       result <- private$.request(
         endpoint = endpoint,
@@ -909,7 +916,7 @@ AlpacaAccount <- R6::R6Class(
     #' @param after (scalar<character> | NULL) only activities after this
     #'   timestamp.
     #' @param direction (scalar<character> | NULL) `"asc"` or `"desc"`.
-    #' @param page_size (scalar<count in [1, 100]> | NULL) max results per page.
+    #' @param page_size (scalar<count in [1, 101[> | NULL) max results per page.
     #'   Alpaca caps this at **100** for `/v2/account/activities`; values above
     #'   100 return HTTP 422 server-side. This method validates the cap up-front
     #'   and `abort()`s with a clear message rather than letting the vendor
@@ -1081,7 +1088,7 @@ AlpacaAccount <- R6::R6Class(
     #' @param after (scalar<character> | NULL) only activities after this
     #'   timestamp.
     #' @param direction (scalar<character> | NULL) `"asc"` or `"desc"`.
-    #' @param page_size (scalar<count in [1, 100]> | NULL) max results per page.
+    #' @param page_size (scalar<count in [1, 101[> | NULL) max results per page.
     #'   Alpaca caps this at **100** for `/v2/account/activities/{type}`; values
     #'   above 100 return HTTP 422 server-side. This method validates the cap
     #'   up-front and `abort()`s with a clear message rather than letting the
@@ -1125,6 +1132,7 @@ AlpacaAccount <- R6::R6Class(
         direction,
         page_token
       )
+      assert::assert_nonempty_strings(activity_type)
       if (!is.null(page_size)) {
         if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
           rlang::abort(
@@ -1303,6 +1311,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     get_watchlist = function(watchlist_id) {
       assert_args_AlpacaAccount__get_watchlist(watchlist_id)
+      assert::assert_nonempty_strings(watchlist_id)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
       result <- private$.request(
         endpoint = endpoint,
@@ -1377,6 +1386,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     add_watchlist = function(name, symbols = NULL) {
       assert_args_AlpacaAccount__add_watchlist(name, symbols)
+      assert::assert_nonempty_strings(name)
       result <- private$.request(
         endpoint = "/v2/watchlists",
         method = "POST",
@@ -1449,6 +1459,8 @@ AlpacaAccount <- R6::R6Class(
     #' }
     modify_watchlist = function(watchlist_id, name, symbols) {
       assert_args_AlpacaAccount__modify_watchlist(watchlist_id, name, symbols)
+      assert::assert_nonempty_strings(watchlist_id)
+      assert::assert_nonempty_strings(name)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
       result <- private$.request(
         endpoint = endpoint,
@@ -1518,6 +1530,8 @@ AlpacaAccount <- R6::R6Class(
     #' }
     add_watchlist_symbol = function(watchlist_id, symbol) {
       assert_args_AlpacaAccount__add_watchlist_symbol(watchlist_id, symbol)
+      assert::assert_nonempty_strings(watchlist_id)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
       result <- private$.request(
         endpoint = endpoint,
@@ -1576,6 +1590,8 @@ AlpacaAccount <- R6::R6Class(
     #' }
     cancel_watchlist_symbol = function(watchlist_id, symbol) {
       assert_args_AlpacaAccount__cancel_watchlist_symbol(watchlist_id, symbol)
+      assert::assert_nonempty_strings(watchlist_id)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/watchlists/", watchlist_id, "/", symbol)
       result <- private$.request(
         endpoint = endpoint,
@@ -1627,9 +1643,9 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param watchlist_id (scalar<character>) watchlist UUID.
-    #' @return (data.table | promise<data.table>) a single-row confirmation with
-    #'   `watchlist_id` (character, the deleted watchlist UUID) and `status`
-    #'   (character, `"deleted"`).
+    #' @return (CancelWatchlistAck | promise<CancelWatchlistAck>) a single-row
+    #'   confirmation with `watchlist_id` (the deleted watchlist UUID) and
+    #'   `status` (always `"deleted"`).
     #'
     #' @examples
     #' \dontrun{
@@ -1638,6 +1654,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     cancel_watchlist = function(watchlist_id) {
       assert_args_AlpacaAccount__cancel_watchlist(watchlist_id)
+      assert::assert_nonempty_strings(watchlist_id)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
       result <- private$.request(
         endpoint = endpoint,

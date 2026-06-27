@@ -189,7 +189,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param start (scalar<character> | NULL) start date/time (RFC-3339 or
     #'   `"YYYY-MM-DD"`).
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max bars **per page**
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max bars **per page**
     #'   (1-10000, default 10000). The method auto-paginates via
     #'   `next_page_token`, so the full `start`..`end` range is returned
     #'   regardless of `limit`; this only sets the page size (and thus the number
@@ -254,6 +254,7 @@ AlpacaMarketData <- R6::R6Class(
         max_pages,
         sleep
       )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/bars")
       result <- alpaca_paginate(
         base_url = private$.data_base_url,
@@ -326,7 +327,7 @@ AlpacaMarketData <- R6::R6Class(
     #'   valid values).
     #' @param start (scalar<character> | NULL) start date/time.
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max bars **per page**
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max bars **per page**
     #'   (1-10000, default 10000). NOTE: Alpaca applies this as a *total row
     #'   budget across all requested symbols per page* (not per symbol), filling
     #'   symbols alphabetically. The method auto-paginates via `next_page_token`,
@@ -469,6 +470,7 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     get_latest_bar = function(symbol, feed = NULL) {
       assert_args_AlpacaMarketData__get_latest_bar(symbol, feed)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/bars/latest")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -540,6 +542,7 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     get_latest_trade = function(symbol, feed = NULL, currency = NULL) {
       assert_args_AlpacaMarketData__get_latest_trade(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/trades/latest")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -612,6 +615,7 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     get_latest_quote = function(symbol, feed = NULL, currency = NULL) {
       assert_args_AlpacaMarketData__get_latest_quote(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes/latest")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -674,6 +678,7 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     get_snapshot = function(symbol, feed = NULL, currency = NULL) {
       assert_args_AlpacaMarketData__get_snapshot(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/snapshot")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -1039,7 +1044,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbol (scalar<character>) ticker symbol.
     #' @param start (scalar<character> | NULL) start date/time.
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max trades (1-10000,
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max trades (1-10000,
     #'   default 1000).
     #' @param asof (scalar<character> | NULL) as-of date for symbol mapping
     #'   (`"YYYY-MM-DD"` or `"-"` to skip).
@@ -1076,6 +1081,7 @@ AlpacaMarketData <- R6::R6Class(
         sort,
         page_token
       )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/trades")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -1132,7 +1138,7 @@ AlpacaMarketData <- R6::R6Class(
     #' @param symbol (scalar<character>) ticker symbol.
     #' @param start (scalar<character> | NULL) start date/time.
     #' @param end (scalar<character> | NULL) end date/time.
-    #' @param limit (scalar<count in [1, 10000]> | NULL) max quotes (1-10000,
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max quotes (1-10000,
     #'   default 1000).
     #' @param asof (scalar<character> | NULL) as-of date for symbol mapping
     #'   (`"YYYY-MM-DD"` or `"-"` to skip).
@@ -1171,6 +1177,7 @@ AlpacaMarketData <- R6::R6Class(
         sort,
         page_token
       )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes")
       result <- private$.data_request(
         endpoint = endpoint,
@@ -1317,6 +1324,7 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     get_asset = function(symbol_or_id) {
       assert_args_AlpacaMarketData__get_asset(symbol_or_id)
+      assert::assert_nonempty_strings(symbol_or_id)
       endpoint <- paste0("/v2/assets/", symbol_or_id)
       result <- private$.request(
         endpoint = endpoint,
