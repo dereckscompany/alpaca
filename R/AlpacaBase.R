@@ -50,16 +50,19 @@ AlpacaBase <- R6::R6Class(
     #' @description
     #' Initialise an AlpacaBase Object
     #'
-    #' @param keys List; API credentials from [get_api_keys()].
+    #' @param keys (list) API credentials from [get_api_keys()].
     #'   Defaults to `get_api_keys()`.
-    #' @param base_url Character; API base URL. Defaults to `get_base_url()`.
-    #' @param async Logical; if `TRUE`, methods return promises. Default `FALSE`.
-    #' @return Invisible self.
+    #' @param base_url (scalar<character>) API base URL. Defaults to
+    #'   `get_base_url()`.
+    #' @param async (scalar<logical>) if `TRUE`, methods return promises. Default
+    #'   `FALSE`.
+    #' @return (class<AlpacaBase>) invisibly, self.
     initialize = function(
       keys = get_api_keys(),
       base_url = get_base_url(),
       async = FALSE
     ) {
+      assert_args_AlpacaBase__initialize(keys, base_url, async)
       if (isTRUE(async) && !requireNamespace("promises", quietly = TRUE)) {
         rlang::abort(
           "Package 'promises' is required for async mode. Install with: install.packages('promises')"
@@ -71,7 +74,7 @@ AlpacaBase <- R6::R6Class(
         async = async,
         body_format = "json"
       )
-      return(invisible(self))
+      return(invisible(assert_return_AlpacaBase__initialize(self)))
     }
   ),
   private = list(

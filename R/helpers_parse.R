@@ -11,19 +11,20 @@
 #' so that `rbindlist()` treats it as a single list-column entry rather
 #' than expanding it into multiple rows.
 #'
-#' @param x A named list (single record).
-#' @return The same list with multi-element list fields wrapped.
+#' @param x (list) a named list (single record).
+#' @return (list) the same list with multi-element list fields wrapped.
 #'
 #' @keywords internal
 #' @noRd
 wrap_list_fields <- function(x) {
+  assert_args_wrap_list_fields(x)
   for (nm in names(x)) {
     val <- x[[nm]]
     if (is.list(val) && length(val) >= 1) {
       x[[nm]] <- list(val)
     }
   }
-  return(x)
+  return(assert_return_wrap_list_fields(x))
 }
 
 # ----------------------------------------------------------------------
@@ -55,15 +56,17 @@ wrap_list_fields <- function(x) {
 #' `lubridate::as_datetime()` directly so the package has one chokepoint
 #' for instant parsing.
 #'
-#' @param x Character; RFC-3339 timestamp string (e.g., `"2024-01-15T14:30:00Z"`).
-#' @return POSIXct in UTC, or NA if `x` is NULL/NA.
+#' @param x (character | NA | NULL) RFC-3339 timestamp string(s) (e.g.,
+#'   `"2024-01-15T14:30:00Z"`), or `NULL`.
+#' @return (POSIXct | NA) the parsed UTC date-times, or `NA` if `x` is `NULL`.
 #'
 #' @importFrom lubridate as_datetime
 #' @keywords internal
 #' @noRd
 rfc3339_to_datetime <- function(x) {
+  assert_args_rfc3339_to_datetime(x)
   if (is.null(x)) {
-    return(lubridate::NA_POSIXct_)
+    return(assert_return_rfc3339_to_datetime(lubridate::NA_POSIXct_))
   }
   # Don't short-circuit on `all(is.na(x))` — returning the length-1
   # `NA_POSIXct_` from there would, when fed back through
@@ -74,7 +77,7 @@ rfc3339_to_datetime <- function(x) {
   # value is NA. `lubridate::as_datetime()` does the right thing on
   # all-NA input on its own. Mirrors the binance fix in
   # `ms_to_datetime`.
-  return(lubridate::as_datetime(x))
+  return(assert_return_rfc3339_to_datetime(lubridate::as_datetime(x)))
 }
 
 #' Apply a Function to Selected Columns of a data.table by Reference
@@ -104,17 +107,19 @@ rfc3339_to_datetime <- function(x) {
 #' agnostic — pass any `fn(vec) -> vec` function. Mirrors the same-named
 #' helper in the binance package.
 #'
-#' @param dt A [data.table::data.table].
-#' @param cols Character; candidate column names to convert.
-#' @param fn Function; takes a column vector, returns the coerced vector.
+#' @param dt (class<data.table>) the table to mutate (by reference).
+#' @param cols (character) candidate column names to convert.
+#' @param fn (function) takes a column vector, returns the coerced vector.
 #'
-#' @return `dt`, modified by reference and returned invisibly.
+#' @return (class<data.table>) `dt`, modified by reference and returned
+#'   invisibly.
 #'
 #' @keywords internal
 #' @noRd
 coerce_cols <- function(dt, cols, fn) {
+  assert_args_coerce_cols(dt, cols, fn)
   if (nrow(dt) == 0L) {
-    return(invisible(dt))
+    return(invisible(assert_return_coerce_cols(dt)))
   }
   # `unique()` prevents double-coercion when a caller passes the same
   # column name twice (e.g. `coerce_cols(dt, c("created_at",
@@ -129,7 +134,7 @@ coerce_cols <- function(dt, cols, fn) {
       data.table::set(dt, j = col, value = fn(dt[[col]]))
     }
   }
-  return(invisible(dt))
+  return(invisible(assert_return_coerce_cols(dt)))
 }
 
 #' Convert Named Character Columns of a data.table to POSIXct
@@ -141,9 +146,11 @@ coerce_cols <- function(dt, cols, fn) {
 #' optional timestamps (e.g. `filled_at` on an unfilled order), and we
 #' want the parser to handle the present subset without erroring.
 #'
-#' @param dt A [data.table::data.table].
-#' @param cols Character; candidate column names to convert.
-#' @return `dt`, modified by reference and returned invisibly.
+#' @param dt (class<data.table>) the table to mutate (by reference).
+#' @param cols (character) candidate column names to convert.
+#' @return (class<data.table>) `dt`, modified by reference and returned
+#'   invisibly.
+#' @noassert
 #'
 #' @keywords internal
 #' @noRd
@@ -158,9 +165,11 @@ parse_timestamp_cols <- function(dt, cols) {
 #' for each that exists in `dt`, parses `"YYYY-MM-DD"` strings to
 #' `Date`. Columns that do not exist in `dt` are silently skipped.
 #'
-#' @param dt A [data.table::data.table].
-#' @param cols Character; candidate column names to convert.
-#' @return `dt`, modified by reference and returned invisibly.
+#' @param dt (class<data.table>) the table to mutate (by reference).
+#' @param cols (character) candidate column names to convert.
+#' @return (class<data.table>) `dt`, modified by reference and returned
+#'   invisibly.
+#' @noassert
 #'
 #' @keywords internal
 #' @noRd
@@ -186,15 +195,17 @@ ALPACA_EXCHANGE_TZ <- "America/New_York"
 
 #' Combine a YYYY-MM-DD Date String with a HH:MM Time String
 #'
-#' @param date Character; ISO date string.
-#' @param time Character; `"HH:MM"` clock time.
-#' @return POSIXct in `America/New_York`, or NA where inputs are NA.
+#' @param date (character | NA) ISO date string(s).
+#' @param time (character | NA) `"HH:MM"` clock time(s).
+#' @return (POSIXct | NA) the combined date-times in `America/New_York`, `NA`
+#'   where inputs are `NA`.
 #'
 #' @keywords internal
 #' @noRd
 combine_et_datetime <- function(date, time) {
+  assert_args_combine_et_datetime(date, time)
   joined <- ifelse(is.na(date) | is.na(time), NA_character_, paste(date, time))
-  return(lubridate::ymd_hm(joined, tz = ALPACA_EXCHANGE_TZ, quiet = TRUE))
+  return(assert_return_combine_et_datetime(lubridate::ymd_hm(joined, tz = ALPACA_EXCHANGE_TZ, quiet = TRUE)))
 }
 
 #' Insert a Colon into a HHMM Time String
@@ -202,14 +213,15 @@ combine_et_datetime <- function(date, time) {
 #' Alpaca's `session_open`/`session_close` fields are encoded as `"HHMM"`
 #' (no separator), unlike `open`/`close` which use `"HH:MM"`.
 #'
-#' @param x Character; `"HHMM"` strings.
-#' @return Character; `"HH:MM"` strings, NA-preserving.
+#' @param x (character | NA) `"HHMM"` strings.
+#' @return (character | NA) `"HH:MM"` strings, NA-preserving.
 #'
 #' @keywords internal
 #' @noRd
 hhmm_to_hh_mm <- function(x) {
+  assert_args_hhmm_to_hh_mm(x)
   out <- ifelse(is.na(x) | nchar(x) != 4L, NA_character_, paste0(substr(x, 1L, 2L), ":", substr(x, 3L, 4L)))
-  return(out)
+  return(assert_return_hhmm_to_hh_mm(out))
 }
 
 #' Parse Alpaca Bar Data to data.table
@@ -218,15 +230,16 @@ hhmm_to_hh_mm <- function(x) {
 #' `c`, `v`, `n`, `vw`) into a tidy [data.table::data.table] with descriptive
 #' column names.
 #'
-#' @param bars A list of bar objects from the Alpaca API.
-#' @return A [data.table::data.table] with columns: `timestamp`, `open`,
+#' @param bars (list | NULL) bar objects from the Alpaca API.
+#' @return (class<data.table>) a table with columns: `timestamp`, `open`,
 #'   `high`, `low`, `close`, `volume`, `trade_count`, `vwap`.
 #'
 #' @keywords internal
 #' @noRd
 parse_bars <- function(bars) {
+  assert_args_parse_bars(bars)
   if (is.null(bars) || length(bars) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_bars(data.table::data.table()[]))
   }
   dt <- data.table::rbindlist(bars, fill = TRUE)
   name_map <- c(
@@ -245,7 +258,7 @@ parse_bars <- function(bars) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
-  return(dt[])
+  return(assert_return_parse_bars(dt[]))
 }
 
 #' Parse Multi-Symbol Bar Response
@@ -254,8 +267,9 @@ parse_bars <- function(bars) {
 #' `{"bars": {"AAPL": [...], ...}, "next_page_token": ...}`. This function
 #' flattens that structure into a single data.table with a `symbol` column.
 #'
-#' @param data List; the parsed Alpaca response.
-#' @return A [data.table::data.table] with a `symbol` column prepended.
+#' @param data (list) the parsed Alpaca response.
+#' @return (class<data.table>) a table with a `symbol` column prepended.
+#' @noassert
 #'
 #' @keywords internal
 #' @noRd
@@ -276,14 +290,15 @@ parse_multi_bars <- function(data) {
 #' Single-page callers pass one page's map directly; the duplicate-name
 #' handling is a harmless superset of that case.
 #'
-#' @param items Named list; accumulated per-symbol bar arrays.
-#' @return A [data.table::data.table] with a `symbol` column prepended.
+#' @param items (list | NULL) accumulated per-symbol bar arrays.
+#' @return (class<data.table>) a table with a `symbol` column prepended.
 #'
 #' @keywords internal
 #' @noRd
 parse_multi_bars_items <- function(items) {
+  assert_args_parse_multi_bars_items(items)
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_multi_bars_items(data.table::data.table()[]))
   }
   syms <- unique(names(items))
   dts <- lapply(syms, function(sym) {
@@ -295,7 +310,7 @@ parse_multi_bars_items <- function(items) {
     }
     return(dt[])
   })
-  return(data.table::rbindlist(dts, fill = TRUE)[])
+  return(assert_return_parse_multi_bars_items(data.table::rbindlist(dts, fill = TRUE)[]))
 }
 
 #' Parse Alpaca Trade Data to data.table (One Row Per Trade)
@@ -310,15 +325,16 @@ parse_multi_bars_items <- function(items) {
 #' `dt[grepl("T", conditions)]`. Trades with no condition codes get
 #' `conditions = NA`.
 #'
-#' @param trades A list of trade objects from the Alpaca API.
-#' @return A [data.table::data.table] with columns: `timestamp`, `price`,
+#' @param trades (list | NULL) trade objects from the Alpaca API.
+#' @return (class<data.table>) a table with columns: `timestamp`, `price`,
 #'   `size`, `exchange`, `conditions`, `tape`, `id`.
 #'
 #' @keywords internal
 #' @noRd
 parse_trades <- function(trades) {
+  assert_args_parse_trades(trades)
   if (is.null(trades) || length(trades) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_trades(data.table::data.table()[]))
   }
   # Collapse the `c` condition-code array on each trade so one trade
   # remains one row. We rename `c` to `conditions` first so the helper
@@ -345,7 +361,7 @@ parse_trades <- function(trades) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
-  return(dt[])
+  return(assert_return_parse_trades(dt[]))
 }
 
 #' Parse Alpaca Quote Data to data.table (One Row Per Quote)
@@ -360,15 +376,16 @@ parse_trades <- function(trades) {
 #' `dt[grepl("R", conditions)]`. Quotes with no condition codes get
 #' `conditions = NA`.
 #'
-#' @param quotes A list of quote objects from the Alpaca API.
-#' @return A [data.table::data.table] with one row per quote and
+#' @param quotes (list | NULL) quote objects from the Alpaca API.
+#' @return (class<data.table>) a table with one row per quote and
 #'   descriptive column names.
 #'
 #' @keywords internal
 #' @noRd
 parse_quotes <- function(quotes) {
+  assert_args_parse_quotes(quotes)
   if (is.null(quotes) || length(quotes) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_quotes(data.table::data.table()[]))
   }
   # Rename `c` -> `conditions` first so the helper finds the field, then
   # collapse the array to a `;`-joined character column. One quote =
@@ -397,7 +414,7 @@ parse_quotes <- function(quotes) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
-  return(dt[])
+  return(assert_return_parse_quotes(dt[]))
 }
 
 #' Parse Snapshot Data to data.table
@@ -422,14 +439,15 @@ parse_quotes <- function(quotes) {
 #' prevDailyBar) is the close *price* — a scalar number — and is left
 #' untouched. The name map renames it to `*_close` per section.
 #'
-#' @param snapshot A named list representing an Alpaca snapshot.
-#' @return A single-row [data.table::data.table].
+#' @param snapshot (list | NULL) a named list representing an Alpaca snapshot.
+#' @return (class<data.table>) a single-row table.
 #'
 #' @keywords internal
 #' @noRd
 parse_snapshot <- function(snapshot) {
+  assert_args_parse_snapshot(snapshot)
   if (is.null(snapshot) || length(snapshot) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_snapshot(data.table::data.table()[]))
   }
   # Collapse the inner `c` condition-code arrays on latestTrade /
   # latestQuote BEFORE flattening. Only these two sections — bar
@@ -481,7 +499,7 @@ parse_snapshot <- function(snapshot) {
   }
   dt <- as_dt_row(flat)
   if (ncol(dt) == 0) {
-    return(dt[])
+    return(assert_return_parse_snapshot(dt[]))
   }
   # Expand abbreviated field names with explicit map
   snapshot_name_map <- c(
@@ -547,7 +565,7 @@ parse_snapshot <- function(snapshot) {
       "prev_daily_bar_timestamp"
     )
   )
-  return(dt[])
+  return(assert_return_parse_snapshot(dt[]))
 }
 
 #' Parse Alpaca News Response to data.table (One Row Per Article)
@@ -570,14 +588,15 @@ parse_snapshot <- function(snapshot) {
 #' Articles with no symbols and/or no images keep the article row, with
 #' the missing fields set to `NA`.
 #'
-#' @param news_items A list of news article objects from the Alpaca API.
-#' @return A [data.table::data.table] with one row per article.
+#' @param news_items (list | NULL) news article objects from the Alpaca API.
+#' @return (class<data.table>) a table with one row per article.
 #'
 #' @keywords internal
 #' @noRd
 parse_news <- function(news_items) {
+  assert_args_parse_news(news_items)
   if (is.null(news_items) || length(news_items) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_news(data.table::data.table()[]))
   }
   # Walk each article, collapse the two nested arrays into scalar character
   # fields, then drop the originals so rbindlist sees a flat record.
@@ -645,7 +664,7 @@ parse_news <- function(news_items) {
   dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, c("created_at", "updated_at"))
-  return(dt[])
+  return(assert_return_parse_news(dt[]))
 }
 
 #' Parse Alpaca Watchlist Response to Long-Format data.table
@@ -658,16 +677,17 @@ parse_news <- function(news_items) {
 #' column (see `collapse_string_array_fields()`), so the returned table has
 #' no list columns even when some assets have empty `attributes`.
 #'
-#' @param wl A named list representing a single watchlist response from the
-#'   Alpaca API.
-#' @return A [data.table::data.table] in long format with asset columns
+#' @param wl (list | NULL) a named list representing a single watchlist response
+#'   from the Alpaca API.
+#' @return (class<data.table>) a long-format table with asset columns
 #'   (prefixed `asset_`) alongside watchlist metadata.
 #'
 #' @keywords internal
 #' @noRd
 parse_watchlist <- function(wl) {
+  assert_args_parse_watchlist(wl)
   if (is.null(wl) || length(wl) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_watchlist(data.table::data.table()[]))
   }
   assets <- wl[["assets"]]
   wl[["assets"]] <- NULL
@@ -684,7 +704,7 @@ parse_watchlist <- function(wl) {
     # the schema is stable across populated / empty watchlists, matching
     # the documented @return contract.
     parent[, asset_attributes := NA_character_]
-    return(parent[])
+    return(assert_return_parse_watchlist(parent[]))
   }
   # Collapse each asset's `attributes` string array to a scalar character
   # before binding. Without this, mixed empty/populated arrays make
@@ -699,7 +719,7 @@ parse_watchlist <- function(wl) {
   # Cross-join: repeat parent row for each asset
   parent_rep <- parent[rep(1L, nrow(assets_dt)), ]
   dt <- cbind(parent_rep, assets_dt)
-  return(dt[])
+  return(assert_return_parse_watchlist(dt[]))
 }
 
 #' Parse an Alpaca Asset Record to a Single-Row data.table
@@ -709,17 +729,18 @@ parse_watchlist <- function(wl) {
 #' `"fractional_eh_enabled;has_options;overnight_tradable"`). One asset
 #' stays one row.
 #'
-#' @param x A named list representing a single Alpaca asset.
-#' @return A single-row [data.table::data.table].
+#' @param x (list | NULL) a named list representing a single Alpaca asset.
+#' @return (class<data.table>) a single-row table.
 #'
 #' @keywords internal
 #' @noRd
 parse_asset <- function(x) {
+  assert_args_parse_asset(x)
   if (is.null(x) || length(x) == 0L) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_asset(data.table::data.table()[]))
   }
   x <- collapse_string_array_fields(x, "attributes")
-  return(as_dt_row(x))
+  return(assert_return_parse_asset(as_dt_row(x)))
 }
 
 #' Parse an Alpaca Asset List to a data.table
@@ -728,16 +749,17 @@ parse_asset <- function(x) {
 #' `attributes` array column is collapsed instead of arriving as a list
 #' column.
 #'
-#' @param items A list of asset records.
-#' @return A [data.table::data.table] with one row per asset.
+#' @param items (list | NULL) asset records.
+#' @return (class<data.table>) a table with one row per asset.
 #'
 #' @keywords internal
 #' @noRd
 parse_assets <- function(items) {
+  assert_args_parse_assets(items)
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_assets(data.table::data.table()[]))
   }
-  return(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[])
+  return(assert_return_parse_assets(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[]))
 }
 
 #' Parse a Single Option Contract Record
@@ -751,15 +773,17 @@ parse_assets <- function(items) {
 #' Contracts without `deliverables` (the default response shape) come
 #' back as a single row with no `deliverable_*` columns.
 #'
-#' @param x A named list representing a single Alpaca option contract.
-#' @return A [data.table::data.table] with one row per deliverable
+#' @param x (list | NULL) a named list representing a single Alpaca option
+#'   contract.
+#' @return (class<data.table>) a table with one row per deliverable
 #'   (or one row when no `deliverables` are present).
 #'
 #' @keywords internal
 #' @noRd
 parse_contract <- function(x) {
+  assert_args_parse_contract(x)
   if (is.null(x) || length(x) == 0L) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_contract(data.table::data.table()[]))
   }
   delivs <- x[["deliverables"]]
   x[["deliverables"]] <- NULL
@@ -773,7 +797,7 @@ parse_contract <- function(x) {
     )
   )
   if (is.null(delivs) || length(delivs) == 0L) {
-    return(contract_row[])
+    return(assert_return_parse_contract(contract_row[]))
   }
   # Normalise per-deliverable records before binding: replace `NULL`
   # fields with `NA` so `rbindlist(fill = TRUE)` doesn't warn about
@@ -787,7 +811,7 @@ parse_contract <- function(x) {
   data.table::setnames(deliv_dt, paste0("deliverable_", names(deliv_dt)))
   deliv_dt[, deliverable_index := seq_len(.N)]
   contract_rep <- contract_row[rep(1L, nrow(deliv_dt)), ]
-  return(cbind(contract_rep, deliv_dt)[])
+  return(assert_return_parse_contract(cbind(contract_rep, deliv_dt)[]))
 }
 
 #' Parse an Alpaca Option Contracts List
@@ -797,16 +821,17 @@ parse_contract <- function(x) {
 #' one row per `(contract, deliverable)` pair; otherwise it has one
 #' row per contract.
 #'
-#' @param items A list of option contract records.
-#' @return A [data.table::data.table].
+#' @param items (list | NULL) option contract records.
+#' @return (class<data.table>) the parsed contracts table.
 #'
 #' @keywords internal
 #' @noRd
 parse_contracts <- function(items) {
+  assert_args_parse_contracts(items)
   if (is.null(items) || length(items) == 0L) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_contracts(data.table::data.table()[]))
   }
-  return(data.table::rbindlist(lapply(items, parse_contract), fill = TRUE)[])
+  return(assert_return_parse_contracts(data.table::rbindlist(lapply(items, parse_contract), fill = TRUE)[]))
 }
 
 #' Parse a Single Order Response to data.table
@@ -832,14 +857,15 @@ parse_contracts <- function(items) {
 #' legs share the same column set and `data.table::rbindlist()` aligns
 #' them naturally.
 #'
-#' @param x A named list representing a single order.
-#' @return A [data.table::data.table].
+#' @param x (list | NULL) a named list representing a single order.
+#' @return (class<data.table>) the parsed order table.
 #'
 #' @keywords internal
 #' @noRd
 parse_order <- function(x) {
+  assert_args_parse_order(x)
   if (is.null(x) || length(x) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_order(data.table::data.table()[]))
   }
   legs <- x[["legs"]]
   parent_id <- x[["id"]]
@@ -853,7 +879,7 @@ parse_order <- function(x) {
 
   if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
     parse_timestamp_cols(parent_dt, ORDER_TIMESTAMP_COLS)
-    return(parent_dt[])
+    return(assert_return_parse_order(parent_dt[]))
   }
 
   # Each leg is itself an order — strip its `legs` field (always null in
@@ -869,7 +895,7 @@ parse_order <- function(x) {
   }
   out <- data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)
   parse_timestamp_cols(out, ORDER_TIMESTAMP_COLS)
-  return(out[])
+  return(assert_return_parse_order(out[]))
 }
 
 # All timestamp fields Alpaca emits on an order record. Optional fields
@@ -890,15 +916,16 @@ ORDER_TIMESTAMP_COLS <- c(
 #'
 #' Applies `parse_order()` to each item and row-binds.
 #'
-#' @param items A list of order named lists.
-#' @return A [data.table::data.table].
+#' @param items (list | NULL) order named lists.
+#' @return (class<data.table>) the parsed orders table.
 #'
 #' @keywords internal
 #' @noRd
 parse_orders <- function(items) {
+  assert_args_parse_orders(items)
   if (is.null(items) || length(items) == 0) {
-    return(data.table::data.table()[])
+    return(assert_return_parse_orders(data.table::data.table()[]))
   }
   dt <- data.table::rbindlist(lapply(items, parse_order), fill = TRUE)
-  return(dt[])
+  return(assert_return_parse_orders(dt[]))
 }

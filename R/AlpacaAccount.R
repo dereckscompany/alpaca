@@ -117,24 +117,13 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `id` (character): Account UUID.
-    #'   - `account_number` (character): Account number.
-    #'   - `status` (character): Account status (e.g., `"ACTIVE"`).
-    #'   - `currency` (character): Account currency (e.g., `"USD"`).
-    #'   - `cash` (character): Cash balance.
-    #'   - `portfolio_value` (character): Total portfolio value.
-    #'   - `equity` (character): Account equity.
-    #'   - `buying_power` (character): Available buying power.
-    #'   - `initial_margin` (character): Initial margin requirement.
-    #'   - `maintenance_margin` (character): Maintenance margin requirement.
-    #'   - `long_market_value` (character): Market value of long positions.
-    #'   - `short_market_value` (character): Market value of short positions.
-    #'   - `pattern_day_trader` (logical): Whether flagged as PDT.
-    #'   - `trading_blocked` (logical): Whether trading is blocked.
-    #'   - `daytrade_count` (integer): Number of day trades in the last 5 days.
-    #'   - `daytrading_buying_power` (character): Day trading buying power.
-    #'   - `created_at` (POSIXct, UTC): Account creation timestamp.
+    #' @return (data.table | promise<data.table>) the account details. Columns
+    #'   include `id`, `account_number`, `status`, `currency`, `cash`,
+    #'   `portfolio_value`, `equity`, `buying_power`, `initial_margin`,
+    #'   `maintenance_margin`, `long_market_value`, `short_market_value`,
+    #'   `daytrading_buying_power` (all character); `pattern_day_trader` and
+    #'   `trading_blocked` (logical); `daytrade_count` (integer); and
+    #'   `created_at` (POSIXct, UTC).
     #'
     #' @examples
     #' \dontrun{
@@ -144,7 +133,7 @@ AlpacaAccount <- R6::R6Class(
     #' cat("Buying power:", info$buying_power, "\n")
     #' }
     get_account = function() {
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/account",
         .parser = function(data) {
           # Flatten nested configuration objects into wide prefixed columns
@@ -161,6 +150,11 @@ AlpacaAccount <- R6::R6Class(
           parse_timestamp_cols(dt, "created_at")
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_account,
+        is_async = private$.is_async
       ))
     },
 
@@ -197,15 +191,11 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `dtbp_check` (character): Day trading buying power check method.
-    #'   - `no_shorting` (logical): Whether shorting is disabled.
-    #'   - `suspend_trade` (logical): Whether trading is suspended.
-    #'   - `trade_confirm_email` (character): Trade confirmation email setting.
-    #'   - `fractional_trading` (logical): Whether fractional trading is enabled.
-    #'   - `max_margin_multiplier` (character): Maximum margin multiplier.
-    #'   - `pdt_check` (character): PDT check method.
-    #'   - `max_options_trading_level` (integer): Options trading level.
+    #' @return (data.table | promise<data.table>) the configuration. Columns
+    #'   include `dtbp_check`, `trade_confirm_email`, `max_margin_multiplier`,
+    #'   `pdt_check` (character); `no_shorting`, `suspend_trade`,
+    #'   `fractional_trading` (logical); and `max_options_trading_level`
+    #'   (integer).
     #'
     #' @examples
     #' \dontrun{
@@ -214,9 +204,14 @@ AlpacaAccount <- R6::R6Class(
     #' print(config)
     #' }
     get_account_config = function() {
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/account/configurations",
         .parser = as_dt_row
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_account_config,
+        is_async = private$.is_async
       ))
     },
 
@@ -262,22 +257,26 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param dtbp_check Character or NULL; DTBP check method: `"both"`, `"entry"`, `"exit"`.
-    #' @param no_shorting Logical or NULL; if `TRUE`, disables short selling.
-    #' @param suspend_trade Logical or NULL; if `TRUE`, suspends all trading.
-    #' @param trade_confirm_email Character or NULL; `"all"`, `"none"`.
-    #' @param fractional_trading Logical or NULL; enable/disable fractional trading.
-    #' @param max_margin_multiplier Character or NULL; `"1"`, `"2"`, or `"4"`.
-    #' @param pdt_check Character or NULL; `"both"`, `"entry"`, `"exit"`.
-    #' @param max_options_trading_level Integer or NULL; options trading level
-    #'   (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
-    #'   3=Spreads/Straddles).
-    #' @param ptp_no_exception_entry Logical or NULL; if `TRUE`, accept orders
-    #'   for PTP symbols with no exception.
-    #' @param disable_overnight_trading Logical or NULL; if `TRUE`, disable
-    #'   overnight trading on the account.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the updated configuration.
+    #' @param dtbp_check (scalar<character> | NULL) DTBP check method: `"both"`,
+    #'   `"entry"`, `"exit"`.
+    #' @param no_shorting (scalar<logical> | NULL) if `TRUE`, disables short
+    #'   selling.
+    #' @param suspend_trade (scalar<logical> | NULL) if `TRUE`, suspends all
+    #'   trading.
+    #' @param trade_confirm_email (scalar<character> | NULL) `"all"`, `"none"`.
+    #' @param fractional_trading (scalar<logical> | NULL) enable/disable
+    #'   fractional trading.
+    #' @param max_margin_multiplier (scalar<character> | NULL) `"1"`, `"2"`, or
+    #'   `"4"`.
+    #' @param pdt_check (scalar<character> | NULL) `"both"`, `"entry"`, `"exit"`.
+    #' @param max_options_trading_level (scalar<count in [0, Inf[> | NULL) options
+    #'   trading level (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long
+    #'   Call/Put, 3=Spreads/Straddles).
+    #' @param ptp_no_exception_entry (scalar<logical> | NULL) if `TRUE`, accept
+    #'   orders for PTP symbols with no exception.
+    #' @param disable_overnight_trading (scalar<logical> | NULL) if `TRUE`,
+    #'   disable overnight trading on the account.
+    #' @return (data.table | promise<data.table>) the updated configuration.
     #'
     #' @examples
     #' \dontrun{
@@ -296,7 +295,19 @@ AlpacaAccount <- R6::R6Class(
       ptp_no_exception_entry = NULL,
       disable_overnight_trading = NULL
     ) {
-      return(private$.request(
+      assert_args_AlpacaAccount__modify_account_config(
+        dtbp_check,
+        no_shorting,
+        suspend_trade,
+        trade_confirm_email,
+        fractional_trading,
+        max_margin_multiplier,
+        pdt_check,
+        max_options_trading_level,
+        ptp_no_exception_entry,
+        disable_overnight_trading
+      )
+      result <- private$.request(
         endpoint = "/v2/account/configurations",
         method = "PATCH",
         body = list(
@@ -312,6 +323,11 @@ AlpacaAccount <- R6::R6Class(
           disable_overnight_trading = disable_overnight_trading
         ),
         .parser = as_dt_row
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__modify_account_config,
+        is_async = private$.is_async
       ))
     },
 
@@ -357,21 +373,11 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `asset_id` (character): Asset UUID.
-    #'   - `symbol` (character): Ticker symbol.
-    #'   - `exchange` (character): Exchange.
-    #'   - `asset_class` (character): Asset class (e.g., `"us_equity"`).
-    #'   - `avg_entry_price` (character): Average entry price.
-    #'   - `qty` (character): Quantity held.
-    #'   - `side` (character): Position side (`"long"` or `"short"`).
-    #'   - `market_value` (character): Current market value.
-    #'   - `cost_basis` (character): Total cost basis.
-    #'   - `unrealized_pl` (character): Unrealised profit/loss.
-    #'   - `unrealized_plpc` (character): Unrealised P/L percentage.
-    #'   - `current_price` (character): Current asset price.
-    #'   - `lastday_price` (character): Previous close price.
-    #'   - `change_today` (character): Percentage change today.
+    #' @return (data.table | promise<data.table>) the open positions. Columns
+    #'   include `asset_id`, `symbol`, `exchange`, `asset_class`,
+    #'   `avg_entry_price`, `qty`, `side`, `market_value`, `cost_basis`,
+    #'   `unrealized_pl`, `unrealized_plpc`, `current_price`, `lastday_price`
+    #'   and `change_today` (all character).
     #'
     #' @examples
     #' \dontrun{
@@ -380,9 +386,14 @@ AlpacaAccount <- R6::R6Class(
     #' print(positions[, .(symbol, qty, unrealized_pl)])
     #' }
     get_positions = function() {
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/positions",
         .parser = as_dt_list
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_positions,
+        is_async = private$.is_async
       ))
     },
 
@@ -424,9 +435,10 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol_or_id Character; ticker symbol (e.g., `"AAPL"`) or asset UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
-    #'   same columns as `get_positions()`, single row.
+    #' @param symbol_or_id (scalar<character>) ticker symbol (e.g., `"AAPL"`) or
+    #'   asset UUID.
+    #' @return (data.table | promise<data.table>) the position, with the same
+    #'   columns as `get_positions()`, single row.
     #'
     #' @examples
     #' \dontrun{
@@ -435,10 +447,16 @@ AlpacaAccount <- R6::R6Class(
     #' print(pos[, .(symbol, qty, avg_entry_price, current_price, unrealized_pl)])
     #' }
     get_position = function(symbol_or_id) {
+      assert_args_AlpacaAccount__get_position(symbol_or_id)
       endpoint <- paste0("/v2/positions/", symbol_or_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         .parser = as_dt_row
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_position,
+        is_async = private$.is_async
       ))
     },
 
@@ -480,13 +498,12 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol_or_id Character; ticker symbol or asset UUID.
-    #' @param qty Numeric or NULL; number of shares to close. Mutually exclusive
-    #'   with `percentage`.
-    #' @param percentage Numeric or NULL; percentage of position to close (0-100).
-    #'   Mutually exclusive with `qty`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the closing order details.
+    #' @param symbol_or_id (scalar<character>) ticker symbol or asset UUID.
+    #' @param qty (scalar<numeric> | NULL) number of shares to close. Mutually
+    #'   exclusive with `percentage`.
+    #' @param percentage (scalar<numeric> | NULL) percentage of position to close
+    #'   (0-100). Mutually exclusive with `qty`.
+    #' @return (data.table | promise<data.table>) the closing order details.
     #'
     #' @examples
     #' \dontrun{
@@ -502,6 +519,7 @@ AlpacaAccount <- R6::R6Class(
     #' acct$close_position("AAPL", qty = 5)
     #' }
     close_position = function(symbol_or_id, qty = NULL, percentage = NULL) {
+      assert_args_AlpacaAccount__close_position(symbol_or_id, qty, percentage)
       if (!is.null(qty) && !is.null(percentage)) {
         rlang::abort("`qty` and `percentage` are mutually exclusive.")
       }
@@ -513,7 +531,7 @@ AlpacaAccount <- R6::R6Class(
       }
 
       endpoint <- paste0("/v2/positions/", symbol_or_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "DELETE",
         query = list(qty = qty, percentage = percentage),
@@ -522,6 +540,11 @@ AlpacaAccount <- R6::R6Class(
           parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__close_position,
+        is_async = private$.is_async
       ))
     },
 
@@ -575,13 +598,13 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param cancel_orders Logical; if `TRUE`, cancels all open orders before
-    #'   liquidating positions. Default `FALSE`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
-    #'   When positions are closed, one row per position with full order details.
-    #'   When no open positions exist, a single confirmation row with columns:
-    #'   - `cancel_orders` (logical): Whether orders were also cancelled.
-    #'   - `status` (character): `"closed"`.
+    #' @param cancel_orders (scalar<logical>) if `TRUE`, cancels all open orders
+    #'   before liquidating positions. Default `FALSE`.
+    #' @return (data.table | promise<data.table>) the closed positions. When
+    #'   positions are closed, one row per position with full order details.
+    #'   When no open positions exist, a single confirmation row with
+    #'   `cancel_orders` (logical, whether orders were also cancelled) and
+    #'   `status` (character, `"closed"`).
     #'
     #' @examples
     #' \dontrun{
@@ -589,7 +612,8 @@ AlpacaAccount <- R6::R6Class(
     #' acct$close_all_positions(cancel_orders = TRUE)
     #' }
     close_all_positions = function(cancel_orders = FALSE) {
-      return(private$.request(
+      assert_args_AlpacaAccount__close_all_positions(cancel_orders)
+      result <- private$.request(
         endpoint = "/v2/positions",
         method = "DELETE",
         query = list(cancel_orders = tolower(as.character(cancel_orders))),
@@ -615,6 +639,11 @@ AlpacaAccount <- R6::R6Class(
           parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__close_all_positions,
+        is_async = private$.is_async
       ))
     },
 
@@ -646,10 +675,10 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol_or_id Character; OCC option symbol or asset UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
-    #'   - `symbol` (character): The exercised option symbol or asset UUID.
-    #'   - `status` (character): `"exercised"`.
+    #' @param symbol_or_id (scalar<character>) OCC option symbol or asset UUID.
+    #' @return (data.table | promise<data.table>) a single-row confirmation with
+    #'   `symbol` (character, the exercised option symbol or asset UUID) and
+    #'   `status` (character, `"exercised"`).
     #'
     #' @examples
     #' \dontrun{
@@ -657,8 +686,9 @@ AlpacaAccount <- R6::R6Class(
     #' acct$exercise_option("AAPL240621C00200000")
     #' }
     exercise_option = function(symbol_or_id) {
+      assert_args_AlpacaAccount__exercise_option(symbol_or_id)
       endpoint <- paste0("/v2/positions/", symbol_or_id, "/exercise")
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "POST",
         .parser = function(data) {
@@ -667,6 +697,11 @@ AlpacaAccount <- R6::R6Class(
             status = "exercised"
           )[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__exercise_option,
+        is_async = private$.is_async
       ))
     },
 
@@ -702,28 +737,28 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param period Character or NULL; time period for the history. Examples:
-    #'   `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Mutually exclusive with
-    #'   providing both `start` and `end`.
-    #' @param timeframe Character or NULL; resolution of the time series:
+    #' @param period (scalar<character> | NULL) time period for the history.
+    #'   Examples: `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Mutually
+    #'   exclusive with providing both `start` and `end`.
+    #' @param timeframe (scalar<character> | NULL) resolution of the time series:
     #'   `"1Min"`, `"5Min"`, `"15Min"`, `"1H"`, `"1D"`.
-    #' @param start Character or NULL; start timestamp in RFC3339 format.
+    #' @param start (scalar<character> | NULL) start timestamp in RFC3339 format.
     #'   Defaults to `end` minus `period`.
-    #' @param end Character or NULL; end timestamp in RFC3339 format.
-    #' @param intraday_reporting Character or NULL; `"market_hours"` (default),
-    #'   `"extended_hours"`, or `"continuous"` (for 24/7 crypto charts).
-    #' @param pnl_reset Character or NULL; `"per_day"` (default) or `"no_reset"`.
-    #'   Set to `"no_reset"` for continuous crypto PnL.
-    #' @param date_start Deprecated alias for `start`. Earlier releases used
-    #'   this name but it was silently ignored by the API. Now forwarded to
-    #'   `start` with a deprecation warning. Will be removed in a future
-    #'   release.
-    #' @param date_end Deprecated alias for `end`. Same notes as `date_start`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `timestamp` (POSIXct): Snapshot timestamp in UTC.
-    #'   - `equity` (numeric): Portfolio equity value.
-    #'   - `profit_loss` (numeric): Profit/loss.
-    #'   - `profit_loss_pct` (numeric): Profit/loss percentage.
+    #' @param end (scalar<character> | NULL) end timestamp in RFC3339 format.
+    #' @param intraday_reporting (scalar<character> | NULL) `"market_hours"`
+    #'   (default), `"extended_hours"`, or `"continuous"` (for 24/7 crypto
+    #'   charts).
+    #' @param pnl_reset (scalar<character> | NULL) `"per_day"` (default) or
+    #'   `"no_reset"`. Set to `"no_reset"` for continuous crypto PnL.
+    #' @param date_start (scalar<character> | NULL) deprecated alias for `start`.
+    #'   Earlier releases used this name but it was silently ignored by the API.
+    #'   Now forwarded to `start` with a deprecation warning. Will be removed in
+    #'   a future release.
+    #' @param date_end (scalar<character> | NULL) deprecated alias for `end`.
+    #'   Same notes as `date_start`.
+    #' @return (data.table | promise<data.table>) the portfolio history. Columns:
+    #'   `timestamp` (POSIXct, UTC), `equity` (numeric), `profit_loss` (numeric)
+    #'   and `profit_loss_pct` (numeric).
     #'
     #' @examples
     #' \dontrun{
@@ -741,6 +776,16 @@ AlpacaAccount <- R6::R6Class(
       date_start = NULL,
       date_end = NULL
     ) {
+      assert_args_AlpacaAccount__get_portfolio_history(
+        period,
+        timeframe,
+        start,
+        end,
+        intraday_reporting,
+        pnl_reset,
+        date_start,
+        date_end
+      )
       # Deprecated aliases — forward to the new names with a once-per-session
       # warning so a tight loop doesn't spam stderr.
       if (!is.null(date_start)) {
@@ -768,7 +813,7 @@ AlpacaAccount <- R6::R6Class(
       if (!is.null(pnl_reset)) {
         rlang::arg_match0(pnl_reset, c("per_day", "no_reset"))
       }
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/account/portfolio/history",
         query = list(
           period = period,
@@ -797,6 +842,11 @@ AlpacaAccount <- R6::R6Class(
           )
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_portfolio_history,
+        is_async = private$.is_async
       ))
     },
 
@@ -841,32 +891,35 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param activity_types Character or NULL; comma-separated activity types to
-    #'   filter (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
-    #'   Mutually exclusive with `category`.
-    #' @param category Character or NULL; broad category filter:
+    #' @param activity_types (scalar<character> | NULL) comma-separated activity
+    #'   types to filter (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs
+    #'   for full list. Mutually exclusive with `category`.
+    #' @param category (scalar<character> | NULL) broad category filter:
     #'   `"trade_activity"` or `"non_trade_activity"`. Mutually exclusive with
     #'   `activity_types`.
-    #' @param date Character or NULL; filter to a specific date (`"YYYY-MM-DD"`).
-    #' @param until Character or NULL; only activities before this timestamp.
-    #' @param after Character or NULL; only activities after this timestamp.
-    #' @param direction Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_size Integer or NULL; max results per page. Alpaca caps
-    #'   this at **100** for `/v2/account/activities`; values above 100
-    #'   return HTTP 422 server-side. This method validates the cap up-front
+    #' @param date (scalar<character> | NULL) filter to a specific date
+    #'   (`"YYYY-MM-DD"`).
+    #' @param until (scalar<character> | NULL) only activities before this
+    #'   timestamp.
+    #' @param after (scalar<character> | NULL) only activities after this
+    #'   timestamp.
+    #' @param direction (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param page_size (scalar<count in [1, 100]> | NULL) max results per page.
+    #'   Alpaca caps this at **100** for `/v2/account/activities`; values above
+    #'   100 return HTTP 422 server-side. This method validates the cap up-front
     #'   and `abort()`s with a clear message rather than letting the vendor
     #'   error leak through. Must be a single non-NA integerish value when
     #'   provided. Default `NULL` lets Alpaca pick its server-side default
     #'   (currently 100).
-    #' @param page_token Character or NULL; cursor for the next page. For
-    #'   activities this is the **`id` of the last row from the previous
-    #'   page** (Alpaca's activity IDs are sortable cursors, not opaque
-    #'   tokens). See the "Pagination" section below.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details. Columns vary by activity type. Includes `id` when
-    #'   non-empty — the per-activity cursor used for paging (see
-    #'   "Pagination"). An empty response returns an empty `data.table` with
-    #'   no columns.
+    #' @param page_token (scalar<character> | NULL) cursor for the next page. For
+    #'   activities this is the **`id` of the last row from the previous page**
+    #'   (Alpaca's activity IDs are sortable cursors, not opaque tokens). See the
+    #'   "Pagination" section below.
+    #' @noassert page_size
+    #' @return (data.table | promise<data.table>) the activities. Columns vary by
+    #'   activity type. Includes `id` when non-empty — the per-activity cursor
+    #'   used for paging (see "Pagination"). An empty response returns an empty
+    #'   table with no columns.
     #'
     #' @section Pagination:
     #' This method does **not** auto-paginate. To walk every activity that
@@ -915,6 +968,15 @@ AlpacaAccount <- R6::R6Class(
       page_token = NULL,
       category = NULL
     ) {
+      assert_args_AlpacaAccount__get_activities(
+        activity_types,
+        category,
+        date,
+        until,
+        after,
+        direction,
+        page_token
+      )
       if (!is.null(activity_types) && !is.null(category)) {
         rlang::abort("`activity_types` and `category` are mutually exclusive.")
       }
@@ -940,7 +1002,7 @@ AlpacaAccount <- R6::R6Class(
           ))
         }
       }
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/account/activities",
         query = list(
           activity_types = activity_types,
@@ -957,6 +1019,11 @@ AlpacaAccount <- R6::R6Class(
           parse_timestamp_cols(dt, "transaction_time")
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_activities,
+        is_async = private$.is_async
       ))
     },
 
@@ -998,29 +1065,30 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param activity_type Character; activity type (e.g., `"FILL"`, `"DIV"`,
-    #'   `"TRANS"`, `"JNLC"`, `"JNLS"`, `"CSD"`, `"CSW"`).
-    #' @param date Character or NULL; filter to a specific date.
-    #' @param until Character or NULL; only activities before this timestamp.
-    #' @param after Character or NULL; only activities after this timestamp.
-    #' @param direction Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_size Integer or NULL; max results per page. Alpaca caps
-    #'   this at **100** for `/v2/account/activities/{type}`; values above
-    #'   100 return HTTP 422 server-side. This method validates the cap
-    #'   up-front and `abort()`s with a clear message rather than letting
-    #'   the vendor error leak through. Must be a single non-NA integerish
-    #'   value when provided. Default `NULL` lets Alpaca pick its
-    #'   server-side default (currently 100). For multi-page walks see the
-    #'   "Pagination" section on `get_activities()` — the id-cursor recipe
-    #'   is identical for this method.
-    #' @param page_token Character or NULL; cursor for the next page —
+    #' @param activity_type (scalar<character>) activity type (e.g., `"FILL"`,
+    #'   `"DIV"`, `"TRANS"`, `"JNLC"`, `"JNLS"`, `"CSD"`, `"CSW"`).
+    #' @param date (scalar<character> | NULL) filter to a specific date.
+    #' @param until (scalar<character> | NULL) only activities before this
+    #'   timestamp.
+    #' @param after (scalar<character> | NULL) only activities after this
+    #'   timestamp.
+    #' @param direction (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param page_size (scalar<count in [1, 100]> | NULL) max results per page.
+    #'   Alpaca caps this at **100** for `/v2/account/activities/{type}`; values
+    #'   above 100 return HTTP 422 server-side. This method validates the cap
+    #'   up-front and `abort()`s with a clear message rather than letting the
+    #'   vendor error leak through. Must be a single non-NA integerish value when
+    #'   provided. Default `NULL` lets Alpaca pick its server-side default
+    #'   (currently 100). For multi-page walks see the "Pagination" section on
+    #'   `get_activities()` — the id-cursor recipe is identical for this method.
+    #' @param page_token (scalar<character> | NULL) cursor for the next page —
     #'   the **`id` of the last row from the previous page**. See the
-    #'   "Pagination" section on `get_activities()` for a worked example;
-    #'   the recipe is identical for this method.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   activity details. Includes `id` when non-empty (the per-activity
-    #'   cursor used for paging). An empty response returns an empty
-    #'   `data.table` with no columns.
+    #'   "Pagination" section on `get_activities()` for a worked example; the
+    #'   recipe is identical for this method.
+    #' @noassert page_size
+    #' @return (data.table | promise<data.table>) the activities. Includes `id`
+    #'   when non-empty (the per-activity cursor used for paging). An empty
+    #'   response returns an empty table with no columns.
     #'
     #' @seealso [AlpacaAccount$get_activities()] — the sibling method
     #'   includes the worked id-cursor pagination loop in its
@@ -1041,6 +1109,14 @@ AlpacaAccount <- R6::R6Class(
       page_size = NULL,
       page_token = NULL
     ) {
+      assert_args_AlpacaAccount__get_activities_by_type(
+        activity_type,
+        date,
+        until,
+        after,
+        direction,
+        page_token
+      )
       if (!is.null(page_size)) {
         if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
           rlang::abort(
@@ -1058,7 +1134,7 @@ AlpacaAccount <- R6::R6Class(
         }
       }
       endpoint <- paste0("/v2/account/activities/", activity_type)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         query = list(
           date = date,
@@ -1073,6 +1149,11 @@ AlpacaAccount <- R6::R6Class(
           parse_timestamp_cols(dt, "transaction_time")
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_activities_by_type,
+        is_async = private$.is_async
       ))
     },
 
@@ -1116,12 +1197,9 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `id` (character): Watchlist UUID.
-    #'   - `account_id` (character): Account UUID.
-    #'   - `name` (character): Watchlist name.
-    #'   - `created_at` (POSIXct, UTC): Creation timestamp.
-    #'   - `updated_at` (POSIXct, UTC): Last update timestamp.
+    #' @return (data.table | promise<data.table>) the watchlists. Columns: `id`,
+    #'   `account_id`, `name` (character); `created_at` and `updated_at`
+    #'   (POSIXct, UTC).
     #'
     #' @examples
     #' \dontrun{
@@ -1130,13 +1208,18 @@ AlpacaAccount <- R6::R6Class(
     #' print(watchlists)
     #' }
     get_watchlists = function() {
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/watchlists",
         .parser = function(items) {
           dt <- as_dt_list(items)
           parse_timestamp_cols(dt, c("created_at", "updated_at"))
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_watchlists,
+        is_async = private$.is_async
       ))
     },
 
@@ -1187,11 +1270,11 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param watchlist_id Character; watchlist UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) in long
-    #'   format with one row per asset in the watchlist. Columns include watchlist
-    #'   metadata (`id`, `account_id`, `name`, `created_at`, `updated_at`) and
-    #'   asset columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
+    #' @param watchlist_id (scalar<character>) watchlist UUID.
+    #' @return (data.table | promise<data.table>) a long-format table with one
+    #'   row per asset in the watchlist. Columns include watchlist metadata
+    #'   (`id`, `account_id`, `name`, `created_at`, `updated_at`) and asset
+    #'   columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
     #'   `asset_name`, `asset_attributes`, etc.). `asset_attributes` is a
     #'   `;`-separated character column (e.g.
     #'   `"fractional_eh_enabled;has_options"`) — `NA` when the asset has
@@ -1205,10 +1288,16 @@ AlpacaAccount <- R6::R6Class(
     #' print(wl)
     #' }
     get_watchlist = function(watchlist_id) {
+      assert_args_AlpacaAccount__get_watchlist(watchlist_id)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         .parser = parse_watchlist
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__get_watchlist,
+        is_async = private$.is_async
       ))
     },
 
@@ -1256,16 +1345,15 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param name Character; watchlist name.
-    #' @param symbols Character vector or NULL; initial symbols (e.g.,
+    #' @param name (scalar<character>) watchlist name.
+    #' @param symbols (character | NULL) initial symbols (e.g.,
     #'   `c("AAPL", "MSFT")`).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same long-format shape as `get_watchlist()`: one row per
-    #'   asset, with watchlist metadata (`id`, `account_id`, `name`,
-    #'   `created_at`, `updated_at`) replicated and asset columns prefixed
-    #'   `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
-    #'   `asset_attributes`, ...). A watchlist created with no symbols
-    #'   returns one row with asset columns set to `NA`.
+    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #'   `get_watchlist()`: one row per asset, with watchlist metadata (`id`,
+    #'   `account_id`, `name`, `created_at`, `updated_at`) replicated and asset
+    #'   columns prefixed `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
+    #'   `asset_attributes`, ...). A watchlist created with no symbols returns
+    #'   one row with asset columns set to `NA`.
     #'
     #' @examples
     #' \dontrun{
@@ -1274,11 +1362,17 @@ AlpacaAccount <- R6::R6Class(
     #' print(wl)
     #' }
     add_watchlist = function(name, symbols = NULL) {
-      return(private$.request(
+      assert_args_AlpacaAccount__add_watchlist(name, symbols)
+      result <- private$.request(
         endpoint = "/v2/watchlists",
         method = "POST",
         body = list(name = name, symbols = symbols),
         .parser = parse_watchlist
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__add_watchlist,
+        is_async = private$.is_async
       ))
     },
 
@@ -1325,13 +1419,13 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param watchlist_id Character; watchlist UUID.
-    #' @param name Character; new watchlist name.
-    #' @param symbols Character vector; new full list of symbols (replaces existing).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same long-format shape as `get_watchlist()`: one row per
-    #'   asset (after the modification), watchlist metadata replicated
-    #'   on each row, asset columns prefixed `asset_`.
+    #' @param watchlist_id (scalar<character>) watchlist UUID.
+    #' @param name (scalar<character>) new watchlist name.
+    #' @param symbols (character) new full list of symbols (replaces existing).
+    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #'   `get_watchlist()`: one row per asset (after the modification),
+    #'   watchlist metadata replicated on each row, asset columns prefixed
+    #'   `asset_`.
     #'
     #' @examples
     #' \dontrun{
@@ -1340,12 +1434,18 @@ AlpacaAccount <- R6::R6Class(
     #'                       symbols = c("AAPL", "TSLA"))
     #' }
     modify_watchlist = function(watchlist_id, name, symbols) {
+      assert_args_AlpacaAccount__modify_watchlist(watchlist_id, name, symbols)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "PUT",
         body = list(name = name, symbols = symbols),
         .parser = parse_watchlist
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__modify_watchlist,
+        is_async = private$.is_async
       ))
     },
 
@@ -1392,11 +1492,10 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param watchlist_id Character; watchlist UUID.
-    #' @param symbol Character; ticker symbol to add (e.g., `"AAPL"`).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same long-format shape as `get_watchlist()`: one row per
-    #'   asset in the updated watchlist.
+    #' @param watchlist_id (scalar<character>) watchlist UUID.
+    #' @param symbol (scalar<character>) ticker symbol to add (e.g., `"AAPL"`).
+    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #'   `get_watchlist()`: one row per asset in the updated watchlist.
     #'
     #' @examples
     #' \dontrun{
@@ -1404,12 +1503,18 @@ AlpacaAccount <- R6::R6Class(
     #' acct$add_watchlist_symbol("some-uuid", "NVDA")
     #' }
     add_watchlist_symbol = function(watchlist_id, symbol) {
+      assert_args_AlpacaAccount__add_watchlist_symbol(watchlist_id, symbol)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "POST",
         body = list(symbol = symbol),
         .parser = parse_watchlist
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__add_watchlist_symbol,
+        is_async = private$.is_async
       ))
     },
 
@@ -1442,14 +1547,13 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param watchlist_id Character; watchlist UUID.
-    #' @param symbol Character; ticker symbol to remove.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
-    #'   When the API returns the updated watchlist, a single row with watchlist details.
-    #'   On 204 No Content, a single confirmation row with columns:
-    #'   - `watchlist_id` (character): The watchlist UUID.
-    #'   - `symbol` (character): The removed ticker symbol.
-    #'   - `status` (character): `"removed"`.
+    #' @param watchlist_id (scalar<character>) watchlist UUID.
+    #' @param symbol (scalar<character>) ticker symbol to remove.
+    #' @return (data.table | promise<data.table>) the result. When the API
+    #'   returns the updated watchlist, a single row with watchlist details. On
+    #'   204 No Content, a single confirmation row with `watchlist_id`
+    #'   (character, the watchlist UUID), `symbol` (character, the removed ticker
+    #'   symbol) and `status` (character, `"removed"`).
     #'
     #' @examples
     #' \dontrun{
@@ -1457,8 +1561,9 @@ AlpacaAccount <- R6::R6Class(
     #' acct$cancel_watchlist_symbol("some-uuid", "AAPL")
     #' }
     cancel_watchlist_symbol = function(watchlist_id, symbol) {
+      assert_args_AlpacaAccount__cancel_watchlist_symbol(watchlist_id, symbol)
       endpoint <- paste0("/v2/watchlists/", watchlist_id, "/", symbol)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "DELETE",
         .parser = function(data) {
@@ -1471,6 +1576,11 @@ AlpacaAccount <- R6::R6Class(
           }
           return(parse_watchlist(data))
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__cancel_watchlist_symbol,
+        is_async = private$.is_async
       ))
     },
 
@@ -1502,10 +1612,10 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param watchlist_id Character; watchlist UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
-    #'   - `watchlist_id` (character): The deleted watchlist UUID.
-    #'   - `status` (character): `"deleted"`.
+    #' @param watchlist_id (scalar<character>) watchlist UUID.
+    #' @return (data.table | promise<data.table>) a single-row confirmation with
+    #'   `watchlist_id` (character, the deleted watchlist UUID) and `status`
+    #'   (character, `"deleted"`).
     #'
     #' @examples
     #' \dontrun{
@@ -1513,8 +1623,9 @@ AlpacaAccount <- R6::R6Class(
     #' acct$cancel_watchlist("some-uuid")
     #' }
     cancel_watchlist = function(watchlist_id) {
+      assert_args_AlpacaAccount__cancel_watchlist(watchlist_id)
       endpoint <- paste0("/v2/watchlists/", watchlist_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         method = "DELETE",
         .parser = function(data) {
@@ -1523,6 +1634,11 @@ AlpacaAccount <- R6::R6Class(
             status = "deleted"
           )[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaAccount__cancel_watchlist,
+        is_async = private$.is_async
       ))
     }
   )

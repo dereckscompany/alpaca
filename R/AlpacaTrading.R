@@ -129,59 +129,56 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
-    #'   for all order classes except `"mleg"` (multi-leg options), where each
-    #'   leg carries its own symbol.
-    #' @param side Character or NULL; `"buy"` or `"sell"`. Required for all
-    #'   order classes except `"mleg"`, where each leg carries its own side.
-    #' @param type Character; order type: `"market"`, `"limit"`, `"stop"`,
-    #'   `"stop_limit"`, `"trailing_stop"`.
-    #' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
-    #' @param qty Numeric or NULL; number of shares. Mutually exclusive with `notional`.
-    #' @param notional Numeric or NULL; dollar amount. Market/day orders only.
-    #' @param limit_price Numeric or NULL; limit price. Required for `"limit"` and
-    #'   `"stop_limit"` orders.
-    #' @param stop_price Numeric or NULL; stop trigger price. Required for `"stop"` and
-    #'   `"stop_limit"` orders.
-    #' @param trail_price Numeric or NULL; trailing stop dollar offset.
-    #' @param trail_percent Numeric or NULL; trailing stop percentage offset.
-    #' @param extended_hours Logical or NULL; allow pre/post market execution.
-    #' @param client_order_id Character or NULL; unique client order ID (max 128 chars).
-    #' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`, `"oto"`.
-    #' @param take_profit List or NULL; `list(limit_price = ...)` for bracket orders.
-    #' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
-    #' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
-    #'   `"sell_to_open"`, `"sell_to_close"`.
-    #' @param legs List or NULL; list of leg objects (max 4) for multi-leg
-    #'   options strategies. Required when `order_class = "mleg"`.
-    #' @param advanced_instructions List or NULL; routing instructions for
+    #' @param symbol (scalar<character> | NULL) ticker symbol (e.g., `"AAPL"`).
+    #'   Required for all order classes except `"mleg"` (multi-leg options),
+    #'   where each leg carries its own symbol.
+    #' @param side (scalar<character> | NULL) `"buy"` or `"sell"`. Required for
+    #'   all order classes except `"mleg"`, where each leg carries its own side.
+    #' @param type (scalar<character>) order type: `"market"`, `"limit"`,
+    #'   `"stop"`, `"stop_limit"`, `"trailing_stop"`.
+    #' @param time_in_force (scalar<character>) `"day"`, `"gtc"`, `"opg"`,
+    #'   `"cls"`, `"ioc"`, `"fok"`.
+    #' @param qty (scalar<numeric> | NULL) number of shares. Mutually exclusive
+    #'   with `notional`.
+    #' @param notional (scalar<numeric> | NULL) dollar amount. Market/day orders
+    #'   only.
+    #' @param limit_price (scalar<numeric> | NULL) limit price. Required for
+    #'   `"limit"` and `"stop_limit"` orders.
+    #' @param stop_price (scalar<numeric> | NULL) stop trigger price. Required for
+    #'   `"stop"` and `"stop_limit"` orders.
+    #' @param trail_price (scalar<numeric> | NULL) trailing stop dollar offset.
+    #' @param trail_percent (scalar<numeric> | NULL) trailing stop percentage
+    #'   offset.
+    #' @param extended_hours (scalar<logical> | NULL) allow pre/post market
+    #'   execution.
+    #' @param client_order_id (scalar<character> | NULL) unique client order ID
+    #'   (max 128 chars).
+    #' @param order_class (scalar<character> | NULL) `"simple"`, `"bracket"`,
+    #'   `"oco"`, `"oto"`.
+    #' @param take_profit (list | NULL) `list(limit_price = ...)` for bracket
+    #'   orders.
+    #' @param stop_loss (list | NULL) `list(stop_price = ..., limit_price = ...)`
+    #'   for bracket orders.
+    #' @param position_intent (scalar<character> | NULL) `"buy_to_open"`,
+    #'   `"buy_to_close"`, `"sell_to_open"`, `"sell_to_close"`.
+    #' @param legs (list | NULL) leg objects (max 4) for multi-leg options
+    #'   strategies. Required when `order_class = "mleg"`.
+    #' @param advanced_instructions (list | NULL) routing instructions for
     #'   Alpaca Elite Smart Router.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
+    #' @return (data.table | promise<data.table>) the order(s).
     #'   A simple order returns a single row. A `bracket` / `oco` / `oto` /
     #'   `mleg` order returns the parent row plus one row per leg — see the
     #'   "Multi-leg orders" section in the README and `vignette("data-shapes")`
-    #'   for the parent + leg layout. Columns:
-    #'   - `id` (character): Order UUID.
-    #'   - `client_order_id` (character): Client order ID.
-    #'   - `symbol` (character): Ticker symbol.
-    #'   - `side` (character): `"buy"` or `"sell"`.
-    #'   - `type` (character): Order type.
-    #'   - `time_in_force` (character): Time in force.
-    #'   - `status` (character): Order status (e.g., `"accepted"`, `"new"`, `"filled"`).
-    #'   - `qty` (character): Requested quantity.
-    #'   - `filled_qty` (character): Quantity filled so far.
-    #'   - `filled_avg_price` (character): Average fill price.
-    #'   - `limit_price` (character): Limit price (if set).
-    #'   - `stop_price` (character): Stop price (if set).
-    #'   - `created_at` (POSIXct, UTC): Order creation timestamp. Other
-    #'     order timestamps — `updated_at`, `submitted_at`, `filled_at`,
-    #'     `expired_at`, `canceled_at`, `failed_at`, `replaced_at` —
-    #'     are likewise parsed to POSIXct (UTC) when present.
-    #'   - `leg_index` (integer): `NA` on the parent row; `1..N` on each leg.
-    #'   - `parent_order_id` (character): `NA` on the parent row; the parent's
-    #'     `id` on each leg. Use `dt[is.na(parent_order_id)]` to keep just
-    #'     parent rows, or `dt[parent_order_id == "<uuid>"]` for the legs of
-    #'     one bracket.
+    #'   for the parent + leg layout. Columns include `id`, `client_order_id`,
+    #'   `symbol`, `side`, `type`, `time_in_force`, `status`, `qty`,
+    #'   `filled_qty`, `filled_avg_price`, `limit_price` and `stop_price`
+    #'   (all character); the order timestamps `created_at`, `updated_at`,
+    #'   `submitted_at`, `filled_at`, `expired_at`, `canceled_at`, `failed_at`
+    #'   and `replaced_at` (POSIXct, UTC) when present; `leg_index` (integer,
+    #'   `NA` on the parent row, `1..N` on each leg); and `parent_order_id`
+    #'   (character, `NA` on the parent row, the parent's `id` on each leg). Use
+    #'   `dt[is.na(parent_order_id)]` to keep just parent rows, or
+    #'   `dt[parent_order_id == "<uuid>"]` for the legs of one bracket.
     #'
     #' @examples
     #' \dontrun{
@@ -227,6 +224,26 @@ AlpacaTrading <- R6::R6Class(
       legs = NULL,
       advanced_instructions = NULL
     ) {
+      assert_args_AlpacaTrading__add_order(
+        symbol,
+        side,
+        type,
+        time_in_force,
+        qty,
+        notional,
+        limit_price,
+        stop_price,
+        trail_price,
+        trail_percent,
+        extended_hours,
+        client_order_id,
+        order_class,
+        take_profit,
+        stop_loss,
+        position_intent,
+        legs,
+        advanced_instructions
+      )
       params <- validate_order_params(
         symbol = symbol,
         side = side,
@@ -248,11 +265,15 @@ AlpacaTrading <- R6::R6Class(
         advanced_instructions = advanced_instructions
       )
 
-      return(private$.request(
-        endpoint = "/v2/orders",
-        method = "POST",
-        body = params,
-        .parser = parse_order
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = "/v2/orders",
+          method = "POST",
+          body = params,
+          .parser = parse_order
+        ),
+        assert_return_AlpacaTrading__add_order,
+        is_async = private$.is_async
       ))
     },
 
@@ -317,25 +338,30 @@ AlpacaTrading <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param status Character or NULL; `"open"`, `"closed"`, `"all"`. Default `"open"`.
-    #' @param limit Integer or NULL; max orders (default 50, max 500).
-    #' @param after Character or NULL; only orders submitted after this timestamp.
-    #' @param until Character or NULL; only orders submitted before this timestamp.
-    #' @param direction Character or NULL; `"asc"` or `"desc"`.
-    #' @param nested Logical or NULL; roll up multi-leg orders under `legs`.
-    #' @param symbols Character or NULL; comma-separated symbol filter.
-    #' @param side Character or NULL; filter by side.
-    #' @param asset_class Character or NULL; comma-separated asset classes
-    #'   (e.g., `"us_equity"`, `"us_option"`, `"crypto"`). With `"us_option"`,
-    #'   `symbols` can filter by underlying.
-    #' @param before_order_id Character or NULL; return orders submitted before
-    #'   this order ID. Mutually exclusive with `after_order_id`. Do not combine
-    #'   with `after`/`until`.
-    #' @param after_order_id Character or NULL; return orders submitted after
-    #'   this order ID. Mutually exclusive with `before_order_id`. Do not
+    #' @param status (scalar<character> | NULL) `"open"`, `"closed"`, `"all"`.
+    #'   Default `"open"`.
+    #' @param limit (scalar<count in [1, Inf[> | NULL) max orders (default 50,
+    #'   max 500).
+    #' @param after (scalar<character> | NULL) only orders submitted after this
+    #'   timestamp.
+    #' @param until (scalar<character> | NULL) only orders submitted before this
+    #'   timestamp.
+    #' @param direction (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param nested (scalar<logical> | NULL) roll up multi-leg orders under
+    #'   `legs`.
+    #' @param symbols (scalar<character> | NULL) comma-separated symbol filter.
+    #' @param side (scalar<character> | NULL) filter by side.
+    #' @param asset_class (scalar<character> | NULL) comma-separated asset
+    #'   classes (e.g., `"us_equity"`, `"us_option"`, `"crypto"`). With
+    #'   `"us_option"`, `symbols` can filter by underlying.
+    #' @param before_order_id (scalar<character> | NULL) return orders submitted
+    #'   before this order ID. Mutually exclusive with `after_order_id`. Do not
     #'   combine with `after`/`until`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same columns as `add_order()` return value.
+    #' @param after_order_id (scalar<character> | NULL) return orders submitted
+    #'   after this order ID. Mutually exclusive with `before_order_id`. Do not
+    #'   combine with `after`/`until`.
+    #' @return (data.table | promise<data.table>) the orders, with the same
+    #'   columns as `add_order()` return value.
     #'
     #' @examples
     #' \dontrun{
@@ -356,6 +382,19 @@ AlpacaTrading <- R6::R6Class(
       before_order_id = NULL,
       after_order_id = NULL
     ) {
+      assert_args_AlpacaTrading__get_orders(
+        status,
+        limit,
+        after,
+        until,
+        direction,
+        nested,
+        symbols,
+        side,
+        asset_class,
+        before_order_id,
+        after_order_id
+      )
       if (!is.null(before_order_id) && !is.null(after_order_id)) {
         rlang::abort("`before_order_id` and `after_order_id` are mutually exclusive.")
       }
@@ -378,22 +417,26 @@ AlpacaTrading <- R6::R6Class(
       if (!is.null(side)) {
         rlang::arg_match0(tolower(side), c("buy", "sell"))
       }
-      return(private$.request(
-        endpoint = "/v2/orders",
-        query = list(
-          status = status,
-          limit = limit,
-          after = after,
-          until = until,
-          direction = direction,
-          nested = nested,
-          symbols = symbols,
-          side = side,
-          asset_class = asset_class,
-          before_order_id = before_order_id,
-          after_order_id = after_order_id
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = "/v2/orders",
+          query = list(
+            status = status,
+            limit = limit,
+            after = after,
+            until = until,
+            direction = direction,
+            nested = nested,
+            symbols = symbols,
+            side = side,
+            asset_class = asset_class,
+            before_order_id = before_order_id,
+            after_order_id = after_order_id
+          ),
+          .parser = parse_orders
         ),
-        .parser = parse_orders
+        assert_return_AlpacaTrading__get_orders,
+        is_async = private$.is_async
       ))
     },
 
@@ -453,15 +496,15 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param order_id Character; order UUID.
-    #' @param nested Logical or NULL; include leg orders. When `TRUE`, a
+    #' @param order_id (scalar<character>) order UUID.
+    #' @param nested (scalar<logical> | NULL) include leg orders. When `TRUE`, a
     #'   bracket / OCO / OTO / multi-leg order returns the parent row plus
     #'   one row per leg, distinguished by `leg_index` (`NA` on parent,
     #'   `1..N` on legs) and `parent_order_id` (`NA` on parent, parent's
     #'   `id` on legs). Simple orders return a single row regardless.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
-    #'   with the same columns as `add_order()`. Multi-row when `nested =
-    #'   TRUE` and the order has legs; otherwise single row.
+    #' @return (data.table | promise<data.table>) the order, with the same
+    #'   columns as `add_order()`. Multi-row when `nested = TRUE` and the order
+    #'   has legs; otherwise single row.
     #'
     #' @examples
     #' \dontrun{
@@ -470,11 +513,16 @@ AlpacaTrading <- R6::R6Class(
     #' print(order)
     #' }
     get_order = function(order_id, nested = NULL) {
+      assert_args_AlpacaTrading__get_order(order_id, nested)
       endpoint <- paste0("/v2/orders/", order_id)
-      return(private$.request(
-        endpoint = endpoint,
-        query = list(nested = nested),
-        .parser = parse_order
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = endpoint,
+          query = list(nested = nested),
+          .parser = parse_order
+        ),
+        assert_return_AlpacaTrading__get_order,
+        is_async = private$.is_async
       ))
     },
 
@@ -535,12 +583,12 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param client_order_id Character; the client order ID (max 128 chars).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`)
-    #'   with the same columns as `add_order()`. A simple order returns a
-    #'   single row; a bracket / OCO / OTO / multi-leg order returns the
-    #'   parent row plus one row per leg, distinguished by `leg_index`
-    #'   and `parent_order_id`.
+    #' @param client_order_id (scalar<character>) the client order ID (max 128
+    #'   chars).
+    #' @return (data.table | promise<data.table>) the order, with the same
+    #'   columns as `add_order()`. A simple order returns a single row; a
+    #'   bracket / OCO / OTO / multi-leg order returns the parent row plus one
+    #'   row per leg, distinguished by `leg_index` and `parent_order_id`.
     #'
     #' @examples
     #' \dontrun{
@@ -549,10 +597,15 @@ AlpacaTrading <- R6::R6Class(
     #' print(order)
     #' }
     get_order_by_client_id = function(client_order_id) {
-      return(private$.request(
-        endpoint = "/v2/orders:by_client_order_id",
-        query = list(client_order_id = client_order_id),
-        .parser = parse_order
+      assert_args_AlpacaTrading__get_order_by_client_id(client_order_id)
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = "/v2/orders:by_client_order_id",
+          query = list(client_order_id = client_order_id),
+          .parser = parse_order
+        ),
+        assert_return_AlpacaTrading__get_order_by_client_id,
+        is_async = private$.is_async
       ))
     },
 
@@ -629,19 +682,20 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param order_id Character; order UUID to replace.
-    #' @param qty Numeric or NULL; new quantity. Mutually exclusive with `notional`.
-    #' @param notional Numeric or NULL; new notional (dollar) amount. Only valid
-    #'   for IPO indications of interest (`asset_class = "ipo"`).
-    #' @param time_in_force Character or NULL; new time in force.
-    #' @param limit_price Numeric or NULL; new limit price.
-    #' @param stop_price Numeric or NULL; new stop price.
-    #' @param trail Numeric or NULL; new trail value (for `type = "trailing_stop"`).
-    #' @param client_order_id Character or NULL; new client order ID.
-    #' @param advanced_instructions List or NULL; routing instructions for
+    #' @param order_id (scalar<character>) order UUID to replace.
+    #' @param qty (scalar<numeric> | NULL) new quantity. Mutually exclusive with
+    #'   `notional`.
+    #' @param notional (scalar<numeric> | NULL) new notional (dollar) amount.
+    #'   Only valid for IPO indications of interest (`asset_class = "ipo"`).
+    #' @param time_in_force (scalar<character> | NULL) new time in force.
+    #' @param limit_price (scalar<numeric> | NULL) new limit price.
+    #' @param stop_price (scalar<numeric> | NULL) new stop price.
+    #' @param trail (scalar<numeric> | NULL) new trail value (for
+    #'   `type = "trailing_stop"`).
+    #' @param client_order_id (scalar<character> | NULL) new client order ID.
+    #' @param advanced_instructions (list | NULL) routing instructions for
     #'   Alpaca Elite Smart Router.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the replacement order details.
+    #' @return (data.table | promise<data.table>) the replacement order details.
     #'
     #' @examples
     #' \dontrun{
@@ -660,6 +714,17 @@ AlpacaTrading <- R6::R6Class(
       notional = NULL,
       advanced_instructions = NULL
     ) {
+      assert_args_AlpacaTrading__modify_order(
+        order_id,
+        qty,
+        notional,
+        time_in_force,
+        limit_price,
+        stop_price,
+        trail,
+        client_order_id,
+        advanced_instructions
+      )
       if (!is.null(qty) && !is.null(notional)) {
         rlang::abort("`qty` and `notional` are mutually exclusive on a single replace request.")
       }
@@ -680,20 +745,24 @@ AlpacaTrading <- R6::R6Class(
       }
 
       endpoint <- paste0("/v2/orders/", order_id)
-      return(private$.request(
-        endpoint = endpoint,
-        method = "PATCH",
-        body = list(
-          qty = qty,
-          time_in_force = time_in_force,
-          limit_price = limit_price,
-          stop_price = stop_price,
-          trail = trail,
-          client_order_id = client_order_id,
-          notional = notional,
-          advanced_instructions = advanced_instructions
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = endpoint,
+          method = "PATCH",
+          body = list(
+            qty = qty,
+            time_in_force = time_in_force,
+            limit_price = limit_price,
+            stop_price = stop_price,
+            trail = trail,
+            client_order_id = client_order_id,
+            notional = notional,
+            advanced_instructions = advanced_instructions
+          ),
+          .parser = parse_order
         ),
-        .parser = parse_order
+        assert_return_AlpacaTrading__modify_order,
+        is_async = private$.is_async
       ))
     },
 
@@ -727,10 +796,10 @@ AlpacaTrading <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param order_id Character; order UUID to cancel.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`), single row with columns:
-    #'   - `order_id` (character): The cancelled order UUID.
-    #'   - `status` (character): `"cancelled"`.
+    #' @param order_id (scalar<character>) order UUID to cancel.
+    #' @return (data.table | promise<data.table>) a single-row confirmation with
+    #'   `order_id` (character, the cancelled order UUID) and `status`
+    #'   (character, `"cancelled"`).
     #'
     #' @examples
     #' \dontrun{
@@ -738,16 +807,21 @@ AlpacaTrading <- R6::R6Class(
     #' trading$cancel_order("some-order-uuid")
     #' }
     cancel_order = function(order_id) {
+      assert_args_AlpacaTrading__cancel_order(order_id)
       endpoint <- paste0("/v2/orders/", order_id)
-      return(private$.request(
-        endpoint = endpoint,
-        method = "DELETE",
-        .parser = function(data) {
-          return(data.table::data.table(
-            order_id = order_id,
-            status = "cancelled"
-          )[])
-        }
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = endpoint,
+          method = "DELETE",
+          .parser = function(data) {
+            return(data.table::data.table(
+              order_id = order_id,
+              status = "cancelled"
+            )[])
+          }
+        ),
+        assert_return_AlpacaTrading__cancel_order,
+        is_async = private$.is_async
       ))
     },
 
@@ -813,10 +887,10 @@ AlpacaTrading <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`).
-    #'   When orders are cancelled, one row per order with full order details.
-    #'   When no open orders exist, a single confirmation row with columns:
-    #'   - `status` (character): `"cancelled"`.
+    #' @return (data.table | promise<data.table>) the cancelled orders. When
+    #'   orders are cancelled, one row per order with full order details. When
+    #'   no open orders exist, a single confirmation row with a `status`
+    #'   (character) column set to `"cancelled"`.
     #'
     #' @examples
     #' \dontrun{
@@ -825,28 +899,32 @@ AlpacaTrading <- R6::R6Class(
     #' print(cancelled)
     #' }
     cancel_all_orders = function() {
-      return(private$.request(
-        endpoint = "/v2/orders",
-        method = "DELETE",
-        .parser = function(data) {
-          if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table(status = "cancelled")[])
-          }
-          # Alpaca returns [{id, status, body: {order...}}, ...]
-          # Unwrap body into top-level fields
-          unwrapped <- lapply(data, function(item) {
-            body <- item$body
-            item$body <- NULL
-            if (is.list(body)) {
-              return(c(item, body))
-            } else {
-              return(item)
+      return(connectcore::then_or_now(
+        private$.request(
+          endpoint = "/v2/orders",
+          method = "DELETE",
+          .parser = function(data) {
+            if (is.null(data) || length(data) == 0) {
+              return(data.table::data.table(status = "cancelled")[])
             }
-          })
-          dt <- as_dt_list(unwrapped)
-          parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
-          return(dt)
-        }
+            # Alpaca returns [{id, status, body: {order...}}, ...]
+            # Unwrap body into top-level fields
+            unwrapped <- lapply(data, function(item) {
+              body <- item$body
+              item$body <- NULL
+              if (is.list(body)) {
+                return(c(item, body))
+              } else {
+                return(item)
+              }
+            })
+            dt <- as_dt_list(unwrapped)
+            parse_timestamp_cols(dt, ORDER_TIMESTAMP_COLS)
+            return(dt)
+          }
+        ),
+        assert_return_AlpacaTrading__cancel_all_orders,
+        is_async = private$.is_async
       ))
     }
   )

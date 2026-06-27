@@ -14,33 +14,39 @@
 #' - **Stop-limit orders**: require `qty`, `stop_price`, and `limit_price`.
 #' - **Trailing stop orders**: require `qty` and either `trail_price` or `trail_percent`.
 #'
-#' @param symbol Character or NULL; ticker symbol (e.g., `"AAPL"`). Required
-#'   for all order classes except `"mleg"` (multi-leg options), where each
-#'   leg carries its own symbol.
-#' @param side Character or NULL; `"buy"` or `"sell"`. Required for all order
-#'   classes except `"mleg"`, where each leg carries its own side.
-#' @param type Character; order type.
-#' @param time_in_force Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
-#' @param qty Numeric or NULL; number of shares.
-#' @param notional Numeric or NULL; dollar amount (market/day orders only).
-#' @param limit_price Numeric or NULL; limit price.
-#' @param stop_price Numeric or NULL; stop trigger price.
-#' @param trail_price Numeric or NULL; trailing stop dollar offset.
-#' @param trail_percent Numeric or NULL; trailing stop percentage offset.
-#' @param extended_hours Logical or NULL; allow pre/post market.
-#' @param client_order_id Character or NULL; unique client order ID (max 128 chars).
-#' @param order_class Character or NULL; `"simple"`, `"bracket"`, `"oco"`,
-#'   `"oto"`, or `"mleg"` (multi-leg options). Case-insensitive; empty string
-#'   is treated as NULL.
-#' @param take_profit List or NULL; `list(limit_price = ...)` for bracket orders.
-#' @param stop_loss List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket orders.
-#' @param position_intent Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
-#'   `"sell_to_open"`, `"sell_to_close"`.
-#' @param legs List or NULL; list of leg objects for multi-leg options orders
+#' @param symbol (scalar<character> | NULL) ticker symbol (e.g., `"AAPL"`).
+#'   Required for all order classes except `"mleg"` (multi-leg options), where
+#'   each leg carries its own symbol.
+#' @param side (scalar<character> | NULL) `"buy"` or `"sell"`. Required for all
+#'   order classes except `"mleg"`, where each leg carries its own side.
+#' @param type (scalar<character>) order type.
+#' @param time_in_force (scalar<character>) `"day"`, `"gtc"`, `"opg"`, `"cls"`,
+#'   `"ioc"`, `"fok"`.
+#' @param qty (scalar<numeric> | NULL) number of shares.
+#' @param notional (scalar<numeric> | NULL) dollar amount (market/day orders
+#'   only).
+#' @param limit_price (scalar<numeric> | NULL) limit price.
+#' @param stop_price (scalar<numeric> | NULL) stop trigger price.
+#' @param trail_price (scalar<numeric> | NULL) trailing stop dollar offset.
+#' @param trail_percent (scalar<numeric> | NULL) trailing stop percentage offset.
+#' @param extended_hours (scalar<logical> | NULL) allow pre/post market.
+#' @param client_order_id (scalar<character> | NULL) unique client order ID
+#'   (max 128 chars).
+#' @param order_class (scalar<character> | NULL) `"simple"`, `"bracket"`,
+#'   `"oco"`, `"oto"`, or `"mleg"` (multi-leg options). Case-insensitive; empty
+#'   string is treated as NULL.
+#' @param take_profit (list | NULL) `list(limit_price = ...)` for bracket
+#'   orders.
+#' @param stop_loss (list | NULL) `list(stop_price = ..., limit_price = ...)`
+#'   for bracket orders.
+#' @param position_intent (scalar<character> | NULL) `"buy_to_open"`,
+#'   `"buy_to_close"`, `"sell_to_open"`, `"sell_to_close"`.
+#' @param legs (list | NULL) leg objects for multi-leg options orders
 #'   (`order_class = "mleg"`). Max 4 legs.
-#' @param advanced_instructions List or NULL; advanced routing instructions for
+#' @param advanced_instructions (list | NULL) advanced routing instructions for
 #'   the Alpaca Elite Smart Router.
-#' @return Named list of validated order parameters (NULLs removed).
+#' @return (list) validated order parameters (NULLs removed).
+#' @noassert
 #'
 #' @importFrom rlang abort arg_match0
 #' @keywords internal

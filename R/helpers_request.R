@@ -12,10 +12,11 @@
 #' header credentials, not request signing, so this is the connector's `.sign()`
 #' seam: no timestamp or HMAC is involved.
 #'
-#' @param req An [httr2::request].
-#' @param keys List with `api_key` and `api_secret`.
-#' @param ctx List; signing context (unused — Alpaca needs no server clock).
-#' @return The request with the two API-key headers added.
+#' @param req (class<httr2_request>) the request to sign.
+#' @param keys (list) credentials with `api_key` and `api_secret`.
+#' @param ctx (list) signing context (unused — Alpaca needs no server clock).
+#' @return (class<httr2_request>) the request with the two API-key headers added.
+#' @noassert
 #'
 #' @importFrom httr2 req_headers
 #' @keywords internal
@@ -45,30 +46,31 @@ alpaca_sign <- function(req, keys, ctx = list()) {
 #' [as.list()] keeps it an array for any length without touching any other
 #' field's bytes.
 #'
-#' @param body Named list; the request body. NULL entries are dropped first
+#' @param body (list) the request body. NULL entries are dropped first
 #'   (matching the pre-migration funnel).
-#' @return A length-one character string with the serialised JSON body, or
-#'   `NULL` when the body prunes to nothing (the pre-migration funnel sent no
-#'   body in that case).
+#' @return (scalar<character> | NULL) the serialised JSON body, or `NULL` when
+#'   the body prunes to nothing (the pre-migration funnel sent no body in that
+#'   case).
 #'
 #' @keywords internal
 #' @noRd
 alpaca_serialize_body <- function(body) {
+  assert_args_alpaca_serialize_body(body)
   body <- body[!vapply(body, is.null, logical(1))]
   if (length(body) == 0L) {
-    return(NULL)
+    return(assert_return_alpaca_serialize_body(NULL))
   }
   if (!is.null(body$symbols)) {
     # Keep `symbols` a JSON array even for a single symbol; auto_unbox would
     # otherwise emit a scalar, which Alpaca's watchlist endpoints reject.
     body$symbols <- as.list(body$symbols)
   }
-  return(as.character(jsonlite::toJSON(
+  return(assert_return_alpaca_serialize_body(as.character(jsonlite::toJSON(
     body,
     auto_unbox = TRUE,
     digits = 22,
     null = "null"
-  )))
+  ))))
 }
 
 #' Build and Execute an Alpaca API Request
@@ -84,22 +86,26 @@ alpaca_serialize_body <- function(body) {
 #' - `APCA-API-KEY-ID`: Your API key ID
 #' - `APCA-API-SECRET-KEY`: Your API secret key
 #'
-#' @param base_url Character; the API base URL.
-#' @param endpoint Character; the API path (e.g., `"/v2/account"`).
-#' @param method Character; HTTP method. Default `"GET"`.
-#' @param query Named list; query parameters. Default `list()`.
-#' @param body Named list or NULL; JSON request body (for POST/PATCH). Default `NULL`.
-#' @param keys List or NULL; API credentials with `api_key` and `api_secret`.
+#' @param base_url (scalar<character>) the API base URL.
+#' @param endpoint (scalar<character>) the API path (e.g., `"/v2/account"`).
+#' @param method (scalar<character>) HTTP method. Default `"GET"`.
+#' @param query (list) query parameters. Default `list()`.
+#' @param body (list | NULL) JSON request body (for POST/PATCH). Default `NULL`.
+#' @param keys (list | NULL) API credentials with `api_key` and `api_secret`.
 #'   Default `NULL` (no auth).
-#' @param .perform Function; the httr2 perform function. Default `httr2::req_perform`.
-#' @param .parser Function; post-processing function applied to parsed response.
-#'   Default `identity`.
-#' @param is_async Logical; whether `.perform` returns promises. Default `FALSE`.
-#' @param timeout Numeric; request timeout in seconds. Default `10`.
-#' @param simplifyVector Logical; passed to [httr2::resp_body_json]. Default
-#'   `FALSE`. Set to `TRUE` for endpoints returning parallel arrays so JSON
-#'   nulls become NA in atomic vectors.
-#' @return Parsed and post-processed API response data, or a promise thereof.
+#' @param .perform (function) the httr2 perform function. Default
+#'   `httr2::req_perform`.
+#' @param .parser (function) post-processing function applied to parsed
+#'   response. Default `identity`.
+#' @param is_async (scalar<logical>) whether `.perform` returns promises.
+#'   Default `FALSE`.
+#' @param timeout (scalar<numeric in ]0, Inf[>) request timeout in seconds.
+#'   Default `10`.
+#' @param simplifyVector (scalar<logical>) passed to [httr2::resp_body_json].
+#'   Default `FALSE`. Set to `TRUE` for endpoints returning parallel arrays so
+#'   JSON nulls become NA in atomic vectors.
+#' @return (any | promise<any>) parsed and post-processed API response data, or
+#'   a promise thereof.
 #'
 #' @importFrom httr2 req_perform
 #' @export
@@ -116,7 +122,20 @@ alpaca_build_request <- function(
   timeout = 10,
   simplifyVector = FALSE
 ) {
-  return(connectcore::build_request(
+  assert_args_alpaca_build_request(
+    base_url,
+    endpoint,
+    method,
+    query,
+    body,
+    keys,
+    .perform,
+    .parser,
+    is_async,
+    timeout,
+    simplifyVector
+  )
+  return(assert_return_alpaca_build_request(connectcore::build_request(
     base_url = base_url,
     endpoint = endpoint,
     method = method,
@@ -130,7 +149,7 @@ alpaca_build_request <- function(
     .parser = .parser,
     is_async = is_async,
     timeout = timeout
-  ))
+  )))
 }
 
 #' Auto-Paginate an Alpaca API Endpoint
@@ -150,24 +169,28 @@ alpaca_build_request <- function(
 #' truncation can never pass silently. Resume by re-requesting with a later
 #' `start` (bars/trades/quotes are time-ordered) or by raising `max_pages`.
 #'
-#' @param base_url Character; the API base URL.
-#' @param endpoint Character; the API path (e.g., `"/v2/orders"`).
-#' @param method Character; HTTP method. Default `"GET"`.
-#' @param query Named list; query parameters. Default `list()`.
-#' @param keys List or NULL; API credentials.
-#' @param .perform Function; the httr2 perform function.
-#' @param .parser Function; applied to the accumulated list of page items.
+#' @param base_url (scalar<character>) the API base URL.
+#' @param endpoint (scalar<character>) the API path (e.g., `"/v2/orders"`).
+#' @param method (scalar<character>) HTTP method. Default `"GET"`.
+#' @param query (list) query parameters. Default `list()`.
+#' @param keys (list | NULL) API credentials.
+#' @param .perform (function) the httr2 perform function.
+#' @param .parser (function) applied to the accumulated list of page items.
 #'   Receives a single flat list of all items across pages.
-#' @param is_async Logical; whether `.perform` returns promises.
-#' @param items_field Character or NULL; the JSON field containing the array
-#'   of items (e.g., `"bars"`, `"trades"`, `"quotes"`). If `NULL`, the
-#'   entire response list is accumulated (for endpoints returning top-level arrays).
-#' @param max_pages Integer; maximum number of pages to fetch. Default `Inf`.
-#' @param sleep Numeric; seconds to pause between page requests, to respect
-#'   rate limits (Alpaca's free/Basic data tier caps at 200 req/min). Applied
-#'   in synchronous mode only. Default `0`.
-#' @param timeout Numeric; request timeout in seconds. Default `10`.
-#' @return Parsed and post-processed API response data, or a promise thereof.
+#' @param is_async (scalar<logical>) whether `.perform` returns promises.
+#' @param items_field (scalar<character> | NULL) the JSON field containing the
+#'   array of items (e.g., `"bars"`, `"trades"`, `"quotes"`). If `NULL`, the
+#'   entire response list is accumulated (for endpoints returning top-level
+#'   arrays).
+#' @param max_pages (scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) maximum
+#'   number of pages to fetch. Default `Inf`.
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between page
+#'   requests, to respect rate limits (Alpaca's free/Basic data tier caps at
+#'   200 req/min). Applied in synchronous mode only. Default `0`.
+#' @param timeout (scalar<numeric in ]0, Inf[>) request timeout in seconds.
+#'   Default `10`.
+#' @return (any | promise<any>) parsed and post-processed API response data, or
+#'   a promise thereof.
 #'
 #' @examples
 #' \dontrun{
@@ -198,6 +221,20 @@ alpaca_paginate <- function(
   sleep = 0,
   timeout = 10
 ) {
+  assert_args_alpaca_paginate(
+    base_url,
+    endpoint,
+    method,
+    query,
+    keys,
+    .perform,
+    .parser,
+    is_async,
+    items_field,
+    max_pages,
+    sleep,
+    timeout
+  )
   accumulator <- list()
   page_count <- 0L
 
@@ -265,7 +302,7 @@ alpaca_paginate <- function(
     ))
   }
 
-  return(fetch_page())
+  return(assert_return_alpaca_paginate(fetch_page()))
 }
 
 #' Parse and Validate an Alpaca API Response
@@ -274,22 +311,24 @@ alpaca_paginate <- function(
 #' returns the parsed data. Alpaca returns error details in the JSON body
 #' with a `message` field. This is the connector's `.parse_envelope()` seam.
 #'
-#' @param resp An [httr2::response] object.
-#' @param simplifyVector Logical; passed to [httr2::resp_body_json]. Default
-#'   `FALSE` (lists preserved). Set to `TRUE` for endpoints returning parallel
-#'   arrays (e.g., portfolio history) so JSON nulls become NA in atomic vectors.
-#' @return The parsed JSON response data.
+#' @param resp (class<httr2_response>) the response object.
+#' @param simplifyVector (scalar<logical>) passed to [httr2::resp_body_json].
+#'   Default `FALSE` (lists preserved). Set to `TRUE` for endpoints returning
+#'   parallel arrays (e.g., portfolio history) so JSON nulls become NA in atomic
+#'   vectors.
+#' @return (any) the parsed JSON response data.
 #'
 #' @importFrom httr2 resp_status resp_body_json resp_body_string
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
 parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
+  assert_args_parse_alpaca_response(resp, simplifyVector)
   status <- httr2::resp_status(resp)
 
   # Handle 204 No Content (e.g., successful DELETE)
   if (status == 204L) {
-    return(list())
+    return(assert_return_parse_alpaca_response(list()))
   }
 
   parsed <- tryCatch(
@@ -316,5 +355,5 @@ parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
     rlang::abort(paste0("Alpaca API error ", status, ": ", msg))
   }
 
-  return(parsed)
+  return(assert_return_parse_alpaca_response(parsed))
 }

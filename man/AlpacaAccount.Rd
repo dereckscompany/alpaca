@@ -388,26 +388,13 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{id} (character): Account UUID.
-\item \code{account_number} (character): Account number.
-\item \code{status} (character): Account status (e.g., \code{"ACTIVE"}).
-\item \code{currency} (character): Account currency (e.g., \code{"USD"}).
-\item \code{cash} (character): Cash balance.
-\item \code{portfolio_value} (character): Total portfolio value.
-\item \code{equity} (character): Account equity.
-\item \code{buying_power} (character): Available buying power.
-\item \code{initial_margin} (character): Initial margin requirement.
-\item \code{maintenance_margin} (character): Maintenance margin requirement.
-\item \code{long_market_value} (character): Market value of long positions.
-\item \code{short_market_value} (character): Market value of short positions.
-\item \code{pattern_day_trader} (logical): Whether flagged as PDT.
-\item \code{trading_blocked} (logical): Whether trading is blocked.
-\item \code{daytrade_count} (integer): Number of day trades in the last 5 days.
-\item \code{daytrading_buying_power} (character): Day trading buying power.
-\item \code{created_at} (POSIXct, UTC): Account creation timestamp.
-}
+(data.table | promise<data.table>) the account details. Columns
+include \code{id}, \code{account_number}, \code{status}, \code{currency}, \code{cash},
+\code{portfolio_value}, \code{equity}, \code{buying_power}, \code{initial_margin},
+\code{maintenance_margin}, \code{long_market_value}, \code{short_market_value},
+\code{daytrading_buying_power} (all character); \code{pattern_day_trader} and
+\code{trading_blocked} (logical); \code{daytrade_count} (integer); and
+\code{created_at} (POSIXct, UTC).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -468,17 +455,11 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{dtbp_check} (character): Day trading buying power check method.
-\item \code{no_shorting} (logical): Whether shorting is disabled.
-\item \code{suspend_trade} (logical): Whether trading is suspended.
-\item \code{trade_confirm_email} (character): Trade confirmation email setting.
-\item \code{fractional_trading} (logical): Whether fractional trading is enabled.
-\item \code{max_margin_multiplier} (character): Maximum margin multiplier.
-\item \code{pdt_check} (character): PDT check method.
-\item \code{max_options_trading_level} (integer): Options trading level.
-}
+(data.table | promise<data.table>) the configuration. Columns
+include \code{dtbp_check}, \code{trade_confirm_email}, \code{max_margin_multiplier},
+\code{pdt_check} (character); \code{no_shorting}, \code{suspend_trade},
+\code{fractional_trading} (logical); and \code{max_options_trading_level}
+(integer).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -561,35 +542,39 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dtbp_check}}{Character or NULL; DTBP check method: \code{"both"}, \code{"entry"}, \code{"exit"}.}
+\item{\code{dtbp_check}}{(scalar<character> | NULL) DTBP check method: \code{"both"},
+\code{"entry"}, \code{"exit"}.}
 
-\item{\code{no_shorting}}{Logical or NULL; if \code{TRUE}, disables short selling.}
+\item{\code{no_shorting}}{(scalar<logical> | NULL) if \code{TRUE}, disables short
+selling.}
 
-\item{\code{suspend_trade}}{Logical or NULL; if \code{TRUE}, suspends all trading.}
+\item{\code{suspend_trade}}{(scalar<logical> | NULL) if \code{TRUE}, suspends all
+trading.}
 
-\item{\code{trade_confirm_email}}{Character or NULL; \code{"all"}, \code{"none"}.}
+\item{\code{trade_confirm_email}}{(scalar<character> | NULL) \code{"all"}, \code{"none"}.}
 
-\item{\code{fractional_trading}}{Logical or NULL; enable/disable fractional trading.}
+\item{\code{fractional_trading}}{(scalar<logical> | NULL) enable/disable
+fractional trading.}
 
-\item{\code{max_margin_multiplier}}{Character or NULL; \code{"1"}, \code{"2"}, or \code{"4"}.}
+\item{\code{max_margin_multiplier}}{(scalar<character> | NULL) \code{"1"}, \code{"2"}, or
+\code{"4"}.}
 
-\item{\code{pdt_check}}{Character or NULL; \code{"both"}, \code{"entry"}, \code{"exit"}.}
+\item{\code{pdt_check}}{(scalar<character> | NULL) \code{"both"}, \code{"entry"}, \code{"exit"}.}
 
-\item{\code{max_options_trading_level}}{Integer or NULL; options trading level
-(0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
-3=Spreads/Straddles).}
+\item{\code{max_options_trading_level}}{(scalar<count in [0, Inf[> | NULL) options
+trading level (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long
+Call/Put, 3=Spreads/Straddles).}
 
-\item{\code{ptp_no_exception_entry}}{Logical or NULL; if \code{TRUE}, accept orders
-for PTP symbols with no exception.}
+\item{\code{ptp_no_exception_entry}}{(scalar<logical> | NULL) if \code{TRUE}, accept
+orders for PTP symbols with no exception.}
 
-\item{\code{disable_overnight_trading}}{Logical or NULL; if \code{TRUE}, disable
-overnight trading on the account.}
+\item{\code{disable_overnight_trading}}{(scalar<logical> | NULL) if \code{TRUE},
+disable overnight trading on the account.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the updated configuration.
+(data.table | promise<data.table>) the updated configuration.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -655,23 +640,11 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{asset_id} (character): Asset UUID.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{exchange} (character): Exchange.
-\item \code{asset_class} (character): Asset class (e.g., \code{"us_equity"}).
-\item \code{avg_entry_price} (character): Average entry price.
-\item \code{qty} (character): Quantity held.
-\item \code{side} (character): Position side (\code{"long"} or \code{"short"}).
-\item \code{market_value} (character): Current market value.
-\item \code{cost_basis} (character): Total cost basis.
-\item \code{unrealized_pl} (character): Unrealised profit/loss.
-\item \code{unrealized_plpc} (character): Unrealised P/L percentage.
-\item \code{current_price} (character): Current asset price.
-\item \code{lastday_price} (character): Previous close price.
-\item \code{change_today} (character): Percentage change today.
-}
+(data.table | promise<data.table>) the open positions. Columns
+include \code{asset_id}, \code{symbol}, \code{exchange}, \code{asset_class},
+\code{avg_entry_price}, \code{qty}, \code{side}, \code{market_value}, \code{cost_basis},
+\code{unrealized_pl}, \code{unrealized_plpc}, \code{current_price}, \code{lastday_price}
+and \code{change_today} (all character).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -738,13 +711,14 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol_or_id}}{Character; ticker symbol (e.g., \code{"AAPL"}) or asset UUID.}
+\item{\code{symbol_or_id}}{(scalar<character>) ticker symbol (e.g., \code{"AAPL"}) or
+asset UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
-same columns as \code{get_positions()}, single row.
+(data.table | promise<data.table>) the position, with the same
+columns as \code{get_positions()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -811,19 +785,18 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol_or_id}}{Character; ticker symbol or asset UUID.}
+\item{\code{symbol_or_id}}{(scalar<character>) ticker symbol or asset UUID.}
 
-\item{\code{qty}}{Numeric or NULL; number of shares to close. Mutually exclusive
-with \code{percentage}.}
+\item{\code{qty}}{(scalar<numeric> | NULL) number of shares to close. Mutually
+exclusive with \code{percentage}.}
 
-\item{\code{percentage}}{Numeric or NULL; percentage of position to close (0-100).
-Mutually exclusive with \code{qty}.}
+\item{\code{percentage}}{(scalar<numeric> | NULL) percentage of position to close
+(0-100). Mutually exclusive with \code{qty}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the closing order details.
+(data.table | promise<data.table>) the closing order details.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -909,19 +882,17 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{cancel_orders}}{Logical; if \code{TRUE}, cancels all open orders before
-liquidating positions. Default \code{FALSE}.}
+\item{\code{cancel_orders}}{(scalar<logical>) if \code{TRUE}, cancels all open orders
+before liquidating positions. Default \code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
-When positions are closed, one row per position with full order details.
-When no open positions exist, a single confirmation row with columns:
-\itemize{
-\item \code{cancel_orders} (logical): Whether orders were also cancelled.
-\item \code{status} (character): \code{"closed"}.
-}
+(data.table | promise<data.table>) the closed positions. When
+positions are closed, one row per position with full order details.
+When no open positions exist, a single confirmation row with
+\code{cancel_orders} (logical, whether orders were also cancelled) and
+\code{status} (character, \code{"closed"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -978,16 +949,14 @@ confirmation \code{data.table}:
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol_or_id}}{Character; OCC option symbol or asset UUID.}
+\item{\code{symbol_or_id}}{(scalar<character>) OCC option symbol or asset UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
-\itemize{
-\item \code{symbol} (character): The exercised option symbol or asset UUID.
-\item \code{status} (character): \code{"exercised"}.
-}
+(data.table | promise<data.table>) a single-row confirmation with
+\code{symbol} (character, the exercised option symbol or asset UUID) and
+\code{status} (character, \code{"exercised"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1054,41 +1023,39 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{period}}{Character or NULL; time period for the history. Examples:
-\code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Mutually exclusive with
-providing both \code{start} and \code{end}.}
+\item{\code{period}}{(scalar<character> | NULL) time period for the history.
+Examples: \code{"1D"}, \code{"1W"}, \code{"1M"}, \code{"3M"}, \code{"1A"}, \code{"all"}. Mutually
+exclusive with providing both \code{start} and \code{end}.}
 
-\item{\code{timeframe}}{Character or NULL; resolution of the time series:
+\item{\code{timeframe}}{(scalar<character> | NULL) resolution of the time series:
 \code{"1Min"}, \code{"5Min"}, \code{"15Min"}, \code{"1H"}, \code{"1D"}.}
 
-\item{\code{start}}{Character or NULL; start timestamp in RFC3339 format.
+\item{\code{start}}{(scalar<character> | NULL) start timestamp in RFC3339 format.
 Defaults to \code{end} minus \code{period}.}
 
-\item{\code{end}}{Character or NULL; end timestamp in RFC3339 format.}
+\item{\code{end}}{(scalar<character> | NULL) end timestamp in RFC3339 format.}
 
-\item{\code{intraday_reporting}}{Character or NULL; \code{"market_hours"} (default),
-\code{"extended_hours"}, or \code{"continuous"} (for 24/7 crypto charts).}
+\item{\code{intraday_reporting}}{(scalar<character> | NULL) \code{"market_hours"}
+(default), \code{"extended_hours"}, or \code{"continuous"} (for 24/7 crypto
+charts).}
 
-\item{\code{pnl_reset}}{Character or NULL; \code{"per_day"} (default) or \code{"no_reset"}.
-Set to \code{"no_reset"} for continuous crypto PnL.}
+\item{\code{pnl_reset}}{(scalar<character> | NULL) \code{"per_day"} (default) or
+\code{"no_reset"}. Set to \code{"no_reset"} for continuous crypto PnL.}
 
-\item{\code{date_start}}{Deprecated alias for \code{start}. Earlier releases used
-this name but it was silently ignored by the API. Now forwarded to
-\code{start} with a deprecation warning. Will be removed in a future
-release.}
+\item{\code{date_start}}{(scalar<character> | NULL) deprecated alias for \code{start}.
+Earlier releases used this name but it was silently ignored by the API.
+Now forwarded to \code{start} with a deprecation warning. Will be removed in
+a future release.}
 
-\item{\code{date_end}}{Deprecated alias for \code{end}. Same notes as \code{date_start}.}
+\item{\code{date_end}}{(scalar<character> | NULL) deprecated alias for \code{end}.
+Same notes as \code{date_start}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Snapshot timestamp in UTC.
-\item \code{equity} (numeric): Portfolio equity value.
-\item \code{profit_loss} (numeric): Profit/loss.
-\item \code{profit_loss_pct} (numeric): Profit/loss percentage.
-}
+(data.table | promise<data.table>) the portfolio history. Columns:
+\code{timestamp} (POSIXct, UTC), \code{equity} (numeric), \code{profit_loss} (numeric)
+and \code{profit_loss_pct} (numeric).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1165,43 +1132,45 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{activity_types}}{Character or NULL; comma-separated activity types to
-filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs for full list.
-Mutually exclusive with \code{category}.}
+\item{\code{activity_types}}{(scalar<character> | NULL) comma-separated activity
+types to filter (e.g., \code{"FILL"}, \code{"DIV"}, \code{"TRANS"}). See Alpaca docs
+for full list. Mutually exclusive with \code{category}.}
 
-\item{\code{date}}{Character or NULL; filter to a specific date (\code{"YYYY-MM-DD"}).}
+\item{\code{date}}{(scalar<character> | NULL) filter to a specific date
+(\code{"YYYY-MM-DD"}).}
 
-\item{\code{until}}{Character or NULL; only activities before this timestamp.}
+\item{\code{until}}{(scalar<character> | NULL) only activities before this
+timestamp.}
 
-\item{\code{after}}{Character or NULL; only activities after this timestamp.}
+\item{\code{after}}{(scalar<character> | NULL) only activities after this
+timestamp.}
 
-\item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{direction}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max results per page. Alpaca caps
-this at \strong{100} for \verb{/v2/account/activities}; values above 100
-return HTTP 422 server-side. This method validates the cap up-front
+\item{\code{page_size}}{(scalar<count in [1, 100]> | NULL) max results per page.
+Alpaca caps this at \strong{100} for \verb{/v2/account/activities}; values above
+100 return HTTP 422 server-side. This method validates the cap up-front
 and \code{abort()}s with a clear message rather than letting the vendor
 error leak through. Must be a single non-NA integerish value when
 provided. Default \code{NULL} lets Alpaca pick its server-side default
 (currently 100).}
 
-\item{\code{page_token}}{Character or NULL; cursor for the next page. For
-activities this is the \strong{\code{id} of the last row from the previous
-page} (Alpaca's activity IDs are sortable cursors, not opaque
-tokens). See the "Pagination" section below.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for the next page. For
+activities this is the \strong{\code{id} of the last row from the previous page}
+(Alpaca's activity IDs are sortable cursors, not opaque tokens). See the
+"Pagination" section below.}
 
-\item{\code{category}}{Character or NULL; broad category filter:
+\item{\code{category}}{(scalar<character> | NULL) broad category filter:
 \code{"trade_activity"} or \code{"non_trade_activity"}. Mutually exclusive with
 \code{activity_types}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details. Columns vary by activity type. Includes \code{id} when
-non-empty — the per-activity cursor used for paging (see
-"Pagination"). An empty response returns an empty \code{data.table} with
-no columns.
+(data.table | promise<data.table>) the activities. Columns vary by
+activity type. Includes \code{id} when non-empty — the per-activity cursor
+used for paging (see "Pagination"). An empty response returns an empty
+table with no columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1276,39 +1245,39 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{activity_type}}{Character; activity type (e.g., \code{"FILL"}, \code{"DIV"},
-\code{"TRANS"}, \code{"JNLC"}, \code{"JNLS"}, \code{"CSD"}, \code{"CSW"}).}
+\item{\code{activity_type}}{(scalar<character>) activity type (e.g., \code{"FILL"},
+\code{"DIV"}, \code{"TRANS"}, \code{"JNLC"}, \code{"JNLS"}, \code{"CSD"}, \code{"CSW"}).}
 
-\item{\code{date}}{Character or NULL; filter to a specific date.}
+\item{\code{date}}{(scalar<character> | NULL) filter to a specific date.}
 
-\item{\code{until}}{Character or NULL; only activities before this timestamp.}
+\item{\code{until}}{(scalar<character> | NULL) only activities before this
+timestamp.}
 
-\item{\code{after}}{Character or NULL; only activities after this timestamp.}
+\item{\code{after}}{(scalar<character> | NULL) only activities after this
+timestamp.}
 
-\item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{direction}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{Integer or NULL; max results per page. Alpaca caps
-this at \strong{100} for \verb{/v2/account/activities/\{type\}}; values above
-100 return HTTP 422 server-side. This method validates the cap
-up-front and \code{abort()}s with a clear message rather than letting
-the vendor error leak through. Must be a single non-NA integerish
-value when provided. Default \code{NULL} lets Alpaca pick its
-server-side default (currently 100). For multi-page walks see the
-"Pagination" section on \code{get_activities()} — the id-cursor recipe
-is identical for this method.}
+\item{\code{page_size}}{(scalar<count in [1, 100]> | NULL) max results per page.
+Alpaca caps this at \strong{100} for \verb{/v2/account/activities/\{type\}}; values
+above 100 return HTTP 422 server-side. This method validates the cap
+up-front and \code{abort()}s with a clear message rather than letting the
+vendor error leak through. Must be a single non-NA integerish value when
+provided. Default \code{NULL} lets Alpaca pick its server-side default
+(currently 100). For multi-page walks see the "Pagination" section on
+\code{get_activities()} — the id-cursor recipe is identical for this method.}
 
-\item{\code{page_token}}{Character or NULL; cursor for the next page —
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for the next page —
 the \strong{\code{id} of the last row from the previous page}. See the
-"Pagination" section on \code{get_activities()} for a worked example;
-the recipe is identical for this method.}
+"Pagination" section on \code{get_activities()} for a worked example; the
+recipe is identical for this method.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-activity details. Includes \code{id} when non-empty (the per-activity
-cursor used for paging). An empty response returns an empty
-\code{data.table} with no columns.
+(data.table | promise<data.table>) the activities. Includes \code{id}
+when non-empty (the per-activity cursor used for paging). An empty
+response returns an empty table with no columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1373,14 +1342,9 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{id} (character): Watchlist UUID.
-\item \code{account_id} (character): Account UUID.
-\item \code{name} (character): Watchlist name.
-\item \code{created_at} (POSIXct, UTC): Creation timestamp.
-\item \code{updated_at} (POSIXct, UTC): Last update timestamp.
-}
+(data.table | promise<data.table>) the watchlists. Columns: \code{id},
+\code{account_id}, \code{name} (character); \code{created_at} and \code{updated_at}
+(POSIXct, UTC).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1456,15 +1420,15 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{watchlist_id}}{Character; watchlist UUID.}
+\item{\code{watchlist_id}}{(scalar<character>) watchlist UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) in long
-format with one row per asset in the watchlist. Columns include watchlist
-metadata (\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and
-asset columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
+(data.table | promise<data.table>) a long-format table with one
+row per asset in the watchlist. Columns include watchlist metadata
+(\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and asset
+columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
 \code{asset_name}, \code{asset_attributes}, etc.). \code{asset_attributes} is a
 \verb{;}-separated character column (e.g.
 \code{"fractional_eh_enabled;has_options"}) — \code{NA} when the asset has
@@ -1543,21 +1507,20 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{name}}{Character; watchlist name.}
+\item{\code{name}}{(scalar<character>) watchlist name.}
 
-\item{\code{symbols}}{Character vector or NULL; initial symbols (e.g.,
+\item{\code{symbols}}{(character | NULL) initial symbols (e.g.,
 \code{c("AAPL", "MSFT")}).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same long-format shape as \code{get_watchlist()}: one row per
-asset, with watchlist metadata (\code{id}, \code{account_id}, \code{name},
-\code{created_at}, \code{updated_at}) replicated and asset columns prefixed
-\code{asset_} (\code{asset_id}, \code{asset_symbol}, \code{asset_name},
-\code{asset_attributes}, ...). A watchlist created with no symbols
-returns one row with asset columns set to \code{NA}.
+(data.table | promise<data.table>) the same long-format shape as
+\code{get_watchlist()}: one row per asset, with watchlist metadata (\code{id},
+\code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) replicated and asset
+columns prefixed \code{asset_} (\code{asset_id}, \code{asset_symbol}, \code{asset_name},
+\code{asset_attributes}, ...). A watchlist created with no symbols returns
+one row with asset columns set to \code{NA}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1630,19 +1593,19 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{watchlist_id}}{Character; watchlist UUID.}
+\item{\code{watchlist_id}}{(scalar<character>) watchlist UUID.}
 
-\item{\code{name}}{Character; new watchlist name.}
+\item{\code{name}}{(scalar<character>) new watchlist name.}
 
-\item{\code{symbols}}{Character vector; new full list of symbols (replaces existing).}
+\item{\code{symbols}}{(character) new full list of symbols (replaces existing).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same long-format shape as \code{get_watchlist()}: one row per
-asset (after the modification), watchlist metadata replicated
-on each row, asset columns prefixed \code{asset_}.
+(data.table | promise<data.table>) the same long-format shape as
+\code{get_watchlist()}: one row per asset (after the modification),
+watchlist metadata replicated on each row, asset columns prefixed
+\code{asset_}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1715,16 +1678,15 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{watchlist_id}}{Character; watchlist UUID.}
+\item{\code{watchlist_id}}{(scalar<character>) watchlist UUID.}
 
-\item{\code{symbol}}{Character; ticker symbol to add (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{(scalar<character>) ticker symbol to add (e.g., \code{"AAPL"}).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same long-format shape as \code{get_watchlist()}: one row per
-asset in the updated watchlist.
+(data.table | promise<data.table>) the same long-format shape as
+\code{get_watchlist()}: one row per asset in the updated watchlist.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1782,21 +1744,18 @@ confirmation \code{data.table}:
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{watchlist_id}}{Character; watchlist UUID.}
+\item{\code{watchlist_id}}{(scalar<character>) watchlist UUID.}
 
-\item{\code{symbol}}{Character; ticker symbol to remove.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol to remove.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
-When the API returns the updated watchlist, a single row with watchlist details.
-On 204 No Content, a single confirmation row with columns:
-\itemize{
-\item \code{watchlist_id} (character): The watchlist UUID.
-\item \code{symbol} (character): The removed ticker symbol.
-\item \code{status} (character): \code{"removed"}.
-}
+(data.table | promise<data.table>) the result. When the API
+returns the updated watchlist, a single row with watchlist details. On
+204 No Content, a single confirmation row with \code{watchlist_id}
+(character, the watchlist UUID), \code{symbol} (character, the removed ticker
+symbol) and \code{status} (character, \code{"removed"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1853,16 +1812,14 @@ confirmation \code{data.table}:
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{watchlist_id}}{Character; watchlist UUID.}
+\item{\code{watchlist_id}}{(scalar<character>) watchlist UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
-\itemize{
-\item \code{watchlist_id} (character): The deleted watchlist UUID.
-\item \code{status} (character): \code{"deleted"}.
-}
+(data.table | promise<data.table>) a single-row confirmation with
+\code{watchlist_id} (character, the deleted watchlist UUID) and \code{status}
+(character, \code{"deleted"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

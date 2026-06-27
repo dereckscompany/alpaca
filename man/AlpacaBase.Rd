@@ -78,17 +78,19 @@ Initialise an AlpacaBase Object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
+\item{\code{keys}}{(list) API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.
 Defaults to \code{get_api_keys()}.}
 
-\item{\code{base_url}}{Character; API base URL. Defaults to \code{get_base_url()}.}
+\item{\code{base_url}}{(scalar<character>) API base URL. Defaults to
+\code{get_base_url()}.}
 
-\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
+\item{\code{async}}{(scalar<logical>) if \code{TRUE}, methods return promises. Default
+\code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisible self.
+(class<AlpacaBase>) invisibly, self.
 }
 }
 \if{html}{\out{<hr>}}

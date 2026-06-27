@@ -1,4 +1,20 @@
-# alpaca 0.3.1
+# alpaca 0.4.0
+
+## New features
+
+* **Runtime contract enforcement via [roxyassert](https://github.com/dereckscompany/roxyassert).**
+  Every `@param` and `@return` across the package is now typed in roxyassert's
+  annotation grammar (no prose types remain), and the generated guards are
+  wired in: each function and R6 method validates its inputs with
+  `assert_args_<fn>()` at entry and its result with `assert_return_<fn>()` (the
+  R6 forms `assert_args_<Class>__<method>()` / `assert_return_<Class>__<method>()`).
+  Documented contracts and runtime validation now come from one source —
+  `R/contracts-generated.R`, regenerated on `document()` like `NAMESPACE`. The
+  change adds validation only: no public signature or behaviour changes for any
+  valid input. For the sync-or-async methods the return validator is applied to
+  the resolved value through `connectcore::then_or_now()`, so it runs in both
+  modes (per roxyassert's promise model). `assert` is now an `Imports`
+  dependency; `roxyassert` is used at `document()` time only.
 
 ## Internal
 

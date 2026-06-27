@@ -377,19 +377,21 @@ curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
+\item{\code{keys}}{(list) API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
 
-\item{\code{base_url}}{Character; trading API base URL. Defaults to \code{get_base_url()}.}
+\item{\code{base_url}}{(scalar<character>) trading API base URL. Defaults to
+\code{get_base_url()}.}
 
-\item{\code{data_base_url}}{Character; market data API base URL. Defaults to
-\code{get_data_base_url()}.}
+\item{\code{data_base_url}}{(scalar<character>) market data API base URL. Defaults
+to \code{get_data_base_url()}.}
 
-\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
+\item{\code{async}}{(scalar<logical>) if \code{TRUE}, methods return promises. Default
+\code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisible self.
+(class<AlpacaMarketData>) invisibly, self.
 }
 }
 \if{html}{\out{<hr>}}
@@ -450,62 +452,57 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{symbol}}{(scalar<character>) ticker symbol (e.g., \code{"AAPL"}).}
 
-\item{\code{timeframe}}{Character; bar timeframe. Valid values:
+\item{\code{timeframe}}{(scalar<character>) bar timeframe. Valid values:
 \code{"1Min"} to \code{"59Min"}, \code{"1Hour"} to \code{"23Hour"}, \code{"1Day"}, \code{"1Week"},
 \code{"1Month"} to \code{"12Month"}.}
 
-\item{\code{start}}{Character or NULL; start date/time (RFC-3339 or \code{"YYYY-MM-DD"}).}
+\item{\code{start}}{(scalar<character> | NULL) start date/time (RFC-3339 or
+\code{"YYYY-MM-DD"}).}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars \strong{per page} (1-10000, default
-10000). The method auto-paginates via \code{next_page_token}, so the full
-\code{start}..\code{end} range is returned regardless of \code{limit}; this only sets
-the page size (and thus the number of requests).}
+\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max bars \strong{per page}
+(1-10000, default 10000). The method auto-paginates via
+\code{next_page_token}, so the full \code{start}..\code{end} range is returned
+regardless of \code{limit}; this only sets the page size (and thus the number
+of requests).}
 
-\item{\code{adjustment}}{Character or NULL; price adjustment type. One or a
-comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
+\item{\code{adjustment}}{(scalar<character> | NULL) price adjustment type. One or
+a comma-separated combination of: \code{"raw"}, \code{"split"}, \code{"dividend"},
 \code{"spin-off"}, \code{"all"}. Default \code{"raw"}.}
 
-\item{\code{feed}}{Character or NULL; data feed source:
+\item{\code{feed}}{(scalar<character> | NULL) data feed source:
 \code{"sip"} (default, all US exchanges), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} (default) or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; starting cursor. Normally left NULL —
-auto-pagination begins at \code{start} and follows the cursor itself.}
+\item{\code{page_token}}{(scalar<character> | NULL) starting cursor. Normally left
+NULL — auto-pagination begins at \code{start} and follows the cursor itself.}
 
-\item{\code{asof}}{Character or NULL; as-of date (\code{"YYYY-MM-DD"}) used to
+\item{\code{asof}}{(scalar<character> | NULL) as-of date (\code{"YYYY-MM-DD"}) used to
 identify the underlying entity when symbols have been renamed
 (e.g. FB -> META). Pass \code{"-"} to skip symbol mapping.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency for returned prices.
-Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency for returned
+prices. Default \code{"USD"}.}
 
-\item{\code{max_pages}}{Integer; cap on pages fetched (runaway guard). Default
-1000 — high enough that real requests complete, low enough to bound a
-fat-fingered pull. Pass \code{Inf} for unbounded. If hit while more data
-remains, the partial result is returned with a \code{warning()}.}
+\item{\code{max_pages}}{(scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+(runaway guard). Default 1000 — high enough that real requests complete,
+low enough to bound a fat-fingered pull. Pass \code{Inf} for unbounded. If hit
+while more data remains, the partial result is returned with a
+\code{warning()}.}
 
-\item{\code{sleep}}{Numeric; seconds to pause between page requests (rate-limit
-throttle; sync only). Default 0.3.}
+\item{\code{sleep}}{(scalar<numeric in [0, Inf[>) seconds to pause between page
+requests (rate-limit throttle; sync only). Default 0.3.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Bar timestamp in UTC.
-\item \code{open} (numeric): Opening price.
-\item \code{high} (numeric): Highest price.
-\item \code{low} (numeric): Lowest price.
-\item \code{close} (numeric): Closing price.
-\item \code{volume} (integer): Volume traded.
-\item \code{trade_count} (integer): Number of trades.
-\item \code{vwap} (numeric): Volume-weighted average price.
-}
+(data.table | promise<data.table>) the bars. Columns: \code{timestamp}
+(POSIXct, UTC), \code{open}, \code{high}, \code{low}, \code{close}, \code{vwap} (numeric), and
+\code{volume}, \code{trade_count} (integer).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -581,47 +578,50 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols (max 100).}
+\item{\code{symbols}}{(character) ticker symbols (max 100).}
 
-\item{\code{timeframe}}{Character; bar timeframe (see \code{get_bars()} for valid values).}
+\item{\code{timeframe}}{(scalar<character>) bar timeframe (see \code{get_bars()} for
+valid values).}
 
-\item{\code{start}}{Character or NULL; start date/time.}
+\item{\code{start}}{(scalar<character> | NULL) start date/time.}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars \strong{per page} (1-10000, default
-10000). NOTE: Alpaca applies this as a \emph{total row budget across all
-requested symbols per page} (not per symbol), filling symbols
-alphabetically. The method auto-paginates via \code{next_page_token}, so the
-full range for every symbol is returned regardless of \code{limit}.}
+\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max bars \strong{per page}
+(1-10000, default 10000). NOTE: Alpaca applies this as a \emph{total row
+budget across all requested symbols per page} (not per symbol), filling
+symbols alphabetically. The method auto-paginates via \code{next_page_token},
+so the full range for every symbol is returned regardless of \code{limit}.}
 
-\item{\code{adjustment}}{Character or NULL; one or comma-separated combination
-of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
+\item{\code{adjustment}}{(scalar<character> | NULL) one or comma-separated
+combination of \code{"raw"}, \code{"split"}, \code{"dividend"}, \code{"spin-off"}, \code{"all"}.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"}, \code{"boats"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\code{"boats"}.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; starting cursor. Normally left NULL —
-auto-pagination begins at \code{start} and follows the cursor itself.}
+\item{\code{page_token}}{(scalar<character> | NULL) starting cursor. Normally left
+NULL — auto-pagination begins at \code{start} and follows the cursor itself.}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping (\code{"YYYY-MM-DD"}
-or \code{"-"} to skip).}
+\item{\code{asof}}{(scalar<character> | NULL) as-of date for symbol mapping
+(\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 
-\item{\code{max_pages}}{Integer; cap on pages fetched (runaway guard). Default
-1000; pass \code{Inf} for unbounded. If hit while more data remains, the
-partial result is returned with a \code{warning()}.}
+\item{\code{max_pages}}{(scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+(runaway guard). Default 1000; pass \code{Inf} for unbounded. If hit while
+more data remains, the partial result is returned with a \code{warning()}.}
 
-\item{\code{sleep}}{Numeric; seconds to pause between page requests (rate-limit
-throttle; sync only). Default 0.3.}
+\item{\code{sleep}}{(scalar<numeric in [0, Inf[>) seconds to pause between page
+requests (rate-limit throttle; sync only). Default 0.3.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column prepended plus the same columns as \code{get_bars()}.
+(data.table | promise<data.table>) the bars, with a \code{symbol}
+column prepended plus the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -685,15 +685,15 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"iex"} or \code{"sip"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"iex"} or \code{"sip"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with the
-same columns as \code{get_bars()}, single row.
+(data.table | promise<data.table>) the bar, with the same columns
+as \code{get_bars()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -756,32 +756,25 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per trade} (a single row for this single-trade method).
-Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Trade timestamp.
-\item \code{price} (numeric): Trade price.
-\item \code{size} (integer): Trade size.
-\item \code{exchange} (character): Exchange code.
-\item \code{tape} (character): SIP tape.
-\item \code{id} (integer): Trade ID.
-\item \code{conditions} (character): Semicolon-separated condition codes
-(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}. Recover
-the original vector via
-\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
-the trade carries no condition codes.
-}
+(data.table | promise<data.table>) \strong{one row per trade} (a single
+row for this single-trade method). Columns: \code{timestamp} (POSIXct),
+\code{price} (numeric), \code{size} (integer), \code{exchange} (character), \code{tape}
+(character), \code{id} (integer), and \code{conditions} (character,
+semicolon-separated condition codes e.g. \code{"@;T"}; \code{NA} when the trade
+carries no condition codes). Filter with \code{dt[grepl("T", conditions)]};
+recover the original vector via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -846,33 +839,24 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per quote}. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Quote timestamp.
-\item \code{ask_exchange} (character): Ask exchange code.
-\item \code{ask_price} (numeric): Ask price.
-\item \code{ask_size} (integer): Ask size.
-\item \code{bid_exchange} (character): Bid exchange code.
-\item \code{bid_price} (numeric): Bid price.
-\item \code{bid_size} (integer): Bid size.
-\item \code{conditions} (character): \verb{;}-separated quote condition codes
-(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
-recover the original vector via
-\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
-no conditions were reported.
-\item \code{tape} (character): Tape identifier.
-}
+(data.table | promise<data.table>) \strong{one row per quote}. Columns:
+\code{timestamp} (POSIXct), \code{ask_exchange}, \code{bid_exchange}, \code{tape}
+(character), \code{ask_price}, \code{bid_price} (numeric), \code{ask_size}, \code{bid_size}
+(integer), and \code{conditions} (character, \verb{;}-separated quote condition
+codes e.g. \code{"R;F"}; \code{NA} when no conditions were reported). Filter with
+\code{dt[grepl("R", conditions)]} or recover via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -931,18 +915,19 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-flattened snapshot fields (prefixed by section name).
+(data.table | promise<data.table>) the flattened snapshot fields
+(prefixed by section name).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -999,18 +984,19 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols.}
+\item{\code{symbols}}{(character) ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and the same columns as \code{get_bars()}.
+(data.table | promise<data.table>) the bars, with a \code{symbol}
+column and the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1067,20 +1053,21 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols.}
+\item{\code{symbols}}{(character) ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-leading \code{symbol} column and the same per-trade columns as
-\code{get_latest_trade()}: \code{timestamp}, \code{price}, \code{size}, \code{exchange},
-\code{conditions} (\verb{;}-collapsed), \code{tape}, \code{id}. One row per symbol.
+(data.table | promise<data.table>) the trades, with a leading
+\code{symbol} column and the same per-trade columns as \code{get_latest_trade()}:
+\code{timestamp}, \code{price}, \code{size}, \code{exchange}, \code{conditions} (\verb{;}-collapsed),
+\code{tape}, \code{id}. One row per symbol.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1125,20 +1112,21 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols.}
+\item{\code{symbols}}{(character) ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and quote columns (\code{timestamp}, \verb{ask_*}, \verb{bid_*},
-\code{conditions}, \code{tape}). \code{conditions} is a \verb{;}-separated character
-column following the package's array-collapse convention.
+(data.table | promise<data.table>) the quotes, with a \code{symbol}
+column and quote columns (\code{timestamp}, \verb{ask_*}, \verb{bid_*}, \code{conditions},
+\code{tape}). \code{conditions} is a \verb{;}-separated character column following the
+package's array-collapse convention.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1193,18 +1181,19 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; ticker symbols.}
+\item{\code{symbols}}{(character) ticker symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"delayed_sip"},
-\code{"otc"}, \code{"boats"}, \code{"overnight"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"},
+\code{"delayed_sip"}, \code{"otc"}, \code{"boats"}, \code{"overnight"}.}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with a
-\code{symbol} column and flattened snapshot fields.
+(data.table | promise<data.table>) the snapshots, with a \code{symbol}
+column and flattened snapshot fields.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1274,41 +1263,36 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{start}}{Character or NULL; start date/time.}
+\item{\code{start}}{(scalar<character> | NULL) start date/time.}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
+\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max trades (1-10000,
+default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"}, \code{"otc"},
 \code{"boats"}.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+\item{\code{asof}}{(scalar<character> | NULL) as-of date for symbol mapping
 (\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per trade}. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Trade timestamp.
-\item \code{price} (numeric): Trade price.
-\item \code{size} (integer): Trade size.
-\item \code{exchange} (character): Exchange code.
-\item \code{tape} (character): SIP tape.
-\item \code{id} (integer): Trade ID.
-\item \code{conditions} (character): Semicolon-separated condition codes
-(e.g. \code{"@;T"}). Filter with \code{dt[grepl("T", conditions)]}.
-}
+(data.table | promise<data.table>) \strong{one row per trade}. Columns:
+\code{timestamp} (POSIXct), \code{price} (numeric), \code{size} (integer), \code{exchange}
+(character), \code{tape} (character), \code{id} (integer), and \code{conditions}
+(character, semicolon-separated condition codes e.g. \code{"@;T"}). Filter
+with \code{dt[grepl("T", conditions)]}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1365,46 +1349,38 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; ticker symbol.}
+\item{\code{symbol}}{(scalar<character>) ticker symbol.}
 
-\item{\code{start}}{Character or NULL; start date/time.}
+\item{\code{start}}{(scalar<character> | NULL) start date/time.}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max quotes (1-10000, default 1000).}
+\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max quotes (1-10000,
+default 1000).}
 
-\item{\code{feed}}{Character or NULL; \code{"sip"} (default), \code{"iex"}, \code{"otc"},
+\item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"}, \code{"otc"},
 \code{"boats"}.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{asof}}{Character or NULL; as-of date for symbol mapping
+\item{\code{asof}}{(scalar<character> | NULL) as-of date for symbol mapping
 (\code{"YYYY-MM-DD"} or \code{"-"} to skip).}
 
-\item{\code{currency}}{Character or NULL; ISO 4217 currency. Default \code{"USD"}.}
+\item{\code{currency}}{(scalar<character> | NULL) ISO 4217 currency. Default
+\code{"USD"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per quote}. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Quote timestamp.
-\item \code{ask_exchange} (character): Ask exchange code.
-\item \code{ask_price} (numeric): Ask price.
-\item \code{ask_size} (integer): Ask size.
-\item \code{bid_exchange} (character): Bid exchange code.
-\item \code{bid_price} (numeric): Bid price.
-\item \code{bid_size} (integer): Bid size.
-\item \code{conditions} (character): \verb{;}-separated quote condition codes
-(e.g. \code{"R;F"}). Filter with \code{dt[grepl("R", conditions)]} or
-recover the original vector via
-\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}. \code{NA} when
-no conditions were reported.
-\item \code{tape} (character): Tape identifier.
-}
+(data.table | promise<data.table>) \strong{one row per quote}. Columns:
+\code{timestamp} (POSIXct), \code{ask_exchange}, \code{bid_exchange}, \code{tape}
+(character), \code{ask_price}, \code{bid_price} (numeric), \code{ask_size}, \code{bid_size}
+(integer), and \code{conditions} (character, \verb{;}-separated quote condition
+codes e.g. \code{"R;F"}; \code{NA} when no conditions were reported). Filter with
+\code{dt[grepl("R", conditions)]} or recover via
+\code{strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]}.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1464,36 +1440,27 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{status}}{Character or NULL; filter by status (\code{"active"}, \code{"inactive"}).}
+\item{\code{status}}{(scalar<character> | NULL) filter by status (\code{"active"},
+\code{"inactive"}).}
 
-\item{\code{asset_class}}{Character or NULL; filter by class (\code{"us_equity"},
-\code{"us_option"}, \code{"crypto"}).}
+\item{\code{asset_class}}{(scalar<character> | NULL) filter by class
+(\code{"us_equity"}, \code{"us_option"}, \code{"crypto"}).}
 
-\item{\code{exchange}}{Character or NULL; filter by exchange (\code{"AMEX"}, \code{"ARCA"},
-\code{"BATS"}, \code{"NYSE"}, \code{"NASDAQ"}, \code{"NYSEARCA"}, \code{"OTC"}).}
+\item{\code{exchange}}{(scalar<character> | NULL) filter by exchange (\code{"AMEX"},
+\code{"ARCA"}, \code{"BATS"}, \code{"NYSE"}, \code{"NASDAQ"}, \code{"NYSEARCA"}, \code{"OTC"}).}
 
-\item{\code{attributes}}{Character or NULL; comma-separated attribute filters.
-Returns assets matching any of the listed attributes. Supported values:
-\code{"ptp_no_exception"}, \code{"ptp_with_exception"}, \code{"ipo"}, \code{"has_options"},
-\code{"options_late_close"}, \code{"fractional_eh_enabled"}, \code{"overnight_tradable"},
-\code{"overnight_halted"}.}
+\item{\code{attributes}}{(scalar<character> | NULL) comma-separated attribute
+filters. Returns assets matching any of the listed attributes. Supported
+values: \code{"ptp_no_exception"}, \code{"ptp_with_exception"}, \code{"ipo"},
+\code{"has_options"}, \code{"options_late_close"}, \code{"fractional_eh_enabled"},
+\code{"overnight_tradable"}, \code{"overnight_halted"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{id} (character): Asset UUID.
-\item \code{class} (character): Asset class.
-\item \code{exchange} (character): Exchange.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{name} (character): Company name.
-\item \code{status} (character): Active/inactive.
-\item \code{tradable} (logical): Whether the asset is tradable.
-\item \code{marginable} (logical): Whether margin is available.
-\item \code{shortable} (logical): Whether short selling is available.
-\item \code{fractionable} (logical): Whether fractional shares are available.
-}
+(data.table | promise<data.table>) the assets. Columns: \code{id},
+\code{class}, \code{exchange}, \code{symbol}, \code{name}, \code{status} (character); \code{tradable},
+\code{marginable}, \code{shortable}, \code{fractionable} (logical).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1558,13 +1525,13 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol_or_id}}{Character; ticker symbol or asset UUID.}
+\item{\code{symbol_or_id}}{(scalar<character>) ticker symbol or asset UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{get_assets()}, single row.
+(data.table | promise<data.table>) the asset, with the same
+columns as \code{get_assets()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1622,26 +1589,20 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{start}}{Character or NULL; start date (\code{"YYYY-MM-DD"}).}
+\item{\code{start}}{(scalar<character> | NULL) start date (\code{"YYYY-MM-DD"}).}
 
-\item{\code{end}}{Character or NULL; end date (\code{"YYYY-MM-DD"}).}
+\item{\code{end}}{(scalar<character> | NULL) end date (\code{"YYYY-MM-DD"}).}
 
-\item{\code{date_type}}{Character or NULL; one of \code{"TRADING"} or \code{"SETTLEMENT"}.
-Determines whether \code{start}/\code{end} are interpreted as trading dates
-(default) or settlement dates.}
+\item{\code{date_type}}{(scalar<character> | NULL) one of \code{"TRADING"} or
+\code{"SETTLEMENT"}. Determines whether \code{start}/\code{end} are interpreted as
+trading dates (default) or settlement dates.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{date} (Date): Trading date.
-\item \code{open} (POSIXct, \code{America/New_York}): Regular-hours market open.
-\item \code{close} (POSIXct, \code{America/New_York}): Regular-hours market close.
-\item \code{session_open} (POSIXct, \code{America/New_York}): Extended-hours session open.
-\item \code{session_close} (POSIXct, \code{America/New_York}): Extended-hours session close.
-\item \code{settlement_date} (Date): Settlement date for trades executed on \code{date}.
-}
+(data.table | promise<data.table>) the calendar. Columns: \code{date}
+and \code{settlement_date} (Date); \code{open}, \code{close}, \code{session_open},
+\code{session_close} (POSIXct, \code{America/New_York}).
 
 Alpaca's API returns market times without an offset; per the
 Alpaca docs they are Eastern Time. We localise to
@@ -1701,13 +1662,9 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{timestamp} (POSIXct, \code{America/New_York}): Current server timestamp.
-\item \code{is_open} (logical): Whether the market is currently open.
-\item \code{next_open} (POSIXct, \code{America/New_York}): Next market open time.
-\item \code{next_close} (POSIXct, \code{America/New_York}): Next market close time.
-}
+(data.table | promise<data.table>) the clock. Columns:
+\code{timestamp}, \code{next_open}, \code{next_close} (POSIXct, \code{America/New_York}) and
+\code{is_open} (logical).
 
 The Alpaca clock endpoint returns ISO-8601 timestamps with an
 explicit offset; we parse the instant exactly and display it in
@@ -1795,42 +1752,31 @@ as a follow-up.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{ca_types}}{Character; comma-separated corporate action types. Valid
-values: \code{"dividend"}, \code{"merger"}, \code{"spinoff"}, \code{"split"}.}
+\item{\code{ca_types}}{(scalar<character>) comma-separated corporate action
+types. Valid values: \code{"dividend"}, \code{"merger"}, \code{"spinoff"}, \code{"split"}.}
 
-\item{\code{since}}{Character; start date (\code{"YYYY-MM-DD"}). Required.}
+\item{\code{since}}{(scalar<character>) start date (\code{"YYYY-MM-DD"}). Required.}
 
-\item{\code{until}}{Character; end date (\code{"YYYY-MM-DD"}). Required.}
+\item{\code{until}}{(scalar<character>) end date (\code{"YYYY-MM-DD"}). Required.}
 
-\item{\code{symbol}}{Character or NULL; filter by ticker symbol.}
+\item{\code{symbol}}{(scalar<character> | NULL) filter by ticker symbol.}
 
-\item{\code{cusip}}{Character or NULL; filter by CUSIP.}
+\item{\code{cusip}}{(scalar<character> | NULL) filter by CUSIP.}
 
-\item{\code{date_type}}{Character or NULL; which date field \code{since}/\code{until} refer
-to. Alpaca's documented / SDK values are
-\code{"declaration_date"}, \code{"ex_date"}, \code{"record_date"}, \code{"payable_date"}
-(default server-side: \code{"ex_date"}). Validated client-side; invalid
-values abort before the request.}
+\item{\code{date_type}}{(scalar<character> | NULL) which date field \code{since}/\code{until}
+refer to. Alpaca's documented / SDK values are \code{"declaration_date"},
+\code{"ex_date"}, \code{"record_date"}, \code{"payable_date"} (default server-side:
+\code{"ex_date"}). Validated client-side; invalid values abort before the
+request.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{id} (character): Announcement UUID.
-\item \code{corporate_action_id} (character): Corporate action ID.
-\item \code{ca_type} (character): Action type.
-\item \code{ca_sub_type} (character): Action sub-type.
-\item \code{initiating_symbol} (character): Symbol initiating the action.
-\item \code{target_symbol} (character): Target symbol (for mergers).
-\item \code{declaration_date} (Date): Declaration date.
-\item \code{ex_date} (Date): Ex-date.
-\item \code{record_date} (Date): Record date.
-\item \code{payable_date} (Date): Payable date.
-\item \code{cash} (character): Cash amount (for dividends).
-\item \code{old_rate} (character): Old rate (for splits).
-\item \code{new_rate} (character): New rate (for splits).
-}
+(data.table | promise<data.table>) the announcements. Columns:
+\code{id}, \code{corporate_action_id}, \code{ca_type}, \code{ca_sub_type},
+\code{initiating_symbol}, \code{target_symbol}, \code{cash}, \code{old_rate}, \code{new_rate}
+(character); \code{declaration_date}, \code{ex_date}, \code{record_date},
+\code{payable_date} (Date).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1918,56 +1864,42 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character or NULL; comma-separated symbols to filter
-(e.g., \code{"AAPL,MSFT"}).}
+\item{\code{symbols}}{(character | NULL) comma-separated symbols to filter
+(e.g., \code{"AAPL,MSFT"}), or a character vector of symbols.}
 
-\item{\code{start}}{Character or NULL; start date/time (RFC-3339).}
+\item{\code{start}}{(scalar<character> | NULL) start date/time (RFC-3339).}
 
-\item{\code{end}}{Character or NULL; end date/time (RFC-3339).}
+\item{\code{end}}{(scalar<character> | NULL) end date/time (RFC-3339).}
 
-\item{\code{limit}}{Integer or NULL; max articles (default 10, max 50).}
+\item{\code{limit}}{(scalar<count in [1, Inf[> | NULL) max articles (default 10,
+max 50 server-side).}
 
-\item{\code{sort}}{Character or NULL; \code{"desc"} (default, newest first) or \code{"asc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"desc"} (default, newest first) or
+\code{"asc"}.}
 
-\item{\code{include_content}}{Logical or NULL; if \code{TRUE}, include full article content.}
+\item{\code{include_content}}{(scalar<logical> | NULL) if \code{TRUE}, include full
+article content.}
 
-\item{\code{exclude_contentless}}{Logical or NULL; if \code{TRUE}, exclude articles
-without content.}
+\item{\code{exclude_contentless}}{(scalar<logical> | NULL) if \code{TRUE}, exclude
+articles without content.}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per article}. Columns:
-\itemize{
-\item \code{id} (integer): Article ID.
-\item \code{headline} (character): Article headline.
-\item \code{author} (character): Author name.
-\item \code{source} (character): News source.
-\item \code{summary} (character): Article summary.
-\item \code{url} (character): Article URL.
-\item \code{created_at} (POSIXct, UTC): Publication timestamp.
-\item \code{updated_at} (POSIXct, UTC): Last update timestamp.
-\item \code{symbols} (character): Semicolon-separated related tickers, e.g.
-\code{"AAPL;MSFT"}. Filter with \code{dt[grepl("AAPL", symbols)]}; recover
-the original vector via
-\code{strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]}.
-\item \code{image_sizes} (character): Semicolon-separated image size labels
-parallel to \code{image_urls}. \code{NA} when the article has no images.
-When some images on an article report a \code{size} and others omit
-it, the missing values become \strong{empty tokens} (e.g.
-\code{"large;"}) — never the literal string \code{"NA"} — so a real
-value is unambiguous from a missing one.
-\item \code{image_urls} (character): Semicolon-separated image URLs.
-The join is \strong{lossless} for any input URL: each URL is
-double-encoded (\verb{\%} → \verb{\%25} first, then \verb{;} → \verb{\%3B}) before
-joining, so a single pass of \code{URLdecode()} after splitting
-recovers the original string even when it already contained
-\verb{\%3B} or other percent-escapes. Recover with
+(data.table | promise<data.table>) \strong{one row per article}.
+Columns: \code{id} (integer); \code{headline}, \code{author}, \code{source}, \code{summary},
+\code{url} (character); \code{created_at}, \code{updated_at} (POSIXct, UTC); \code{symbols}
+(character, \verb{;}-separated related tickers, e.g. \code{"AAPL;MSFT"});
+\code{image_sizes} (character, \verb{;}-separated image size labels parallel to
+\code{image_urls}, \code{NA} when the article has no images — missing per-image
+sizes become empty tokens e.g. \code{"large;"}, never the literal \code{"NA"});
+and \code{image_urls} (character, \verb{;}-separated image URLs, losslessly
+double-encoded \verb{\%} → \verb{\%25} then \verb{;} → \verb{\%3B} so a single \code{URLdecode()}
+after splitting recovers the original). Filter symbols with
+\code{dt[grepl("AAPL", symbols)]}; recover URLs with
 \code{vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))}.
-}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -2038,25 +1970,18 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character vector; crypto symbols (e.g. \code{"BTC/USD"}).}
+\item{\code{symbols}}{(character) crypto symbols (e.g. \code{"BTC/USD"}).}
 
-\item{\code{loc}}{Character; location code, \code{"us"} (default).}
+\item{\code{loc}}{(scalar<character>) location code, \code{"us"} (default).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-one row per \verb{(symbol, side, level)}. Columns:
-\itemize{
-\item \code{symbol} (character): Crypto symbol.
-\item \code{side} (character): \code{"bid"} or \code{"ask"}.
-\item \code{level} (integer): 1-based depth within the side. \code{level = 1} is
-top of book (best bid / best ask); \code{level = 2} is the next-best,
-and so on. Ordering is preserved from the Alpaca response.
-\item \code{price} (numeric): Price at this level.
-\item \code{size} (numeric): Quantity at this level.
-\item \code{timestamp} (POSIXct): Orderbook timestamp.
-}
+(data.table | promise<data.table>) one row per
+\verb{(symbol, side, level)}. Columns: \code{symbol}, \code{side} (\code{"bid"} or \code{"ask"})
+(character); \code{level} (integer, 1-based depth within the side — \code{level = 1}
+is top of book, ordering preserved from the Alpaca response); \code{price},
+\code{size} (numeric); and \code{timestamp} (POSIXct).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -2117,19 +2042,17 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{by}}{Character or NULL; ranking metric: \code{"volume"} (default) or \code{"trades"}.}
+\item{\code{by}}{(scalar<character> | NULL) ranking metric: \code{"volume"} (default)
+or \code{"trades"}.}
 
-\item{\code{top}}{Integer or NULL; number of results to return (default 10).}
+\item{\code{top}}{(scalar<count in [1, Inf[> | NULL) number of results to return
+(default 10).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{volume} (numeric): Trading volume.
-\item \code{trade_count} (numeric): Number of trades.
-}
+(data.table | promise<data.table>) the most active stocks.
+Columns: \code{symbol} (character); \code{volume}, \code{trade_count} (numeric).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -2194,20 +2117,17 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{market_type}}{Character; \code{"stocks"} (default) or \code{"crypto"}.}
+\item{\code{market_type}}{(scalar<character>) \code{"stocks"} (default) or \code{"crypto"}.}
 
-\item{\code{top}}{Integer or NULL; number of results per direction (default 10).}
+\item{\code{top}}{(scalar<count in [1, Inf[> | NULL) number of results per
+direction (default 10).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with columns:
-\itemize{
-\item \code{symbol} (character): Ticker symbol.
-\item \code{percent_change} (numeric): Percentage change.
-\item \code{change} (numeric): Absolute price change.
-\item \code{price} (numeric): Current price.
-}
+(data.table | promise<data.table>) the movers. Columns: \code{symbol}
+(character); \code{percent_change}, \code{change}, \code{price} (numeric); plus a
+\code{direction} column (\code{"gainer"} / \code{"loser"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

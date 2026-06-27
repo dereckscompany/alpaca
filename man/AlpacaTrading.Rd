@@ -278,82 +278,77 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character or NULL; ticker symbol (e.g., \code{"AAPL"}). Required
-for all order classes except \code{"mleg"} (multi-leg options), where each
-leg carries its own symbol.}
+\item{\code{symbol}}{(scalar<character> | NULL) ticker symbol (e.g., \code{"AAPL"}).
+Required for all order classes except \code{"mleg"} (multi-leg options),
+where each leg carries its own symbol.}
 
-\item{\code{side}}{Character or NULL; \code{"buy"} or \code{"sell"}. Required for all
-order classes except \code{"mleg"}, where each leg carries its own side.}
+\item{\code{side}}{(scalar<character> | NULL) \code{"buy"} or \code{"sell"}. Required for
+all order classes except \code{"mleg"}, where each leg carries its own side.}
 
-\item{\code{type}}{Character; order type: \code{"market"}, \code{"limit"}, \code{"stop"},
-\code{"stop_limit"}, \code{"trailing_stop"}.}
+\item{\code{type}}{(scalar<character>) order type: \code{"market"}, \code{"limit"},
+\code{"stop"}, \code{"stop_limit"}, \code{"trailing_stop"}.}
 
-\item{\code{time_in_force}}{Character; \code{"day"}, \code{"gtc"}, \code{"opg"}, \code{"cls"}, \code{"ioc"}, \code{"fok"}.}
+\item{\code{time_in_force}}{(scalar<character>) \code{"day"}, \code{"gtc"}, \code{"opg"},
+\code{"cls"}, \code{"ioc"}, \code{"fok"}.}
 
-\item{\code{qty}}{Numeric or NULL; number of shares. Mutually exclusive with \code{notional}.}
+\item{\code{qty}}{(scalar<numeric> | NULL) number of shares. Mutually exclusive
+with \code{notional}.}
 
-\item{\code{notional}}{Numeric or NULL; dollar amount. Market/day orders only.}
+\item{\code{notional}}{(scalar<numeric> | NULL) dollar amount. Market/day orders
+only.}
 
-\item{\code{limit_price}}{Numeric or NULL; limit price. Required for \code{"limit"} and
-\code{"stop_limit"} orders.}
+\item{\code{limit_price}}{(scalar<numeric> | NULL) limit price. Required for
+\code{"limit"} and \code{"stop_limit"} orders.}
 
-\item{\code{stop_price}}{Numeric or NULL; stop trigger price. Required for \code{"stop"} and
-\code{"stop_limit"} orders.}
+\item{\code{stop_price}}{(scalar<numeric> | NULL) stop trigger price. Required for
+\code{"stop"} and \code{"stop_limit"} orders.}
 
-\item{\code{trail_price}}{Numeric or NULL; trailing stop dollar offset.}
+\item{\code{trail_price}}{(scalar<numeric> | NULL) trailing stop dollar offset.}
 
-\item{\code{trail_percent}}{Numeric or NULL; trailing stop percentage offset.}
+\item{\code{trail_percent}}{(scalar<numeric> | NULL) trailing stop percentage
+offset.}
 
-\item{\code{extended_hours}}{Logical or NULL; allow pre/post market execution.}
+\item{\code{extended_hours}}{(scalar<logical> | NULL) allow pre/post market
+execution.}
 
-\item{\code{client_order_id}}{Character or NULL; unique client order ID (max 128 chars).}
+\item{\code{client_order_id}}{(scalar<character> | NULL) unique client order ID
+(max 128 chars).}
 
-\item{\code{order_class}}{Character or NULL; \code{"simple"}, \code{"bracket"}, \code{"oco"}, \code{"oto"}.}
+\item{\code{order_class}}{(scalar<character> | NULL) \code{"simple"}, \code{"bracket"},
+\code{"oco"}, \code{"oto"}.}
 
-\item{\code{take_profit}}{List or NULL; \code{list(limit_price = ...)} for bracket orders.}
+\item{\code{take_profit}}{(list | NULL) \code{list(limit_price = ...)} for bracket
+orders.}
 
-\item{\code{stop_loss}}{List or NULL; \code{list(stop_price = ..., limit_price = ...)} for bracket orders.}
+\item{\code{stop_loss}}{(list | NULL) \code{list(stop_price = ..., limit_price = ...)}
+for bracket orders.}
 
-\item{\code{position_intent}}{Character or NULL; \code{"buy_to_open"}, \code{"buy_to_close"},
-\code{"sell_to_open"}, \code{"sell_to_close"}.}
+\item{\code{position_intent}}{(scalar<character> | NULL) \code{"buy_to_open"},
+\code{"buy_to_close"}, \code{"sell_to_open"}, \code{"sell_to_close"}.}
 
-\item{\code{legs}}{List or NULL; list of leg objects (max 4) for multi-leg
-options strategies. Required when \code{order_class = "mleg"}.}
+\item{\code{legs}}{(list | NULL) leg objects (max 4) for multi-leg options
+strategies. Required when \code{order_class = "mleg"}.}
 
-\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+\item{\code{advanced_instructions}}{(list | NULL) routing instructions for
 Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
+(data.table | promise<data.table>) the order(s).
 A simple order returns a single row. A \code{bracket} / \code{oco} / \code{oto} /
 \code{mleg} order returns the parent row plus one row per leg — see the
 "Multi-leg orders" section in the README and \code{vignette("data-shapes")}
-for the parent + leg layout. Columns:
-\itemize{
-\item \code{id} (character): Order UUID.
-\item \code{client_order_id} (character): Client order ID.
-\item \code{symbol} (character): Ticker symbol.
-\item \code{side} (character): \code{"buy"} or \code{"sell"}.
-\item \code{type} (character): Order type.
-\item \code{time_in_force} (character): Time in force.
-\item \code{status} (character): Order status (e.g., \code{"accepted"}, \code{"new"}, \code{"filled"}).
-\item \code{qty} (character): Requested quantity.
-\item \code{filled_qty} (character): Quantity filled so far.
-\item \code{filled_avg_price} (character): Average fill price.
-\item \code{limit_price} (character): Limit price (if set).
-\item \code{stop_price} (character): Stop price (if set).
-\item \code{created_at} (POSIXct, UTC): Order creation timestamp. Other
-order timestamps — \code{updated_at}, \code{submitted_at}, \code{filled_at},
-\code{expired_at}, \code{canceled_at}, \code{failed_at}, \code{replaced_at} —
-are likewise parsed to POSIXct (UTC) when present.
-\item \code{leg_index} (integer): \code{NA} on the parent row; \verb{1..N} on each leg.
-\item \code{parent_order_id} (character): \code{NA} on the parent row; the parent's
-\code{id} on each leg. Use \code{dt[is.na(parent_order_id)]} to keep just
-parent rows, or \code{dt[parent_order_id == "<uuid>"]} for the legs of
-one bracket.
-}
+for the parent + leg layout. Columns include \code{id}, \code{client_order_id},
+\code{symbol}, \code{side}, \code{type}, \code{time_in_force}, \code{status}, \code{qty},
+\code{filled_qty}, \code{filled_avg_price}, \code{limit_price} and \code{stop_price}
+(all character); the order timestamps \code{created_at}, \code{updated_at},
+\code{submitted_at}, \code{filled_at}, \code{expired_at}, \code{canceled_at}, \code{failed_at}
+and \code{replaced_at} (POSIXct, UTC) when present; \code{leg_index} (integer,
+\code{NA} on the parent row, \verb{1..N} on each leg); and \code{parent_order_id}
+(character, \code{NA} on the parent row, the parent's \code{id} on each leg). Use
+\code{dt[is.na(parent_order_id)]} to keep just parent rows, or
+\code{dt[parent_order_id == "<uuid>"]} for the legs of one bracket.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -471,39 +466,44 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{status}}{Character or NULL; \code{"open"}, \code{"closed"}, \code{"all"}. Default \code{"open"}.}
+\item{\code{status}}{(scalar<character> | NULL) \code{"open"}, \code{"closed"}, \code{"all"}.
+Default \code{"open"}.}
 
-\item{\code{limit}}{Integer or NULL; max orders (default 50, max 500).}
+\item{\code{limit}}{(scalar<count in [1, Inf[> | NULL) max orders (default 50,
+max 500).}
 
-\item{\code{after}}{Character or NULL; only orders submitted after this timestamp.}
+\item{\code{after}}{(scalar<character> | NULL) only orders submitted after this
+timestamp.}
 
-\item{\code{until}}{Character or NULL; only orders submitted before this timestamp.}
+\item{\code{until}}{(scalar<character> | NULL) only orders submitted before this
+timestamp.}
 
-\item{\code{direction}}{Character or NULL; \code{"asc"} or \code{"desc"}.}
+\item{\code{direction}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{nested}}{Logical or NULL; roll up multi-leg orders under \code{legs}.}
+\item{\code{nested}}{(scalar<logical> | NULL) roll up multi-leg orders under
+\code{legs}.}
 
-\item{\code{symbols}}{Character or NULL; comma-separated symbol filter.}
+\item{\code{symbols}}{(scalar<character> | NULL) comma-separated symbol filter.}
 
-\item{\code{side}}{Character or NULL; filter by side.}
+\item{\code{side}}{(scalar<character> | NULL) filter by side.}
 
-\item{\code{asset_class}}{Character or NULL; comma-separated asset classes
-(e.g., \code{"us_equity"}, \code{"us_option"}, \code{"crypto"}). With \code{"us_option"},
-\code{symbols} can filter by underlying.}
+\item{\code{asset_class}}{(scalar<character> | NULL) comma-separated asset
+classes (e.g., \code{"us_equity"}, \code{"us_option"}, \code{"crypto"}). With
+\code{"us_option"}, \code{symbols} can filter by underlying.}
 
-\item{\code{before_order_id}}{Character or NULL; return orders submitted before
-this order ID. Mutually exclusive with \code{after_order_id}. Do not combine
-with \code{after}/\code{until}.}
+\item{\code{before_order_id}}{(scalar<character> | NULL) return orders submitted
+before this order ID. Mutually exclusive with \code{after_order_id}. Do not
+combine with \code{after}/\code{until}.}
 
-\item{\code{after_order_id}}{Character or NULL; return orders submitted after
-this order ID. Mutually exclusive with \code{before_order_id}. Do not
+\item{\code{after_order_id}}{(scalar<character> | NULL) return orders submitted
+after this order ID. Mutually exclusive with \code{before_order_id}. Do not
 combine with \code{after}/\code{until}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{add_order()} return value.
+(data.table | promise<data.table>) the orders, with the same
+columns as \code{add_order()} return value.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -588,9 +588,9 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{order_id}}{Character; order UUID.}
+\item{\code{order_id}}{(scalar<character>) order UUID.}
 
-\item{\code{nested}}{Logical or NULL; include leg orders. When \code{TRUE}, a
+\item{\code{nested}}{(scalar<logical> | NULL) include leg orders. When \code{TRUE}, a
 bracket / OCO / OTO / multi-leg order returns the parent row plus
 one row per leg, distinguished by \code{leg_index} (\code{NA} on parent,
 \verb{1..N} on legs) and \code{parent_order_id} (\code{NA} on parent, parent's
@@ -599,8 +599,9 @@ one row per leg, distinguished by \code{leg_index} (\code{NA} on parent,
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
-with the same columns as \code{add_order()}. Multi-row when \code{nested = TRUE} and the order has legs; otherwise single row.
+(data.table | promise<data.table>) the order, with the same
+columns as \code{add_order()}. Multi-row when \code{nested = TRUE} and the order
+has legs; otherwise single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -686,16 +687,16 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{client_order_id}}{Character; the client order ID (max 128 chars).}
+\item{\code{client_order_id}}{(scalar<character>) the client order ID (max 128
+chars).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
-with the same columns as \code{add_order()}. A simple order returns a
-single row; a bracket / OCO / OTO / multi-leg order returns the
-parent row plus one row per leg, distinguished by \code{leg_index}
-and \code{parent_order_id}.
+(data.table | promise<data.table>) the order, with the same
+columns as \code{add_order()}. A simple order returns a single row; a
+bracket / OCO / OTO / multi-leg order returns the parent row plus one
+row per leg, distinguished by \code{leg_index} and \code{parent_order_id}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -806,31 +807,32 @@ Verified: 2026-05-22
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{order_id}}{Character; order UUID to replace.}
+\item{\code{order_id}}{(scalar<character>) order UUID to replace.}
 
-\item{\code{qty}}{Numeric or NULL; new quantity. Mutually exclusive with \code{notional}.}
+\item{\code{qty}}{(scalar<numeric> | NULL) new quantity. Mutually exclusive with
+\code{notional}.}
 
-\item{\code{time_in_force}}{Character or NULL; new time in force.}
+\item{\code{time_in_force}}{(scalar<character> | NULL) new time in force.}
 
-\item{\code{limit_price}}{Numeric or NULL; new limit price.}
+\item{\code{limit_price}}{(scalar<numeric> | NULL) new limit price.}
 
-\item{\code{stop_price}}{Numeric or NULL; new stop price.}
+\item{\code{stop_price}}{(scalar<numeric> | NULL) new stop price.}
 
-\item{\code{trail}}{Numeric or NULL; new trail value (for \code{type = "trailing_stop"}).}
+\item{\code{trail}}{(scalar<numeric> | NULL) new trail value (for
+\code{type = "trailing_stop"}).}
 
-\item{\code{client_order_id}}{Character or NULL; new client order ID.}
+\item{\code{client_order_id}}{(scalar<character> | NULL) new client order ID.}
 
-\item{\code{notional}}{Numeric or NULL; new notional (dollar) amount. Only valid
-for IPO indications of interest (\code{asset_class = "ipo"}).}
+\item{\code{notional}}{(scalar<numeric> | NULL) new notional (dollar) amount.
+Only valid for IPO indications of interest (\code{asset_class = "ipo"}).}
 
-\item{\code{advanced_instructions}}{List or NULL; routing instructions for
+\item{\code{advanced_instructions}}{(list | NULL) routing instructions for
 Alpaca Elite Smart Router.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the replacement order details.
+(data.table | promise<data.table>) the replacement order details.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -888,16 +890,14 @@ confirmation \code{data.table}:
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{order_id}}{Character; order UUID to cancel.}
+\item{\code{order_id}}{(scalar<character>) order UUID to cancel.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}), single row with columns:
-\itemize{
-\item \code{order_id} (character): The cancelled order UUID.
-\item \code{status} (character): \code{"cancelled"}.
-}
+(data.table | promise<data.table>) a single-row confirmation with
+\code{order_id} (character, the cancelled order UUID) and \code{status}
+(character, \code{"cancelled"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -985,12 +985,10 @@ Verified: 2026-05-22
 }
 
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
-When orders are cancelled, one row per order with full order details.
-When no open orders exist, a single confirmation row with columns:
-\itemize{
-\item \code{status} (character): \code{"cancelled"}.
-}
+(data.table | promise<data.table>) the cancelled orders. When
+orders are cancelled, one row per order with full order details. When
+no open orders exist, a single confirmation row with a \code{status}
+(character) column set to \code{"cancelled"}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

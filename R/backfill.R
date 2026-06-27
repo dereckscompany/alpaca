@@ -7,19 +7,22 @@
 #' saving results to a CSV file. Supports resuming interrupted downloads by
 #' reading existing data and skipping completed symbol-timeframe combinations.
 #'
-#' @param symbols Character vector; ticker symbols (e.g., `c("AAPL", "MSFT")`).
-#' @param timeframes Character vector; bar timeframes (e.g., `c("1Day", "1Hour")`).
+#' @param symbols (character) ticker symbols (e.g., `c("AAPL", "MSFT")`).
+#' @param timeframes (character) bar timeframes (e.g., `c("1Day", "1Hour")`).
 #'   See `alpaca_timeframe_map` for valid values.
-#' @param start Character or POSIXct; start date/time.
-#' @param end Character or POSIXct; end date/time. Defaults to `Sys.time()`.
-#' @param path Character; file path for CSV output. Default `"alpaca_bars.csv"`.
-#' @param adjustment Character; price adjustment type. Default `"raw"`.
-#' @param feed Character or NULL; data feed (`"iex"` or `"sip"`).
-#' @param sleep Numeric; seconds to pause between requests (rate limiting).
-#'   Default `0.25`.
-#' @param keys List; API credentials. Defaults to [get_api_keys()].
-#' @param data_base_url Character; market data base URL. Defaults to [get_data_base_url()].
-#' @return `data.table` with all downloaded data (invisibly). Also writes to CSV.
+#' @param start (POSIXct | character) start date/time.
+#' @param end (POSIXct | character) end date/time. Defaults to `Sys.time()`.
+#' @param path (scalar<character>) file path for CSV output. Default
+#'   `"alpaca_bars.csv"`.
+#' @param adjustment (scalar<character>) price adjustment type. Default `"raw"`.
+#' @param feed (scalar<character> | NULL) data feed (`"iex"` or `"sip"`).
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between requests
+#'   (rate limiting). Default `0.25`.
+#' @param keys (list) API credentials. Defaults to [get_api_keys()].
+#' @param data_base_url (scalar<character>) market data base URL. Defaults to
+#'   [get_data_base_url()].
+#' @return (class<data.table>) all downloaded data (invisibly). Also writes to
+#'   CSV.
 #'
 #'   Per-combo failures are surfaced as warnings during the run (one
 #'   `rlang::warn()` per failed `(symbol, timeframe)` pair, with the
@@ -59,6 +62,18 @@ alpaca_backfill_bars <- function(
   keys = get_api_keys(),
   data_base_url = get_data_base_url()
 ) {
+  assert_args_alpaca_backfill_bars(
+    symbols,
+    timeframes,
+    start,
+    end,
+    path,
+    adjustment,
+    feed,
+    sleep,
+    keys,
+    data_base_url
+  )
   if (is.character(start)) {
     start <- lubridate::as_datetime(start, tz = "UTC")
   }
@@ -84,7 +99,7 @@ alpaca_backfill_bars <- function(
 
   if (nrow(tasks) == 0) {
     message("All symbol-timeframe combinations already downloaded.")
-    return(invisible(existing))
+    return(invisible(assert_return_alpaca_backfill_bars(existing)))
   }
 
   message(sprintf("Downloading %d symbol-timeframe combination(s)...\n", nrow(tasks)))
@@ -164,5 +179,5 @@ alpaca_backfill_bars <- function(
     ))
   }
 
-  return(invisible(combined))
+  return(invisible(assert_return_alpaca_backfill_bars(combined)))
 }

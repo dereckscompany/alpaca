@@ -7,10 +7,12 @@
 time_convert_to_alpaca(x)
 }
 \arguments{
-\item{x}{POSIXct; a datetime object (or character coercible to POSIXct).}
+\item{x}{(any?) a date-time (or character coercible to POSIXct), a bare \code{NA},
+or \code{NULL}.}
 }
 \value{
-Character string in RFC-3339 format (e.g., \code{"2024-01-15T14:30:00Z"}).
+(character | NA) RFC-3339 strings (e.g., \code{"2024-01-15T14:30:00Z"}),
+or \code{NA} if input is \code{NULL}/\code{NA}.
 }
 \description{
 Formats a \code{POSIXct} object as an RFC-3339 timestamp string suitable for
