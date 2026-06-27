@@ -6,7 +6,8 @@
 #' Parses an RFC-3339 timestamp string (e.g., `"2024-01-15T14:30:00Z"`) into
 #' a `POSIXct` object in UTC. Returns `NA` for `NULL` or `NA` input.
 #'
-#' @param x (any?) RFC-3339 timestamp string(s), a bare `NA`, or `NULL`.
+#' @param x (character | logical | NA | NULL) RFC-3339 timestamp string(s), or a
+#'   bare `NA` (`logical`), or `NULL`.
 #' @return (POSIXct | NA) the parsed UTC date-times, or `NA` if input is
 #'   `NULL`/`NA`.
 #'
@@ -29,8 +30,8 @@ time_convert_from_alpaca <- function(x) {
 #' Formats a `POSIXct` object as an RFC-3339 timestamp string suitable for
 #' the Alpaca API. Output is always in UTC with `Z` suffix.
 #'
-#' @param x (any?) a date-time (or character coercible to POSIXct), a bare `NA`,
-#'   or `NULL`.
+#' @param x (POSIXct | character | logical | NULL) a date-time (or character
+#'   coercible to POSIXct), or a bare `NA` (`logical`), or `NULL`.
 #' @return (character | NA) RFC-3339 strings (e.g., `"2024-01-15T14:30:00Z"`),
 #'   or `NA` if input is `NULL`/`NA`.
 #'

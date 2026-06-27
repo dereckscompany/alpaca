@@ -120,7 +120,7 @@ alpaca_build_request <- function(
   .parser = identity,
   is_async = FALSE,
   timeout = 10,
-  simplifyVector = FALSE
+  simplifyVector = FALSE # nolint: object_name_linter. mirrors httr2::resp_body_json's argument name verbatim.
 ) {
   assert_args_alpaca_build_request(
     base_url,
@@ -322,7 +322,9 @@ alpaca_paginate <- function(
 #' @importFrom rlang abort
 #' @keywords internal
 #' @noRd
+# nolint start: object_name_linter. `simplifyVector` mirrors httr2::resp_body_json's argument name verbatim.
 parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
+  # nolint end
   assert_args_parse_alpaca_response(resp, simplifyVector)
   status <- httr2::resp_status(resp)
 
