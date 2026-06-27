@@ -500,7 +500,7 @@ requests (rate-limit throttle; sync only). Default 0.3.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the bars. Columns: \code{timestamp}
+(Bars | promise<Bars>) the bars. Columns: \code{timestamp}
 (POSIXct, UTC), \code{open}, \code{high}, \code{low}, \code{close}, \code{vwap} (numeric), and
 \code{volume}, \code{trade_count} (integer).
 }
@@ -620,7 +620,7 @@ requests (rate-limit throttle; sync only). Default 0.3.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the bars, with a \code{symbol}
+(BarsMulti | promise<BarsMulti>) the bars, with a \code{symbol}
 column prepended plus the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
@@ -692,7 +692,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the bar, with the same columns
+(Bars | promise<Bars>) the bar, with the same columns
 as \code{get_bars()}, single row.
 }
 \subsection{Examples}{
@@ -767,7 +767,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per trade} (a single
+(Trade | promise<Trade>) \strong{one row per trade} (a single
 row for this single-trade method). Columns: \code{timestamp} (POSIXct),
 \code{price} (numeric), \code{size} (integer), \code{exchange} (character), \code{tape}
 (character), \code{id} (integer), and \code{conditions} (character,
@@ -850,7 +850,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per quote}. Columns:
+(Quote | promise<Quote>) \strong{one row per quote}. Columns:
 \code{timestamp} (POSIXct), \code{ask_exchange}, \code{bid_exchange}, \code{tape}
 (character), \code{ask_price}, \code{bid_price} (numeric), \code{ask_size}, \code{bid_size}
 (integer), and \code{conditions} (character, \verb{;}-separated quote condition
@@ -926,7 +926,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the flattened snapshot fields
+(Snapshot | promise<Snapshot>) the flattened snapshot fields
 (prefixed by section name).
 }
 \subsection{Examples}{
@@ -995,7 +995,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the bars, with a \code{symbol}
+(BarsMulti | promise<BarsMulti>) the bars, with a \code{symbol}
 column and the same columns as \code{get_bars()}.
 }
 \subsection{Examples}{
@@ -1064,7 +1064,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the trades, with a leading
+(TradesMulti | promise<TradesMulti>) the trades, with a leading
 \code{symbol} column and the same per-trade columns as \code{get_latest_trade()}:
 \code{timestamp}, \code{price}, \code{size}, \code{exchange}, \code{conditions} (\verb{;}-collapsed),
 \code{tape}, \code{id}. One row per symbol.
@@ -1123,7 +1123,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the quotes, with a \code{symbol}
+(QuotesMulti | promise<QuotesMulti>) the quotes, with a \code{symbol}
 column and quote columns (\code{timestamp}, \verb{ask_*}, \verb{bid_*}, \code{conditions},
 \code{tape}). \code{conditions} is a \verb{;}-separated character column following the
 package's array-collapse convention.
@@ -1192,8 +1192,8 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the snapshots, with a \code{symbol}
-column and flattened snapshot fields.
+(SnapshotMulti | promise<SnapshotMulti>) the snapshots, with a
+\code{symbol} column and flattened snapshot fields.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1288,7 +1288,7 @@ default 1000).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per trade}. Columns:
+(Trade | promise<Trade>) \strong{one row per trade}. Columns:
 \code{timestamp} (POSIXct), \code{price} (numeric), \code{size} (integer), \code{exchange}
 (character), \code{tape} (character), \code{id} (integer), and \code{conditions}
 (character, semicolon-separated condition codes e.g. \code{"@;T"}). Filter
@@ -1374,7 +1374,7 @@ default 1000).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per quote}. Columns:
+(Quote | promise<Quote>) \strong{one row per quote}. Columns:
 \code{timestamp} (POSIXct), \code{ask_exchange}, \code{bid_exchange}, \code{tape}
 (character), \code{ask_price}, \code{bid_price} (numeric), \code{ask_size}, \code{bid_size}
 (integer), and \code{conditions} (character, \verb{;}-separated quote condition
@@ -1458,7 +1458,7 @@ values: \code{"ptp_no_exception"}, \code{"ptp_with_exception"}, \code{"ipo"},
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the assets. Columns: \code{id},
+(Asset | promise<Asset>) the assets. Columns: \code{id},
 \code{class}, \code{exchange}, \code{symbol}, \code{name}, \code{status} (character); \code{tradable},
 \code{marginable}, \code{shortable}, \code{fractionable} (logical).
 }
@@ -1530,7 +1530,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the asset, with the same
+(Asset | promise<Asset>) the asset, with the same
 columns as \code{get_assets()}, single row.
 }
 \subsection{Examples}{
@@ -1600,7 +1600,7 @@ trading dates (default) or settlement dates.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the calendar. Columns: \code{date}
+(Calendar | promise<Calendar>) the calendar. Columns: \code{date}
 and \code{settlement_date} (Date); \code{open}, \code{close}, \code{session_open},
 \code{session_close} (POSIXct, \code{America/New_York}).
 
@@ -1662,7 +1662,7 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-(data.table | promise<data.table>) the clock. Columns:
+(Clock | promise<Clock>) the clock. Columns:
 \code{timestamp}, \code{next_open}, \code{next_close} (POSIXct, \code{America/New_York}) and
 \code{is_open} (logical).
 
@@ -1772,8 +1772,8 @@ request.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the announcements. Columns:
-\code{id}, \code{corporate_action_id}, \code{ca_type}, \code{ca_sub_type},
+(CorporateAction | promise<CorporateAction>) the announcements.
+Columns: \code{id}, \code{corporate_action_id}, \code{ca_type}, \code{ca_sub_type},
 \code{initiating_symbol}, \code{target_symbol}, \code{cash}, \code{old_rate}, \code{new_rate}
 (character); \code{declaration_date}, \code{ex_date}, \code{record_date},
 \code{payable_date} (Date).
@@ -1888,7 +1888,7 @@ articles without content.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per article}.
+(News | promise<News>) \strong{one row per article}.
 Columns: \code{id} (integer); \code{headline}, \code{author}, \code{source}, \code{summary},
 \code{url} (character); \code{created_at}, \code{updated_at} (POSIXct, UTC); \code{symbols}
 (character, \verb{;}-separated related tickers, e.g. \code{"AAPL;MSFT"});
@@ -1977,7 +1977,7 @@ Verified: 2026-05-22
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) one row per
+(CryptoOrderbook | promise<CryptoOrderbook>) one row per
 \verb{(symbol, side, level)}. Columns: \code{symbol}, \code{side} (\code{"bid"} or \code{"ask"})
 (character); \code{level} (integer, 1-based depth within the side — \code{level = 1}
 is top of book, ordering preserved from the Alpaca response); \code{price},
@@ -2051,8 +2051,10 @@ or \code{"trades"}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the most active stocks.
-Columns: \code{symbol} (character); \code{volume}, \code{trade_count} (numeric).
+(MostActives | promise<MostActives>) the most active stocks.
+Columns: \code{symbol} (character); \code{volume}, \code{trade_count}
+(integer | numeric — Alpaca encodes them without a decimal, so the
+JSON parser realises them as integer or numeric by magnitude).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -2125,7 +2127,7 @@ direction (default 10).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the movers. Columns: \code{symbol}
+(Movers | promise<Movers>) the movers. Columns: \code{symbol}
 (character); \code{percent_change}, \code{change}, \code{price} (numeric); plus a
 \code{direction} column (\code{"gainer"} / \code{"loser"}).
 }

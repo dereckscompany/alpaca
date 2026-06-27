@@ -388,7 +388,7 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-(data.table | promise<data.table>) the account details. Columns
+(Account | promise<Account>) the account details. Columns
 include \code{id}, \code{account_number}, \code{status}, \code{currency}, \code{cash},
 \code{portfolio_value}, \code{equity}, \code{buying_power}, \code{initial_margin},
 \code{maintenance_margin}, \code{long_market_value}, \code{short_market_value},
@@ -455,7 +455,7 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-(data.table | promise<data.table>) the configuration. Columns
+(AccountConfig | promise<AccountConfig>) the configuration. Columns
 include \code{dtbp_check}, \code{trade_confirm_email}, \code{max_margin_multiplier},
 \code{pdt_check} (character); \code{no_shorting}, \code{suspend_trade},
 \code{fractional_trading} (logical); and \code{max_options_trading_level}
@@ -574,7 +574,7 @@ disable overnight trading on the account.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the updated configuration.
+(AccountConfig | promise<AccountConfig>) the updated configuration.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -640,7 +640,7 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-(data.table | promise<data.table>) the open positions. Columns
+(Position | promise<Position>) the open positions. Columns
 include \code{asset_id}, \code{symbol}, \code{exchange}, \code{asset_class},
 \code{avg_entry_price}, \code{qty}, \code{side}, \code{market_value}, \code{cost_basis},
 \code{unrealized_pl}, \code{unrealized_plpc}, \code{current_price}, \code{lastday_price}
@@ -717,7 +717,7 @@ asset UUID.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the position, with the same
+(Position | promise<Position>) the position, with the same
 columns as \code{get_positions()}, single row.
 }
 \subsection{Examples}{
@@ -1053,9 +1053,9 @@ Same notes as \code{date_start}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the portfolio history. Columns:
-\code{timestamp} (POSIXct, UTC), \code{equity} (numeric), \code{profit_loss} (numeric)
-and \code{profit_loss_pct} (numeric).
+(PortfolioHistory | promise<PortfolioHistory>) the portfolio
+history. Columns: \code{timestamp} (POSIXct, UTC), \code{equity} (numeric),
+\code{profit_loss} (numeric) and \code{profit_loss_pct} (numeric).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1167,10 +1167,10 @@ activities this is the \strong{\code{id} of the last row from the previous page}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the activities. Columns vary by
-activity type. Includes \code{id} when non-empty — the per-activity cursor
-used for paging (see "Pagination"). An empty response returns an empty
-table with no columns.
+(Activity | promise<Activity>) the activities. Columns beyond the
+guaranteed \code{Activity} set vary by activity type. \code{id} is the per-activity
+cursor used for paging (see "Pagination"). An empty response returns a
+zero-row table carrying the \code{Activity} columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1275,9 +1275,9 @@ recipe is identical for this method.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the activities. Includes \code{id}
-when non-empty (the per-activity cursor used for paging). An empty
-response returns an empty table with no columns.
+(Activity | promise<Activity>) the activities. \code{id} is the
+per-activity cursor used for paging. An empty response returns a
+zero-row table carrying the \code{Activity} columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1342,7 +1342,7 @@ Verified: 2026-05-21
 }
 
 \subsection{Returns}{
-(data.table | promise<data.table>) the watchlists. Columns: \code{id},
+(Watchlists | promise<Watchlists>) the watchlists. Columns: \code{id},
 \code{account_id}, \code{name} (character); \code{created_at} and \code{updated_at}
 (POSIXct, UTC).
 }
@@ -1425,7 +1425,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) a long-format table with one
+(Watchlist | promise<Watchlist>) a long-format table with one
 row per asset in the watchlist. Columns include watchlist metadata
 (\code{id}, \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) and asset
 columns prefixed with \code{asset_} (\code{asset_id}, \code{asset_symbol},
@@ -1515,7 +1515,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the same long-format shape as
+(Watchlist | promise<Watchlist>) the same long-format shape as
 \code{get_watchlist()}: one row per asset, with watchlist metadata (\code{id},
 \code{account_id}, \code{name}, \code{created_at}, \code{updated_at}) replicated and asset
 columns prefixed \code{asset_} (\code{asset_id}, \code{asset_symbol}, \code{asset_name},
@@ -1602,7 +1602,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the same long-format shape as
+(Watchlist | promise<Watchlist>) the same long-format shape as
 \code{get_watchlist()}: one row per asset (after the modification),
 watchlist metadata replicated on each row, asset columns prefixed
 \code{asset_}.
@@ -1685,7 +1685,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the same long-format shape as
+(Watchlist | promise<Watchlist>) the same long-format shape as
 \code{get_watchlist()}: one row per asset in the updated watchlist.
 }
 \subsection{Examples}{

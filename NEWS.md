@@ -15,6 +15,23 @@
   the resolved value through `connectcore::then_or_now()`, so it runs in both
   modes (per roxyassert's promise model). `assert` is now an `Imports`
   dependency; `roxyassert` is used at `document()` time only.
+* **Typed return shapes for every table-returning method.** The return contract
+  of each endpoint method now references a reusable `@type` shape declared in
+  `R/types_alpaca.R` (`Bars`, `BarsMulti`, `Trade`/`TradesMulti`,
+  `Quote`/`QuotesMulti`, `Snapshot`/`SnapshotMulti`, `Asset`, `Calendar`,
+  `Clock`, `CorporateAction`, `News`, `CryptoOrderbook`, `MostActives`,
+  `Movers`, `Contract`, `Account`, `AccountConfig`, `Position`, `Activity`,
+  `PortfolioHistory`, `Watchlists`/`Watchlist`, `OrderCore`/`Order`, and the
+  options `OptionTradesMulti`/`OptionQuotesMulti`), so `assert_return_*` now
+  checks the actual columns and their types — not merely "is a `data.table`".
+  The list-returning endpoints route their empty branch through typed
+  `empty_dt_*()` constructors, so an empty Alpaca response still carries the
+  shape's columns. Two shape refinements match Alpaca's wire encoding: the bar
+  OHLC / vwap and the trade/quote price columns are `integer | numeric`
+  (Alpaca drops the decimal point on a whole-number price, so JSON realises it
+  as `integer` for that value), and the `Watchlist` `asset_*` columns are
+  nullable (an empty watchlist returns one all-`NA` asset row). Public
+  behaviour for any valid response is unchanged.
 
 ## Internal
 

@@ -1038,18 +1038,20 @@ empty_dt_quotes_multi <- function() {
 #' @noRd
 #' @noassert
 empty_dt_option_trades_multi <- function() {
+  # The options trade payload carries no consolidated tape, so the shape is the
+  # equity TradesMulti minus `tape`.
   dt <- empty_dt_trades_multi()
-  dt[, tape := NULL]
-  return(dt[])
+  return(dt[, setdiff(names(dt), "tape"), with = FALSE][])
 }
 
 #' @keywords internal
 #' @noRd
 #' @noassert
 empty_dt_option_quotes_multi <- function() {
+  # The options quote payload carries no consolidated tape, so the shape is the
+  # equity QuotesMulti minus `tape`.
   dt <- empty_dt_quotes_multi()
-  dt[, tape := NULL]
-  return(dt[])
+  return(dt[, setdiff(names(dt), "tape"), with = FALSE][])
 }
 
 #' @keywords internal

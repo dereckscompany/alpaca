@@ -324,7 +324,7 @@ before this date.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the contracts. With
+(Contract | promise<Contract>) the contracts. With
 \code{show_deliverables = NULL} (default) or \code{FALSE}, returns one row per
 contract. With \code{show_deliverables = TRUE}, the nested \code{deliverables}
 array is exploded to one row per \verb{(contract, deliverable)}; contract
@@ -423,7 +423,7 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the contract, with the same
+(Contract | promise<Contract>) the contract, with the same
 columns as \code{get_contracts()}, single row.
 }
 \subsection{Examples}{
@@ -531,7 +531,7 @@ default 1000).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per bar} with a
+(BarsMulti | promise<BarsMulti>) \strong{one row per bar} with a
 leading \code{symbol} column. Bar columns mirror the equity \code{get_bars()}
 output: \code{timestamp} (POSIXct), \code{open}, \code{high}, \code{low}, \code{close}, \code{vwap}
 (numeric), \code{volume}, \code{trade_count} (integer).
@@ -633,11 +633,13 @@ default 1000).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per trade} with a
-leading \code{symbol} column. Columns: \code{timestamp} (POSIXct), \code{price}
-(numeric), \code{size} (integer), \code{exchange} (character), \code{conditions}
-(character, \verb{;}-separated trade condition codes or a single-character
-code; \code{NA} when none reported), \code{tape} (character), \code{id} (integer).
+(OptionTradesMulti | promise<OptionTradesMulti>) \strong{one row per
+trade} with a leading \code{symbol} column. Columns: \code{timestamp} (POSIXct),
+\code{price} (numeric), \code{size} (integer), \code{exchange} (character),
+\code{conditions} (character, \verb{;}-separated trade condition codes or a
+single-character code; \code{NA} when none reported), \code{id} (integer). The
+options trade payload carries no consolidated tape, so there is no
+\code{tape} column (unlike the equity trade shape).
 }
 }
 \if{html}{\out{<hr>}}
@@ -699,11 +701,12 @@ feed) or \code{"indicative"} (free, delayed/modified).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per contract} with a
-leading \code{symbol} column. Columns: \code{timestamp} (POSIXct); \code{ask_exchange},
-\code{ask_price}, \code{ask_size}, \code{bid_exchange}, \code{bid_price}, \code{bid_size}; and
-\code{conditions} (character, \verb{;}-separated quote condition codes or a
-single-character code; \code{NA} when none reported).
+(OptionQuotesMulti | promise<OptionQuotesMulti>) \strong{one row per
+contract} with a leading \code{symbol} column. Columns: \code{timestamp}
+(POSIXct); \code{ask_exchange}, \code{ask_price}, \code{ask_size}, \code{bid_exchange},
+\code{bid_price}, \code{bid_size}; and \code{conditions} (character, \verb{;}-separated
+quote condition codes or a single-character code; \code{NA} when none
+reported).
 }
 }
 \if{html}{\out{<hr>}}
@@ -761,11 +764,13 @@ Verified: 2026-05-21
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per contract} with a
-leading \code{symbol} column. Columns: \code{timestamp} (POSIXct), \code{price}
-(numeric), \code{size} (integer), \code{exchange} (character), \code{conditions}
-(character, \verb{;}-separated trade condition codes or a single-character
-code; \code{NA} when none reported), \code{tape} (character), \code{id} (integer).
+(OptionTradesMulti | promise<OptionTradesMulti>) \strong{one row per
+contract} with a leading \code{symbol} column. Columns: \code{timestamp}
+(POSIXct), \code{price} (numeric), \code{size} (integer), \code{exchange} (character),
+\code{conditions} (character, \verb{;}-separated trade condition codes or a
+single-character code; \code{NA} when none reported), \code{id} (integer). The
+options trade payload carries no consolidated tape, so there is no
+\code{tape} column (unlike the equity trade shape).
 }
 }
 \if{html}{\out{<hr>}}
@@ -886,7 +891,7 @@ default 100).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per contract}.
+(SnapshotMulti | promise<SnapshotMulti>) \strong{one row per contract}.
 Columns: \code{symbol} (character, OCC option symbol); the flattened
 \verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} / \verb{daily_bar_*} /
 \verb{prev_daily_bar_*} sections (see \code{get_snapshot()} for the per-field
@@ -976,7 +981,7 @@ Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the same shape as
+(SnapshotMulti | promise<SnapshotMulti>) the same shape as
 \code{get_option_chain()} — one row per contract in the chain rooted at
 \code{symbol}. Despite the legacy name, this is \strong{not} a single-contract
 snapshot; for that, use \code{get_option_snapshots(symbols = "<OCC>")}.
@@ -1138,8 +1143,8 @@ or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) \strong{one row per contract in the
-chain}. Columns mirror \code{get_option_snapshots()}: a \code{symbol} key, the
+(SnapshotMulti | promise<SnapshotMulti>) \strong{one row per contract in
+the chain}. Columns mirror \code{get_option_snapshots()}: a \code{symbol} key, the
 flattened \verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} /
 \verb{daily_bar_*} / \verb{prev_daily_bar_*} blocks (including
 \code{latest_trade_conditions} / \code{latest_quote_conditions}), and — when the

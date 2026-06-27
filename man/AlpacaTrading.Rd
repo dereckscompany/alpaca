@@ -335,7 +335,7 @@ Alpaca Elite Smart Router.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the order(s).
+(Order | promise<Order>) the order(s).
 A simple order returns a single row. A \code{bracket} / \code{oco} / \code{oto} /
 \code{mleg} order returns the parent row plus one row per leg — see the
 "Multi-leg orders" section in the README and \code{vignette("data-shapes")}
@@ -502,7 +502,7 @@ combine with \code{after}/\code{until}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the orders, with the same
+(Order | promise<Order>) the orders, with the same
 columns as \code{add_order()} return value.
 }
 \subsection{Examples}{
@@ -599,7 +599,7 @@ one row per leg, distinguished by \code{leg_index} (\code{NA} on parent,
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the order, with the same
+(Order | promise<Order>) the order, with the same
 columns as \code{add_order()}. Multi-row when \code{nested = TRUE} and the order
 has legs; otherwise single row.
 }
@@ -693,7 +693,7 @@ chars).}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the order, with the same
+(Order | promise<Order>) the order, with the same
 columns as \code{add_order()}. A simple order returns a single row; a
 bracket / OCO / OTO / multi-leg order returns the parent row plus one
 row per leg, distinguished by \code{leg_index} and \code{parent_order_id}.
@@ -832,7 +832,7 @@ Alpaca Elite Smart Router.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the replacement order details.
+(Order | promise<Order>) the replacement order details.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

@@ -34,15 +34,18 @@
 #' @genassert
 #' @exportassert
 #'
-#' @type Bars (data.table) one row per OHLCV bar:
+#' @type Bars (data.table) one row per OHLCV bar. The OHLC and vwap price
+#'   columns are typed `integer | numeric`: Alpaca encodes a whole-number price
+#'   without a decimal point, so the JSON parser realises it as `integer` for
+#'   that bar and `numeric` otherwise (same rationale as the screener counters):
 #' - timestamp (POSIXct) bar open time (UTC).
-#' - open (numeric) open price.
-#' - high (numeric) high price.
-#' - low (numeric) low price.
-#' - close (numeric) close price.
+#' - open (integer | numeric) open price.
+#' - high (integer | numeric) high price.
+#' - low (integer | numeric) low price.
+#' - close (integer | numeric) close price.
 #' - volume (integer) traded volume.
 #' - trade_count (integer) number of trades in the bar.
-#' - vwap (numeric) volume-weighted average price.
+#' - vwap (integer | numeric) volume-weighted average price.
 #'
 #' @type BarsMulti (extends Bars) one row per (symbol, bar), with the symbol key:
 #' - symbol (character) the ticker (or OCC option) symbol.
@@ -50,7 +53,8 @@
 #' @type Trade (data.table) one row per equity trade (`parse_trades()` maps the
 #'   short field names `t`/`p`/`s`/`x`/`z`/`i`/`c`):
 #' - timestamp (POSIXct) trade time (UTC).
-#' - price (numeric) trade price.
+#' - price (integer | numeric) trade price (`integer` when Alpaca returns a
+#'   whole-number price without a decimal, `numeric` otherwise).
 #' - size (integer) trade size in shares.
 #' - exchange (character) reporting exchange code.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
@@ -70,10 +74,12 @@
 #'   `t`/`ax`/`ap`/`as`/`bx`/`bp`/`bs`/`z`/`c`):
 #' - timestamp (POSIXct) quote time (UTC).
 #' - ask_exchange (character) the exchange posting the best ask.
-#' - ask_price (numeric) best ask price.
+#' - ask_price (integer | numeric) best ask price (`integer` when whole, else
+#'   `numeric`).
 #' - ask_size (integer) ask size.
 #' - bid_exchange (character) the exchange posting the best bid.
-#' - bid_price (numeric) best bid price.
+#' - bid_price (integer | numeric) best bid price (`integer` when whole, else
+#'   `numeric`).
 #' - bid_size (integer) bid size.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
 #' - conditions (character | NA) `;`-collapsed quote condition codes, or `NA`.
@@ -92,12 +98,13 @@
 #'   because the bar OHLC columns parse as `integer` or `numeric` depending on
 #'   the value and the greeks appear only with an options data subscription):
 #' - latest_trade_timestamp (POSIXct) latest trade time (UTC).
-#' - latest_trade_price (numeric) latest trade price.
+#' - latest_trade_price (integer | numeric) latest trade price (`integer` when
+#'   whole, else `numeric`).
 #' - latest_trade_size (integer) latest trade size.
 #' - latest_trade_conditions (character | NA) `;`-collapsed trade conditions, or `NA`.
 #' - latest_quote_timestamp (POSIXct) latest quote time (UTC).
-#' - latest_quote_ask_price (numeric) latest ask price.
-#' - latest_quote_bid_price (numeric) latest bid price.
+#' - latest_quote_ask_price (integer | numeric) latest ask price.
+#' - latest_quote_bid_price (integer | numeric) latest bid price.
 #' - latest_quote_ask_size (integer) latest ask size.
 #' - latest_quote_bid_size (integer) latest bid size.
 #' - latest_quote_conditions (character | NA) `;`-collapsed quote conditions, or `NA`.
@@ -277,10 +284,12 @@
 #' - updated_at (POSIXct) last-updated time (UTC).
 #'
 #' @type Watchlist (extends Watchlists) one row per asset in a single watchlist
-#'   (long format; the watchlist metadata is replicated on each asset row):
-#' - asset_id (character) the asset UUID.
-#' - asset_symbol (character) the asset ticker.
-#' - asset_name (character) the asset name.
+#'   (long format; the watchlist metadata is replicated on each asset row). A
+#'   watchlist with no assets still returns one row, with every `asset_*` column
+#'   `NA` — hence each is nullable:
+#' - asset_id (character | NA) the asset UUID, or `NA` on the empty-watchlist row.
+#' - asset_symbol (character | NA) the asset ticker, or `NA`.
+#' - asset_name (character | NA) the asset name, or `NA`.
 #' - asset_attributes (character | NA) `;`-collapsed asset attribute tags, or `NA`.
 #'
 #' @type OrderCore (data.table) one row per order; the columns common to every
