@@ -895,9 +895,9 @@ confirmation \code{data.table}:
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) a single-row confirmation with
-\code{order_id} (character, the cancelled order UUID) and \code{status}
-(character, \code{"cancelled"}).
+(CancelOrderAck | promise<CancelOrderAck>) a single-row
+confirmation with \code{order_id} (the cancelled order UUID) and \code{status}
+(always \code{"cancelled"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

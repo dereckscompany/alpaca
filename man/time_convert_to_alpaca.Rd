@@ -7,8 +7,8 @@
 time_convert_to_alpaca(x)
 }
 \arguments{
-\item{x}{(any?) a date-time (or character coercible to POSIXct), a bare \code{NA},
-or \code{NULL}.}
+\item{x}{(POSIXct | character | logical | NULL) a date-time (or character
+coercible to POSIXct), or a bare \code{NA} (\code{logical}), or \code{NULL}.}
 }
 \value{
 (character | NA) RFC-3339 strings (e.g., \code{"2024-01-15T14:30:00Z"}),

@@ -218,6 +218,23 @@ assert_args_AlpacaAccount__close_position <- function(symbol_or_id, qty, percent
 
 assert_return_AlpacaAccount__close_position <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("id", "symbol", "side", "type", "status", "qty", "filled_qty", "created_at"))
+  assert_character(value[["id"]])
+  assert_no_missing_values(value[["id"]])
+  assert_character(value[["symbol"]])
+  assert_no_missing_values(value[["symbol"]])
+  assert_character(value[["side"]])
+  assert_no_missing_values(value[["side"]])
+  assert_character(value[["type"]])
+  assert_no_missing_values(value[["type"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
+  assert_character(value[["qty"]])
+  assert_no_missing_values(value[["qty"]])
+  assert_character(value[["filled_qty"]])
+  assert_no_missing_values(value[["filled_qty"]])
+  assert_datetime(value[["created_at"]])
+  assert_no_missing_values(value[["created_at"]])
   return(value)
 }
 
@@ -238,6 +255,11 @@ assert_args_AlpacaAccount__exercise_option <- function(symbol_or_id) {
 
 assert_return_AlpacaAccount__exercise_option <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("symbol", "status"))
+  assert_character(value[["symbol"]])
+  assert_no_missing_values(value[["symbol"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
   return(value)
 }
 
@@ -275,11 +297,8 @@ assert_return_AlpacaAccount__get_portfolio_history <- function(value) {
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
   assert_double(value[["equity"]])
-  assert_no_missing_values(value[["equity"]])
   assert_double(value[["profit_loss"]])
-  assert_no_missing_values(value[["profit_loss"]])
   assert_double(value[["profit_loss_pct"]])
-  assert_no_missing_values(value[["profit_loss_pct"]])
   return(value)
 }
 
@@ -510,6 +529,11 @@ assert_args_AlpacaAccount__cancel_watchlist <- function(watchlist_id) {
 
 assert_return_AlpacaAccount__cancel_watchlist <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("watchlist_id", "status"))
+  assert_character(value[["watchlist_id"]])
+  assert_no_missing_values(value[["watchlist_id"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
   return(value)
 }
 
@@ -549,7 +573,7 @@ assert_args_AlpacaMarketData__get_bars <- function(symbol, timeframe, start, end
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(adjustment)) {
     assert_scalar_character(adjustment)
@@ -598,9 +622,9 @@ assert_return_AlpacaMarketData__get_bars <- function(value) {
   assert_no_missing_values(value[["low"]])
   assert_double(value[["close"]])
   assert_no_missing_values(value[["close"]])
-  assert_integer(value[["volume"]])
+  assert_double(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
+  assert_double(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
   assert_double(value[["vwap"]])
   assert_no_missing_values(value[["vwap"]])
@@ -619,7 +643,7 @@ assert_args_AlpacaMarketData__get_bars_multi <- function(symbols, timeframe, sta
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(adjustment)) {
     assert_scalar_character(adjustment)
@@ -668,9 +692,9 @@ assert_return_AlpacaMarketData__get_bars_multi <- function(value) {
   assert_no_missing_values(value[["low"]])
   assert_double(value[["close"]])
   assert_no_missing_values(value[["close"]])
-  assert_integer(value[["volume"]])
+  assert_double(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
+  assert_double(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
   assert_double(value[["vwap"]])
   assert_no_missing_values(value[["vwap"]])
@@ -700,9 +724,9 @@ assert_return_AlpacaMarketData__get_latest_bar <- function(value) {
   assert_no_missing_values(value[["low"]])
   assert_double(value[["close"]])
   assert_no_missing_values(value[["close"]])
-  assert_integer(value[["volume"]])
+  assert_double(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
+  assert_double(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
   assert_double(value[["vwap"]])
   assert_no_missing_values(value[["vwap"]])
@@ -733,7 +757,7 @@ assert_return_AlpacaMarketData__get_latest_trade <- function(value) {
   assert_no_missing_values(value[["exchange"]])
   assert_character(value[["tape"]])
   assert_no_missing_values(value[["tape"]])
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["conditions"]])
   return(value)
@@ -758,13 +782,11 @@ assert_return_AlpacaMarketData__get_latest_quote <- function(value) {
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
   assert_double(value[["ask_price"]])
-  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
   assert_double(value[["bid_price"]])
-  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -797,9 +819,7 @@ assert_return_AlpacaMarketData__get_snapshot <- function(value) {
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
   assert_double(value[["latest_quote_ask_price"]])
-  assert_no_missing_values(value[["latest_quote_ask_price"]])
   assert_double(value[["latest_quote_bid_price"]])
-  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -833,9 +853,9 @@ assert_return_AlpacaMarketData__get_latest_bars_multi <- function(value) {
   assert_no_missing_values(value[["low"]])
   assert_double(value[["close"]])
   assert_no_missing_values(value[["close"]])
-  assert_integer(value[["volume"]])
+  assert_double(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
+  assert_double(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
   assert_double(value[["vwap"]])
   assert_no_missing_values(value[["vwap"]])
@@ -869,7 +889,7 @@ assert_return_AlpacaMarketData__get_latest_trades_multi <- function(value) {
   assert_no_missing_values(value[["exchange"]])
   assert_character(value[["tape"]])
   assert_no_missing_values(value[["tape"]])
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["conditions"]])
   assert_character(value[["symbol"]])
@@ -897,13 +917,11 @@ assert_return_AlpacaMarketData__get_latest_quotes_multi <- function(value) {
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
   assert_double(value[["ask_price"]])
-  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
   assert_double(value[["bid_price"]])
-  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -939,9 +957,7 @@ assert_return_AlpacaMarketData__get_snapshots_multi <- function(value) {
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
   assert_double(value[["latest_quote_ask_price"]])
-  assert_no_missing_values(value[["latest_quote_ask_price"]])
   assert_double(value[["latest_quote_bid_price"]])
-  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -962,7 +978,7 @@ assert_args_AlpacaMarketData__get_trades <- function(symbol, start, end, limit, 
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(asof)) {
     assert_scalar_character(asof)
@@ -995,7 +1011,7 @@ assert_return_AlpacaMarketData__get_trades <- function(value) {
   assert_no_missing_values(value[["exchange"]])
   assert_character(value[["tape"]])
   assert_no_missing_values(value[["tape"]])
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["conditions"]])
   return(value)
@@ -1011,7 +1027,7 @@ assert_args_AlpacaMarketData__get_quotes <- function(symbol, start, end, limit, 
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(asof)) {
     assert_scalar_character(asof)
@@ -1039,13 +1055,11 @@ assert_return_AlpacaMarketData__get_quotes <- function(value) {
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
   assert_double(value[["ask_price"]])
-  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
   assert_double(value[["bid_price"]])
-  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -1252,7 +1266,7 @@ assert_args_AlpacaMarketData__get_news <- function(symbols, start, end, limit, s
 assert_return_AlpacaMarketData__get_news <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("id", "headline", "author", "source", "summary", "url", "symbols", "created_at", "updated_at", "image_sizes", "image_urls"))
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["headline"]])
   assert_no_missing_values(value[["headline"]])
@@ -1391,7 +1405,7 @@ assert_args_AlpacaOptions__get_contracts <- function(underlying_symbols, status,
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(page_token)) {
     assert_scalar_character(page_token)
@@ -1489,7 +1503,7 @@ assert_args_AlpacaOptions__get_option_bars <- function(symbols, timeframe, start
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(page_token)) {
     assert_scalar_character(page_token)
@@ -1513,9 +1527,9 @@ assert_return_AlpacaOptions__get_option_bars <- function(value) {
   assert_no_missing_values(value[["low"]])
   assert_double(value[["close"]])
   assert_no_missing_values(value[["close"]])
-  assert_integer(value[["volume"]])
+  assert_double(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
+  assert_double(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
   assert_double(value[["vwap"]])
   assert_no_missing_values(value[["vwap"]])
@@ -1534,7 +1548,7 @@ assert_args_AlpacaOptions__get_option_trades <- function(symbols, start, end, li
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 10000)
+    assert_between(limit, lower = 1, upper = 10001, upper_inclusive = FALSE)
   }
   if (!is.null(page_token)) {
     assert_scalar_character(page_token)
@@ -1556,7 +1570,7 @@ assert_return_AlpacaOptions__get_option_trades <- function(value) {
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
   assert_no_missing_values(value[["exchange"]])
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["conditions"]])
   assert_character(value[["symbol"]])
@@ -1580,13 +1594,11 @@ assert_return_AlpacaOptions__get_option_latest_quotes <- function(value) {
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
   assert_double(value[["ask_price"]])
-  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
   assert_double(value[["bid_price"]])
-  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["conditions"]])
@@ -1614,7 +1626,7 @@ assert_return_AlpacaOptions__get_option_latest_trades <- function(value) {
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
   assert_no_missing_values(value[["exchange"]])
-  assert_integer(value[["id"]])
+  assert_double(value[["id"]])
   assert_no_missing_values(value[["id"]])
   assert_character(value[["conditions"]])
   assert_character(value[["symbol"]])
@@ -1632,7 +1644,7 @@ assert_args_AlpacaOptions__get_option_snapshots <- function(symbols, feed, updat
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 1000)
+    assert_between(limit, lower = 1, upper = 1001, upper_inclusive = FALSE)
   }
   if (!is.null(page_token)) {
     assert_scalar_character(page_token)
@@ -1653,9 +1665,7 @@ assert_return_AlpacaOptions__get_option_snapshots <- function(value) {
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
   assert_double(value[["latest_quote_ask_price"]])
-  assert_no_missing_values(value[["latest_quote_ask_price"]])
   assert_double(value[["latest_quote_bid_price"]])
-  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -1694,7 +1704,7 @@ assert_args_AlpacaOptions__get_option_chain <- function(underlying_symbol, type,
   }
   if (!is.null(limit)) {
     assert_scalar_count(limit)
-    assert_between(limit, lower = 1, upper = 1000)
+    assert_between(limit, lower = 1, upper = 1001, upper_inclusive = FALSE)
   }
   if (!is.null(updated_since)) {
     assert_scalar_character(updated_since)
@@ -1718,9 +1728,7 @@ assert_return_AlpacaOptions__get_option_chain <- function(value) {
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
   assert_double(value[["latest_quote_ask_price"]])
-  assert_no_missing_values(value[["latest_quote_ask_price"]])
   assert_double(value[["latest_quote_bid_price"]])
-  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -1992,6 +2000,11 @@ assert_args_AlpacaTrading__cancel_order <- function(order_id) {
 
 assert_return_AlpacaTrading__cancel_order <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("order_id", "status"))
+  assert_character(value[["order_id"]])
+  assert_no_missing_values(value[["order_id"]])
+  assert_character(value[["status"]])
+  assert_no_missing_values(value[["status"]])
   return(value)
 }
 
@@ -2422,6 +2435,18 @@ assert_return_get_api_keys <- function(value) {
 }
 
 assert_args_time_convert_from_alpaca <- function(x) {
+  if (!is.null(x)) {
+    assert_any_of(
+      x,
+      function(.x) {
+        assert_character(.x)
+        assert_no_missing_values(.x)
+      },
+      function(.x) {
+        assert_logical(.x)
+      }
+    )
+  }
   return(invisible(NULL))
 }
 
@@ -2431,6 +2456,23 @@ assert_return_time_convert_from_alpaca <- function(value) {
 }
 
 assert_args_time_convert_to_alpaca <- function(x) {
+  if (!is.null(x)) {
+    assert_any_of(
+      x,
+      function(.x) {
+        assert_datetime(.x)
+        assert_no_missing_values(.x)
+      },
+      function(.x) {
+        assert_character(.x)
+        assert_no_missing_values(.x)
+      },
+      function(.x) {
+        assert_logical(.x)
+        assert_no_missing_values(.x)
+      }
+    )
+  }
   return(invisible(NULL))
 }
 

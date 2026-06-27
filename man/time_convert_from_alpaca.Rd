@@ -7,7 +7,8 @@
 time_convert_from_alpaca(x)
 }
 \arguments{
-\item{x}{(any?) RFC-3339 timestamp string(s), a bare \code{NA}, or \code{NULL}.}
+\item{x}{(character | logical | NA | NULL) RFC-3339 timestamp string(s), or a
+bare \code{NA} (\code{logical}), or \code{NULL}.}
 }
 \value{
 (POSIXct | NA) the parsed UTC date-times, or \code{NA} if input is

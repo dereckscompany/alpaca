@@ -40,8 +40,11 @@
 #' - high (numeric) high price.
 #' - low (numeric) low price.
 #' - close (numeric) close price.
-#' - volume (integer) traded volume.
-#' - trade_count (integer) number of trades in the bar.
+#' - volume (numeric) traded volume. A whole-number counter that can exceed the
+#'   32-bit `integer` ceiling on a liquid name, so the parser coerces it to a
+#'   `numeric` double (jsonlite already realises a value `>= 2^31` as a double).
+#' - trade_count (numeric) number of trades in the bar, coerced to `numeric` for
+#'   the same overflow reason as `volume`.
 #' - vwap (numeric) volume-weighted average price.
 #'
 #' @type BarsMulti (extends Bars) one row per (symbol, bar), with the symbol key:
@@ -55,7 +58,9 @@
 #' - size (integer) trade size in shares.
 #' - exchange (character) reporting exchange code.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
-#' - id (integer) exchange-assigned trade id.
+#' - id (numeric) exchange-assigned trade id. Can exceed the 32-bit `integer`
+#'   ceiling, so the parser coerces it to a `numeric` double (jsonlite already
+#'   realises a value `>= 2^31` as a double).
 #' - conditions (character | NA) `;`-collapsed trade condition codes (e.g.
 #'   `"@;T"`), or `NA` when the trade carries none.
 #'
@@ -71,10 +76,14 @@
 #'   `t`/`ax`/`ap`/`as`/`bx`/`bp`/`bs`/`z`/`c`):
 #' - timestamp (POSIXct) quote time (UTC).
 #' - ask_exchange (character) the exchange posting the best ask.
-#' - ask_price (numeric) best ask price (the parser coerces it to a double).
+#' - ask_price (numeric | NA) best ask price (the parser coerces it to a
+#'   double). On an illiquid, one-sided book the ask side may be absent, which
+#'   the parser coerces to `NA`, so the column is nullable.
 #' - ask_size (integer) ask size.
 #' - bid_exchange (character) the exchange posting the best bid.
-#' - bid_price (numeric) best bid price (the parser coerces it to a double).
+#' - bid_price (numeric | NA) best bid price (the parser coerces it to a
+#'   double). On an illiquid, one-sided book the bid side may be absent, which
+#'   the parser coerces to `NA`, so the column is nullable.
 #' - bid_size (integer) bid size.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
 #' - conditions (character | NA) `;`-collapsed quote condition codes, or `NA`.
@@ -98,8 +107,10 @@
 #' - latest_trade_size (integer) latest trade size.
 #' - latest_trade_conditions (character | NA) `;`-collapsed trade conditions, or `NA`.
 #' - latest_quote_timestamp (POSIXct) latest quote time (UTC).
-#' - latest_quote_ask_price (numeric) latest ask price (coerced to a double).
-#' - latest_quote_bid_price (numeric) latest bid price (coerced to a double).
+#' - latest_quote_ask_price (numeric | NA) latest ask price (coerced to a
+#'   double); `NA` when an illiquid, one-sided book omits the ask.
+#' - latest_quote_bid_price (numeric | NA) latest bid price (coerced to a
+#'   double); `NA` when an illiquid, one-sided book omits the bid.
 #' - latest_quote_ask_size (integer) latest ask size.
 #' - latest_quote_bid_size (integer) latest bid size.
 #' - latest_quote_conditions (character | NA) `;`-collapsed quote conditions, or `NA`.
@@ -158,7 +169,9 @@
 #' - new_rate (character | NA) post-action rate, or `NA`.
 #'
 #' @type News (data.table) one row per article:
-#' - id (integer) article id.
+#' - id (numeric) article id. Can exceed the 32-bit `integer` ceiling, so the
+#'   parser coerces it to a `numeric` double (jsonlite already realises a value
+#'   `>= 2^31` as a double).
 #' - headline (character) the headline.
 #' - author (character) the author.
 #' - source (character) the news source.
@@ -269,9 +282,12 @@
 #'
 #' @type PortfolioHistory (data.table) one row per time-series point:
 #' - timestamp (POSIXct) the snapshot time (UTC).
-#' - equity (numeric) account equity at that point.
-#' - profit_loss (numeric) P/L versus the base value.
-#' - profit_loss_pct (numeric) P/L percent versus the base value.
+#' - equity (numeric | NA) account equity at that point. The parser's `nums()`
+#'   maps a JSON `null` (a no-data point) to `NA`, so the column is nullable.
+#' - profit_loss (numeric | NA) P/L versus the base value, `NA` on a no-data
+#'   point (same `nums()` `null`-to-`NA` mapping as `equity`).
+#' - profit_loss_pct (numeric | NA) P/L percent versus the base value, `NA` on a
+#'   no-data point (same `nums()` `null`-to-`NA` mapping as `equity`).
 #'
 #' @type Watchlists (data.table) one row per watchlist (the list view):
 #' - id (character) watchlist UUID.
@@ -307,4 +323,22 @@
 #'   adding the leg-bookkeeping columns `parse_order()` injects:
 #' - leg_index (integer | NA) `NA` on the parent row, `1..N` on each leg row.
 #' - parent_order_id (character | NA) `NA` on the parent row, the parent id on legs.
+#'
+#' @type CancelOrderAck (data.table) one row, the cancel-order confirmation
+#'   (`DELETE /v2/orders/{id}` returns `204 No Content`; this method synthesises
+#'   the row from the request):
+#' - order_id (character) the cancelled order UUID.
+#' - status (character) always `"cancelled"`.
+#'
+#' @type ExerciseAck (data.table) one row, the option-exercise confirmation
+#'   (`POST /v2/positions/{symbol_or_id}/exercise` returns `204 No Content`;
+#'   this method synthesises the row from the request):
+#' - symbol (character) the exercised option symbol or asset UUID.
+#' - status (character) always `"exercised"`.
+#'
+#' @type CancelWatchlistAck (data.table) one row, the delete-watchlist
+#'   confirmation (`DELETE /v2/watchlists/{id}` returns `204 No Content`; this
+#'   method synthesises the row from the request):
+#' - watchlist_id (character) the deleted watchlist UUID.
+#' - status (character) always `"deleted"`.
 NULL

@@ -262,6 +262,11 @@ parse_bars <- function(bars) {
   # parser realises that bar's price as `integer`. Coerce every price/vwap
   # column to a clean `numeric` double so the column is always a double.
   coerce_cols(dt, c("open", "high", "low", "close", "vwap"), as.numeric)
+  # `volume` / `trade_count` are whole-number counters that can exceed the
+  # 32-bit `integer` ceiling on a liquid name; jsonlite already realises any
+  # such value as a double, so coerce both to a clean `numeric` to keep the
+  # column type stable and never overflow `integer`.
+  coerce_cols(dt, c("volume", "trade_count"), as.numeric)
   return(assert_return_parse_bars(dt[]))
 }
 
@@ -368,6 +373,10 @@ parse_trades <- function(trades) {
   # Coerce the price to a clean `numeric` double (a whole-number price Alpaca
   # sends without a decimal would otherwise realise as `integer`).
   coerce_cols(dt, "price", as.numeric)
+  # The exchange-assigned trade `id` can exceed the 32-bit `integer` ceiling;
+  # jsonlite already realises such a value as a double, so coerce to a clean
+  # `numeric` to keep the column type stable and never overflow `integer`.
+  coerce_cols(dt, "id", as.numeric)
   return(assert_return_parse_trades(dt[]))
 }
 
@@ -682,6 +691,10 @@ parse_news <- function(news_items) {
   dt <- data.table::rbindlist(items_clean, fill = TRUE)
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, c("created_at", "updated_at"))
+  # The article `id` can exceed the 32-bit `integer` ceiling; jsonlite already
+  # realises such a value as a double, so coerce to a clean `numeric` to keep
+  # the column type stable and never overflow `integer`.
+  coerce_cols(dt, "id", as.numeric)
   return(assert_return_parse_news(dt[]))
 }
 
@@ -972,8 +985,8 @@ empty_dt_bars <- function() {
     high = numeric(0),
     low = numeric(0),
     close = numeric(0),
-    volume = integer(0),
-    trade_count = integer(0),
+    volume = numeric(0),
+    trade_count = numeric(0),
     vwap = numeric(0)
   ))
 }
@@ -998,7 +1011,7 @@ empty_dt_trades <- function() {
     size = integer(0),
     exchange = character(0),
     tape = character(0),
-    id = integer(0),
+    id = numeric(0),
     conditions = character(0)
   ))
 }
@@ -1147,7 +1160,7 @@ empty_dt_corporate_actions <- function() {
 #' @noassert
 empty_dt_news <- function() {
   return(data.table::data.table(
-    id = integer(0),
+    id = numeric(0),
     headline = character(0),
     author = character(0),
     source = character(0),

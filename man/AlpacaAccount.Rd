@@ -796,7 +796,11 @@ exclusive with \code{percentage}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) the closing order details.
+(OrderCore | promise<OrderCore>) the closing order as a single row
+(the core order columns; the venue returns the richer single-order
+fields as un-asserted extras). Unlike the list/single-order endpoints
+this path bypasses \code{parse_order()}, so it carries no \code{leg_index} /
+\code{parent_order_id} columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -954,9 +958,9 @@ confirmation \code{data.table}:
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) a single-row confirmation with
-\code{symbol} (character, the exercised option symbol or asset UUID) and
-\code{status} (character, \code{"exercised"}).
+(ExerciseAck | promise<ExerciseAck>) a single-row confirmation
+with \code{symbol} (the exercised option symbol or asset UUID) and \code{status}
+(always \code{"exercised"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1147,7 +1151,7 @@ timestamp.}
 
 \item{\code{direction}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{(scalar<count in [1, 100]> | NULL) max results per page.
+\item{\code{page_size}}{(scalar<count in [1, 101[> | NULL) max results per page.
 Alpaca caps this at \strong{100} for \verb{/v2/account/activities}; values above
 100 return HTTP 422 server-side. This method validates the cap up-front
 and \code{abort()}s with a clear message rather than letting the vendor
@@ -1258,7 +1262,7 @@ timestamp.}
 
 \item{\code{direction}}{(scalar<character> | NULL) \code{"asc"} or \code{"desc"}.}
 
-\item{\code{page_size}}{(scalar<count in [1, 100]> | NULL) max results per page.
+\item{\code{page_size}}{(scalar<count in [1, 101[> | NULL) max results per page.
 Alpaca caps this at \strong{100} for \verb{/v2/account/activities/\{type\}}; values
 above 100 return HTTP 422 server-side. This method validates the cap
 up-front and \code{abort()}s with a clear message rather than letting the
@@ -1817,9 +1821,9 @@ confirmation \code{data.table}:
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(data.table | promise<data.table>) a single-row confirmation with
-\code{watchlist_id} (character, the deleted watchlist UUID) and \code{status}
-(character, \code{"deleted"}).
+(CancelWatchlistAck | promise<CancelWatchlistAck>) a single-row
+confirmation with \code{watchlist_id} (the deleted watchlist UUID) and
+\code{status} (always \code{"deleted"}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

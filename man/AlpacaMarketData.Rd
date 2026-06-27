@@ -463,7 +463,7 @@ Verified: 2026-05-21
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max bars \strong{per page}
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max bars \strong{per page}
 (1-10000, default 10000). The method auto-paginates via
 \code{next_page_token}, so the full \code{start}..\code{end} range is returned
 regardless of \code{limit}; this only sets the page size (and thus the number
@@ -587,7 +587,7 @@ valid values).}
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max bars \strong{per page}
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max bars \strong{per page}
 (1-10000, default 10000). NOTE: Alpaca applies this as a \emph{total row
 budget across all requested symbols per page} (not per symbol), filling
 symbols alphabetically. The method auto-paginates via \code{next_page_token},
@@ -1269,7 +1269,7 @@ Verified: 2026-05-22
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max trades (1-10000,
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max trades (1-10000,
 default 1000).}
 
 \item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"}, \code{"otc"},
@@ -1355,7 +1355,7 @@ Verified: 2026-05-22
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max quotes (1-10000,
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max quotes (1-10000,
 default 1000).}
 
 \item{\code{feed}}{(scalar<character> | NULL) \code{"sip"} (default), \code{"iex"}, \code{"otc"},

@@ -310,7 +310,7 @@ before this date.}
 \item{\code{style}}{(scalar<character> | NULL) option style (\code{"american"},
 \code{"european"}).}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max contracts to return
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max contracts to return
 (default 100, max 10000).}
 
 \item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
@@ -521,7 +521,7 @@ Verified: 2026-05-21
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max bars (1-10000,
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max bars (1-10000,
 default 1000).}
 
 \item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
@@ -623,7 +623,7 @@ Verified: 2026-05-21
 
 \item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{(scalar<count in [1, 10000]> | NULL) max trades (1-10000,
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max trades (1-10000,
 default 1000).}
 
 \item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
@@ -883,7 +883,7 @@ Verified: 2026-05-21
 \item{\code{updated_since}}{(scalar<character> | NULL) only return snapshots
 updated at or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 
-\item{\code{limit}}{(scalar<count in [1, 1000]> | NULL) max snapshots (1-1000,
+\item{\code{limit}}{(scalar<count in [1, 1001[> | NULL) max snapshots (1-1000,
 default 100).}
 
 \item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
@@ -1132,7 +1132,7 @@ before this date.}
 \item{\code{feed}}{(scalar<character> | NULL) \code{"opra"} (default) or
 \code{"indicative"}.}
 
-\item{\code{limit}}{(scalar<count in [1, 1000]> | NULL) max results (1-1000,
+\item{\code{limit}}{(scalar<count in [1, 1001[> | NULL) max results (1-1000,
 default 100).}
 
 \item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
