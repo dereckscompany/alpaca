@@ -24,6 +24,7 @@ Imports:
     data.table,
     httr2 (>= 1.0.0),
     lubridate,
+    jsonlite,
     connectcore
 Remotes:
     dereckscompany/connectcore@v0.1.0
@@ -33,7 +34,6 @@ Suggests:
     covr,
     diffviewer,
     DT,
-    jsonlite,
     knitr,
     later,
     lintr,
