@@ -117,7 +117,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @return (data.table | promise<data.table>) the account details. Columns
+    #' @return (Account | promise<Account>) the account details. Columns
     #'   include `id`, `account_number`, `status`, `currency`, `cash`,
     #'   `portfolio_value`, `equity`, `buying_power`, `initial_margin`,
     #'   `maintenance_margin`, `long_market_value`, `short_market_value`,
@@ -191,7 +191,7 @@ AlpacaAccount <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @return (data.table | promise<data.table>) the configuration. Columns
+    #' @return (AccountConfig | promise<AccountConfig>) the configuration. Columns
     #'   include `dtbp_check`, `trade_confirm_email`, `max_margin_multiplier`,
     #'   `pdt_check` (character); `no_shorting`, `suspend_trade`,
     #'   `fractional_trading` (logical); and `max_options_trading_level`
@@ -276,7 +276,7 @@ AlpacaAccount <- R6::R6Class(
     #'   orders for PTP symbols with no exception.
     #' @param disable_overnight_trading (scalar<logical> | NULL) if `TRUE`,
     #'   disable overnight trading on the account.
-    #' @return (data.table | promise<data.table>) the updated configuration.
+    #' @return (AccountConfig | promise<AccountConfig>) the updated configuration.
     #'
     #' @examples
     #' \dontrun{
@@ -373,7 +373,7 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @return (data.table | promise<data.table>) the open positions. Columns
+    #' @return (Position | promise<Position>) the open positions. Columns
     #'   include `asset_id`, `symbol`, `exchange`, `asset_class`,
     #'   `avg_entry_price`, `qty`, `side`, `market_value`, `cost_basis`,
     #'   `unrealized_pl`, `unrealized_plpc`, `current_price`, `lastday_price`
@@ -388,7 +388,12 @@ AlpacaAccount <- R6::R6Class(
     get_positions = function() {
       result <- private$.request(
         endpoint = "/v2/positions",
-        .parser = as_dt_list
+        .parser = function(items) {
+          if (is.null(items) || length(items) == 0) {
+            return(empty_dt_positions())
+          }
+          return(as_dt_list(items))
+        }
       )
       return(connectcore::then_or_now(
         result,
@@ -437,7 +442,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param symbol_or_id (scalar<character>) ticker symbol (e.g., `"AAPL"`) or
     #'   asset UUID.
-    #' @return (data.table | promise<data.table>) the position, with the same
+    #' @return (Position | promise<Position>) the position, with the same
     #'   columns as `get_positions()`, single row.
     #'
     #' @examples
@@ -756,9 +761,9 @@ AlpacaAccount <- R6::R6Class(
     #'   a future release.
     #' @param date_end (scalar<character> | NULL) deprecated alias for `end`.
     #'   Same notes as `date_start`.
-    #' @return (data.table | promise<data.table>) the portfolio history. Columns:
-    #'   `timestamp` (POSIXct, UTC), `equity` (numeric), `profit_loss` (numeric)
-    #'   and `profit_loss_pct` (numeric).
+    #' @return (PortfolioHistory | promise<PortfolioHistory>) the portfolio
+    #'   history. Columns: `timestamp` (POSIXct, UTC), `equity` (numeric),
+    #'   `profit_loss` (numeric) and `profit_loss_pct` (numeric).
     #'
     #' @examples
     #' \dontrun{
@@ -825,7 +830,7 @@ AlpacaAccount <- R6::R6Class(
         ),
         .parser = function(data) {
           if (is.null(data) || is.null(data$timestamp) || length(data$timestamp) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_portfolio_history())
           }
           # The response carries parallel arrays (timestamp, equity, ...).
           # Parsed with simplifyVector = FALSE each is a list whose JSON
@@ -916,10 +921,10 @@ AlpacaAccount <- R6::R6Class(
     #'   (Alpaca's activity IDs are sortable cursors, not opaque tokens). See the
     #'   "Pagination" section below.
     #' @noassert page_size
-    #' @return (data.table | promise<data.table>) the activities. Columns vary by
-    #'   activity type. Includes `id` when non-empty — the per-activity cursor
-    #'   used for paging (see "Pagination"). An empty response returns an empty
-    #'   table with no columns.
+    #' @return (Activity | promise<Activity>) the activities. Columns beyond the
+    #'   guaranteed `Activity` set vary by activity type. `id` is the per-activity
+    #'   cursor used for paging (see "Pagination"). An empty response returns a
+    #'   zero-row table carrying the `Activity` columns.
     #'
     #' @section Pagination:
     #' This method does **not** auto-paginate. To walk every activity that
@@ -1015,6 +1020,9 @@ AlpacaAccount <- R6::R6Class(
           category = category
         ),
         .parser = function(items) {
+          if (is.null(items) || length(items) == 0) {
+            return(empty_dt_activities())
+          }
           dt <- as_dt_list(items)
           parse_timestamp_cols(dt, "transaction_time")
           return(dt)
@@ -1086,9 +1094,9 @@ AlpacaAccount <- R6::R6Class(
     #'   "Pagination" section on `get_activities()` for a worked example; the
     #'   recipe is identical for this method.
     #' @noassert page_size
-    #' @return (data.table | promise<data.table>) the activities. Includes `id`
-    #'   when non-empty (the per-activity cursor used for paging). An empty
-    #'   response returns an empty table with no columns.
+    #' @return (Activity | promise<Activity>) the activities. `id` is the
+    #'   per-activity cursor used for paging. An empty response returns a
+    #'   zero-row table carrying the `Activity` columns.
     #'
     #' @seealso [AlpacaAccount$get_activities()] — the sibling method
     #'   includes the worked id-cursor pagination loop in its
@@ -1145,6 +1153,9 @@ AlpacaAccount <- R6::R6Class(
           page_token = page_token
         ),
         .parser = function(items) {
+          if (is.null(items) || length(items) == 0) {
+            return(empty_dt_activities())
+          }
           dt <- as_dt_list(items)
           parse_timestamp_cols(dt, "transaction_time")
           return(dt)
@@ -1197,7 +1208,7 @@ AlpacaAccount <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @return (data.table | promise<data.table>) the watchlists. Columns: `id`,
+    #' @return (Watchlists | promise<Watchlists>) the watchlists. Columns: `id`,
     #'   `account_id`, `name` (character); `created_at` and `updated_at`
     #'   (POSIXct, UTC).
     #'
@@ -1211,6 +1222,9 @@ AlpacaAccount <- R6::R6Class(
       result <- private$.request(
         endpoint = "/v2/watchlists",
         .parser = function(items) {
+          if (is.null(items) || length(items) == 0) {
+            return(empty_dt_watchlists())
+          }
           dt <- as_dt_list(items)
           parse_timestamp_cols(dt, c("created_at", "updated_at"))
           return(dt)
@@ -1271,7 +1285,7 @@ AlpacaAccount <- R6::R6Class(
     #' ```
     #'
     #' @param watchlist_id (scalar<character>) watchlist UUID.
-    #' @return (data.table | promise<data.table>) a long-format table with one
+    #' @return (Watchlist | promise<Watchlist>) a long-format table with one
     #'   row per asset in the watchlist. Columns include watchlist metadata
     #'   (`id`, `account_id`, `name`, `created_at`, `updated_at`) and asset
     #'   columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
@@ -1348,7 +1362,7 @@ AlpacaAccount <- R6::R6Class(
     #' @param name (scalar<character>) watchlist name.
     #' @param symbols (character | NULL) initial symbols (e.g.,
     #'   `c("AAPL", "MSFT")`).
-    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #' @return (Watchlist | promise<Watchlist>) the same long-format shape as
     #'   `get_watchlist()`: one row per asset, with watchlist metadata (`id`,
     #'   `account_id`, `name`, `created_at`, `updated_at`) replicated and asset
     #'   columns prefixed `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
@@ -1422,7 +1436,7 @@ AlpacaAccount <- R6::R6Class(
     #' @param watchlist_id (scalar<character>) watchlist UUID.
     #' @param name (scalar<character>) new watchlist name.
     #' @param symbols (character) new full list of symbols (replaces existing).
-    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #' @return (Watchlist | promise<Watchlist>) the same long-format shape as
     #'   `get_watchlist()`: one row per asset (after the modification),
     #'   watchlist metadata replicated on each row, asset columns prefixed
     #'   `asset_`.
@@ -1494,7 +1508,7 @@ AlpacaAccount <- R6::R6Class(
     #'
     #' @param watchlist_id (scalar<character>) watchlist UUID.
     #' @param symbol (scalar<character>) ticker symbol to add (e.g., `"AAPL"`).
-    #' @return (data.table | promise<data.table>) the same long-format shape as
+    #' @return (Watchlist | promise<Watchlist>) the same long-format shape as
     #'   `get_watchlist()`: one row per asset in the updated watchlist.
     #'
     #' @examples
