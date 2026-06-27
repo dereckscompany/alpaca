@@ -1,7 +1,7 @@
 Package: alpaca
 Type: Package
 Title: API Wrapper to Alpaca Trading Platform
-Version: 0.4.0
+Version: 0.4.1
 URL: https://dereckscompany.github.io/alpaca/
 BugReports: https://github.com/dereckscompany/alpaca/issues
 Authors@R:
@@ -26,11 +26,11 @@ Imports:
     lubridate,
     jsonlite,
     assert,
-    connectcore
+    connectcore (>= 0.1.0)
 Remotes:
     dereckscompany/assert,
-    dereckscompany/roxyassert@v0.9.1,
-    dereckscompany/connectcore@v0.1.0
+    dereckscompany/roxyassert,
+    dereckscompany/connectcore
 Suggests:
     box,
     coro,
@@ -44,7 +44,7 @@ Suggests:
     promises,
     rcmdcheck,
     rmarkdown,
-    roxyassert,
+    roxyassert (>= 0.9.1),
     testthat (>= 3.0.0),
     withr
 Config/testthat/edition: 3
