@@ -94,12 +94,23 @@ test_that("alpaca_build_request sends JSON body for POST", {
 # future serialisation change (e.g. an `auto_unbox` flip that silently turns a
 # single-symbol watchlist into a scalar) can never pass unnoticed again.
 
-# How the pre-migration funnel serialised a body: drop NULLs, then
-# `httr2::req_body_json()` (auto_unbox = TRUE, digits = 22, null = "null").
+# The exact bytes the pre-migration funnel emitted, computed directly with no
+# httr2-internal reach-in: drop NULLs, then serialise with the same
+# `jsonlite::toJSON()` options `httr2::req_body_json()` used (auto_unbox = TRUE,
+# digits = 22, null = "null"). This mirrors the production serializer
+# (`alpaca_serialize_body()`) byte-for-byte, including its single-symbol
+# watchlist array handling, so it pins the real wire contract.
 master_body_bytes <- function(body) {
   body <- body[!vapply(body, is.null, logical(1))]
-  req <- httr2::req_body_json(httr2::request("https://x"), body)
-  return(as.character(httr2:::req_body_get(req)))
+  if (!is.null(body$symbols)) {
+    body$symbols <- as.list(body$symbols)
+  }
+  return(as.character(jsonlite::toJSON(
+    body,
+    auto_unbox = TRUE,
+    digits = 22,
+    null = "null"
+  )))
 }
 
 test_that("alpaca_serialize_body is byte-identical to the pre-migration funnel for an order", {
