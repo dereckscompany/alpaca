@@ -1905,9 +1905,9 @@ AlpacaMarketData <- R6::R6Class(
     #' @param top (scalar<count in [1, Inf[> | NULL) number of results to return
     #'   (default 10).
     #' @return (MostActives | promise<MostActives>) the most active stocks.
-    #'   Columns: `symbol` (character); `volume`, `trade_count`
-    #'   (integer | numeric — Alpaca encodes them without a decimal, so the
-    #'   JSON parser realises them as integer or numeric by magnitude).
+    #'   Columns: `symbol` (character); `volume`, `trade_count` (count — the
+    #'   parser coerces both whole-number counters to a `numeric` double so a
+    #'   large volume cannot overflow `integer`).
     #'
     #' @examples
     #' \dontrun{
@@ -1924,7 +1924,11 @@ AlpacaMarketData <- R6::R6Class(
           if (is.null(data$most_actives) || length(data$most_actives) == 0) {
             return(empty_dt_most_actives())
           }
-          return(as_dt_list(data$most_actives))
+          dt <- as_dt_list(data$most_actives)
+          # `volume` / `trade_count` are whole-number counters; coerce both to a
+          # clean `numeric` double so a large volume cannot overflow `integer`.
+          coerce_cols(dt, c("volume", "trade_count"), as.numeric)
+          return(dt[])
         }
       )
       return(connectcore::then_or_now(

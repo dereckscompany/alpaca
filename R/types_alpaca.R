@@ -22,30 +22,27 @@
 #' `volume` / `trade_count` and the trade/quote `size` fields; `numeric` (strict
 #' double) for true floating-point prices; `POSIXct` for parsed timestamps and
 #' `Date` for calendar dates. A column is marked `| NA` only where a value can
-#' legitimately be missing on a present row. The whole-number-double screener
-#' counters (`volume` / `trade_count` on `MostActives`) are typed
-#' `integer | numeric` because Alpaca encodes them without a decimal and the
-#' JSON parser realises them as either depending on magnitude.
+#' legitimately be missing on a present row. Alpaca encodes a whole-number price
+#' without a decimal point, so the raw JSON parser realises such a bar/trade/
+#' quote price as `integer`; the parsers coerce every price/vwap column to a
+#' clean `numeric` double with `as.numeric()`, so the contracts can stay strict.
 #'
-#' `@genassert` emits a standalone `assert_type_<Shape>()` for each shape;
-#' `@exportassert` exports them so downstream packages can validate against
-#' Alpaca's shapes.
+#' `@genassert` is omitted: no generated `assert_type_<Shape>()` is called
+#' internally, and as a leaf connector nothing downstream consumes them, so the
+#' shapes expand inline into the methods' `assert_return_*` contracts only.
 #' @name alpaca_shapes
-#' @genassert
-#' @exportassert
 #'
-#' @type Bars (data.table) one row per OHLCV bar. The OHLC and vwap price
-#'   columns are typed `integer | numeric`: Alpaca encodes a whole-number price
-#'   without a decimal point, so the JSON parser realises it as `integer` for
-#'   that bar and `numeric` otherwise (same rationale as the screener counters):
+#' @type Bars (data.table) one row per OHLCV bar. The parser coerces the OHLC and
+#'   vwap price columns to `numeric` (a whole-number price Alpaca sends without a
+#'   decimal would otherwise realise as `integer`):
 #' - timestamp (POSIXct) bar open time (UTC).
-#' - open (integer | numeric) open price.
-#' - high (integer | numeric) high price.
-#' - low (integer | numeric) low price.
-#' - close (integer | numeric) close price.
+#' - open (numeric) open price.
+#' - high (numeric) high price.
+#' - low (numeric) low price.
+#' - close (numeric) close price.
 #' - volume (integer) traded volume.
 #' - trade_count (integer) number of trades in the bar.
-#' - vwap (integer | numeric) volume-weighted average price.
+#' - vwap (numeric) volume-weighted average price.
 #'
 #' @type BarsMulti (extends Bars) one row per (symbol, bar), with the symbol key:
 #' - symbol (character) the ticker (or OCC option) symbol.
@@ -53,8 +50,8 @@
 #' @type Trade (data.table) one row per equity trade (`parse_trades()` maps the
 #'   short field names `t`/`p`/`s`/`x`/`z`/`i`/`c`):
 #' - timestamp (POSIXct) trade time (UTC).
-#' - price (integer | numeric) trade price (`integer` when Alpaca returns a
-#'   whole-number price without a decimal, `numeric` otherwise).
+#' - price (numeric) trade price (the parser coerces it to a double, so a
+#'   whole-number price Alpaca sends without a decimal lands as `numeric`).
 #' - size (integer) trade size in shares.
 #' - exchange (character) reporting exchange code.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
@@ -74,12 +71,10 @@
 #'   `t`/`ax`/`ap`/`as`/`bx`/`bp`/`bs`/`z`/`c`):
 #' - timestamp (POSIXct) quote time (UTC).
 #' - ask_exchange (character) the exchange posting the best ask.
-#' - ask_price (integer | numeric) best ask price (`integer` when whole, else
-#'   `numeric`).
+#' - ask_price (numeric) best ask price (the parser coerces it to a double).
 #' - ask_size (integer) ask size.
 #' - bid_exchange (character) the exchange posting the best bid.
-#' - bid_price (integer | numeric) best bid price (`integer` when whole, else
-#'   `numeric`).
+#' - bid_price (numeric) best bid price (the parser coerces it to a double).
 #' - bid_size (integer) bid size.
 #' - tape (character) the consolidated tape (e.g. `"C"`).
 #' - conditions (character | NA) `;`-collapsed quote condition codes, or `NA`.
@@ -98,13 +93,13 @@
 #'   because the bar OHLC columns parse as `integer` or `numeric` depending on
 #'   the value and the greeks appear only with an options data subscription):
 #' - latest_trade_timestamp (POSIXct) latest trade time (UTC).
-#' - latest_trade_price (integer | numeric) latest trade price (`integer` when
-#'   whole, else `numeric`).
+#' - latest_trade_price (numeric) latest trade price (the parser coerces it to a
+#'   double).
 #' - latest_trade_size (integer) latest trade size.
 #' - latest_trade_conditions (character | NA) `;`-collapsed trade conditions, or `NA`.
 #' - latest_quote_timestamp (POSIXct) latest quote time (UTC).
-#' - latest_quote_ask_price (integer | numeric) latest ask price.
-#' - latest_quote_bid_price (integer | numeric) latest bid price.
+#' - latest_quote_ask_price (numeric) latest ask price (coerced to a double).
+#' - latest_quote_bid_price (numeric) latest bid price (coerced to a double).
 #' - latest_quote_ask_size (integer) latest ask size.
 #' - latest_quote_bid_size (integer) latest bid size.
 #' - latest_quote_conditions (character | NA) `;`-collapsed quote conditions, or `NA`.
@@ -175,10 +170,12 @@
 #' - image_sizes (character | NA) `;`-joined image size labels, or `NA` when none.
 #' - image_urls (character | NA) `;`-joined, losslessly encoded image URLs, or `NA`.
 #'
-#' @type MostActives (data.table) one row per active symbol:
+#' @type MostActives (data.table) one row per active symbol. `volume` and
+#'   `trade_count` are genuine whole-number counters, typed `count`; the parser
+#'   coerces both to `numeric` so a large volume cannot overflow `integer`:
 #' - symbol (character) the ticker.
-#' - volume (integer | numeric) traded volume.
-#' - trade_count (integer | numeric) number of trades.
+#' - volume (count) traded volume.
+#' - trade_count (count) number of trades.
 #'
 #' @type Movers (data.table) one row per mover:
 #' - symbol (character) the ticker.

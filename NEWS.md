@@ -27,11 +27,25 @@
   The list-returning endpoints route their empty branch through typed
   `empty_dt_*()` constructors, so an empty Alpaca response still carries the
   shape's columns. Two shape refinements match Alpaca's wire encoding: the bar
-  OHLC / vwap and the trade/quote price columns are `integer | numeric`
-  (Alpaca drops the decimal point on a whole-number price, so JSON realises it
-  as `integer` for that value), and the `Watchlist` `asset_*` columns are
-  nullable (an empty watchlist returns one all-`NA` asset row). Public
-  behaviour for any valid response is unchanged.
+  OHLC / vwap and the trade/quote price columns are coerced to a clean `numeric`
+  double in the parser (Alpaca drops the decimal point on a whole-number price,
+  so the raw JSON realises it as `integer`; coercing keeps the column type
+  stable so the contract can stay strict `numeric`), and the `Watchlist`
+  `asset_*` columns are nullable (an empty watchlist returns one all-`NA` asset
+  row). Public behaviour for any valid response is unchanged.
+* **Strict numeric contracts and leaf-connector hygiene.** The price columns
+  (`open`/`high`/`low`/`close`/`vwap`, the trade/quote `price`, the snapshot
+  `latest_*_price` columns) are now typed strict `numeric` rather than
+  `integer | numeric`: the parsers coerce them with `as.numeric()` so the
+  column is always a double. The `MostActives` `volume` / `trade_count` are
+  typed `count` and coerced to `numeric`, so a large volume cannot overflow
+  `integer`. The two mis-named typed-empty-vector helpers
+  (`empty_dt_empty_posixct()` / `empty_dt_empty_date()`) are dropped in favour
+  of inline length-0 `lubridate::as_datetime()` / `as_date()` inside the
+  `empty_dt_*` builders. As a leaf connector with no downstream consumer, the
+  shapes no longer export `assert_type_*` validators (`@genassert` /
+  `@exportassert` removed); the `@type` shapes still expand inline into each
+  method's `assert_return_*` contract.
 
 ## Internal
 

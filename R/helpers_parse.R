@@ -258,6 +258,10 @@ parse_bars <- function(bars) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
+  # Alpaca sends a whole-number price without a decimal, so the raw JSON
+  # parser realises that bar's price as `integer`. Coerce every price/vwap
+  # column to a clean `numeric` double so the column is always a double.
+  coerce_cols(dt, c("open", "high", "low", "close", "vwap"), as.numeric)
   return(assert_return_parse_bars(dt[]))
 }
 
@@ -361,6 +365,9 @@ parse_trades <- function(trades) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
+  # Coerce the price to a clean `numeric` double (a whole-number price Alpaca
+  # sends without a decimal would otherwise realise as `integer`).
+  coerce_cols(dt, "price", as.numeric)
   return(assert_return_parse_trades(dt[]))
 }
 
@@ -414,6 +421,9 @@ parse_quotes <- function(quotes) {
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
   parse_timestamp_cols(dt, "timestamp")
+  # Coerce the bid/ask prices to clean `numeric` doubles (a whole-number price
+  # Alpaca sends without a decimal would otherwise realise as `integer`).
+  coerce_cols(dt, c("ask_price", "bid_price"), as.numeric)
   return(assert_return_parse_quotes(dt[]))
 }
 
@@ -564,6 +574,14 @@ parse_snapshot <- function(snapshot) {
       "daily_bar_timestamp",
       "prev_daily_bar_timestamp"
     )
+  )
+  # Coerce the latest-trade/-quote prices to clean `numeric` doubles (a
+  # whole-number price Alpaca sends without a decimal would otherwise realise
+  # as `integer`). The `*_bar_*` OHLC blocks ride along as un-asserted extras.
+  coerce_cols(
+    dt,
+    c("latest_trade_price", "latest_quote_ask_price", "latest_quote_bid_price"),
+    as.numeric
   )
   return(assert_return_parse_snapshot(dt[]))
 }
@@ -936,32 +954,20 @@ parse_orders <- function(items) {
 # match the corresponding `@type` shape in R/types_alpaca.R (every column
 # present, correctly typed). The list-returning endpoint methods substitute the
 # matching empty into their empty branch so an empty Alpaca response still
-# satisfies the method's typed `@return` contract (the generated
-# `assert_type_<Shape>()` requires the shape's columns to be present, which a
-# bare `data.table()` would not carry). Single-object endpoints always return
-# one row, so they need none. POSIXct columns use UTC and Date columns plain
-# `Date`, matching the parsers' coercions.
-
-#' @keywords internal
-#' @noRd
-#' @noassert
-empty_dt_empty_posixct <- function() {
-  return(lubridate::as_datetime(character(0), tz = "UTC"))
-}
-
-#' @keywords internal
-#' @noRd
-#' @noassert
-empty_dt_empty_date <- function() {
-  return(lubridate::as_date(character(0)))
-}
+# satisfies the method's typed `@return` contract (`assert_has_columns` requires
+# the shape's columns to be present, which a bare `data.table()` would not
+# carry). Single-object endpoints always return one row, so they need none.
+# Datetime columns are built with a length-0
+# `lubridate::as_datetime(character(0), tz = "UTC")` and date columns with a
+# length-0 `lubridate::as_date(character(0))`, matching the class and tz the
+# parsers' `parse_timestamp_cols` / `parse_date_cols` coercions produce.
 
 #' @keywords internal
 #' @noRd
 #' @noassert
 empty_dt_bars <- function() {
   return(data.table::data.table(
-    timestamp = empty_dt_empty_posixct(),
+    timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     open = numeric(0),
     high = numeric(0),
     low = numeric(0),
@@ -987,7 +993,7 @@ empty_dt_bars_multi <- function() {
 #' @noassert
 empty_dt_trades <- function() {
   return(data.table::data.table(
-    timestamp = empty_dt_empty_posixct(),
+    timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     price = numeric(0),
     size = integer(0),
     exchange = character(0),
@@ -1012,7 +1018,7 @@ empty_dt_trades_multi <- function() {
 #' @noassert
 empty_dt_quotes <- function() {
   return(data.table::data.table(
-    timestamp = empty_dt_empty_posixct(),
+    timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     ask_exchange = character(0),
     ask_price = numeric(0),
     ask_size = integer(0),
@@ -1059,11 +1065,11 @@ empty_dt_option_quotes_multi <- function() {
 #' @noassert
 empty_dt_snapshot <- function() {
   return(data.table::data.table(
-    latest_trade_timestamp = empty_dt_empty_posixct(),
+    latest_trade_timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     latest_trade_price = numeric(0),
     latest_trade_size = integer(0),
     latest_trade_conditions = character(0),
-    latest_quote_timestamp = empty_dt_empty_posixct(),
+    latest_quote_timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     latest_quote_ask_price = numeric(0),
     latest_quote_bid_price = numeric(0),
     latest_quote_ask_size = integer(0),
@@ -1106,12 +1112,12 @@ empty_dt_assets <- function() {
 #' @noassert
 empty_dt_calendar <- function() {
   return(data.table::data.table(
-    date = empty_dt_empty_date(),
-    open = empty_dt_empty_posixct(),
-    close = empty_dt_empty_posixct(),
-    session_open = empty_dt_empty_posixct(),
-    session_close = empty_dt_empty_posixct(),
-    settlement_date = empty_dt_empty_date()
+    date = lubridate::as_date(character(0)),
+    open = lubridate::as_datetime(character(0), tz = "UTC"),
+    close = lubridate::as_datetime(character(0), tz = "UTC"),
+    session_open = lubridate::as_datetime(character(0), tz = "UTC"),
+    session_close = lubridate::as_datetime(character(0), tz = "UTC"),
+    settlement_date = lubridate::as_date(character(0))
   ))
 }
 
@@ -1126,10 +1132,10 @@ empty_dt_corporate_actions <- function() {
     ca_sub_type = character(0),
     initiating_symbol = character(0),
     target_symbol = character(0),
-    declaration_date = empty_dt_empty_date(),
-    ex_date = empty_dt_empty_date(),
-    record_date = empty_dt_empty_date(),
-    payable_date = empty_dt_empty_date(),
+    declaration_date = lubridate::as_date(character(0)),
+    ex_date = lubridate::as_date(character(0)),
+    record_date = lubridate::as_date(character(0)),
+    payable_date = lubridate::as_date(character(0)),
     cash = character(0),
     old_rate = character(0),
     new_rate = character(0)
@@ -1148,8 +1154,8 @@ empty_dt_news <- function() {
     summary = character(0),
     url = character(0),
     symbols = character(0),
-    created_at = empty_dt_empty_posixct(),
-    updated_at = empty_dt_empty_posixct(),
+    created_at = lubridate::as_datetime(character(0), tz = "UTC"),
+    updated_at = lubridate::as_datetime(character(0), tz = "UTC"),
     image_sizes = character(0),
     image_urls = character(0)
   ))
@@ -1161,8 +1167,8 @@ empty_dt_news <- function() {
 empty_dt_most_actives <- function() {
   return(data.table::data.table(
     symbol = character(0),
-    volume = integer(0),
-    trade_count = integer(0)
+    volume = numeric(0),
+    trade_count = numeric(0)
   ))
 }
 
@@ -1191,7 +1197,7 @@ empty_dt_contracts <- function() {
     tradable = logical(0),
     type = character(0),
     strike_price = character(0),
-    expiration_date = empty_dt_empty_date(),
+    expiration_date = lubridate::as_date(character(0)),
     underlying_symbol = character(0),
     style = character(0),
     root_symbol = character(0),
@@ -1234,7 +1240,7 @@ empty_dt_activities <- function() {
     side = character(0),
     qty = character(0),
     price = character(0),
-    transaction_time = empty_dt_empty_posixct()
+    transaction_time = lubridate::as_datetime(character(0), tz = "UTC")
   ))
 }
 
@@ -1243,7 +1249,7 @@ empty_dt_activities <- function() {
 #' @noassert
 empty_dt_portfolio_history <- function() {
   return(data.table::data.table(
-    timestamp = empty_dt_empty_posixct(),
+    timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
     equity = numeric(0),
     profit_loss = numeric(0),
     profit_loss_pct = numeric(0)
@@ -1258,8 +1264,8 @@ empty_dt_watchlists <- function() {
     id = character(0),
     account_id = character(0),
     name = character(0),
-    created_at = empty_dt_empty_posixct(),
-    updated_at = empty_dt_empty_posixct()
+    created_at = lubridate::as_datetime(character(0), tz = "UTC"),
+    updated_at = lubridate::as_datetime(character(0), tz = "UTC")
   ))
 }
 
@@ -1275,7 +1281,7 @@ empty_dt_orders <- function() {
     status = character(0),
     qty = character(0),
     filled_qty = character(0),
-    created_at = empty_dt_empty_posixct(),
+    created_at = lubridate::as_datetime(character(0), tz = "UTC"),
     leg_index = integer(0),
     parent_order_id = character(0)
   ))
