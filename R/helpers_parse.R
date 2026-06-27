@@ -239,7 +239,7 @@ hhmm_to_hh_mm <- function(x) {
 parse_bars <- function(bars) {
   assert_args_parse_bars(bars)
   if (is.null(bars) || length(bars) == 0) {
-    return(assert_return_parse_bars(data.table::data.table()[]))
+    return(assert_return_parse_bars(empty_dt_bars()))
   }
   dt <- data.table::rbindlist(bars, fill = TRUE)
   name_map <- c(
@@ -298,7 +298,7 @@ parse_multi_bars <- function(data) {
 parse_multi_bars_items <- function(items) {
   assert_args_parse_multi_bars_items(items)
   if (is.null(items) || length(items) == 0) {
-    return(assert_return_parse_multi_bars_items(data.table::data.table()[]))
+    return(assert_return_parse_multi_bars_items(empty_dt_bars_multi()))
   }
   syms <- unique(names(items))
   dts <- lapply(syms, function(sym) {
@@ -334,7 +334,7 @@ parse_multi_bars_items <- function(items) {
 parse_trades <- function(trades) {
   assert_args_parse_trades(trades)
   if (is.null(trades) || length(trades) == 0) {
-    return(assert_return_parse_trades(data.table::data.table()[]))
+    return(assert_return_parse_trades(empty_dt_trades()))
   }
   # Collapse the `c` condition-code array on each trade so one trade
   # remains one row. We rename `c` to `conditions` first so the helper
@@ -385,7 +385,7 @@ parse_trades <- function(trades) {
 parse_quotes <- function(quotes) {
   assert_args_parse_quotes(quotes)
   if (is.null(quotes) || length(quotes) == 0) {
-    return(assert_return_parse_quotes(data.table::data.table()[]))
+    return(assert_return_parse_quotes(empty_dt_quotes()))
   }
   # Rename `c` -> `conditions` first so the helper finds the field, then
   # collapse the array to a `;`-joined character column. One quote =
@@ -447,7 +447,7 @@ parse_quotes <- function(quotes) {
 parse_snapshot <- function(snapshot) {
   assert_args_parse_snapshot(snapshot)
   if (is.null(snapshot) || length(snapshot) == 0) {
-    return(assert_return_parse_snapshot(data.table::data.table()[]))
+    return(assert_return_parse_snapshot(empty_dt_snapshot()))
   }
   # Collapse the inner `c` condition-code arrays on latestTrade /
   # latestQuote BEFORE flattening. Only these two sections — bar
@@ -499,7 +499,7 @@ parse_snapshot <- function(snapshot) {
   }
   dt <- as_dt_row(flat)
   if (ncol(dt) == 0) {
-    return(assert_return_parse_snapshot(dt[]))
+    return(assert_return_parse_snapshot(empty_dt_snapshot()))
   }
   # Expand abbreviated field names with explicit map
   snapshot_name_map <- c(
@@ -596,7 +596,7 @@ parse_snapshot <- function(snapshot) {
 parse_news <- function(news_items) {
   assert_args_parse_news(news_items)
   if (is.null(news_items) || length(news_items) == 0) {
-    return(assert_return_parse_news(data.table::data.table()[]))
+    return(assert_return_parse_news(empty_dt_news()))
   }
   # Walk each article, collapse the two nested arrays into scalar character
   # fields, then drop the originals so rbindlist sees a flat record.
@@ -757,7 +757,7 @@ parse_asset <- function(x) {
 parse_assets <- function(items) {
   assert_args_parse_assets(items)
   if (is.null(items) || length(items) == 0L) {
-    return(assert_return_parse_assets(data.table::data.table()[]))
+    return(assert_return_parse_assets(empty_dt_assets()))
   }
   return(assert_return_parse_assets(data.table::rbindlist(lapply(items, parse_asset), fill = TRUE)[]))
 }
@@ -829,7 +829,7 @@ parse_contract <- function(x) {
 parse_contracts <- function(items) {
   assert_args_parse_contracts(items)
   if (is.null(items) || length(items) == 0L) {
-    return(assert_return_parse_contracts(data.table::data.table()[]))
+    return(assert_return_parse_contracts(empty_dt_contracts()))
   }
   return(assert_return_parse_contracts(data.table::rbindlist(lapply(items, parse_contract), fill = TRUE)[]))
 }
@@ -865,7 +865,7 @@ parse_contracts <- function(items) {
 parse_order <- function(x) {
   assert_args_parse_order(x)
   if (is.null(x) || length(x) == 0) {
-    return(assert_return_parse_order(data.table::data.table()[]))
+    return(assert_return_parse_order(empty_dt_orders()))
   }
   legs <- x[["legs"]]
   parent_id <- x[["id"]]
@@ -924,8 +924,339 @@ ORDER_TIMESTAMP_COLS <- c(
 parse_orders <- function(items) {
   assert_args_parse_orders(items)
   if (is.null(items) || length(items) == 0) {
-    return(assert_return_parse_orders(data.table::data.table()[]))
+    return(assert_return_parse_orders(empty_dt_orders()))
   }
   dt <- data.table::rbindlist(lapply(items, parse_order), fill = TRUE)
   return(assert_return_parse_orders(dt[]))
+}
+
+# ---- Typed empty constructors ----
+#
+# Each `empty_dt_<descriptive>()` returns a zero-row data.table whose columns
+# match the corresponding `@type` shape in R/types_alpaca.R (every column
+# present, correctly typed). The list-returning endpoint methods substitute the
+# matching empty into their empty branch so an empty Alpaca response still
+# satisfies the method's typed `@return` contract (the generated
+# `assert_type_<Shape>()` requires the shape's columns to be present, which a
+# bare `data.table()` would not carry). Single-object endpoints always return
+# one row, so they need none. POSIXct columns use UTC and Date columns plain
+# `Date`, matching the parsers' coercions.
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_empty_posixct <- function() {
+  return(lubridate::as_datetime(character(0), tz = "UTC"))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_empty_date <- function() {
+  return(lubridate::as_date(character(0)))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_bars <- function() {
+  return(data.table::data.table(
+    timestamp = empty_dt_empty_posixct(),
+    open = numeric(0),
+    high = numeric(0),
+    low = numeric(0),
+    close = numeric(0),
+    volume = integer(0),
+    trade_count = integer(0),
+    vwap = numeric(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_bars_multi <- function() {
+  dt <- empty_dt_bars()
+  dt[, symbol := character(0)]
+  data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_trades <- function() {
+  return(data.table::data.table(
+    timestamp = empty_dt_empty_posixct(),
+    price = numeric(0),
+    size = integer(0),
+    exchange = character(0),
+    tape = character(0),
+    id = integer(0),
+    conditions = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_trades_multi <- function() {
+  dt <- empty_dt_trades()
+  dt[, symbol := character(0)]
+  data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_quotes <- function() {
+  return(data.table::data.table(
+    timestamp = empty_dt_empty_posixct(),
+    ask_exchange = character(0),
+    ask_price = numeric(0),
+    ask_size = integer(0),
+    bid_exchange = character(0),
+    bid_price = numeric(0),
+    bid_size = integer(0),
+    tape = character(0),
+    conditions = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_quotes_multi <- function() {
+  dt <- empty_dt_quotes()
+  dt[, symbol := character(0)]
+  data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_snapshot <- function() {
+  return(data.table::data.table(
+    latest_trade_timestamp = empty_dt_empty_posixct(),
+    latest_trade_price = numeric(0),
+    latest_trade_size = integer(0),
+    latest_trade_conditions = character(0),
+    latest_quote_timestamp = empty_dt_empty_posixct(),
+    latest_quote_ask_price = numeric(0),
+    latest_quote_bid_price = numeric(0),
+    latest_quote_ask_size = integer(0),
+    latest_quote_bid_size = integer(0),
+    latest_quote_conditions = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_snapshots_multi <- function() {
+  dt <- empty_dt_snapshot()
+  dt[, symbol := character(0)]
+  data.table::setcolorder(dt, c("symbol", setdiff(names(dt), "symbol")))
+  return(dt[])
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_assets <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    class = character(0),
+    exchange = character(0),
+    symbol = character(0),
+    name = character(0),
+    status = character(0),
+    tradable = logical(0),
+    marginable = logical(0),
+    shortable = logical(0),
+    fractionable = logical(0),
+    attributes = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_calendar <- function() {
+  return(data.table::data.table(
+    date = empty_dt_empty_date(),
+    open = empty_dt_empty_posixct(),
+    close = empty_dt_empty_posixct(),
+    session_open = empty_dt_empty_posixct(),
+    session_close = empty_dt_empty_posixct(),
+    settlement_date = empty_dt_empty_date()
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_corporate_actions <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    corporate_action_id = character(0),
+    ca_type = character(0),
+    ca_sub_type = character(0),
+    initiating_symbol = character(0),
+    target_symbol = character(0),
+    declaration_date = empty_dt_empty_date(),
+    ex_date = empty_dt_empty_date(),
+    record_date = empty_dt_empty_date(),
+    payable_date = empty_dt_empty_date(),
+    cash = character(0),
+    old_rate = character(0),
+    new_rate = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_news <- function() {
+  return(data.table::data.table(
+    id = integer(0),
+    headline = character(0),
+    author = character(0),
+    source = character(0),
+    summary = character(0),
+    url = character(0),
+    symbols = character(0),
+    created_at = empty_dt_empty_posixct(),
+    updated_at = empty_dt_empty_posixct(),
+    image_sizes = character(0),
+    image_urls = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_most_actives <- function() {
+  return(data.table::data.table(
+    symbol = character(0),
+    volume = integer(0),
+    trade_count = integer(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_movers <- function() {
+  return(data.table::data.table(
+    symbol = character(0),
+    percent_change = numeric(0),
+    change = numeric(0),
+    price = numeric(0),
+    direction = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_contracts <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    symbol = character(0),
+    name = character(0),
+    status = character(0),
+    tradable = logical(0),
+    type = character(0),
+    strike_price = character(0),
+    expiration_date = empty_dt_empty_date(),
+    underlying_symbol = character(0),
+    style = character(0),
+    root_symbol = character(0),
+    size = character(0),
+    open_interest = character(0),
+    close_price = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_positions <- function() {
+  return(data.table::data.table(
+    asset_id = character(0),
+    symbol = character(0),
+    exchange = character(0),
+    asset_class = character(0),
+    avg_entry_price = character(0),
+    qty = character(0),
+    side = character(0),
+    market_value = character(0),
+    cost_basis = character(0),
+    unrealized_pl = character(0),
+    unrealized_plpc = character(0),
+    current_price = character(0),
+    lastday_price = character(0),
+    change_today = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_activities <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    activity_type = character(0),
+    symbol = character(0),
+    side = character(0),
+    qty = character(0),
+    price = character(0),
+    transaction_time = empty_dt_empty_posixct()
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_portfolio_history <- function() {
+  return(data.table::data.table(
+    timestamp = empty_dt_empty_posixct(),
+    equity = numeric(0),
+    profit_loss = numeric(0),
+    profit_loss_pct = numeric(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_watchlists <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    account_id = character(0),
+    name = character(0),
+    created_at = empty_dt_empty_posixct(),
+    updated_at = empty_dt_empty_posixct()
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_orders <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    symbol = character(0),
+    side = character(0),
+    type = character(0),
+    status = character(0),
+    qty = character(0),
+    filled_qty = character(0),
+    created_at = empty_dt_empty_posixct(),
+    leg_index = integer(0),
+    parent_order_id = character(0)
+  ))
 }

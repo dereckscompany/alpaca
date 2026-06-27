@@ -165,7 +165,7 @@ AlpacaTrading <- R6::R6Class(
     #'   strategies. Required when `order_class = "mleg"`.
     #' @param advanced_instructions (list | NULL) routing instructions for
     #'   Alpaca Elite Smart Router.
-    #' @return (data.table | promise<data.table>) the order(s).
+    #' @return (Order | promise<Order>) the order(s).
     #'   A simple order returns a single row. A `bracket` / `oco` / `oto` /
     #'   `mleg` order returns the parent row plus one row per leg — see the
     #'   "Multi-leg orders" section in the README and `vignette("data-shapes")`
@@ -360,7 +360,7 @@ AlpacaTrading <- R6::R6Class(
     #' @param after_order_id (scalar<character> | NULL) return orders submitted
     #'   after this order ID. Mutually exclusive with `before_order_id`. Do not
     #'   combine with `after`/`until`.
-    #' @return (data.table | promise<data.table>) the orders, with the same
+    #' @return (Order | promise<Order>) the orders, with the same
     #'   columns as `add_order()` return value.
     #'
     #' @examples
@@ -502,7 +502,7 @@ AlpacaTrading <- R6::R6Class(
     #'   one row per leg, distinguished by `leg_index` (`NA` on parent,
     #'   `1..N` on legs) and `parent_order_id` (`NA` on parent, parent's
     #'   `id` on legs). Simple orders return a single row regardless.
-    #' @return (data.table | promise<data.table>) the order, with the same
+    #' @return (Order | promise<Order>) the order, with the same
     #'   columns as `add_order()`. Multi-row when `nested = TRUE` and the order
     #'   has legs; otherwise single row.
     #'
@@ -585,7 +585,7 @@ AlpacaTrading <- R6::R6Class(
     #'
     #' @param client_order_id (scalar<character>) the client order ID (max 128
     #'   chars).
-    #' @return (data.table | promise<data.table>) the order, with the same
+    #' @return (Order | promise<Order>) the order, with the same
     #'   columns as `add_order()`. A simple order returns a single row; a
     #'   bracket / OCO / OTO / multi-leg order returns the parent row plus one
     #'   row per leg, distinguished by `leg_index` and `parent_order_id`.
@@ -695,7 +695,7 @@ AlpacaTrading <- R6::R6Class(
     #' @param client_order_id (scalar<character> | NULL) new client order ID.
     #' @param advanced_instructions (list | NULL) routing instructions for
     #'   Alpaca Elite Smart Router.
-    #' @return (data.table | promise<data.table>) the replacement order details.
+    #' @return (Order | promise<Order>) the replacement order details.
     #'
     #' @examples
     #' \dontrun{
