@@ -590,65 +590,20 @@ assert_return_AlpacaMarketData__get_bars <- function(value) {
   assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
   assert_integer(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
   assert_integer(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   return(value)
 }
 
@@ -705,65 +660,20 @@ assert_return_AlpacaMarketData__get_bars_multi <- function(value) {
   assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
   assert_integer(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
   assert_integer(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   assert_character(value[["symbol"]])
   assert_no_missing_values(value[["symbol"]])
   return(value)
@@ -782,65 +692,20 @@ assert_return_AlpacaMarketData__get_latest_bar <- function(value) {
   assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
   assert_integer(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
   assert_integer(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   return(value)
 }
 
@@ -860,17 +725,8 @@ assert_return_AlpacaMarketData__get_latest_trade <- function(value) {
   assert_has_columns(value, c("timestamp", "price", "size", "exchange", "tape", "id", "conditions"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["price"]])
+  assert_no_missing_values(value[["price"]])
   assert_integer(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
@@ -901,32 +757,14 @@ assert_return_AlpacaMarketData__get_latest_quote <- function(value) {
   assert_no_missing_values(value[["timestamp"]])
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["ask_price"]])
+  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["bid_price"]])
+  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -951,44 +789,17 @@ assert_return_AlpacaMarketData__get_snapshot <- function(value) {
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions"))
   assert_datetime(value[["latest_trade_timestamp"]])
   assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_trade_price"]])
+  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
   assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_quote_ask_price"]])
+  assert_no_missing_values(value[["latest_quote_ask_price"]])
+  assert_double(value[["latest_quote_bid_price"]])
+  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -1014,65 +825,20 @@ assert_return_AlpacaMarketData__get_latest_bars_multi <- function(value) {
   assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
   assert_integer(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
   assert_integer(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   assert_character(value[["symbol"]])
   assert_no_missing_values(value[["symbol"]])
   return(value)
@@ -1095,17 +861,8 @@ assert_return_AlpacaMarketData__get_latest_trades_multi <- function(value) {
   assert_has_columns(value, c("timestamp", "price", "size", "exchange", "tape", "id", "conditions", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["price"]])
+  assert_no_missing_values(value[["price"]])
   assert_integer(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
@@ -1139,32 +896,14 @@ assert_return_AlpacaMarketData__get_latest_quotes_multi <- function(value) {
   assert_no_missing_values(value[["timestamp"]])
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["ask_price"]])
+  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["bid_price"]])
+  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -1192,44 +931,17 @@ assert_return_AlpacaMarketData__get_snapshots_multi <- function(value) {
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
   assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_trade_price"]])
+  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
   assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_quote_ask_price"]])
+  assert_no_missing_values(value[["latest_quote_ask_price"]])
+  assert_double(value[["latest_quote_bid_price"]])
+  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -1275,17 +987,8 @@ assert_return_AlpacaMarketData__get_trades <- function(value) {
   assert_has_columns(value, c("timestamp", "price", "size", "exchange", "tape", "id", "conditions"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["price"]])
+  assert_no_missing_values(value[["price"]])
   assert_integer(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
@@ -1335,32 +1038,14 @@ assert_return_AlpacaMarketData__get_quotes <- function(value) {
   assert_no_missing_values(value[["timestamp"]])
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["ask_price"]])
+  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["bid_price"]])
+  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["tape"]])
@@ -1630,28 +1315,8 @@ assert_return_AlpacaMarketData__get_most_actives <- function(value) {
   assert_has_columns(value, c("symbol", "volume", "trade_count"))
   assert_character(value[["symbol"]])
   assert_no_missing_values(value[["symbol"]])
-  assert_any_of(
-    value[["volume"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["trade_count"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_count(value[["volume"]])
+  assert_count(value[["trade_count"]])
   return(value)
 }
 
@@ -1840,65 +1505,20 @@ assert_return_AlpacaOptions__get_option_bars <- function(value) {
   assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
   assert_integer(value[["volume"]])
   assert_no_missing_values(value[["volume"]])
   assert_integer(value[["trade_count"]])
   assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   assert_character(value[["symbol"]])
   assert_no_missing_values(value[["symbol"]])
   return(value)
@@ -1930,17 +1550,8 @@ assert_return_AlpacaOptions__get_option_trades <- function(value) {
   assert_has_columns(value, c("timestamp", "price", "size", "exchange", "id", "conditions", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["price"]])
+  assert_no_missing_values(value[["price"]])
   assert_integer(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
@@ -1968,32 +1579,14 @@ assert_return_AlpacaOptions__get_option_latest_quotes <- function(value) {
   assert_no_missing_values(value[["timestamp"]])
   assert_character(value[["ask_exchange"]])
   assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["ask_price"]])
+  assert_no_missing_values(value[["ask_price"]])
   assert_integer(value[["ask_size"]])
   assert_no_missing_values(value[["ask_size"]])
   assert_character(value[["bid_exchange"]])
   assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["bid_price"]])
+  assert_no_missing_values(value[["bid_price"]])
   assert_integer(value[["bid_size"]])
   assert_no_missing_values(value[["bid_size"]])
   assert_character(value[["conditions"]])
@@ -2015,17 +1608,8 @@ assert_return_AlpacaOptions__get_option_latest_trades <- function(value) {
   assert_has_columns(value, c("timestamp", "price", "size", "exchange", "id", "conditions", "symbol"))
   assert_datetime(value[["timestamp"]])
   assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["price"]])
+  assert_no_missing_values(value[["price"]])
   assert_integer(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["exchange"]])
@@ -2061,44 +1645,17 @@ assert_return_AlpacaOptions__get_option_snapshots <- function(value) {
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
   assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_trade_price"]])
+  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
   assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_quote_ask_price"]])
+  assert_no_missing_values(value[["latest_quote_ask_price"]])
+  assert_double(value[["latest_quote_bid_price"]])
+  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -2153,44 +1710,17 @@ assert_return_AlpacaOptions__get_option_chain <- function(value) {
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
   assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_trade_price"]])
+  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
   assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
+  assert_double(value[["latest_quote_ask_price"]])
+  assert_no_missing_values(value[["latest_quote_ask_price"]])
+  assert_double(value[["latest_quote_bid_price"]])
+  assert_no_missing_values(value[["latest_quote_bid_price"]])
   assert_integer(value[["latest_quote_ask_size"]])
   assert_no_missing_values(value[["latest_quote_ask_size"]])
   assert_integer(value[["latest_quote_bid_size"]])
@@ -2851,892 +2381,6 @@ assert_args_alpaca_fetch_bars <- function(symbol, timeframe, start, end, keys, d
 assert_return_alpaca_fetch_bars <- function(value) {
   assert_data_table(value)
   return(value)
-}
-
-assert_type_Bars <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["volume"]])
-  assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
-  assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  return(invisible(value))
-}
-
-assert_type_BarsMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["open"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["high"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["low"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["close"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["volume"]])
-  assert_no_missing_values(value[["volume"]])
-  assert_integer(value[["trade_count"]])
-  assert_no_missing_values(value[["trade_count"]])
-  assert_any_of(
-    value[["vwap"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_Trade <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "price", "size", "exchange", "tape", "id", "conditions"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["size"]])
-  assert_no_missing_values(value[["size"]])
-  assert_character(value[["exchange"]])
-  assert_no_missing_values(value[["exchange"]])
-  assert_character(value[["tape"]])
-  assert_no_missing_values(value[["tape"]])
-  assert_integer(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["conditions"]])
-  return(invisible(value))
-}
-
-assert_type_TradesMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "price", "size", "exchange", "tape", "id", "conditions", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["size"]])
-  assert_no_missing_values(value[["size"]])
-  assert_character(value[["exchange"]])
-  assert_no_missing_values(value[["exchange"]])
-  assert_character(value[["tape"]])
-  assert_no_missing_values(value[["tape"]])
-  assert_integer(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["conditions"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_OptionTradesMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "price", "size", "exchange", "id", "conditions", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_any_of(
-    value[["price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["size"]])
-  assert_no_missing_values(value[["size"]])
-  assert_character(value[["exchange"]])
-  assert_no_missing_values(value[["exchange"]])
-  assert_integer(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["conditions"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_Quote <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "ask_exchange", "ask_price", "ask_size", "bid_exchange", "bid_price", "bid_size", "tape", "conditions"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_character(value[["ask_exchange"]])
-  assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["ask_size"]])
-  assert_no_missing_values(value[["ask_size"]])
-  assert_character(value[["bid_exchange"]])
-  assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["bid_size"]])
-  assert_no_missing_values(value[["bid_size"]])
-  assert_character(value[["tape"]])
-  assert_no_missing_values(value[["tape"]])
-  assert_character(value[["conditions"]])
-  return(invisible(value))
-}
-
-assert_type_QuotesMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "ask_exchange", "ask_price", "ask_size", "bid_exchange", "bid_price", "bid_size", "tape", "conditions", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_character(value[["ask_exchange"]])
-  assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["ask_size"]])
-  assert_no_missing_values(value[["ask_size"]])
-  assert_character(value[["bid_exchange"]])
-  assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["bid_size"]])
-  assert_no_missing_values(value[["bid_size"]])
-  assert_character(value[["tape"]])
-  assert_no_missing_values(value[["tape"]])
-  assert_character(value[["conditions"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_OptionQuotesMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "ask_exchange", "ask_price", "ask_size", "bid_exchange", "bid_price", "bid_size", "conditions", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_character(value[["ask_exchange"]])
-  assert_no_missing_values(value[["ask_exchange"]])
-  assert_any_of(
-    value[["ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["ask_size"]])
-  assert_no_missing_values(value[["ask_size"]])
-  assert_character(value[["bid_exchange"]])
-  assert_no_missing_values(value[["bid_exchange"]])
-  assert_any_of(
-    value[["bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["bid_size"]])
-  assert_no_missing_values(value[["bid_size"]])
-  assert_character(value[["conditions"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_Snapshot <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions"))
-  assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
-  assert_character(value[["latest_trade_conditions"]])
-  assert_datetime(value[["latest_quote_timestamp"]])
-  assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["latest_quote_ask_size"]])
-  assert_no_missing_values(value[["latest_quote_ask_size"]])
-  assert_integer(value[["latest_quote_bid_size"]])
-  assert_no_missing_values(value[["latest_quote_bid_size"]])
-  assert_character(value[["latest_quote_conditions"]])
-  return(invisible(value))
-}
-
-assert_type_SnapshotMulti <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
-  assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
-  assert_any_of(
-    value[["latest_trade_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
-  assert_character(value[["latest_trade_conditions"]])
-  assert_datetime(value[["latest_quote_timestamp"]])
-  assert_no_missing_values(value[["latest_quote_timestamp"]])
-  assert_any_of(
-    value[["latest_quote_ask_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["latest_quote_bid_price"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_integer(value[["latest_quote_ask_size"]])
-  assert_no_missing_values(value[["latest_quote_ask_size"]])
-  assert_integer(value[["latest_quote_bid_size"]])
-  assert_no_missing_values(value[["latest_quote_bid_size"]])
-  assert_character(value[["latest_quote_conditions"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  return(invisible(value))
-}
-
-assert_type_Asset <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "class", "exchange", "symbol", "name", "status", "tradable", "marginable", "shortable", "fractionable", "attributes"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["class"]])
-  assert_no_missing_values(value[["class"]])
-  assert_character(value[["exchange"]])
-  assert_no_missing_values(value[["exchange"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["name"]])
-  assert_no_missing_values(value[["name"]])
-  assert_character(value[["status"]])
-  assert_no_missing_values(value[["status"]])
-  assert_logical(value[["tradable"]])
-  assert_no_missing_values(value[["tradable"]])
-  assert_logical(value[["marginable"]])
-  assert_no_missing_values(value[["marginable"]])
-  assert_logical(value[["shortable"]])
-  assert_no_missing_values(value[["shortable"]])
-  assert_logical(value[["fractionable"]])
-  assert_no_missing_values(value[["fractionable"]])
-  assert_character(value[["attributes"]])
-  return(invisible(value))
-}
-
-assert_type_CryptoOrderbook <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("symbol", "side", "level", "price", "size", "timestamp"))
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
-  assert_integer(value[["level"]])
-  assert_no_missing_values(value[["level"]])
-  assert_double(value[["price"]])
-  assert_no_missing_values(value[["price"]])
-  assert_double(value[["size"]])
-  assert_no_missing_values(value[["size"]])
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  return(invisible(value))
-}
-
-assert_type_Calendar <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("date", "open", "close", "session_open", "session_close", "settlement_date"))
-  assert_date(value[["date"]])
-  assert_no_missing_values(value[["date"]])
-  assert_datetime(value[["open"]])
-  assert_no_missing_values(value[["open"]])
-  assert_datetime(value[["close"]])
-  assert_no_missing_values(value[["close"]])
-  assert_datetime(value[["session_open"]])
-  assert_no_missing_values(value[["session_open"]])
-  assert_datetime(value[["session_close"]])
-  assert_no_missing_values(value[["session_close"]])
-  assert_date(value[["settlement_date"]])
-  assert_no_missing_values(value[["settlement_date"]])
-  return(invisible(value))
-}
-
-assert_type_Clock <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "is_open", "next_open", "next_close"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_logical(value[["is_open"]])
-  assert_no_missing_values(value[["is_open"]])
-  assert_datetime(value[["next_open"]])
-  assert_no_missing_values(value[["next_open"]])
-  assert_datetime(value[["next_close"]])
-  assert_no_missing_values(value[["next_close"]])
-  return(invisible(value))
-}
-
-assert_type_CorporateAction <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "corporate_action_id", "ca_type", "ca_sub_type", "initiating_symbol", "target_symbol", "declaration_date", "ex_date", "record_date", "payable_date", "cash", "old_rate", "new_rate"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["corporate_action_id"]])
-  assert_no_missing_values(value[["corporate_action_id"]])
-  assert_character(value[["ca_type"]])
-  assert_no_missing_values(value[["ca_type"]])
-  assert_character(value[["ca_sub_type"]])
-  assert_no_missing_values(value[["ca_sub_type"]])
-  assert_character(value[["initiating_symbol"]])
-  assert_no_missing_values(value[["initiating_symbol"]])
-  assert_character(value[["target_symbol"]])
-  assert_no_missing_values(value[["target_symbol"]])
-  assert_date(value[["declaration_date"]])
-  assert_no_missing_values(value[["declaration_date"]])
-  assert_date(value[["ex_date"]])
-  assert_no_missing_values(value[["ex_date"]])
-  assert_date(value[["record_date"]])
-  assert_no_missing_values(value[["record_date"]])
-  assert_date(value[["payable_date"]])
-  assert_no_missing_values(value[["payable_date"]])
-  assert_character(value[["cash"]])
-  assert_character(value[["old_rate"]])
-  assert_character(value[["new_rate"]])
-  return(invisible(value))
-}
-
-assert_type_News <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "headline", "author", "source", "summary", "url", "symbols", "created_at", "updated_at", "image_sizes", "image_urls"))
-  assert_integer(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["headline"]])
-  assert_no_missing_values(value[["headline"]])
-  assert_character(value[["author"]])
-  assert_no_missing_values(value[["author"]])
-  assert_character(value[["source"]])
-  assert_no_missing_values(value[["source"]])
-  assert_character(value[["summary"]])
-  assert_no_missing_values(value[["summary"]])
-  assert_character(value[["url"]])
-  assert_no_missing_values(value[["url"]])
-  assert_character(value[["symbols"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  assert_datetime(value[["updated_at"]])
-  assert_no_missing_values(value[["updated_at"]])
-  assert_character(value[["image_sizes"]])
-  assert_character(value[["image_urls"]])
-  return(invisible(value))
-}
-
-assert_type_MostActives <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("symbol", "volume", "trade_count"))
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_any_of(
-    value[["volume"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  assert_any_of(
-    value[["trade_count"]],
-    function(.x) {
-      assert_integer(.x)
-      assert_no_missing_values(.x)
-    },
-    function(.x) {
-      assert_double(.x)
-      assert_no_missing_values(.x)
-    }
-  )
-  return(invisible(value))
-}
-
-assert_type_Movers <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("symbol", "percent_change", "change", "price", "direction"))
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_double(value[["percent_change"]])
-  assert_no_missing_values(value[["percent_change"]])
-  assert_double(value[["change"]])
-  assert_no_missing_values(value[["change"]])
-  assert_double(value[["price"]])
-  assert_no_missing_values(value[["price"]])
-  assert_character(value[["direction"]])
-  assert_no_missing_values(value[["direction"]])
-  return(invisible(value))
-}
-
-assert_type_Contract <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "symbol", "name", "status", "tradable", "type", "strike_price", "expiration_date", "underlying_symbol", "style", "root_symbol", "size", "open_interest", "close_price"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["name"]])
-  assert_no_missing_values(value[["name"]])
-  assert_character(value[["status"]])
-  assert_no_missing_values(value[["status"]])
-  assert_logical(value[["tradable"]])
-  assert_no_missing_values(value[["tradable"]])
-  assert_character(value[["type"]])
-  assert_no_missing_values(value[["type"]])
-  assert_character(value[["strike_price"]])
-  assert_no_missing_values(value[["strike_price"]])
-  assert_date(value[["expiration_date"]])
-  assert_no_missing_values(value[["expiration_date"]])
-  assert_character(value[["underlying_symbol"]])
-  assert_no_missing_values(value[["underlying_symbol"]])
-  assert_character(value[["style"]])
-  assert_no_missing_values(value[["style"]])
-  assert_character(value[["root_symbol"]])
-  assert_no_missing_values(value[["root_symbol"]])
-  assert_character(value[["size"]])
-  assert_no_missing_values(value[["size"]])
-  assert_character(value[["open_interest"]])
-  assert_no_missing_values(value[["open_interest"]])
-  assert_character(value[["close_price"]])
-  assert_no_missing_values(value[["close_price"]])
-  return(invisible(value))
-}
-
-assert_type_Account <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "account_number", "status", "currency", "cash", "portfolio_value", "equity", "last_equity", "buying_power", "initial_margin", "maintenance_margin", "long_market_value", "short_market_value", "pattern_day_trader", "trading_blocked", "transfers_blocked", "account_blocked", "daytrade_count", "daytrading_buying_power", "regt_buying_power", "multiplier", "sma", "created_at"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["account_number"]])
-  assert_no_missing_values(value[["account_number"]])
-  assert_character(value[["status"]])
-  assert_no_missing_values(value[["status"]])
-  assert_character(value[["currency"]])
-  assert_no_missing_values(value[["currency"]])
-  assert_character(value[["cash"]])
-  assert_no_missing_values(value[["cash"]])
-  assert_character(value[["portfolio_value"]])
-  assert_no_missing_values(value[["portfolio_value"]])
-  assert_character(value[["equity"]])
-  assert_no_missing_values(value[["equity"]])
-  assert_character(value[["last_equity"]])
-  assert_no_missing_values(value[["last_equity"]])
-  assert_character(value[["buying_power"]])
-  assert_no_missing_values(value[["buying_power"]])
-  assert_character(value[["initial_margin"]])
-  assert_no_missing_values(value[["initial_margin"]])
-  assert_character(value[["maintenance_margin"]])
-  assert_no_missing_values(value[["maintenance_margin"]])
-  assert_character(value[["long_market_value"]])
-  assert_no_missing_values(value[["long_market_value"]])
-  assert_character(value[["short_market_value"]])
-  assert_no_missing_values(value[["short_market_value"]])
-  assert_logical(value[["pattern_day_trader"]])
-  assert_no_missing_values(value[["pattern_day_trader"]])
-  assert_logical(value[["trading_blocked"]])
-  assert_no_missing_values(value[["trading_blocked"]])
-  assert_logical(value[["transfers_blocked"]])
-  assert_no_missing_values(value[["transfers_blocked"]])
-  assert_logical(value[["account_blocked"]])
-  assert_no_missing_values(value[["account_blocked"]])
-  assert_integer(value[["daytrade_count"]])
-  assert_no_missing_values(value[["daytrade_count"]])
-  assert_character(value[["daytrading_buying_power"]])
-  assert_no_missing_values(value[["daytrading_buying_power"]])
-  assert_character(value[["regt_buying_power"]])
-  assert_no_missing_values(value[["regt_buying_power"]])
-  assert_character(value[["multiplier"]])
-  assert_no_missing_values(value[["multiplier"]])
-  assert_character(value[["sma"]])
-  assert_no_missing_values(value[["sma"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  return(invisible(value))
-}
-
-assert_type_AccountConfig <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check", "max_options_trading_level"))
-  assert_character(value[["dtbp_check"]])
-  assert_no_missing_values(value[["dtbp_check"]])
-  assert_logical(value[["no_shorting"]])
-  assert_no_missing_values(value[["no_shorting"]])
-  assert_logical(value[["suspend_trade"]])
-  assert_no_missing_values(value[["suspend_trade"]])
-  assert_character(value[["trade_confirm_email"]])
-  assert_no_missing_values(value[["trade_confirm_email"]])
-  assert_logical(value[["fractional_trading"]])
-  assert_no_missing_values(value[["fractional_trading"]])
-  assert_character(value[["max_margin_multiplier"]])
-  assert_no_missing_values(value[["max_margin_multiplier"]])
-  assert_character(value[["pdt_check"]])
-  assert_no_missing_values(value[["pdt_check"]])
-  assert_integer(value[["max_options_trading_level"]])
-  assert_no_missing_values(value[["max_options_trading_level"]])
-  return(invisible(value))
-}
-
-assert_type_Position <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("asset_id", "symbol", "exchange", "asset_class", "avg_entry_price", "qty", "side", "market_value", "cost_basis", "unrealized_pl", "unrealized_plpc", "current_price", "lastday_price", "change_today"))
-  assert_character(value[["asset_id"]])
-  assert_no_missing_values(value[["asset_id"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["exchange"]])
-  assert_no_missing_values(value[["exchange"]])
-  assert_character(value[["asset_class"]])
-  assert_no_missing_values(value[["asset_class"]])
-  assert_character(value[["avg_entry_price"]])
-  assert_no_missing_values(value[["avg_entry_price"]])
-  assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
-  assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
-  assert_character(value[["market_value"]])
-  assert_no_missing_values(value[["market_value"]])
-  assert_character(value[["cost_basis"]])
-  assert_no_missing_values(value[["cost_basis"]])
-  assert_character(value[["unrealized_pl"]])
-  assert_no_missing_values(value[["unrealized_pl"]])
-  assert_character(value[["unrealized_plpc"]])
-  assert_no_missing_values(value[["unrealized_plpc"]])
-  assert_character(value[["current_price"]])
-  assert_no_missing_values(value[["current_price"]])
-  assert_character(value[["lastday_price"]])
-  assert_no_missing_values(value[["lastday_price"]])
-  assert_character(value[["change_today"]])
-  assert_no_missing_values(value[["change_today"]])
-  return(invisible(value))
-}
-
-assert_type_Activity <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "activity_type", "symbol", "side", "qty", "price", "transaction_time"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["activity_type"]])
-  assert_no_missing_values(value[["activity_type"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
-  assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
-  assert_character(value[["price"]])
-  assert_no_missing_values(value[["price"]])
-  assert_datetime(value[["transaction_time"]])
-  assert_no_missing_values(value[["transaction_time"]])
-  return(invisible(value))
-}
-
-assert_type_PortfolioHistory <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "equity", "profit_loss", "profit_loss_pct"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
-  assert_double(value[["equity"]])
-  assert_no_missing_values(value[["equity"]])
-  assert_double(value[["profit_loss"]])
-  assert_no_missing_values(value[["profit_loss"]])
-  assert_double(value[["profit_loss_pct"]])
-  assert_no_missing_values(value[["profit_loss_pct"]])
-  return(invisible(value))
-}
-
-assert_type_Watchlists <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "account_id", "name", "created_at", "updated_at"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["account_id"]])
-  assert_no_missing_values(value[["account_id"]])
-  assert_character(value[["name"]])
-  assert_no_missing_values(value[["name"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  assert_datetime(value[["updated_at"]])
-  assert_no_missing_values(value[["updated_at"]])
-  return(invisible(value))
-}
-
-assert_type_Watchlist <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "account_id", "name", "created_at", "updated_at", "asset_id", "asset_symbol", "asset_name", "asset_attributes"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["account_id"]])
-  assert_no_missing_values(value[["account_id"]])
-  assert_character(value[["name"]])
-  assert_no_missing_values(value[["name"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  assert_datetime(value[["updated_at"]])
-  assert_no_missing_values(value[["updated_at"]])
-  assert_character(value[["asset_id"]])
-  assert_character(value[["asset_symbol"]])
-  assert_character(value[["asset_name"]])
-  assert_character(value[["asset_attributes"]])
-  return(invisible(value))
-}
-
-assert_type_OrderCore <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "symbol", "side", "type", "status", "qty", "filled_qty", "created_at"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
-  assert_character(value[["type"]])
-  assert_no_missing_values(value[["type"]])
-  assert_character(value[["status"]])
-  assert_no_missing_values(value[["status"]])
-  assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
-  assert_character(value[["filled_qty"]])
-  assert_no_missing_values(value[["filled_qty"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  return(invisible(value))
-}
-
-assert_type_Order <- function(value) {
-  assert_data_table(value)
-  assert_has_columns(value, c("id", "symbol", "side", "type", "status", "qty", "filled_qty", "created_at", "leg_index", "parent_order_id"))
-  assert_character(value[["id"]])
-  assert_no_missing_values(value[["id"]])
-  assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
-  assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
-  assert_character(value[["type"]])
-  assert_no_missing_values(value[["type"]])
-  assert_character(value[["status"]])
-  assert_no_missing_values(value[["status"]])
-  assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
-  assert_character(value[["filled_qty"]])
-  assert_no_missing_values(value[["filled_qty"]])
-  assert_datetime(value[["created_at"]])
-  assert_no_missing_values(value[["created_at"]])
-  assert_integer(value[["leg_index"]])
-  assert_character(value[["parent_order_id"]])
-  return(invisible(value))
 }
 
 assert_args_get_base_url <- function(url) {

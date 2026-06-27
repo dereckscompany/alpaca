@@ -23,12 +23,12 @@ never narrows these to numbers, so neither do we); \code{integer} for the bar
 \code{volume} / \code{trade_count} and the trade/quote \code{size} fields; \code{numeric} (strict
 double) for true floating-point prices; \code{POSIXct} for parsed timestamps and
 \code{Date} for calendar dates. A column is marked \verb{| NA} only where a value can
-legitimately be missing on a present row. The whole-number-double screener
-counters (\code{volume} / \code{trade_count} on \code{MostActives}) are typed
-\code{integer | numeric} because Alpaca encodes them without a decimal and the
-JSON parser realises them as either depending on magnitude.
+legitimately be missing on a present row. Alpaca encodes a whole-number price
+without a decimal point, so the raw JSON parser realises such a bar/trade/
+quote price as \code{integer}; the parsers coerce every price/vwap column to a
+clean \code{numeric} double with \code{as.numeric()}, so the contracts can stay strict.
 
-\verb{@genassert} emits a standalone \verb{assert_type_<Shape>()} for each shape;
-\verb{@exportassert} exports them so downstream packages can validate against
-Alpaca's shapes.
+\verb{@genassert} is omitted: no generated \verb{assert_type_<Shape>()} is called
+internally, and as a leaf connector nothing downstream consumes them, so the
+shapes expand inline into the methods' \verb{assert_return_*} contracts only.
 }

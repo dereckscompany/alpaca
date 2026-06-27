@@ -2052,9 +2052,9 @@ or \code{"trades"}.}
 }
 \subsection{Returns}{
 (MostActives | promise<MostActives>) the most active stocks.
-Columns: \code{symbol} (character); \code{volume}, \code{trade_count}
-(integer | numeric — Alpaca encodes them without a decimal, so the
-JSON parser realises them as integer or numeric by magnitude).
+Columns: \code{symbol} (character); \code{volume}, \code{trade_count} (count — the
+parser coerces both whole-number counters to a \code{numeric} double so a
+large volume cannot overflow \code{integer}).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
