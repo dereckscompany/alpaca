@@ -23,6 +23,15 @@
   shared funnel), and every existing test continues to pass. The one endpoint
   that relied on `simplifyVector = TRUE` (portfolio history) now coerces the
   parallel arrays itself, preserving `null -> NA` alignment.
+* **Request bodies are byte-identical to the pre-migration transport.** Bodies
+  are pre-serialised by `alpaca_serialize_body()` (the exact options the old
+  `httr2::req_body_json()` funnel used — `auto_unbox = TRUE`, `digits = 22`,
+  `null = "null"`) and sent verbatim through connectcore's `body_format = "raw"`
+  path, so the wire bytes for orders and every other POST/PUT/PATCH match the
+  previous release exactly. The single deliberate departure also fixes a
+  long-standing bug: a one-symbol watchlist now serialises `symbols` as a JSON
+  array (`["AAPL"]`) instead of a bare scalar (`"AAPL"`), which Alpaca's
+  watchlist endpoints require. New tests pin these body bytes.
 
 # alpaca 0.3.0
 

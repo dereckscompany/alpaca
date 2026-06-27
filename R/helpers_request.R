@@ -28,6 +28,49 @@ alpaca_sign <- function(req, keys, ctx = list()) {
   ))
 }
 
+#' Serialise an Alpaca request body to its exact wire bytes
+#'
+#' Pre-serialises a body list to the JSON string Alpaca expects, reproducing the
+#' byte-for-byte output the package produced before the connectcore migration.
+#' The pre-migration funnel sent bodies through `httr2::req_body_json()`, which
+#' serialises with `jsonlite::toJSON(auto_unbox = TRUE, digits = 22, null =
+#' "null")`; this helper uses those exact options so the migrated transport
+#' (which sends the result verbatim via connectcore's `body_format = "raw"`
+#' path) is wire-identical.
+#'
+#' The one deliberate departure is the `symbols` field. Alpaca's watchlist
+#' endpoints require `symbols` to be a JSON array, but `auto_unbox = TRUE`
+#' collapses a single-element character vector to a bare scalar (`"AAPL"`
+#' instead of `["AAPL"]`), which the API rejects. Wrapping `symbols` in
+#' [as.list()] keeps it an array for any length without touching any other
+#' field's bytes.
+#'
+#' @param body Named list; the request body. NULL entries are dropped first
+#'   (matching the pre-migration funnel).
+#' @return A length-one character string with the serialised JSON body, or
+#'   `NULL` when the body prunes to nothing (the pre-migration funnel sent no
+#'   body in that case).
+#'
+#' @keywords internal
+#' @noRd
+alpaca_serialize_body <- function(body) {
+  body <- body[!vapply(body, is.null, logical(1))]
+  if (length(body) == 0L) {
+    return(NULL)
+  }
+  if (!is.null(body$symbols)) {
+    # Keep `symbols` a JSON array even for a single symbol; auto_unbox would
+    # otherwise emit a scalar, which Alpaca's watchlist endpoints reject.
+    body$symbols <- as.list(body$symbols)
+  }
+  return(as.character(jsonlite::toJSON(
+    body,
+    auto_unbox = TRUE,
+    digits = 22,
+    null = "null"
+  )))
+}
+
 #' Build and Execute an Alpaca API Request
 #'
 #' Constructs an [httr2::request], adds authentication headers, performs it via

@@ -93,6 +93,36 @@ AlpacaBase <- R6::R6Class(
     # own parser.
     .parse_envelope = function(resp) {
       return(parse_alpaca_response(resp, simplifyVector = FALSE))
+    },
+
+    # Pre-serialise the body to its exact pre-migration wire bytes, then hand it
+    # to the shared funnel verbatim via connectcore's raw path. The default JSON
+    # path would re-serialise with `auto_unbox = TRUE` and collapse a
+    # single-symbol watchlist `symbols` to a scalar; `alpaca_serialize_body()`
+    # owns the serialisation instead and keeps `symbols` a JSON array. Bodyless
+    # requests fall straight through to the inherited funnel unchanged.
+    .request = function(endpoint, method = "GET", query = list(), body = NULL, ...) {
+      raw_body <- if (is.null(body)) NULL else alpaca_serialize_body(body)
+      # A body that prunes to nothing sent no bytes pre-migration; fall through
+      # to the bodyless funnel path rather than emitting an empty-object body.
+      if (is.null(raw_body)) {
+        return(super$.request(
+          endpoint = endpoint,
+          method = method,
+          query = query,
+          body = NULL,
+          ...
+        ))
+      }
+      return(super$.request(
+        endpoint = endpoint,
+        method = method,
+        query = query,
+        body = raw_body,
+        body_format = "raw",
+        raw_content_type = "application/json",
+        ...
+      ))
     }
   )
 )

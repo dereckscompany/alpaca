@@ -434,14 +434,14 @@
     },
     "connectcore": {
       "Package": "connectcore",
-      "Version": "0.0.1",
+      "Version": "0.1.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteUsername": "dereckscompany",
       "RemoteRepo": "connectcore",
-      "RemoteRef": "v0.0.1",
-      "RemoteSha": "248e0ec4cb3075b3e806c411830618907a17a496"
+      "RemoteRef": "v0.1.0",
+      "RemoteSha": "2213ad8c7b56ebedf83c82226a37da50168aa2ce"
     },
     "coro": {
       "Package": "coro",

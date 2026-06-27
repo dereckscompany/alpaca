@@ -26,7 +26,7 @@ Imports:
     lubridate,
     connectcore
 Remotes:
-    dereckscompany/connectcore@v0.0.1
+    dereckscompany/connectcore@v0.1.0
 Suggests:
     box,
     coro,
