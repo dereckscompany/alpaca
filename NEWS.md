@@ -1,3 +1,10 @@
+# alpaca 0.4.2
+
+## Test harness migrated onto the connectcore mock framework
+
+* **Tests and docs now run against the shared `connectcore` mock harness.** The bespoke mock router and its inline R-list fixtures are replaced by JSON fixtures under `tests/testthat/fixtures/` — the single source of truth — loaded via `connectcore::load_fixtures()` and dispatched through `connectcore::mock_router()`; the README and vignettes install the mock with `connectcore::local_mock_api()`. The fixtures are synthetic and PII-free. This is test/docs infrastructure only — no package behaviour changes.
+* **`DESCRIPTION`.** `connectcore (>= 0.2.0)`; `promises` moved from `Suggests` to `Imports` (used by the async bars path).
+
 # alpaca 0.4.1
 
 ## Contract hardening (coinbase gold-standard sweep)
