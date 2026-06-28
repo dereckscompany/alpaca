@@ -5,10 +5,11 @@
 * **Tests and docs now run against the shared `connectcore` mock harness.** The bespoke mock router and its inline R-list fixtures are replaced by JSON fixtures under `tests/testthat/fixtures/` — the single source of truth — loaded via `connectcore::load_fixtures()` and dispatched through `connectcore::mock_router()`; the README and vignettes install the mock with `connectcore::local_mock_api()`. The fixtures are now derived from real read-only Alpaca API captures with every account id, balance, and order id scrubbed to synthetic placeholders, so they mirror the real response shapes faithfully.
 * **`DESCRIPTION`.** `connectcore (>= 0.2.0)`; `promises` moved from `Suggests` to `Imports` (used by the async bars path).
 
-## Bug fixes surfaced by the real-API fixtures
+## Bug fixes surfaced by real data (enriched fixtures + live integration tests)
 
 * **`parse_order()` no longer errors on an order with null timestamps.** A JSON `null` field (e.g. an unfilled order's `filled_at`) arrives as an all-`NA` *logical* column, which the datetime/number coercers reject — so any real order carrying a null timestamp would crash. `coerce_cols()` now normalises an all-`NA` logical column to `NA_character_` before coercion, yielding a correctly typed all-`NA` column. The previous synthetic fixtures omitted those null fields and hid the bug.
 * **`get_account_config()` no longer rejects a real response.** The `AccountConfig` return contract required `max_options_trading_level`, which the live `/v2/account/configurations` endpoint does not return, so the contract would have rejected the real API response. The field is dropped from the `AccountConfig` return type (the modify parameter is unchanged), and the fields the endpoint actually returns (`closing_transactions_only`, `disable_overnight_trading`, `ptp_no_exception_entry`) are now in the fixture.
+* **Several more return contracts no longer reject legitimately-missing fields**, found by running the live integration tests against the real API: the activity `symbol` / `side` / `qty` / `price` / `transaction_time` (a non-trade row — a fee, journal, or dividend — carries none of the trade columns), the option snapshot/chain `latest_trade_timestamp` / `latest_trade_price` / `latest_trade_size` (an illiquid option has no last trade), and the option-contract `open_interest` / `close_price`. Each is now typed `| NA` so the method returns the row instead of crashing.
 
 # alpaca 0.4.1
 
