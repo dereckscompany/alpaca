@@ -6,5 +6,7 @@
   "fractional_trading": true,
   "max_margin_multiplier": "4",
   "pdt_check": "both",
-  "max_options_trading_level": 2
+  "ptp_no_exception_entry": false,
+  "disable_overnight_trading": false,
+  "closing_transactions_only": false
 }

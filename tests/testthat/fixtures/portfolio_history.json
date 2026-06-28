@@ -20,5 +20,6 @@
     -0.002
   ],
   "base_value": 100000,
+  "base_value_asof": "2024-01-01",
   "timeframe": "1D"
 }

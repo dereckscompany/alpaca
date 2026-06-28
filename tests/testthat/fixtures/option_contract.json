@@ -4,15 +4,30 @@
   "name": "AAPL Jun 21 2024 200.00 Call",
   "status": "active",
   "tradable": true,
-  "type": "call",
-  "strike_price": "200.00",
   "expiration_date": "2024-06-21",
-  "underlying_symbol": "AAPL",
-  "style": "american",
   "root_symbol": "AAPL",
+  "underlying_symbol": "AAPL",
+  "underlying_asset_id": "uuid-aapl",
+  "type": "call",
+  "style": "american",
+  "strike_price": "200.00",
+  "multiplier": "100",
   "size": "100",
   "open_interest": "1234",
   "open_interest_date": "2025-03-07",
   "close_price": "5.50",
-  "close_price_date": "2025-03-07"
+  "close_price_date": "2025-03-07",
+  "ppind": false,
+  "deliverables": [
+    {
+      "type": "equity",
+      "symbol": "AAPL",
+      "asset_id": "uuid-aapl",
+      "amount": "100",
+      "allocation_percentage": "100",
+      "settlement_type": "T+1",
+      "settlement_method": "CCC",
+      "delayed_settlement": false
+    }
+  ]
 }

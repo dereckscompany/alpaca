@@ -251,7 +251,6 @@
 #' - fractional_trading (logical) whether fractional trading is enabled.
 #' - max_margin_multiplier (character) max margin multiplier (string).
 #' - pdt_check (character) pattern-day-trader check mode.
-#' - max_options_trading_level (integer) options trading level (0-3).
 #'
 #' @type Position (data.table) one row per open position (all numeric fields are
 #'   the JSON strings Alpaca returns, unparsed):

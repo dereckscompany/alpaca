@@ -7,8 +7,20 @@
   "assets": [
     {
       "id": "uuid-1",
+      "class": "us_equity",
+      "exchange": "NASDAQ",
       "symbol": "AAPL",
       "name": "Apple Inc.",
+      "status": "active",
+      "tradable": true,
+      "marginable": true,
+      "maintenance_margin_requirement": 30,
+      "margin_requirement_long": "30",
+      "margin_requirement_short": "30",
+      "shortable": true,
+      "easy_to_borrow": true,
+      "borrow_status": "easy_to_borrow",
+      "fractionable": true,
       "attributes": [
         "fractional_eh_enabled",
         "has_options"
@@ -16,8 +28,20 @@
     },
     {
       "id": "uuid-2",
+      "class": "us_equity",
+      "exchange": "NASDAQ",
       "symbol": "MSFT",
       "name": "Microsoft Corporation",
+      "status": "active",
+      "tradable": true,
+      "marginable": true,
+      "maintenance_margin_requirement": 30,
+      "margin_requirement_long": "30",
+      "margin_requirement_short": "30",
+      "shortable": true,
+      "easy_to_borrow": true,
+      "borrow_status": "easy_to_borrow",
+      "fractionable": true,
       "attributes": []
     }
   ]

@@ -55,7 +55,7 @@ assert_return_AlpacaAccount__get_account <- function(value) {
 
 assert_return_AlpacaAccount__get_account_config <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check", "max_options_trading_level"))
+  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check"))
   assert_character(value[["dtbp_check"]])
   assert_no_missing_values(value[["dtbp_check"]])
   assert_logical(value[["no_shorting"]])
@@ -70,8 +70,6 @@ assert_return_AlpacaAccount__get_account_config <- function(value) {
   assert_no_missing_values(value[["max_margin_multiplier"]])
   assert_character(value[["pdt_check"]])
   assert_no_missing_values(value[["pdt_check"]])
-  assert_integer(value[["max_options_trading_level"]])
-  assert_no_missing_values(value[["max_options_trading_level"]])
   return(value)
 }
 
@@ -112,7 +110,7 @@ assert_args_AlpacaAccount__modify_account_config <- function(dtbp_check, no_shor
 
 assert_return_AlpacaAccount__modify_account_config <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check", "max_options_trading_level"))
+  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check"))
   assert_character(value[["dtbp_check"]])
   assert_no_missing_values(value[["dtbp_check"]])
   assert_logical(value[["no_shorting"]])
@@ -127,8 +125,6 @@ assert_return_AlpacaAccount__modify_account_config <- function(value) {
   assert_no_missing_values(value[["max_margin_multiplier"]])
   assert_character(value[["pdt_check"]])
   assert_no_missing_values(value[["pdt_check"]])
-  assert_integer(value[["max_options_trading_level"]])
-  assert_no_missing_values(value[["max_options_trading_level"]])
   return(value)
 }
 
