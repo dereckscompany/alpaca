@@ -144,6 +144,11 @@ run_cmd() {
 
 cmd_document() {
     print_header "Generating documentation..."
+    # keep.source.pkgs preserves R6 method source references under pkgload. Without
+    # it, a package using R6 classes + the roxyassert contract roclet silently emits
+    # no per-method contracts (assert_args_<Class>__<method>): the code still loads,
+    # so the gap only surfaces when a method calls its own missing contract. Harmless
+    # for packages that use neither.
     run_cmd Rscript -e "options(keep.source = TRUE, keep.source.pkgs = TRUE); devtools::document()"
     print_success "Documentation generated"
 }

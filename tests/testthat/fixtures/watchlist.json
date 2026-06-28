@@ -1,0 +1,48 @@
+{
+  "id": "wl-uuid-1",
+  "account_id": "acct-uuid-123",
+  "name": "Tech Stocks",
+  "created_at": "2024-01-10T10:00:00Z",
+  "updated_at": "2024-01-15T14:30:00Z",
+  "assets": [
+    {
+      "id": "uuid-1",
+      "class": "us_equity",
+      "exchange": "NASDAQ",
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "status": "active",
+      "tradable": true,
+      "marginable": true,
+      "maintenance_margin_requirement": 30,
+      "margin_requirement_long": "30",
+      "margin_requirement_short": "30",
+      "shortable": true,
+      "easy_to_borrow": true,
+      "borrow_status": "easy_to_borrow",
+      "fractionable": true,
+      "attributes": [
+        "fractional_eh_enabled",
+        "has_options"
+      ]
+    },
+    {
+      "id": "uuid-2",
+      "class": "us_equity",
+      "exchange": "NASDAQ",
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "status": "active",
+      "tradable": true,
+      "marginable": true,
+      "maintenance_margin_requirement": 30,
+      "margin_requirement_long": "30",
+      "margin_requirement_short": "30",
+      "shortable": true,
+      "easy_to_borrow": true,
+      "borrow_status": "easy_to_borrow",
+      "fractionable": true,
+      "attributes": []
+    }
+  ]
+}

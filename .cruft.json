@@ -1,6 +1,6 @@
 {
   "template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-  "commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73",
+  "commit": "5f86cbc79d59efc845845db678820e28ad63d905",
   "checkout": null,
   "context": {
     "cookiecutter": {
@@ -16,10 +16,11 @@
       "use_rcpp": false,
       "_copy_without_render": [
         "renv/*",
-        "renv.lock"
+        "renv.lock",
+        "scripts/*"
       ],
       "_template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-      "_commit": "bd5eac93efa44184a9ec43f2770ca481e0f5bb73"
+      "_commit": "5f86cbc79d59efc845845db678820e28ad63d905"
     }
   },
   "directory": "template-r-package",

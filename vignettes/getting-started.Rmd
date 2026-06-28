@@ -21,7 +21,10 @@ box::use(
   ]
 )
 
-box::use(../tests/testthat/mock_router[mock_router])
+box::use(
+  connectcore[local_mock_api],
+  ../tests/testthat/mock_router[.mock_routes]
+)
 
 KEYS <- get_api_keys(
   api_key = "fake-key",
@@ -30,7 +33,9 @@ KEYS <- get_api_keys(
 TBASE <- "https://paper-api.alpaca.markets"
 DBASE <- "https://data.alpaca.markets"
 
-options(httr2_mock = mock_router)
+# Install the .mock_routes dispatcher as the httr2_mock option for this scope,
+# so every request below is served from canned fixtures (no network).
+local_mock_api(.mock_routes)
 ```
 
 This vignette demonstrates how to use `alpaca` in **synchronous** mode to

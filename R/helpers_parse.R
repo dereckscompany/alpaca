@@ -131,7 +131,18 @@ coerce_cols <- function(dt, cols, fn) {
   # binance fixes.
   for (col in unique(cols)) {
     if (col %in% names(dt)) {
-      data.table::set(dt, j = col, value = fn(dt[[col]]))
+      v <- dt[[col]]
+      # A JSON `null` field arrives as an all-NA *logical* column, because
+      # `as_dt_row()` maps `NULL` -> `NA`. The coercion functions
+      # (`rfc3339_to_datetime`, `lubridate::ymd`, `as.numeric`) expect a
+      # character/atomic input and a `logical` would error (e.g. an unfilled
+      # order's `filled_at: null`). Normalise such a column to `NA_character_`
+      # of the same length first; `fn` then yields a correctly typed all-NA
+      # column (NA POSIXct / NA Date / NA real).
+      if (is.logical(v) && all(is.na(v))) {
+        v <- rep(NA_character_, length(v))
+      }
+      data.table::set(dt, j = col, value = fn(v))
     }
   }
   return(invisible(assert_return_coerce_cols(dt)))

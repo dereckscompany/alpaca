@@ -1,0 +1,81 @@
+{
+  "option_contracts": [
+    {
+      "id": "opt-uuid-1",
+      "symbol": "AAPL240621C00200000",
+      "name": "AAPL Jun 21 2024 200.00 Call",
+      "status": "active",
+      "tradable": true,
+      "type": "call",
+      "strike_price": "200.00",
+      "expiration_date": "2024-06-21",
+      "underlying_symbol": "AAPL",
+      "underlying_asset_id": "uuid-aapl",
+      "style": "american",
+      "root_symbol": "AAPL",
+      "multiplier": "100",
+      "size": "100",
+      "open_interest": "1234",
+      "open_interest_date": "2024-06-20",
+      "close_price": "5.50",
+      "close_price_date": "2024-06-20",
+      "ppind": false,
+      "deliverables": [
+        {
+          "type": "equity",
+          "symbol": "AAPL",
+          "asset_id": "uuid-aapl",
+          "amount": "100",
+          "allocation_percentage": "100",
+          "settlement_type": "T+1",
+          "settlement_method": "BTOB",
+          "delayed_settlement": false
+        }
+      ]
+    },
+    {
+      "id": "opt-uuid-spinoff",
+      "symbol": "OLDCOSPINOFF000",
+      "name": "Post-spinoff combined contract",
+      "status": "active",
+      "tradable": true,
+      "type": "call",
+      "strike_price": "50.00",
+      "expiration_date": "2026-01-16",
+      "underlying_symbol": "OLDCO",
+      "underlying_asset_id": "uuid-oldco",
+      "style": "american",
+      "root_symbol": "OLDCO",
+      "multiplier": "100",
+      "size": "100",
+      "open_interest": "12",
+      "open_interest_date": "2024-06-20",
+      "close_price": "1.20",
+      "close_price_date": "2024-06-20",
+      "ppind": false,
+      "deliverables": [
+        {
+          "type": "equity",
+          "symbol": "NEWCO",
+          "asset_id": "uuid-newco",
+          "amount": "100",
+          "allocation_percentage": "60",
+          "settlement_type": "T+1",
+          "settlement_method": "BTOB",
+          "delayed_settlement": false
+        },
+        {
+          "type": "cash",
+          "symbol": "USD",
+          "asset_id": null,
+          "amount": "250.00",
+          "allocation_percentage": "40",
+          "settlement_type": "T+1",
+          "settlement_method": "BTOB",
+          "delayed_settlement": false
+        }
+      ]
+    }
+  ],
+  "next_page_token": null
+}

@@ -186,16 +186,14 @@ AlpacaAccount <- R6::R6Class(
     #'   "trade_confirm_email": "all",
     #'   "fractional_trading": true,
     #'   "max_margin_multiplier": "4",
-    #'   "pdt_check": "entry",
-    #'   "max_options_trading_level": 2
+    #'   "pdt_check": "entry"
     #' }
     #' ```
     #'
     #' @return (AccountConfig | promise<AccountConfig>) the configuration. Columns
     #'   include `dtbp_check`, `trade_confirm_email`, `max_margin_multiplier`,
-    #'   `pdt_check` (character); `no_shorting`, `suspend_trade`,
-    #'   `fractional_trading` (logical); and `max_options_trading_level`
-    #'   (integer).
+    #'   `pdt_check` (character); and `no_shorting`, `suspend_trade`,
+    #'   `fractional_trading` (logical).
     #'
     #' @examples
     #' \dontrun{
@@ -252,8 +250,7 @@ AlpacaAccount <- R6::R6Class(
     #'   "trade_confirm_email": "all",
     #'   "fractional_trading": false,
     #'   "max_margin_multiplier": "4",
-    #'   "pdt_check": "entry",
-    #'   "max_options_trading_level": 2
+    #'   "pdt_check": "entry"
     #' }
     #' ```
     #'

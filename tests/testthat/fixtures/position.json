@@ -1,0 +1,16 @@
+{
+  "asset_id": "uuid-aapl",
+  "symbol": "AAPL",
+  "exchange": "NASDAQ",
+  "asset_class": "us_equity",
+  "avg_entry_price": "185.50",
+  "qty": "10",
+  "side": "long",
+  "market_value": "1870.00",
+  "cost_basis": "1855.00",
+  "unrealized_pl": "15.00",
+  "unrealized_plpc": "0.008",
+  "current_price": "187.00",
+  "lastday_price": "186.00",
+  "change_today": "0.005"
+}

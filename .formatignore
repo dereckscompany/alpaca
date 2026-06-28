@@ -1,0 +1,20 @@
+# Paths that FORMAT.sh skips for ALL formatters (R via air, C++ via
+# clang-format, JSON via jq). Full gitignore glob semantics apply -- negation
+# (!), **, anchoring -- evaluated by git's own ignore engine. .gitignore is
+# honoured too, so anything already git-ignored needs no entry here.
+
+# Tool-owned or generated files: their own tool rewrites them in its own
+# style, so formatting them just churns and breaks the CI format check.
+renv/
+renv.lock
+docs/
+.cruft.json
+.claude/
+node_modules/
+
+# Rcpp-generated -- compileAttributes() rewrites these in its own style.
+RcppExports.R
+RcppExports.cpp
+
+# Escape hatch: anything under local/ is left untouched, in any language.
+local/

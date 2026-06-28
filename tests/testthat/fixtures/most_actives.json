@@ -1,0 +1,20 @@
+{
+  "last_updated": "2024-01-15T14:30:00Z",
+  "most_actives": [
+    {
+      "symbol": "TSLA",
+      "volume": 150000000,
+      "trade_count": 2000000
+    },
+    {
+      "symbol": "AAPL",
+      "volume": 80000000,
+      "trade_count": 1000000
+    },
+    {
+      "symbol": "NVDA",
+      "volume": 70000000,
+      "trade_count": 900000
+    }
+  ]
+}

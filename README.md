@@ -43,23 +43,16 @@ transformations applied:
     self-describing. The full mapping per endpoint is documented in the
     method-level `@return` blocks.
 
-2.  **Date / time fields parse to `Date` or `POSIXct`** – Every
-    timestamp the Alpaca API emits in RFC-3339 form is parsed for you,
-    regardless of endpoint: bars, trades, quotes, snapshots (incl. the
-    five nested `*_timestamp` fields), orderbooks, news (`created_at`,
+2.  **All RFC-3339 timestamps are `POSIXct`** – Every timestamp the
+    Alpaca API emits in RFC-3339 form is parsed for you, regardless of
+    endpoint: bars, trades, quotes, snapshots (incl. the five nested
+    `*_timestamp` fields), orderbooks, news (`created_at`,
     `updated_at`), orders (`created_at`, `updated_at`, `submitted_at`,
     `filled_at`, `expired_at`, `canceled_at`, `failed_at`,
-    `replaced_at`), account `created_at`, watchlist
-    `created_at` / `updated_at`, and activities `transaction_time`.
-    POSIXct columns are displayed in UTC by default.
-    `get_calendar()` additionally returns `date` / `settlement_date`
-    as `Date` and `open` / `close` / `session_open` / `session_close`
-    as `POSIXct` localised to `America/New_York` (the inferred
-    exchange tz for `/v2`). `get_clock()` displays its three
-    timestamps in `America/New_York`; the wall-clock instant is
-    preserved exactly. Use `lubridate::with_tz()` to view in any
-    other timezone. See each method's `@return` for the per-column
-    types.
+    `replaced_at`), account `created_at`, watchlist `created_at` /
+    `updated_at`, and activities `transaction_time`. POSIXct columns are
+    displayed in UTC by default. See each method’s `@return` for the
+    per-column types.
 
 3.  **One entity = one row, no list columns** – For every endpoint
     normalised under the shape policy (see *Data-shape conventions*
@@ -161,7 +154,8 @@ box::use(
     get_base_url,
     get_data_base_url
   ],
-  ./tests/testthat/mock_router[mock_router]
+  connectcore[local_mock_api],
+  ./tests/testthat/mock_router[.mock_routes]
 )
 
 KEYS <- get_api_keys(
@@ -172,7 +166,11 @@ KEYS <- get_api_keys(
 TBASE <- "https://paper-api.alpaca.markets"
 DBASE <- "https://data.alpaca.markets"
 
-options(httr2_mock = mock_router)
+# httr2 exposes a native global mock hook: connectcore::local_mock_api installs
+# the .mock_routes dispatcher as the httr2_mock option for the rest of this
+# scope, so every request below is served from canned fixtures -- no network,
+# no real credentials.
+local_mock_api(.mock_routes)
 
 # normal imports
 box::use(
@@ -221,10 +219,11 @@ bars[]
     #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
     #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
 
-`get_bars()` and `get_bars_multi()` **auto-paginate**: they follow Alpaca’s
-`next_page_token` and return the full date range as one `data.table`, not
-just the first ~1,000-row page the API caps each response at. Tune the page
-size, throttle and page cap with `limit` / `sleep` / `max_pages`.
+`get_bars()` and `get_bars_multi()` **auto-paginate**: they follow
+Alpaca’s `next_page_token` and return the full date range as one
+`data.table`, not just the first ~1,000-row page the API caps each
+response at. Tune the page size, throttle and page cap with `limit` /
+`sleep` / `max_pages`.
 
 ### Latest Trade
 
@@ -260,8 +259,6 @@ market$get_clock()
     #>              timestamp is_open           next_open          next_close
     #>                 <POSc>  <lgcl>              <POSc>              <POSc>
     #> 1: 2024-01-15 14:30:00    TRUE 2024-01-16 09:30:00 2024-01-15 16:00:00
-    #> # POSIXct columns are displayed in America/New_York (Alpaca's exchange tz).
-    #> # Use lubridate::with_tz() to view in another timezone.
 
 ### Available Assets
 
@@ -290,14 +287,14 @@ news <- market$get_news(symbols = "AAPL", limit = 5)
 news[, .(headline, source, created_at)]
 ```
 
-    #>                                      headline   source           created_at
-    #>                                        <char>   <char>               <char>
-    #> 1:           Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z
-    #> 2:         Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z
-    #> 3:              Some Generic Markets Headline     wire 2024-01-25T15:00:00Z
-    #> 4:                        URL with semicolons     test 2024-01-25T14:00:00Z
-    #> 5:  URL with a pre-existing %3B in the source     test 2024-01-25T13:00:00Z
-    #> 6: Article with partially-missing image sizes     test 2024-01-25T12:00:00Z
+    #>                                      headline   source          created_at
+    #>                                        <char>   <char>              <POSc>
+    #> 1:           Apple Reports Record Q1 Earnings benzinga 2024-01-25 18:30:00
+    #> 2:         Tech Sector Rallies on AI Optimism  reuters 2024-01-25 16:00:00
+    #> 3:              Some Generic Markets Headline     wire 2024-01-25 15:00:00
+    #> 4:                        URL with semicolons     test 2024-01-25 14:00:00
+    #> 5:  URL with a pre-existing %3B in the source     test 2024-01-25 13:00:00
+    #> 6: Article with partially-missing image sizes     test 2024-01-25 12:00:00
 
 ## Account
 
@@ -340,9 +337,9 @@ acct$get_portfolio_history(period = "1M", timeframe = "1D")
 
     #>     timestamp    equity profit_loss profit_loss_pct
     #>        <POSc>     <num>       <num>           <num>
-    #> 1: 2024-01-01 100000.00        0.00          0.0000
-    #> 2: 2024-01-02 100150.50      150.50          0.0015
-    #> 3: 2024-01-03  99800.25     -200.25         -0.0020
+    #> 1: 2024-01-01 100000.00        0.00        0.000000
+    #> 2: 2024-01-02 100150.50      150.50        0.001505
+    #> 3: 2024-01-03  99800.25     -200.25       -0.002000
 
 ## Trading
 
@@ -374,10 +371,10 @@ order[, .(id, symbol, side, type, status, limit_price)]
 trading$get_orders(status = "open")
 ```
 
-    #>         id symbol   side   type status    qty filled_qty           created_at
-    #>     <char> <char> <char> <char> <char> <char>     <char>               <char>
-    #> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z
-    #> 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z
+    #>         id symbol   side   type status    qty filled_qty          created_at
+    #>     <char> <char> <char> <char> <char> <char>     <char>              <POSc>
+    #> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15 14:30:00
+    #> 2: order-2   MSFT   sell market filled     10         10 2024-01-15 14:31:00
     #>    leg_index parent_order_id
     #>        <int>          <char>
     #> 1:        NA            <NA>
@@ -424,13 +421,13 @@ chain[]
 ```
 
     #>                 symbol latest_trade_timestamp latest_trade_price
-    #>                 <char>                 <char>              <num>
-    #> 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5
-    #> 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2
+    #>                 <char>                 <POSc>              <num>
+    #> 1: AAPL240621C00200000    2024-06-15 14:30:00                5.5
+    #> 2: AAPL240621C00210000    2024-06-15 14:30:00                3.2
     #>    latest_trade_size latest_trade_conditions latest_quote_timestamp
-    #>                <int>                  <char>                 <char>
-    #> 1:                10                       g   2024-06-15T14:30:00Z
-    #> 2:                 5                    <NA>   2024-06-15T14:30:00Z
+    #>                <int>                  <char>                 <POSc>
+    #> 1:                10                       g    2024-06-15 14:30:00
+    #> 2:                 5                    <NA>    2024-06-15 14:30:00
     #>    latest_quote_ask_price latest_quote_bid_price latest_quote_ask_size
     #>                     <num>                  <num>                 <int>
     #> 1:                    5.6                    5.4                    50

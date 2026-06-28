@@ -1,0 +1,32 @@
+{
+  "market_type": "stocks",
+  "last_updated": "2024-01-15T14:30:00Z",
+  "gainers": [
+    {
+      "symbol": "XYZ",
+      "percent_change": 15.5,
+      "change": 3.2,
+      "price": 23.85
+    },
+    {
+      "symbol": "ABC",
+      "percent_change": 12.3,
+      "change": 5.1,
+      "price": 46.55
+    }
+  ],
+  "losers": [
+    {
+      "symbol": "DEF",
+      "percent_change": -10.2,
+      "change": -4.5,
+      "price": 39.6
+    },
+    {
+      "symbol": "GHI",
+      "percent_change": -8.5,
+      "change": -2.1,
+      "price": 22.6
+    }
+  ]
+}

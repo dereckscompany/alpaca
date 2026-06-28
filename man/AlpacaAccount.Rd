@@ -445,8 +445,7 @@ Verified: 2026-05-21
   "trade_confirm_email": "all",
   "fractional_trading": true,
   "max_margin_multiplier": "4",
-  "pdt_check": "entry",
-  "max_options_trading_level": 2
+  "pdt_check": "entry"
 \}
 }\if{html}{\out{</div>}}
 }
@@ -457,9 +456,8 @@ Verified: 2026-05-21
 \subsection{Returns}{
 (AccountConfig | promise<AccountConfig>) the configuration. Columns
 include \code{dtbp_check}, \code{trade_confirm_email}, \code{max_margin_multiplier},
-\code{pdt_check} (character); \code{no_shorting}, \code{suspend_trade},
-\code{fractional_trading} (logical); and \code{max_options_trading_level}
-(integer).
+\code{pdt_check} (character); and \code{no_shorting}, \code{suspend_trade},
+\code{fractional_trading} (logical).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -519,8 +517,7 @@ Verified: 2026-05-21
   "trade_confirm_email": "all",
   "fractional_trading": false,
   "max_margin_multiplier": "4",
-  "pdt_check": "entry",
-  "max_options_trading_level": 2
+  "pdt_check": "entry"
 \}
 }\if{html}{\out{</div>}}
 }

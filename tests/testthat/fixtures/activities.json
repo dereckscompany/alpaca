@@ -1,0 +1,32 @@
+[
+  {
+    "id": "act-1",
+    "activity_type": "FILL",
+    "transaction_time": "2024-01-15T14:30:00Z",
+    "type": "fill",
+    "price": "185.50",
+    "qty": "10",
+    "side": "buy",
+    "symbol": "AAPL",
+    "leaves_qty": "0",
+    "order_id": "order-uuid-001",
+    "cum_qty": "10",
+    "order_status": "filled",
+    "swap_rate": "1"
+  },
+  {
+    "id": "act-2",
+    "activity_type": "FILL",
+    "transaction_time": "2024-01-15T14:31:00Z",
+    "type": "fill",
+    "price": "374.00",
+    "qty": "5",
+    "side": "sell",
+    "symbol": "MSFT",
+    "leaves_qty": "0",
+    "order_id": "order-uuid-002",
+    "cum_qty": "5",
+    "order_status": "filled",
+    "swap_rate": "1"
+  }
+]

@@ -55,7 +55,7 @@ assert_return_AlpacaAccount__get_account <- function(value) {
 
 assert_return_AlpacaAccount__get_account_config <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check", "max_options_trading_level"))
+  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check"))
   assert_character(value[["dtbp_check"]])
   assert_no_missing_values(value[["dtbp_check"]])
   assert_logical(value[["no_shorting"]])
@@ -70,8 +70,6 @@ assert_return_AlpacaAccount__get_account_config <- function(value) {
   assert_no_missing_values(value[["max_margin_multiplier"]])
   assert_character(value[["pdt_check"]])
   assert_no_missing_values(value[["pdt_check"]])
-  assert_integer(value[["max_options_trading_level"]])
-  assert_no_missing_values(value[["max_options_trading_level"]])
   return(value)
 }
 
@@ -112,7 +110,7 @@ assert_args_AlpacaAccount__modify_account_config <- function(dtbp_check, no_shor
 
 assert_return_AlpacaAccount__modify_account_config <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check", "max_options_trading_level"))
+  assert_has_columns(value, c("dtbp_check", "no_shorting", "suspend_trade", "trade_confirm_email", "fractional_trading", "max_margin_multiplier", "pdt_check"))
   assert_character(value[["dtbp_check"]])
   assert_no_missing_values(value[["dtbp_check"]])
   assert_logical(value[["no_shorting"]])
@@ -127,8 +125,6 @@ assert_return_AlpacaAccount__modify_account_config <- function(value) {
   assert_no_missing_values(value[["max_margin_multiplier"]])
   assert_character(value[["pdt_check"]])
   assert_no_missing_values(value[["pdt_check"]])
-  assert_integer(value[["max_options_trading_level"]])
-  assert_no_missing_values(value[["max_options_trading_level"]])
   return(value)
 }
 
@@ -335,15 +331,10 @@ assert_return_AlpacaAccount__get_activities <- function(value) {
   assert_character(value[["activity_type"]])
   assert_no_missing_values(value[["activity_type"]])
   assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
   assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
   assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
   assert_character(value[["price"]])
-  assert_no_missing_values(value[["price"]])
   assert_datetime(value[["transaction_time"]])
-  assert_no_missing_values(value[["transaction_time"]])
   return(value)
 }
 
@@ -375,15 +366,10 @@ assert_return_AlpacaAccount__get_activities_by_type <- function(value) {
   assert_character(value[["activity_type"]])
   assert_no_missing_values(value[["activity_type"]])
   assert_character(value[["symbol"]])
-  assert_no_missing_values(value[["symbol"]])
   assert_character(value[["side"]])
-  assert_no_missing_values(value[["side"]])
   assert_character(value[["qty"]])
-  assert_no_missing_values(value[["qty"]])
   assert_character(value[["price"]])
-  assert_no_missing_values(value[["price"]])
   assert_datetime(value[["transaction_time"]])
-  assert_no_missing_values(value[["transaction_time"]])
   return(value)
 }
 
@@ -810,11 +796,8 @@ assert_return_AlpacaMarketData__get_snapshot <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions"))
   assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
   assert_double(value[["latest_trade_price"]])
-  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
@@ -948,11 +931,8 @@ assert_return_AlpacaMarketData__get_snapshots_multi <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
   assert_double(value[["latest_trade_price"]])
-  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
@@ -1447,9 +1427,7 @@ assert_return_AlpacaOptions__get_contracts <- function(value) {
   assert_character(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["open_interest"]])
-  assert_no_missing_values(value[["open_interest"]])
   assert_character(value[["close_price"]])
-  assert_no_missing_values(value[["close_price"]])
   return(value)
 }
 
@@ -1486,9 +1464,7 @@ assert_return_AlpacaOptions__get_contract <- function(value) {
   assert_character(value[["size"]])
   assert_no_missing_values(value[["size"]])
   assert_character(value[["open_interest"]])
-  assert_no_missing_values(value[["open_interest"]])
   assert_character(value[["close_price"]])
-  assert_no_missing_values(value[["close_price"]])
   return(value)
 }
 
@@ -1656,11 +1632,8 @@ assert_return_AlpacaOptions__get_option_snapshots <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
   assert_double(value[["latest_trade_price"]])
-  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])
@@ -1719,11 +1692,8 @@ assert_return_AlpacaOptions__get_option_chain <- function(value) {
   assert_data_table(value)
   assert_has_columns(value, c("latest_trade_timestamp", "latest_trade_price", "latest_trade_size", "latest_trade_conditions", "latest_quote_timestamp", "latest_quote_ask_price", "latest_quote_bid_price", "latest_quote_ask_size", "latest_quote_bid_size", "latest_quote_conditions", "symbol"))
   assert_datetime(value[["latest_trade_timestamp"]])
-  assert_no_missing_values(value[["latest_trade_timestamp"]])
   assert_double(value[["latest_trade_price"]])
-  assert_no_missing_values(value[["latest_trade_price"]])
   assert_integer(value[["latest_trade_size"]])
-  assert_no_missing_values(value[["latest_trade_size"]])
   assert_character(value[["latest_trade_conditions"]])
   assert_datetime(value[["latest_quote_timestamp"]])
   assert_no_missing_values(value[["latest_quote_timestamp"]])

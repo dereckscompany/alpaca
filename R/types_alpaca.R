@@ -101,10 +101,12 @@
 #'   `implied_volatility` / `greeks_*` columns ride along as un-asserted extras
 #'   because the bar OHLC columns parse as `integer` or `numeric` depending on
 #'   the value and the greeks appear only with an options data subscription):
-#' - latest_trade_timestamp (POSIXct) latest trade time (UTC).
-#' - latest_trade_price (numeric) latest trade price (the parser coerces it to a
-#'   double).
-#' - latest_trade_size (integer) latest trade size.
+#' - latest_trade_timestamp (POSIXct | NA) latest trade time (UTC); `NA` when an
+#'   illiquid contract has had no last trade.
+#' - latest_trade_price (numeric | NA) latest trade price (the parser coerces it
+#'   to a double); `NA` when an illiquid contract has had no last trade.
+#' - latest_trade_size (integer | NA) latest trade size; `NA` when an illiquid
+#'   contract has had no last trade.
 #' - latest_trade_conditions (character | NA) `;`-collapsed trade conditions, or `NA`.
 #' - latest_quote_timestamp (POSIXct) latest quote time (UTC).
 #' - latest_quote_ask_price (numeric | NA) latest ask price (coerced to a
@@ -213,8 +215,10 @@
 #' - style (character) `"american"` / `"european"`.
 #' - root_symbol (character) the options root symbol.
 #' - size (character) contract size (string).
-#' - open_interest (character) open interest (string).
-#' - close_price (character) last close price (string).
+#' - open_interest (character | NA) open interest (string); `NA` when a real
+#'   contract omits it.
+#' - close_price (character | NA) last close price (string); `NA` when a real
+#'   contract omits it.
 #'
 #' @type Account (data.table) one row, the account snapshot (the nested
 #'   `admin_configurations_*` / `user_configurations_*` flattened columns appear
@@ -251,7 +255,6 @@
 #' - fractional_trading (logical) whether fractional trading is enabled.
 #' - max_margin_multiplier (character) max margin multiplier (string).
 #' - pdt_check (character) pattern-day-trader check mode.
-#' - max_options_trading_level (integer) options trading level (0-3).
 #'
 #' @type Position (data.table) one row per open position (all numeric fields are
 #'   the JSON strings Alpaca returns, unparsed):
@@ -270,15 +273,20 @@
 #' - lastday_price (character) previous-day close price (string).
 #' - change_today (character) intraday change fraction (string).
 #'
-#' @type Activity (data.table) one row per account activity (columns beyond this
-#'   guaranteed set vary by activity type and ride along as un-asserted extras):
+#' @type Activity (data.table) one row per account activity. Only `id` and
+#'   `activity_type` are guaranteed across every activity type; the trade-shaped
+#'   columns below are populated for `FILL`/`PARTIAL_FILL` rows and are `NA` on
+#'   non-trade activities (fees `CFEE`, journals `JNLC`, dividends, ...), which
+#'   instead carry their own fields (e.g. `date`, `net_amount`) as un-asserted
+#'   extras:
 #' - id (character) the activity id (also the pagination cursor).
 #' - activity_type (character) the activity type (e.g. `"FILL"`).
-#' - symbol (character) the ticker.
-#' - side (character) order side.
-#' - qty (character) quantity (string).
-#' - price (character) price (string).
-#' - transaction_time (POSIXct) the transaction time (UTC).
+#' - symbol (character | NA) the ticker; `NA` on non-trade activities.
+#' - side (character | NA) order side; `NA` on non-trade activities.
+#' - qty (character | NA) quantity (string); `NA` on non-trade activities.
+#' - price (character | NA) price (string); `NA` on non-trade activities.
+#' - transaction_time (POSIXct | NA) the transaction time (UTC); `NA` on
+#'   non-trade activities (they carry a `date` instead).
 #'
 #' @type PortfolioHistory (data.table) one row per time-series point:
 #' - timestamp (POSIXct) the snapshot time (UTC).

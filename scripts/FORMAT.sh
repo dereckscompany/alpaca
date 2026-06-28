@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # R Package Format Script
-# Formats R and C++ code for the package
+# Formats R, C++ and JSON code for the package. A .formatignore file at the
+# package root (full gitignore glob semantics) controls what every formatter
+# skips; .gitignore is honoured too, and the local/ directory is an escape hatch.
 
 set -e  # Exit on any errors
 set -u  # Exit on undefined variables
@@ -11,6 +13,11 @@ set -u  # Exit on undefined variables
 # ============================================================================
 
 SCRIPT_NAME=$(basename "$0")
+
+# Run from the package root (this script lives in <root>/scripts/) so every
+# path -- and the .formatignore lookup -- resolves relative to it.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
 
 # Colours for output
 if [[ -t 1 ]]; then
@@ -63,15 +70,19 @@ ${YELLOW}USAGE:${NC}
     ${BOLD}$SCRIPT_NAME${NC} [OPTIONS] [COMMAND]
 
 ${YELLOW}DESCRIPTION:${NC}
-    Format R and C++ code in the package.
+    Format R, C++ and JSON code in the package. Every formatter skips paths
+    listed in .formatignore (full gitignore glob semantics) and .gitignore;
+    the local/ directory is a ready-made escape hatch.
 
 ${YELLOW}COMMANDS:${NC}
     ${GREEN}r${NC}            Format R code using air (extremely fast formatter)
     ${GREEN}r-check${NC}      Check if R code is formatted (no changes)
     ${GREEN}cpp${NC}          Format C++ code using clang-format
     ${GREEN}cpp-check${NC}    Check if C++ code is formatted (no changes)
-    ${GREEN}all${NC}          Format both R and C++ code (default)
-    ${GREEN}check${NC}        Check formatting for both R and C++ code
+    ${GREEN}json${NC}         Format JSON using jq, 2-space indent (skips generated/tool-owned files)
+    ${GREEN}json-check${NC}   Check if JSON is formatted (no changes)
+    ${GREEN}all${NC}          Format R, C++ and JSON code (default)
+    ${GREEN}check${NC}        Check formatting for R, C++ and JSON code
     ${GREEN}help${NC}         Show this help message
 
 ${YELLOW}OPTIONS:${NC}
@@ -92,9 +103,12 @@ ${YELLOW}EXAMPLES:${NC}
     $SCRIPT_NAME check
 
 ${YELLOW}NOTES:${NC}
-    - Requires: air (R formatter), clang-format (C++ formatter)
+    - Requires: air (R formatter), clang-format (C++ formatter), jq (JSON formatter)
     - Install air: ${BLUE}curl -LsSf https://github.com/posit-dev/air/releases/latest/download/air-installer.sh | sh${NC}
     - Install clang-format: ${BLUE}brew install clang-format${NC}
+    - Install jq: ${BLUE}brew install jq${NC}
+    - jq 1.7+ preserves number literals and key order, so values are never mutated
+    - Exclusions: edit ${BLUE}.formatignore${NC} (full gitignore globs) or drop files under ${BLUE}local/${NC}
 
 EOF
 }
@@ -110,6 +124,42 @@ run_cmd() {
     "$@"
 }
 
+# Select files matching the given extensions (e.g. "select_files R r") that
+# are NOT excluded by .gitignore or .formatignore. Filtering is delegated to
+# git's own ignore engine, so .formatignore understands the full gitignore
+# glob vocabulary -- negation (!), **, anchoring -- and it applies even to
+# tracked files. Requires a git repository.
+select_files() {
+    local globs=() ext
+    for ext in "$@"; do globs+=("*.$ext"); done
+
+    local candidates
+    candidates=$(git ls-files --cached --others --exclude-standard -- "${globs[@]}" 2>/dev/null || true)
+    [[ -z "$candidates" ]] && return 0
+
+    if [[ -f "$ROOT/.formatignore" ]]; then
+        local ignored
+        ignored=$(printf '%s\n' "$candidates" \
+            | git -c core.excludesFile="$ROOT/.formatignore" check-ignore --no-index --stdin 2>/dev/null || true)
+        if [[ -n "$ignored" ]]; then
+            printf '%s\n' "$candidates" | grep -vxF -f <(printf '%s\n' "$ignored") || true
+            return 0
+        fi
+    fi
+    printf '%s\n' "$candidates"
+    return 0
+}
+
+# Read select_files output into the global SELECTED array (portable: macOS
+# bash 3.2 has no mapfile). Callers must check ${#SELECTED[@]} before use.
+read_selected() {
+    SELECTED=()
+    local line
+    while IFS= read -r line; do
+        [[ -n "$line" ]] && SELECTED+=("$line")
+    done < <(select_files "$@")
+}
+
 cmd_format_r() {
     print_header "Formatting R code with air..."
     if ! command -v air &> /dev/null; then
@@ -117,7 +167,12 @@ cmd_format_r() {
         print_info "Quick install: curl -LsSf https://github.com/posit-dev/air/releases/latest/download/air-installer.sh | sh"
         exit 1
     fi
-    run_cmd air format .
+    read_selected R r
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No R files to format"
+        return 0
+    fi
+    run_cmd air format "${SELECTED[@]}"
     print_success "R code formatted"
 }
 
@@ -128,7 +183,12 @@ cmd_format_r_check() {
         print_info "Quick install: curl -LsSf https://github.com/posit-dev/air/releases/latest/download/air-installer.sh | sh"
         exit 1
     fi
-    if run_cmd air format --check .; then
+    read_selected R r
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No R files to check"
+        return 0
+    fi
+    if run_cmd air format --check "${SELECTED[@]}"; then
         print_success "All R code is properly formatted"
     else
         print_error "Some files need formatting. Run '$SCRIPT_NAME r' to fix."
@@ -143,15 +203,12 @@ cmd_format_cpp() {
         print_info "Install with: brew install clang-format"
         exit 1
     fi
-
-    # Find all C++ files in src/
-    local cpp_files=$(find src -name "*.cpp" -o -name "*.h" -o -name "*.hpp" 2>/dev/null)
-    if [[ -z "$cpp_files" ]]; then
-        print_info "No C++ files found in src/"
+    read_selected cpp cc cxx h hpp hxx
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No C++ files to format"
         return 0
     fi
-
-    run_cmd clang-format -i $cpp_files
+    run_cmd clang-format -i "${SELECTED[@]}"
     print_success "C++ code formatted"
 }
 
@@ -162,16 +219,13 @@ cmd_format_cpp_check() {
         print_info "Install with: brew install clang-format"
         exit 1
     fi
-
-    # Find all C++ files in src/
-    local cpp_files=$(find src -name "*.cpp" -o -name "*.h" -o -name "*.hpp" 2>/dev/null)
-    if [[ -z "$cpp_files" ]]; then
-        print_info "No C++ files found in src/"
+    read_selected cpp cc cxx h hpp hxx
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No C++ files to check"
         return 0
     fi
-
-    # Check if files are formatted (--dry-run --Werror returns non-zero if changes needed)
-    if run_cmd clang-format --dry-run --Werror $cpp_files 2>/dev/null; then
+    # --dry-run --Werror returns non-zero if changes are needed
+    if run_cmd clang-format --dry-run --Werror "${SELECTED[@]}" 2>/dev/null; then
         print_success "All C++ code is properly formatted"
     else
         print_error "Some C++ files need formatting. Run '$SCRIPT_NAME cpp' to fix."
@@ -179,10 +233,69 @@ cmd_format_cpp_check() {
     fi
 }
 
+cmd_format_json() {
+    print_header "Formatting JSON with jq..."
+    if ! command -v jq &> /dev/null; then
+        print_error "jq is not installed."
+        print_info "Install with: brew install jq"
+        exit 1
+    fi
+    read_selected json
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No JSON files to format"
+        return 0
+    fi
+
+    # jq 1.7+ prints unmutated number literals in their original form and
+    # preserves key order, so only whitespace changes -- values and diffs
+    # stay byte-stable.
+    local f tmp
+    for f in "${SELECTED[@]}"; do
+        tmp=$(mktemp)
+        if jq --indent 2 . "$f" > "$tmp" 2>/dev/null; then
+            mv "$tmp" "$f"
+        else
+            rm -f "$tmp"
+            print_warning "Skipped (invalid JSON): $f"
+        fi
+    done
+    print_success "JSON formatted"
+}
+
+cmd_format_json_check() {
+    print_header "Checking JSON formatting..."
+    if ! command -v jq &> /dev/null; then
+        print_error "jq is not installed."
+        print_info "Install with: brew install jq"
+        exit 1
+    fi
+    read_selected json
+    if [[ ${#SELECTED[@]} -eq 0 ]]; then
+        print_info "No JSON files to check"
+        return 0
+    fi
+
+    local f needs_format=0
+    for f in "${SELECTED[@]}"; do
+        if ! diff -q <(jq --indent 2 . "$f" 2>/dev/null) "$f" > /dev/null 2>&1; then
+            print_warning "Needs formatting: $f"
+            needs_format=1
+        fi
+    done
+
+    if [[ "$needs_format" == "1" ]]; then
+        print_error "Some JSON files need formatting. Run '$SCRIPT_NAME json' to fix."
+        exit 1
+    fi
+    print_success "All JSON is properly formatted"
+}
+
 cmd_format_all() {
     cmd_format_r
     echo ""
     cmd_format_cpp
+    echo ""
+    cmd_format_json
     print_success "All code formatted"
 }
 
@@ -190,6 +303,8 @@ cmd_check_all() {
     cmd_format_r_check
     echo ""
     cmd_format_cpp_check
+    echo ""
+    cmd_format_json_check
     print_success "All code properly formatted"
 }
 
@@ -210,7 +325,7 @@ while [[ $# -gt 0 ]]; do
             VERBOSE=1
             shift
             ;;
-        r|r-check|cpp|cpp-check|all|check)
+        r|r-check|cpp|cpp-check|json|json-check|all|check)
             COMMAND=$1
             shift
             ;;
@@ -245,6 +360,12 @@ case $COMMAND in
         ;;
     cpp-check)
         cmd_format_cpp_check
+        ;;
+    json)
+        cmd_format_json
+        ;;
+    json-check)
+        cmd_format_json_check
         ;;
     all)
         cmd_format_all
