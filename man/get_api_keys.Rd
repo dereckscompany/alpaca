@@ -10,14 +10,18 @@ get_api_keys(
 )
 }
 \arguments{
-\item{api_key}{Character string; Alpaca API key ID. Defaults to
+\item{api_key}{(scalar<character>) Alpaca API key ID. Defaults to
 \code{Sys.getenv("ALPACA_API_KEY")}.}
 
-\item{api_secret}{Character string; Alpaca API secret key. Defaults to
+\item{api_secret}{(scalar<character>) Alpaca API secret key. Defaults to
 \code{Sys.getenv("ALPACA_API_SECRET")}.}
 }
 \value{
-Named list with \code{api_key} and \code{api_secret}.
+(list) the credentials:
+\itemize{
+\item api_key (scalar<character>) the API key ID.
+\item api_secret (scalar<character>) the API secret key.
+}
 }
 \description{
 Fetches API credentials from environment variables or explicit arguments.

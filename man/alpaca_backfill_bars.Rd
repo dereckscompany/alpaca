@@ -18,30 +18,33 @@ alpaca_backfill_bars(
 )
 }
 \arguments{
-\item{symbols}{Character vector; ticker symbols (e.g., \code{c("AAPL", "MSFT")}).}
+\item{symbols}{(character) ticker symbols (e.g., \code{c("AAPL", "MSFT")}).}
 
-\item{timeframes}{Character vector; bar timeframes (e.g., \code{c("1Day", "1Hour")}).
+\item{timeframes}{(character) bar timeframes (e.g., \code{c("1Day", "1Hour")}).
 See \code{alpaca_timeframe_map} for valid values.}
 
-\item{start}{Character or POSIXct; start date/time.}
+\item{start}{(POSIXct | character) start date/time.}
 
-\item{end}{Character or POSIXct; end date/time. Defaults to \code{Sys.time()}.}
+\item{end}{(POSIXct | character) end date/time. Defaults to \code{Sys.time()}.}
 
-\item{path}{Character; file path for CSV output. Default \code{"alpaca_bars.csv"}.}
+\item{path}{(scalar<character>) file path for CSV output. Default
+\code{"alpaca_bars.csv"}.}
 
-\item{adjustment}{Character; price adjustment type. Default \code{"raw"}.}
+\item{adjustment}{(scalar<character>) price adjustment type. Default \code{"raw"}.}
 
-\item{feed}{Character or NULL; data feed (\code{"iex"} or \code{"sip"}).}
+\item{feed}{(scalar<character> | NULL) data feed (\code{"iex"} or \code{"sip"}).}
 
-\item{sleep}{Numeric; seconds to pause between requests (rate limiting).
-Default \code{0.25}.}
+\item{sleep}{(scalar<numeric in [0, Inf[>) seconds to pause between requests
+(rate limiting). Default \code{0.25}.}
 
-\item{keys}{List; API credentials. Defaults to \code{\link[=get_api_keys]{get_api_keys()}}.}
+\item{keys}{(list) API credentials. Defaults to \code{\link[=get_api_keys]{get_api_keys()}}.}
 
-\item{data_base_url}{Character; market data base URL. Defaults to \code{\link[=get_data_base_url]{get_data_base_url()}}.}
+\item{data_base_url}{(scalar<character>) market data base URL. Defaults to
+\code{\link[=get_data_base_url]{get_data_base_url()}}.}
 }
 \value{
-\code{data.table} with all downloaded data (invisibly). Also writes to CSV.
+(class<data.table>) all downloaded data (invisibly). Also writes to
+CSV.
 
 Per-combo failures are surfaced as warnings during the run (one
 \code{rlang::warn()} per failed \verb{(symbol, timeframe)} pair, with the

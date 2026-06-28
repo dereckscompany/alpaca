@@ -8,9 +8,9 @@
 #' 2. The `ALPACA_API_ENDPOINT` environment variable.
 #' 3. The default `"https://paper-api.alpaca.markets"` (paper trading).
 #'
-#' @param url Character string; explicit base URL. Defaults to
+#' @param url (scalar<character> | NULL) explicit base URL. Defaults to
 #'   `Sys.getenv("ALPACA_API_ENDPOINT")`.
-#' @return Character string; the API base URL.
+#' @return (scalar<character>) the API base URL.
 #'
 #' @examples
 #' \dontrun{
@@ -19,10 +19,11 @@
 #' }
 #' @export
 get_base_url <- function(url = Sys.getenv("ALPACA_API_ENDPOINT")) {
+  assert_args_get_base_url(url)
   if (is.null(url) || !nzchar(url)) {
-    return("https://paper-api.alpaca.markets")
+    return(assert_return_get_base_url("https://paper-api.alpaca.markets"))
   }
-  return(url)
+  return(assert_return_get_base_url(url))
 }
 
 #' Retrieve Alpaca Market Data API Base URL
@@ -32,9 +33,9 @@ get_base_url <- function(url = Sys.getenv("ALPACA_API_ENDPOINT")) {
 #' 2. The `ALPACA_DATA_ENDPOINT` environment variable.
 #' 3. The default `"https://data.alpaca.markets"`.
 #'
-#' @param url Character string; explicit base URL. Defaults to
+#' @param url (scalar<character> | NULL) explicit base URL. Defaults to
 #'   `Sys.getenv("ALPACA_DATA_ENDPOINT")`.
-#' @return Character string; the Market Data API base URL.
+#' @return (scalar<character>) the Market Data API base URL.
 #'
 #' @examples
 #' \dontrun{
@@ -43,10 +44,11 @@ get_base_url <- function(url = Sys.getenv("ALPACA_API_ENDPOINT")) {
 #' }
 #' @export
 get_data_base_url <- function(url = Sys.getenv("ALPACA_DATA_ENDPOINT")) {
+  assert_args_get_data_base_url(url)
   if (is.null(url) || !nzchar(url)) {
-    return("https://data.alpaca.markets")
+    return(assert_return_get_data_base_url("https://data.alpaca.markets"))
   }
-  return(url)
+  return(assert_return_get_data_base_url(url))
 }
 
 #' Retrieve Alpaca API Credentials
@@ -54,11 +56,13 @@ get_data_base_url <- function(url = Sys.getenv("ALPACA_DATA_ENDPOINT")) {
 #' Fetches API credentials from environment variables or explicit arguments.
 #' Required environment variables: `ALPACA_API_KEY`, `ALPACA_API_SECRET`.
 #'
-#' @param api_key Character string; Alpaca API key ID. Defaults to
+#' @param api_key (scalar<character>) Alpaca API key ID. Defaults to
 #'   `Sys.getenv("ALPACA_API_KEY")`.
-#' @param api_secret Character string; Alpaca API secret key. Defaults to
+#' @param api_secret (scalar<character>) Alpaca API secret key. Defaults to
 #'   `Sys.getenv("ALPACA_API_SECRET")`.
-#' @return Named list with `api_key` and `api_secret`.
+#' @return (list) the credentials:
+#' - api_key (scalar<character>) the API key ID.
+#' - api_secret (scalar<character>) the API secret key.
 #'
 #' @examples
 #' \dontrun{
@@ -70,6 +74,7 @@ get_api_keys <- function(
   api_key = Sys.getenv("ALPACA_API_KEY"),
   api_secret = Sys.getenv("ALPACA_API_SECRET")
 ) {
+  assert_args_get_api_keys(api_key, api_secret)
   if (!nzchar(api_key) || !nzchar(api_secret)) {
     rlang::warn(paste(
       "Alpaca API credentials are empty.",
@@ -77,8 +82,8 @@ get_api_keys <- function(
       "or pass them explicitly."
     ))
   }
-  return(list(
+  return(assert_return_get_api_keys(list(
     api_key = api_key,
     api_secret = api_secret
-  ))
+  )))
 }

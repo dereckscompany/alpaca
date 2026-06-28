@@ -144,7 +144,7 @@ run_cmd() {
 
 cmd_document() {
     print_header "Generating documentation..."
-    run_cmd Rscript -e "devtools::document()"
+    run_cmd Rscript -e "options(keep.source = TRUE, keep.source.pkgs = TRUE); devtools::document()"
     print_success "Documentation generated"
 }
 

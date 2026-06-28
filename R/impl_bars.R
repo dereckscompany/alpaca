@@ -27,20 +27,24 @@ alpaca_timeframe_map <- c(
 #' large date ranges into multiple API requests (Alpaca max 10,000 bars per
 #' request). Returns a single `data.table` with deduplicated, sorted results.
 #'
-#' @param symbol Character; ticker symbol.
-#' @param timeframe Character; bar timeframe (e.g., `"1Day"`).
-#' @param start POSIXct or character; start timestamp.
-#' @param end POSIXct or character; end timestamp.
-#' @param keys List; API credentials from [get_api_keys()].
-#' @param data_base_url Character; market data API base URL.
-#' @param .perform Function; httr2 perform function.
-#' @param is_async Logical; async mode flag.
-#' @param adjustment Character; price adjustment (`"raw"`, `"split"`, `"dividend"`, `"all"`).
-#' @param feed Character or NULL; data feed (`"iex"` or `"sip"`).
-#' @param limit_per_request Integer; max bars per request. Default 10000.
-#' @param sleep Numeric; seconds to sleep between requests. Default 0.2.
-#' @return `data.table` with columns: timestamp, open, high, low, close, volume,
-#'   trade_count, vwap.
+#' @param symbol (scalar<character>) ticker symbol.
+#' @param timeframe (scalar<character>) bar timeframe (e.g., `"1Day"`).
+#' @param start (POSIXct | character) start timestamp.
+#' @param end (POSIXct | character) end timestamp.
+#' @param keys (list) API credentials from [get_api_keys()].
+#' @param data_base_url (scalar<character>) market data API base URL.
+#' @param .perform (function) httr2 perform function.
+#' @param is_async (scalar<logical>) async mode flag.
+#' @param adjustment (scalar<character>) price adjustment (`"raw"`, `"split"`,
+#'   `"dividend"`, `"all"`).
+#' @param feed (scalar<character> | NULL) data feed (`"iex"` or `"sip"`).
+#' @param limit_per_request (scalar<count in [1, Inf[>) max bars per request.
+#'   Default 10000.
+#' @param sleep (scalar<numeric in [0, Inf[>) seconds to sleep between requests.
+#'   Default 0.2.
+#' @return (data.table | promise<data.table>) a table with columns: timestamp,
+#'   open, high, low, close, volume, trade_count, vwap (a promise thereof in
+#'   async mode).
 #'
 #' @keywords internal
 #' @noRd
@@ -58,6 +62,20 @@ alpaca_fetch_bars <- function(
   limit_per_request = 10000L,
   sleep = 0.2
 ) {
+  assert_args_alpaca_fetch_bars(
+    symbol,
+    timeframe,
+    start,
+    end,
+    keys,
+    data_base_url,
+    .perform,
+    is_async,
+    adjustment,
+    feed,
+    limit_per_request,
+    sleep
+  )
   # Convert to POSIXct if needed
   if (is.character(start)) {
     start <- lubridate::as_datetime(start, tz = "UTC")
@@ -129,7 +147,7 @@ alpaca_fetch_bars <- function(
         Sys.sleep(sleep)
       }
     }
-    return(combine_results(results))
+    return(assert_return_alpaca_fetch_bars(combine_results(results)))
   }
 
   # Async: sequential promise chain (one segment at a time to respect rate limits)
@@ -150,5 +168,7 @@ alpaca_fetch_bars <- function(
     accumulate = FALSE,
     init = seed
   )
-  return(promises::then(chain, combine_results))
+  return(promises::then(chain, function(results) {
+    return(assert_return_alpaca_fetch_bars(combine_results(results)))
+  }))
 }

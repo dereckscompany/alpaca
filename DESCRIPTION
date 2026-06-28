@@ -1,7 +1,7 @@
 Package: alpaca
 Type: Package
 Title: API Wrapper to Alpaca Trading Platform
-Version: 0.3.1
+Version: 0.4.1
 URL: https://dereckscompany.github.io/alpaca/
 BugReports: https://github.com/dereckscompany/alpaca/issues
 Authors@R:
@@ -16,7 +16,7 @@ Encoding: UTF-8
 LazyData: true
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
-Roxygen: list(markdown = TRUE)
+Roxygen: list(markdown = TRUE, roclets = c("namespace", "rd", "roxyassert::contract_roclet"))
 Depends: R (>= 4.1.0)
 Imports:
     R6,
@@ -25,9 +25,12 @@ Imports:
     httr2 (>= 1.0.0),
     lubridate,
     jsonlite,
-    connectcore
+    assert,
+    connectcore (>= 0.1.0)
 Remotes:
-    dereckscompany/connectcore@v0.1.0
+    dereckscompany/assert,
+    dereckscompany/roxyassert,
+    dereckscompany/connectcore
 Suggests:
     box,
     coro,
@@ -41,6 +44,7 @@ Suggests:
     promises,
     rcmdcheck,
     rmarkdown,
+    roxyassert (>= 0.9.1),
     testthat (>= 3.0.0),
     withr
 Config/testthat/edition: 3

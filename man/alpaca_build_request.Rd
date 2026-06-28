@@ -19,34 +19,38 @@ alpaca_build_request(
 )
 }
 \arguments{
-\item{base_url}{Character; the API base URL.}
+\item{base_url}{(scalar<character>) the API base URL.}
 
-\item{endpoint}{Character; the API path (e.g., \code{"/v2/account"}).}
+\item{endpoint}{(scalar<character>) the API path (e.g., \code{"/v2/account"}).}
 
-\item{method}{Character; HTTP method. Default \code{"GET"}.}
+\item{method}{(scalar<character>) HTTP method. Default \code{"GET"}.}
 
-\item{query}{Named list; query parameters. Default \code{list()}.}
+\item{query}{(list) query parameters. Default \code{list()}.}
 
-\item{body}{Named list or NULL; JSON request body (for POST/PATCH). Default \code{NULL}.}
+\item{body}{(list | NULL) JSON request body (for POST/PATCH). Default \code{NULL}.}
 
-\item{keys}{List or NULL; API credentials with \code{api_key} and \code{api_secret}.
+\item{keys}{(list | NULL) API credentials with \code{api_key} and \code{api_secret}.
 Default \code{NULL} (no auth).}
 
-\item{.perform}{Function; the httr2 perform function. Default \code{httr2::req_perform}.}
+\item{.perform}{(function) the httr2 perform function. Default
+\code{httr2::req_perform}.}
 
-\item{.parser}{Function; post-processing function applied to parsed response.
-Default \code{identity}.}
+\item{.parser}{(function) post-processing function applied to parsed
+response. Default \code{identity}.}
 
-\item{is_async}{Logical; whether \code{.perform} returns promises. Default \code{FALSE}.}
+\item{is_async}{(scalar<logical>) whether \code{.perform} returns promises.
+Default \code{FALSE}.}
 
-\item{timeout}{Numeric; request timeout in seconds. Default \code{10}.}
+\item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
+Default \code{10}.}
 
-\item{simplifyVector}{Logical; passed to \link[httr2:resp_body_raw]{httr2::resp_body_json}. Default
-\code{FALSE}. Set to \code{TRUE} for endpoints returning parallel arrays so JSON
-nulls become NA in atomic vectors.}
+\item{simplifyVector}{(scalar<logical>) passed to \link[httr2:resp_body_raw]{httr2::resp_body_json}.
+Default \code{FALSE}. Set to \code{TRUE} for endpoints returning parallel arrays so
+JSON nulls become NA in atomic vectors.}
 }
 \value{
-Parsed and post-processed API response data, or a promise thereof.
+(any | promise<any>) parsed and post-processed API response data, or
+a promise thereof.
 }
 \description{
 Constructs an \link[httr2:request]{httr2::request}, adds authentication headers, performs it via

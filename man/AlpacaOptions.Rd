@@ -192,19 +192,21 @@ curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{keys}}{List; API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
+\item{\code{keys}}{(list) API credentials from \code{\link[=get_api_keys]{get_api_keys()}}.}
 
-\item{\code{base_url}}{Character; trading API base URL. Defaults to \code{get_base_url()}.}
+\item{\code{base_url}}{(scalar<character>) trading API base URL. Defaults to
+\code{get_base_url()}.}
 
-\item{\code{data_base_url}}{Character; market data API base URL. Defaults to
-\code{get_data_base_url()}.}
+\item{\code{data_base_url}}{(scalar<character>) market data API base URL. Defaults
+to \code{get_data_base_url()}.}
 
-\item{\code{async}}{Logical; if \code{TRUE}, methods return promises. Default \code{FALSE}.}
+\item{\code{async}}{(scalar<logical>) if \code{TRUE}, methods return promises. Default
+\code{FALSE}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Invisible self.
+(class<AlpacaOptions>) invisibly, self.
 }
 }
 \if{html}{\out{<hr>}}
@@ -282,77 +284,62 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{underlying_symbols}}{Character or NULL; comma-separated underlying
-symbols to filter (e.g., \code{"AAPL"} or \code{"AAPL,MSFT"}).}
+\item{\code{underlying_symbols}}{(scalar<character> | NULL) comma-separated
+underlying symbols to filter (e.g., \code{"AAPL"} or \code{"AAPL,MSFT"}).}
 
-\item{\code{status}}{Character or NULL; contract status (\code{"active"}, \code{"inactive"}).}
+\item{\code{status}}{(scalar<character> | NULL) contract status (\code{"active"},
+\code{"inactive"}).}
 
-\item{\code{type}}{Character or NULL; option type (\code{"call"}, \code{"put"}).}
+\item{\code{type}}{(scalar<character> | NULL) option type (\code{"call"}, \code{"put"}).}
 
-\item{\code{expiration_date}}{Character or NULL; exact expiration date (\code{"YYYY-MM-DD"}).}
+\item{\code{expiration_date}}{(scalar<character> | NULL) exact expiration date
+(\code{"YYYY-MM-DD"}).}
 
-\item{\code{expiration_date_gte}}{Character or NULL; expiration on or after this date.}
+\item{\code{expiration_date_gte}}{(scalar<character> | NULL) expiration on or
+after this date.}
 
-\item{\code{expiration_date_lte}}{Character or NULL; expiration on or before this date.}
+\item{\code{expiration_date_lte}}{(scalar<character> | NULL) expiration on or
+before this date.}
 
-\item{\code{strike_price_gte}}{Numeric or NULL; minimum strike price.}
+\item{\code{strike_price_gte}}{(scalar<numeric> | NULL) minimum strike price.}
 
-\item{\code{strike_price_lte}}{Numeric or NULL; maximum strike price.}
+\item{\code{strike_price_lte}}{(scalar<numeric> | NULL) maximum strike price.}
 
-\item{\code{root_symbol}}{Character or NULL; options root symbol.}
+\item{\code{root_symbol}}{(scalar<character> | NULL) options root symbol.}
 
-\item{\code{style}}{Character or NULL; option style (\code{"american"}, \code{"european"}).}
+\item{\code{style}}{(scalar<character> | NULL) option style (\code{"american"},
+\code{"european"}).}
 
-\item{\code{limit}}{Integer or NULL; max contracts to return (default 100, max 10000).}
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max contracts to return
+(default 100, max 10000).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{show_deliverables}}{Logical or NULL; if \code{TRUE}, include the
+\item{\code{show_deliverables}}{(scalar<logical> | NULL) if \code{TRUE}, include the
 \code{deliverables} array in the response.}
 
-\item{\code{ppind}}{Logical or NULL; filter by Penny Program Indicator. \code{TRUE}
-returns only contracts eligible for penny price increments.}
+\item{\code{ppind}}{(scalar<logical> | NULL) filter by Penny Program Indicator.
+\code{TRUE} returns only contracts eligible for penny price increments.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}).
-With \code{show_deliverables = NULL} (default) or \code{FALSE}, returns one
-row per contract. With \code{show_deliverables = TRUE}, the nested
-\code{deliverables} array is exploded to one row per
-\verb{(contract, deliverable)}; contract fields are replicated on
-each row, deliverable fields appear as \verb{deliverable_*} columns,
-and a 1-indexed \code{deliverable_index} is added. For the typical
-equity option with exactly one deliverable this means one row
-per contract still; for spinoff / split deliverables you get
-one row per deliverable. Filter to canonical per-contract rows
-with \code{dt[deliverable_index == 1L | is.na(deliverable_index)]}.
-Columns (contract):
-\itemize{
-\item \code{id} (character): Contract UUID.
-\item \code{symbol} (character): OCC option symbol.
-\item \code{name} (character): Human-readable contract name.
-\item \code{status} (character): Contract status.
-\item \code{tradable} (logical): Whether the contract is tradable.
-\item \code{type} (character): \code{"call"} or \code{"put"}.
-\item \code{strike_price} (character): Strike price.
-\item \code{expiration_date} (Date): Expiration date.
-\item \code{underlying_symbol} (character): Underlying ticker symbol.
-\item \code{style} (character): Option style.
-\item \code{root_symbol} (character): Root symbol.
-\item \code{size} (character): Contract size (typically \code{"100"}).
-\item \code{open_interest} (character): Open interest.
-\item \code{open_interest_date} (Date): Date of the open-interest snapshot.
-\item \code{close_price} (character): Last close price.
-\item \code{close_price_date} (Date): Date of the last close price.
-}
-
-Columns (deliverables, only when \code{show_deliverables = TRUE}):
-\code{deliverable_index}, \code{deliverable_type}, \code{deliverable_symbol},
-\code{deliverable_asset_id}, \code{deliverable_amount},
-\code{deliverable_allocation_percentage},
-\code{deliverable_settlement_type},
-\code{deliverable_settlement_method},
+(Contract | promise<Contract>) the contracts. With
+\code{show_deliverables = NULL} (default) or \code{FALSE}, returns one row per
+contract. With \code{show_deliverables = TRUE}, the nested \code{deliverables}
+array is exploded to one row per \verb{(contract, deliverable)}; contract
+fields are replicated on each row, deliverable fields appear as
+\verb{deliverable_*} columns, and a 1-indexed \code{deliverable_index} is added.
+Filter to canonical per-contract rows with
+\code{dt[deliverable_index == 1L | is.na(deliverable_index)]}. Contract
+columns: \code{id}, \code{symbol}, \code{name}, \code{status}, \code{type}, \code{strike_price},
+\code{underlying_symbol}, \code{style}, \code{root_symbol}, \code{size}, \code{open_interest},
+\code{close_price} (character); \code{tradable} (logical); \code{expiration_date},
+\code{open_interest_date}, \code{close_price_date} (Date). Deliverable columns
+(only when \code{show_deliverables = TRUE}): \code{deliverable_index},
+\code{deliverable_type}, \code{deliverable_symbol}, \code{deliverable_asset_id},
+\code{deliverable_amount}, \code{deliverable_allocation_percentage},
+\code{deliverable_settlement_type}, \code{deliverable_settlement_method},
 \code{deliverable_delayed_settlement}.
 }
 \subsection{Examples}{
@@ -431,13 +418,13 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol_or_id}}{Character; OCC option symbol or contract UUID.}
+\item{\code{symbol_or_id}}{(scalar<character>) OCC option symbol or contract UUID.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same columns as \code{get_contracts()}, single row.
+(Contract | promise<Contract>) the contract, with the same
+columns as \code{get_contracts()}, single row.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -524,36 +511,30 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+\item{\code{symbols}}{(scalar<character>) comma-separated OCC option symbols.}
 
-\item{\code{timeframe}}{Character; bar timeframe (e.g., \code{"1Day"}, \code{"1Hour"}).}
+\item{\code{timeframe}}{(scalar<character>) bar timeframe (e.g., \code{"1Day"},
+\code{"1Hour"}).}
 
-\item{\code{start}}{Character or NULL; start date/time (RFC-3339 or \code{"YYYY-MM-DD"}).}
+\item{\code{start}}{(scalar<character> | NULL) start date/time (RFC-3339 or
+\code{"YYYY-MM-DD"}).}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max bars (1-10000, default 1000).}
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max bars (1-10000,
+default 1000).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} (default) or \code{"desc"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per bar} and a leading \code{symbol} column. Bar columns mirror
-the equity \code{get_bars()} output:
-\itemize{
-\item \code{timestamp} (POSIXct): Bar start timestamp.
-\item \code{open} (numeric): Opening price.
-\item \code{high} (numeric): High price.
-\item \code{low} (numeric): Low price.
-\item \code{close} (numeric): Closing price.
-\item \code{volume} (integer): Contracts traded.
-\item \code{trade_count} (integer): Number of trades in the bar.
-\item \code{vwap} (numeric): Volume-weighted average price.
-}
+(BarsMulti | promise<BarsMulti>) \strong{one row per bar} with a
+leading \code{symbol} column. Bar columns mirror the equity \code{get_bars()}
+output: \code{timestamp} (POSIXct), \code{open}, \code{high}, \code{low}, \code{close}, \code{vwap}
+(numeric), \code{volume}, \code{trade_count} (integer).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -636,34 +617,29 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+\item{\code{symbols}}{(scalar<character>) comma-separated OCC option symbols.}
 
-\item{\code{start}}{Character or NULL; start date/time.}
+\item{\code{start}}{(scalar<character> | NULL) start date/time.}
 
-\item{\code{end}}{Character or NULL; end date/time.}
+\item{\code{end}}{(scalar<character> | NULL) end date/time.}
 
-\item{\code{limit}}{Integer or NULL; max trades (1-10000, default 1000).}
+\item{\code{limit}}{(scalar<count in [1, 10001[> | NULL) max trades (1-10000,
+default 1000).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{sort}}{Character or NULL; \code{"asc"} (default) or \code{"desc"}.}
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} (default) or \code{"desc"}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per trade} and a leading \code{symbol} column. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Trade timestamp.
-\item \code{price} (numeric): Trade price.
-\item \code{size} (integer): Trade size (contracts).
-\item \code{exchange} (character): Exchange code.
-\item \code{conditions} (character): \verb{;}-separated trade condition codes,
-or a single-character code for option trades. \code{NA} when no
-conditions were reported.
-\item \code{tape} (character): Tape identifier.
-\item \code{id} (integer): Trade ID.
-}
+(OptionTradesMulti | promise<OptionTradesMulti>) \strong{one row per
+trade} with a leading \code{symbol} column. Columns: \code{timestamp} (POSIXct),
+\code{price} (numeric), \code{size} (integer), \code{exchange} (character),
+\code{conditions} (character, \verb{;}-separated trade condition codes or a
+single-character code; \code{NA} when none reported), \code{id} (integer). The
+options trade payload carries no consolidated tape, so there is no
+\code{tape} column (unlike the equity trade shape).
 }
 }
 \if{html}{\out{<hr>}}
@@ -717,24 +693,20 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+\item{\code{symbols}}{(scalar<character>) comma-separated OCC option symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"opra"} (default, official OPRA feed) or
-\code{"indicative"} (free, delayed/modified).}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"opra"} (default, official OPRA
+feed) or \code{"indicative"} (free, delayed/modified).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per contract} and a leading \code{symbol} column. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Quote timestamp.
-\item \code{ask_exchange}, \code{ask_price}, \code{ask_size}.
-\item \code{bid_exchange}, \code{bid_price}, \code{bid_size}.
-\item \code{conditions} (character): \verb{;}-separated quote condition codes,
-or a single-character code for option quotes. \code{NA} when no
-conditions were reported.
-}
+(OptionQuotesMulti | promise<OptionQuotesMulti>) \strong{one row per
+contract} with a leading \code{symbol} column. Columns: \code{timestamp}
+(POSIXct); \code{ask_exchange}, \code{ask_price}, \code{ask_size}, \code{bid_exchange},
+\code{bid_price}, \code{bid_size}; and \code{conditions} (character, \verb{;}-separated
+quote condition codes or a single-character code; \code{NA} when none
+reported).
 }
 }
 \if{html}{\out{<hr>}}
@@ -785,26 +757,20 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+\item{\code{symbols}}{(scalar<character>) comma-separated OCC option symbols.}
 
-\item{\code{feed}}{Character or NULL; data feed.}
+\item{\code{feed}}{(scalar<character> | NULL) data feed.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-\strong{one row per contract} and a leading \code{symbol} column. Columns:
-\itemize{
-\item \code{timestamp} (POSIXct): Trade timestamp.
-\item \code{price} (numeric): Trade price.
-\item \code{size} (integer): Trade size (contracts).
-\item \code{exchange} (character): Exchange code.
-\item \code{conditions} (character): \verb{;}-separated trade condition codes,
-or a single-character code for option trades. \code{NA} when no
-conditions were reported.
-\item \code{tape} (character): Tape identifier.
-\item \code{id} (integer): Trade ID.
-}
+(OptionTradesMulti | promise<OptionTradesMulti>) \strong{one row per
+contract} with a leading \code{symbol} column. Columns: \code{timestamp}
+(POSIXct), \code{price} (numeric), \code{size} (integer), \code{exchange} (character),
+\code{conditions} (character, \verb{;}-separated trade condition codes or a
+single-character code; \code{NA} when none reported), \code{id} (integer). The
+options trade payload carries no consolidated tape, so there is no
+\code{tape} column (unlike the equity trade shape).
 }
 }
 \if{html}{\out{<hr>}}
@@ -909,41 +875,34 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbols}}{Character; comma-separated OCC option symbols.}
+\item{\code{symbols}}{(scalar<character>) comma-separated OCC option symbols.}
 
-\item{\code{feed}}{Character or NULL; \code{"opra"} (default) or \code{"indicative"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"opra"} (default) or
+\code{"indicative"}.}
 
-\item{\code{updated_since}}{Character or NULL; only return snapshots updated at
-or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
+\item{\code{updated_since}}{(scalar<character> | NULL) only return snapshots
+updated at or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 
-\item{\code{limit}}{Integer or NULL; max snapshots (1-1000, default 100).}
+\item{\code{limit}}{(scalar<count in [1, 1001[> | NULL) max snapshots (1-1000,
+default 100).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
-with \strong{one row per contract}. Columns:
-\itemize{
-\item \code{symbol} (character): OCC option symbol.
-\item \verb{latest_trade_*}, \verb{latest_quote_*}, \verb{minute_bar_*},
-\verb{daily_bar_*}, \verb{prev_daily_bar_*}: flattened sections; see
-\code{get_snapshot()} for the per-field listing. \code{latest_trade_t}
-etc. are expanded to \code{latest_trade_timestamp} etc.;
-\code{latest_trade_conditions} and \code{latest_quote_conditions} are
-character columns (\verb{;}-collapsed when Alpaca returns multiple
-codes, single code otherwise, \code{NA} when absent).
-\item \code{implied_volatility} (numeric, optional): Top-level implied
-volatility. Alpaca returns this only when the account's
-options data subscription includes greeks/IV — on the default
-paper-trading \code{indicative} feed without a subscription the
-column is absent. Use \code{if ("implied_volatility" \%in\% names(dt)) ...} if you need to handle both shapes.
-\item \code{greeks_delta}, \code{greeks_gamma}, \code{greeks_theta},
-\code{greeks_vega}, \code{greeks_rho} (numeric, optional): The
-fixed-schema \code{greeks} object flattened to wide columns. Same
-subscription-gating as \code{implied_volatility}.
-}
+(SnapshotMulti | promise<SnapshotMulti>) \strong{one row per contract}.
+Columns: \code{symbol} (character, OCC option symbol); the flattened
+\verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} / \verb{daily_bar_*} /
+\verb{prev_daily_bar_*} sections (see \code{get_snapshot()} for the per-field
+listing — \code{latest_trade_t} etc. expand to \code{latest_trade_timestamp} etc.;
+\code{latest_trade_conditions} / \code{latest_quote_conditions} are character
+columns, \verb{;}-collapsed when Alpaca returns multiple codes); and the
+optional \code{implied_volatility} plus \code{greeks_delta} / \code{greeks_gamma} /
+\code{greeks_theta} / \code{greeks_vega} / \code{greeks_rho} (numeric) — present only
+when the account's options data subscription includes greeks/IV (absent
+on the default paper-trading \code{indicative} feed). Guard with
+\code{if ("implied_volatility" \%in\% names(dt)) ...} to handle both shapes.
 }
 }
 \if{html}{\out{<hr>}}
@@ -1015,18 +974,17 @@ Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{symbol}}{Character; OCC option symbol.}
+\item{\code{symbol}}{(scalar<character>) OCC option symbol.}
 
-\item{\code{feed}}{Character or NULL; data feed.}
+\item{\code{feed}}{(scalar<character> | NULL) data feed.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE}) with
-the same shape as \code{get_option_chain()} — one row per contract in
-the chain rooted at \code{symbol}. Despite the legacy name, this is
-\strong{not} a single-contract snapshot; for that, use
-\code{get_option_snapshots(symbols = "<OCC>")}.
+(SnapshotMulti | promise<SnapshotMulti>) the same shape as
+\code{get_option_chain()} — one row per contract in the chain rooted at
+\code{symbol}. Despite the legacy name, this is \strong{not} a single-contract
+snapshot; for that, use \code{get_option_snapshots(symbols = "<OCC>")}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -1151,45 +1109,50 @@ Verified: 2026-05-21
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{underlying_symbol}}{Character; the underlying ticker symbol (e.g., \code{"AAPL"}).}
+\item{\code{underlying_symbol}}{(scalar<character>) the underlying ticker symbol
+(e.g., \code{"AAPL"}).}
 
-\item{\code{type}}{Character or NULL; \code{"call"}, \code{"put"}.}
+\item{\code{type}}{(scalar<character> | NULL) \code{"call"}, \code{"put"}.}
 
-\item{\code{expiration_date}}{Character or NULL; exact expiration date (\code{"YYYY-MM-DD"}).}
+\item{\code{expiration_date}}{(scalar<character> | NULL) exact expiration date
+(\code{"YYYY-MM-DD"}).}
 
-\item{\code{expiration_date_gte}}{Character or NULL; expiration on or after this date.}
+\item{\code{expiration_date_gte}}{(scalar<character> | NULL) expiration on or
+after this date.}
 
-\item{\code{expiration_date_lte}}{Character or NULL; expiration on or before this date.}
+\item{\code{expiration_date_lte}}{(scalar<character> | NULL) expiration on or
+before this date.}
 
-\item{\code{strike_price_gte}}{Numeric or NULL; minimum strike price.}
+\item{\code{strike_price_gte}}{(scalar<numeric> | NULL) minimum strike price.}
 
-\item{\code{strike_price_lte}}{Numeric or NULL; maximum strike price.}
+\item{\code{strike_price_lte}}{(scalar<numeric> | NULL) maximum strike price.}
 
-\item{\code{root_symbol}}{Character or NULL; options root symbol.}
+\item{\code{root_symbol}}{(scalar<character> | NULL) options root symbol.}
 
-\item{\code{feed}}{Character or NULL; \code{"opra"} (default) or \code{"indicative"}.}
+\item{\code{feed}}{(scalar<character> | NULL) \code{"opra"} (default) or
+\code{"indicative"}.}
 
-\item{\code{limit}}{Integer or NULL; max results (1-1000, default 100).}
+\item{\code{limit}}{(scalar<count in [1, 1001[> | NULL) max results (1-1000,
+default 100).}
 
-\item{\code{page_token}}{Character or NULL; cursor for pagination.}
+\item{\code{page_token}}{(scalar<character> | NULL) cursor for pagination.}
 
-\item{\code{updated_since}}{Character or NULL; only snapshots updated at or
-after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
+\item{\code{updated_since}}{(scalar<character> | NULL) only snapshots updated at
+or after this timestamp (RFC-3339 or \code{"YYYY-MM-DD"}).}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\code{data.table} (or \verb{promise<data.table>} if \code{async = TRUE})
-with \strong{one row per contract in the chain}. Columns mirror
-\code{get_option_snapshots()}: a \code{symbol} key, the flattened
-\verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} /
+(SnapshotMulti | promise<SnapshotMulti>) \strong{one row per contract in
+the chain}. Columns mirror \code{get_option_snapshots()}: a \code{symbol} key, the
+flattened \verb{latest_trade_*} / \verb{latest_quote_*} / \verb{minute_bar_*} /
 \verb{daily_bar_*} / \verb{prev_daily_bar_*} blocks (including
-\code{latest_trade_conditions} / \code{latest_quote_conditions}), and —
-when the account's options data subscription includes them —
-the optional \code{implied_volatility} and \code{greeks_delta} /
-\code{greeks_gamma} / \code{greeks_theta} / \code{greeks_vega} / \code{greeks_rho}
-columns. The greeks/IV columns are absent for the default
-paper-trading \code{indicative} feed without a subscription.
+\code{latest_trade_conditions} / \code{latest_quote_conditions}), and — when the
+account's options data subscription includes them — the optional
+\code{implied_volatility} and \code{greeks_delta} / \code{greeks_gamma} /
+\code{greeks_theta} / \code{greeks_vega} / \code{greeks_rho} columns. The greeks/IV
+columns are absent for the default paper-trading \code{indicative} feed
+without a subscription.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

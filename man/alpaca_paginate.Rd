@@ -20,37 +20,41 @@ alpaca_paginate(
 )
 }
 \arguments{
-\item{base_url}{Character; the API base URL.}
+\item{base_url}{(scalar<character>) the API base URL.}
 
-\item{endpoint}{Character; the API path (e.g., \code{"/v2/orders"}).}
+\item{endpoint}{(scalar<character>) the API path (e.g., \code{"/v2/orders"}).}
 
-\item{method}{Character; HTTP method. Default \code{"GET"}.}
+\item{method}{(scalar<character>) HTTP method. Default \code{"GET"}.}
 
-\item{query}{Named list; query parameters. Default \code{list()}.}
+\item{query}{(list) query parameters. Default \code{list()}.}
 
-\item{keys}{List or NULL; API credentials.}
+\item{keys}{(list | NULL) API credentials.}
 
-\item{.perform}{Function; the httr2 perform function.}
+\item{.perform}{(function) the httr2 perform function.}
 
-\item{.parser}{Function; applied to the accumulated list of page items.
+\item{.parser}{(function) applied to the accumulated list of page items.
 Receives a single flat list of all items across pages.}
 
-\item{is_async}{Logical; whether \code{.perform} returns promises.}
+\item{is_async}{(scalar<logical>) whether \code{.perform} returns promises.}
 
-\item{items_field}{Character or NULL; the JSON field containing the array
-of items (e.g., \code{"bars"}, \code{"trades"}, \code{"quotes"}). If \code{NULL}, the
-entire response list is accumulated (for endpoints returning top-level arrays).}
+\item{items_field}{(scalar<character> | NULL) the JSON field containing the
+array of items (e.g., \code{"bars"}, \code{"trades"}, \code{"quotes"}). If \code{NULL}, the
+entire response list is accumulated (for endpoints returning top-level
+arrays).}
 
-\item{max_pages}{Integer; maximum number of pages to fetch. Default \code{Inf}.}
+\item{max_pages}{(scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) maximum
+number of pages to fetch. Default \code{Inf}.}
 
-\item{sleep}{Numeric; seconds to pause between page requests, to respect
-rate limits (Alpaca's free/Basic data tier caps at 200 req/min). Applied
-in synchronous mode only. Default \code{0}.}
+\item{sleep}{(scalar<numeric in [0, Inf[>) seconds to pause between page
+requests, to respect rate limits (Alpaca's free/Basic data tier caps at
+200 req/min). Applied in synchronous mode only. Default \code{0}.}
 
-\item{timeout}{Numeric; request timeout in seconds. Default \code{10}.}
+\item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
+Default \code{10}.}
 }
 \value{
-Parsed and post-processed API response data, or a promise thereof.
+(any | promise<any>) parsed and post-processed API response data, or
+a promise thereof.
 }
 \description{
 Follows Alpaca's cursor-based pagination (\code{page_token} / \code{next_page_token})

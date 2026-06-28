@@ -7,11 +7,11 @@
 get_data_base_url(url = Sys.getenv("ALPACA_DATA_ENDPOINT"))
 }
 \arguments{
-\item{url}{Character string; explicit base URL. Defaults to
+\item{url}{(scalar<character> | NULL) explicit base URL. Defaults to
 \code{Sys.getenv("ALPACA_DATA_ENDPOINT")}.}
 }
 \value{
-Character string; the Market Data API base URL.
+(scalar<character>) the Market Data API base URL.
 }
 \description{
 Returns the base URL for the Alpaca Market Data API in the following priority:

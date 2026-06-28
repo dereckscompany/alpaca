@@ -129,21 +129,24 @@ AlpacaMarketData <- R6::R6Class(
     #' # (No response — constructor does not call an endpoint)
     #' ```
     #'
-    #' @param keys List; API credentials from [get_api_keys()].
-    #' @param base_url Character; trading API base URL. Defaults to `get_base_url()`.
-    #' @param data_base_url Character; market data API base URL. Defaults to
-    #'   `get_data_base_url()`.
-    #' @param async Logical; if `TRUE`, methods return promises. Default `FALSE`.
-    #' @return Invisible self.
+    #' @param keys (list) API credentials from [get_api_keys()].
+    #' @param base_url (scalar<character>) trading API base URL. Defaults to
+    #'   `get_base_url()`.
+    #' @param data_base_url (scalar<character>) market data API base URL. Defaults
+    #'   to `get_data_base_url()`.
+    #' @param async (scalar<logical>) if `TRUE`, methods return promises. Default
+    #'   `FALSE`.
+    #' @return (class<AlpacaMarketData>) invisibly, self.
     initialize = function(
       keys = get_api_keys(),
       base_url = get_base_url(),
       data_base_url = get_data_base_url(),
       async = FALSE
     ) {
+      assert_args_AlpacaMarketData__initialize(keys, base_url, data_base_url, async)
       super$initialize(keys = keys, base_url = base_url, async = async)
       private$.data_base_url <- data_base_url
-      return(invisible(self))
+      return(invisible(assert_return_AlpacaMarketData__initialize(self)))
     },
 
     # ---- Historical Bars ----
@@ -179,44 +182,41 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol (e.g., `"AAPL"`).
-    #' @param timeframe Character; bar timeframe. Valid values:
+    #' @param symbol (scalar<character>) ticker symbol (e.g., `"AAPL"`).
+    #' @param timeframe (scalar<character>) bar timeframe. Valid values:
     #'   `"1Min"` to `"59Min"`, `"1Hour"` to `"23Hour"`, `"1Day"`, `"1Week"`,
     #'   `"1Month"` to `"12Month"`.
-    #' @param start Character or NULL; start date/time (RFC-3339 or `"YYYY-MM-DD"`).
-    #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max bars **per page** (1-10000, default
-    #'   10000). The method auto-paginates via `next_page_token`, so the full
-    #'   `start`..`end` range is returned regardless of `limit`; this only sets
-    #'   the page size (and thus the number of requests).
-    #' @param adjustment Character or NULL; price adjustment type. One or a
-    #'   comma-separated combination of: `"raw"`, `"split"`, `"dividend"`,
+    #' @param start (scalar<character> | NULL) start date/time (RFC-3339 or
+    #'   `"YYYY-MM-DD"`).
+    #' @param end (scalar<character> | NULL) end date/time.
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max bars **per page**
+    #'   (1-10000, default 10000). The method auto-paginates via
+    #'   `next_page_token`, so the full `start`..`end` range is returned
+    #'   regardless of `limit`; this only sets the page size (and thus the number
+    #'   of requests).
+    #' @param adjustment (scalar<character> | NULL) price adjustment type. One or
+    #'   a comma-separated combination of: `"raw"`, `"split"`, `"dividend"`,
     #'   `"spin-off"`, `"all"`. Default `"raw"`.
-    #' @param asof Character or NULL; as-of date (`"YYYY-MM-DD"`) used to
+    #' @param asof (scalar<character> | NULL) as-of date (`"YYYY-MM-DD"`) used to
     #'   identify the underlying entity when symbols have been renamed
     #'   (e.g. FB -> META). Pass `"-"` to skip symbol mapping.
-    #' @param feed Character or NULL; data feed source:
+    #' @param feed (scalar<character> | NULL) data feed source:
     #'   `"sip"` (default, all US exchanges), `"iex"`, `"otc"`, `"boats"`.
-    #' @param currency Character or NULL; ISO 4217 currency for returned prices.
-    #'   Default `"USD"`.
-    #' @param sort Character or NULL; `"asc"` (default) or `"desc"`.
-    #' @param page_token Character or NULL; starting cursor. Normally left NULL —
-    #'   auto-pagination begins at `start` and follows the cursor itself.
-    #' @param max_pages Integer; cap on pages fetched (runaway guard). Default
-    #'   1000 — high enough that real requests complete, low enough to bound a
-    #'   fat-fingered pull. Pass `Inf` for unbounded. If hit while more data
-    #'   remains, the partial result is returned with a `warning()`.
-    #' @param sleep Numeric; seconds to pause between page requests (rate-limit
-    #'   throttle; sync only). Default 0.3.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `timestamp` (POSIXct): Bar timestamp in UTC.
-    #'   - `open` (numeric): Opening price.
-    #'   - `high` (numeric): Highest price.
-    #'   - `low` (numeric): Lowest price.
-    #'   - `close` (numeric): Closing price.
-    #'   - `volume` (integer): Volume traded.
-    #'   - `trade_count` (integer): Number of trades.
-    #'   - `vwap` (numeric): Volume-weighted average price.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency for returned
+    #'   prices. Default `"USD"`.
+    #' @param sort (scalar<character> | NULL) `"asc"` (default) or `"desc"`.
+    #' @param page_token (scalar<character> | NULL) starting cursor. Normally left
+    #'   NULL — auto-pagination begins at `start` and follows the cursor itself.
+    #' @param max_pages (scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+    #'   (runaway guard). Default 1000 — high enough that real requests complete,
+    #'   low enough to bound a fat-fingered pull. Pass `Inf` for unbounded. If hit
+    #'   while more data remains, the partial result is returned with a
+    #'   `warning()`.
+    #' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between page
+    #'   requests (rate-limit throttle; sync only). Default 0.3.
+    #' @return (Bars | promise<Bars>) the bars. Columns: `timestamp`
+    #'   (POSIXct, UTC), `open`, `high`, `low`, `close`, `vwap` (numeric), and
+    #'   `volume`, `trade_count` (integer).
     #'
     #' @examples
     #' \dontrun{
@@ -239,8 +239,24 @@ AlpacaMarketData <- R6::R6Class(
       max_pages = 1000L,
       sleep = 0.3
     ) {
+      assert_args_AlpacaMarketData__get_bars(
+        symbol,
+        timeframe,
+        start,
+        end,
+        limit,
+        adjustment,
+        asof,
+        feed,
+        currency,
+        sort,
+        page_token,
+        max_pages,
+        sleep
+      )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/bars")
-      return(alpaca_paginate(
+      result <- alpaca_paginate(
         base_url = private$.data_base_url,
         endpoint = endpoint,
         query = list(
@@ -263,6 +279,11 @@ AlpacaMarketData <- R6::R6Class(
         max_pages = max_pages,
         sleep = sleep,
         timeout = 30
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_bars,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -301,31 +322,34 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; ticker symbols (max 100).
-    #' @param timeframe Character; bar timeframe (see `get_bars()` for valid values).
-    #' @param start Character or NULL; start date/time.
-    #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max bars **per page** (1-10000, default
-    #'   10000). NOTE: Alpaca applies this as a *total row budget across all
-    #'   requested symbols per page* (not per symbol), filling symbols
-    #'   alphabetically. The method auto-paginates via `next_page_token`, so the
-    #'   full range for every symbol is returned regardless of `limit`.
-    #' @param adjustment Character or NULL; one or comma-separated combination
-    #'   of `"raw"`, `"split"`, `"dividend"`, `"spin-off"`, `"all"`.
-    #' @param asof Character or NULL; as-of date for symbol mapping (`"YYYY-MM-DD"`
-    #'   or `"-"` to skip).
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`, `"boats"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @param sort Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_token Character or NULL; starting cursor. Normally left NULL —
-    #'   auto-pagination begins at `start` and follows the cursor itself.
-    #' @param max_pages Integer; cap on pages fetched (runaway guard). Default
-    #'   1000; pass `Inf` for unbounded. If hit while more data remains, the
-    #'   partial result is returned with a `warning()`.
-    #' @param sleep Numeric; seconds to pause between page requests (rate-limit
-    #'   throttle; sync only). Default 0.3.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column prepended plus the same columns as `get_bars()`.
+    #' @param symbols (character) ticker symbols (max 100).
+    #' @param timeframe (scalar<character>) bar timeframe (see `get_bars()` for
+    #'   valid values).
+    #' @param start (scalar<character> | NULL) start date/time.
+    #' @param end (scalar<character> | NULL) end date/time.
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max bars **per page**
+    #'   (1-10000, default 10000). NOTE: Alpaca applies this as a *total row
+    #'   budget across all requested symbols per page* (not per symbol), filling
+    #'   symbols alphabetically. The method auto-paginates via `next_page_token`,
+    #'   so the full range for every symbol is returned regardless of `limit`.
+    #' @param adjustment (scalar<character> | NULL) one or comma-separated
+    #'   combination of `"raw"`, `"split"`, `"dividend"`, `"spin-off"`, `"all"`.
+    #' @param asof (scalar<character> | NULL) as-of date for symbol mapping
+    #'   (`"YYYY-MM-DD"` or `"-"` to skip).
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`, `"otc"`,
+    #'   `"boats"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @param sort (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param page_token (scalar<character> | NULL) starting cursor. Normally left
+    #'   NULL — auto-pagination begins at `start` and follows the cursor itself.
+    #' @param max_pages (scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+    #'   (runaway guard). Default 1000; pass `Inf` for unbounded. If hit while
+    #'   more data remains, the partial result is returned with a `warning()`.
+    #' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between page
+    #'   requests (rate-limit throttle; sync only). Default 0.3.
+    #' @return (BarsMulti | promise<BarsMulti>) the bars, with a `symbol`
+    #'   column prepended plus the same columns as `get_bars()`.
     #'
     #' @examples
     #' \dontrun{
@@ -348,7 +372,22 @@ AlpacaMarketData <- R6::R6Class(
       max_pages = 1000L,
       sleep = 0.3
     ) {
-      return(alpaca_paginate(
+      assert_args_AlpacaMarketData__get_bars_multi(
+        symbols,
+        timeframe,
+        start,
+        end,
+        limit,
+        adjustment,
+        asof,
+        feed,
+        currency,
+        sort,
+        page_token,
+        max_pages,
+        sleep
+      )
+      result <- alpaca_paginate(
         base_url = private$.data_base_url,
         endpoint = "/v2/stocks/bars",
         query = list(
@@ -372,6 +411,11 @@ AlpacaMarketData <- R6::R6Class(
         max_pages = max_pages,
         sleep = sleep,
         timeout = 30
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_bars_multi,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -413,10 +457,10 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"iex"` or `"sip"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with the
-    #'   same columns as `get_bars()`, single row.
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param feed (scalar<character> | NULL) `"iex"` or `"sip"`.
+    #' @return (Bars | promise<Bars>) the bar, with the same columns
+    #'   as `get_bars()`, single row.
     #'
     #' @examples
     #' \dontrun{
@@ -425,13 +469,20 @@ AlpacaMarketData <- R6::R6Class(
     #' print(bar)
     #' }
     get_latest_bar = function(symbol, feed = NULL) {
+      assert_args_AlpacaMarketData__get_latest_bar(symbol, feed)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/bars/latest")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed),
         .parser = function(data) {
           return(parse_bars(list(data$bar)))
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_bar,
+        is_async = private$.is_async
       ))
     },
 
@@ -469,24 +520,19 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   **one row per trade** (a single row for this single-trade method).
-    #'   Columns:
-    #'   - `timestamp` (POSIXct): Trade timestamp.
-    #'   - `price` (numeric): Trade price.
-    #'   - `size` (integer): Trade size.
-    #'   - `exchange` (character): Exchange code.
-    #'   - `tape` (character): SIP tape.
-    #'   - `id` (integer): Trade ID.
-    #'   - `conditions` (character): Semicolon-separated condition codes
-    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`. Recover
-    #'     the original vector via
-    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
-    #'     the trade carries no condition codes.
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (Trade | promise<Trade>) **one row per trade** (a single
+    #'   row for this single-trade method). Columns: `timestamp` (POSIXct),
+    #'   `price` (numeric), `size` (integer), `exchange` (character), `tape`
+    #'   (character), `id` (integer), and `conditions` (character,
+    #'   semicolon-separated condition codes e.g. `"@;T"`; `NA` when the trade
+    #'   carries no condition codes). Filter with `dt[grepl("T", conditions)]`;
+    #'   recover the original vector via
+    #'   `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
     #'
     #' @examples
     #' \dontrun{
@@ -495,13 +541,20 @@ AlpacaMarketData <- R6::R6Class(
     #' print(trade)
     #' }
     get_latest_trade = function(symbol, feed = NULL, currency = NULL) {
+      assert_args_AlpacaMarketData__get_latest_trade(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/trades/latest")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
           return(parse_trades(list(data$trade)))
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_trade,
+        is_async = private$.is_async
       ))
     },
 
@@ -541,25 +594,18 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   **one row per quote**. Columns:
-    #'   - `timestamp` (POSIXct): Quote timestamp.
-    #'   - `ask_exchange` (character): Ask exchange code.
-    #'   - `ask_price` (numeric): Ask price.
-    #'   - `ask_size` (integer): Ask size.
-    #'   - `bid_exchange` (character): Bid exchange code.
-    #'   - `bid_price` (numeric): Bid price.
-    #'   - `bid_size` (integer): Bid size.
-    #'   - `conditions` (character): `;`-separated quote condition codes
-    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
-    #'     recover the original vector via
-    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
-    #'     no conditions were reported.
-    #'   - `tape` (character): Tape identifier.
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (Quote | promise<Quote>) **one row per quote**. Columns:
+    #'   `timestamp` (POSIXct), `ask_exchange`, `bid_exchange`, `tape`
+    #'   (character), `ask_price`, `bid_price` (numeric), `ask_size`, `bid_size`
+    #'   (integer), and `conditions` (character, `;`-separated quote condition
+    #'   codes e.g. `"R;F"`; `NA` when no conditions were reported). Filter with
+    #'   `dt[grepl("R", conditions)]` or recover via
+    #'   `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
     #'
     #' @examples
     #' \dontrun{
@@ -568,13 +614,20 @@ AlpacaMarketData <- R6::R6Class(
     #' print(quote)
     #' }
     get_latest_quote = function(symbol, feed = NULL, currency = NULL) {
+      assert_args_AlpacaMarketData__get_latest_quote(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes/latest")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = function(data) {
           return(parse_quotes(list(data$quote)))
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_quote,
+        is_async = private$.is_async
       ))
     },
 
@@ -609,12 +662,13 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   flattened snapshot fields (prefixed by section name).
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (Snapshot | promise<Snapshot>) the flattened snapshot fields
+    #'   (prefixed by section name).
     #'
     #' @examples
     #' \dontrun{
@@ -623,11 +677,18 @@ AlpacaMarketData <- R6::R6Class(
     #' print(snap)
     #' }
     get_snapshot = function(symbol, feed = NULL, currency = NULL) {
+      assert_args_AlpacaMarketData__get_snapshot(symbol, feed, currency)
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/snapshot")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(feed = feed, currency = currency),
         .parser = parse_snapshot
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_snapshot,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -661,12 +722,13 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and the same columns as `get_bars()`.
+    #' @param symbols (character) ticker symbols.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (BarsMulti | promise<BarsMulti>) the bars, with a `symbol`
+    #'   column and the same columns as `get_bars()`.
     #'
     #' @examples
     #' \dontrun{
@@ -675,7 +737,8 @@ AlpacaMarketData <- R6::R6Class(
     #' print(bars)
     #' }
     get_latest_bars_multi = function(symbols, feed = NULL, currency = NULL) {
-      return(private$.data_request(
+      assert_args_AlpacaMarketData__get_latest_bars_multi(symbols, feed, currency)
+      result <- private$.data_request(
         endpoint = "/v2/stocks/bars/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
@@ -685,7 +748,7 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           bars_map <- data$bars
           if (is.null(bars_map) || length(bars_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_bars_multi())
           }
           dts <- lapply(names(bars_map), function(sym) {
             dt <- parse_bars(list(bars_map[[sym]]))
@@ -700,6 +763,11 @@ AlpacaMarketData <- R6::R6Class(
           }
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_bars_multi,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -733,16 +801,18 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   leading `symbol` column and the same per-trade columns as
-    #'   `get_latest_trade()`: `timestamp`, `price`, `size`, `exchange`,
-    #'   `conditions` (`;`-collapsed), `tape`, `id`. One row per symbol.
+    #' @param symbols (character) ticker symbols.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (TradesMulti | promise<TradesMulti>) the trades, with a leading
+    #'   `symbol` column and the same per-trade columns as `get_latest_trade()`:
+    #'   `timestamp`, `price`, `size`, `exchange`, `conditions` (`;`-collapsed),
+    #'   `tape`, `id`. One row per symbol.
     get_latest_trades_multi = function(symbols, feed = NULL, currency = NULL) {
-      return(private$.data_request(
+      assert_args_AlpacaMarketData__get_latest_trades_multi(symbols, feed, currency)
+      result <- private$.data_request(
         endpoint = "/v2/stocks/trades/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
@@ -752,7 +822,7 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           trades_map <- data$trades
           if (is.null(trades_map) || length(trades_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_trades_multi())
           }
           dts <- lapply(names(trades_map), function(sym) {
             dt <- parse_trades(list(trades_map[[sym]]))
@@ -767,6 +837,11 @@ AlpacaMarketData <- R6::R6Class(
           }
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_trades_multi,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -800,16 +875,18 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
-    #'   `symbol` column and quote columns (`timestamp`, `ask_*`, `bid_*`,
-    #'   `conditions`, `tape`). `conditions` is a `;`-separated character
-    #'   column following the package's array-collapse convention.
+    #' @param symbols (character) ticker symbols.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (QuotesMulti | promise<QuotesMulti>) the quotes, with a `symbol`
+    #'   column and quote columns (`timestamp`, `ask_*`, `bid_*`, `conditions`,
+    #'   `tape`). `conditions` is a `;`-separated character column following the
+    #'   package's array-collapse convention.
     get_latest_quotes_multi = function(symbols, feed = NULL, currency = NULL) {
-      return(private$.data_request(
+      assert_args_AlpacaMarketData__get_latest_quotes_multi(symbols, feed, currency)
+      result <- private$.data_request(
         endpoint = "/v2/stocks/quotes/latest",
         query = list(
           symbols = paste(symbols, collapse = ","),
@@ -819,7 +896,7 @@ AlpacaMarketData <- R6::R6Class(
         .parser = function(data) {
           quotes_map <- data$quotes
           if (is.null(quotes_map) || length(quotes_map) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_quotes_multi())
           }
           dts <- lapply(names(quotes_map), function(sym) {
             dt <- parse_quotes(list(quotes_map[[sym]]))
@@ -834,6 +911,11 @@ AlpacaMarketData <- R6::R6Class(
           }
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_latest_quotes_multi,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -877,11 +959,12 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; ticker symbols.
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"delayed_sip"`,
-    #'   `"otc"`, `"boats"`, `"overnight"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with a
+    #' @param symbols (character) ticker symbols.
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`,
+    #'   `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @return (SnapshotMulti | promise<SnapshotMulti>) the snapshots, with a
     #'   `symbol` column and flattened snapshot fields.
     #'
     #' @examples
@@ -891,7 +974,8 @@ AlpacaMarketData <- R6::R6Class(
     #' print(snaps)
     #' }
     get_snapshots_multi = function(symbols, feed = NULL, currency = NULL) {
-      return(private$.data_request(
+      assert_args_AlpacaMarketData__get_snapshots_multi(symbols, feed, currency)
+      result <- private$.data_request(
         endpoint = "/v2/stocks/snapshots",
         query = list(
           symbols = paste(symbols, collapse = ","),
@@ -900,7 +984,7 @@ AlpacaMarketData <- R6::R6Class(
         ),
         .parser = function(data) {
           if (is.null(data) || length(data) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_snapshots_multi())
           }
           dts <- lapply(names(data), function(sym) {
             dt <- parse_snapshot(data[[sym]])
@@ -915,6 +999,11 @@ AlpacaMarketData <- R6::R6Class(
           }
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_snapshots_multi,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -952,27 +1041,24 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param start Character or NULL; start date/time.
-    #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max trades (1-10000, default 1000).
-    #' @param asof Character or NULL; as-of date for symbol mapping
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param start (scalar<character> | NULL) start date/time.
+    #' @param end (scalar<character> | NULL) end date/time.
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max trades (1-10000,
+    #'   default 1000).
+    #' @param asof (scalar<character> | NULL) as-of date for symbol mapping
     #'   (`"YYYY-MM-DD"` or `"-"` to skip).
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`,
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`, `"otc"`,
     #'   `"boats"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @param sort Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   **one row per trade**. Columns:
-    #'   - `timestamp` (POSIXct): Trade timestamp.
-    #'   - `price` (numeric): Trade price.
-    #'   - `size` (integer): Trade size.
-    #'   - `exchange` (character): Exchange code.
-    #'   - `tape` (character): SIP tape.
-    #'   - `id` (integer): Trade ID.
-    #'   - `conditions` (character): Semicolon-separated condition codes
-    #'     (e.g. `"@;T"`). Filter with `dt[grepl("T", conditions)]`.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @param sort (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param page_token (scalar<character> | NULL) cursor for pagination.
+    #' @return (Trade | promise<Trade>) **one row per trade**. Columns:
+    #'   `timestamp` (POSIXct), `price` (numeric), `size` (integer), `exchange`
+    #'   (character), `tape` (character), `id` (integer), and `conditions`
+    #'   (character, semicolon-separated condition codes e.g. `"@;T"`). Filter
+    #'   with `dt[grepl("T", conditions)]`.
     get_trades = function(
       symbol,
       start = NULL,
@@ -984,8 +1070,20 @@ AlpacaMarketData <- R6::R6Class(
       asof = NULL,
       currency = NULL
     ) {
+      assert_args_AlpacaMarketData__get_trades(
+        symbol,
+        start,
+        end,
+        limit,
+        asof,
+        feed,
+        currency,
+        sort,
+        page_token
+      )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/trades")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(
           start = start,
@@ -998,6 +1096,11 @@ AlpacaMarketData <- R6::R6Class(
           currency = currency
         ),
         .parser = function(data) parse_trades(data$trades)
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_trades,
+        is_async = private$.is_async
       ))
     },
 
@@ -1032,32 +1135,26 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol Character; ticker symbol.
-    #' @param start Character or NULL; start date/time.
-    #' @param end Character or NULL; end date/time.
-    #' @param limit Integer or NULL; max quotes (1-10000, default 1000).
-    #' @param asof Character or NULL; as-of date for symbol mapping
+    #' @param symbol (scalar<character>) ticker symbol.
+    #' @param start (scalar<character> | NULL) start date/time.
+    #' @param end (scalar<character> | NULL) end date/time.
+    #' @param limit (scalar<count in [1, 10001[> | NULL) max quotes (1-10000,
+    #'   default 1000).
+    #' @param asof (scalar<character> | NULL) as-of date for symbol mapping
     #'   (`"YYYY-MM-DD"` or `"-"` to skip).
-    #' @param feed Character or NULL; `"sip"` (default), `"iex"`, `"otc"`,
+    #' @param feed (scalar<character> | NULL) `"sip"` (default), `"iex"`, `"otc"`,
     #'   `"boats"`.
-    #' @param currency Character or NULL; ISO 4217 currency. Default `"USD"`.
-    #' @param sort Character or NULL; `"asc"` or `"desc"`.
-    #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   **one row per quote**. Columns:
-    #'   - `timestamp` (POSIXct): Quote timestamp.
-    #'   - `ask_exchange` (character): Ask exchange code.
-    #'   - `ask_price` (numeric): Ask price.
-    #'   - `ask_size` (integer): Ask size.
-    #'   - `bid_exchange` (character): Bid exchange code.
-    #'   - `bid_price` (numeric): Bid price.
-    #'   - `bid_size` (integer): Bid size.
-    #'   - `conditions` (character): `;`-separated quote condition codes
-    #'     (e.g. `"R;F"`). Filter with `dt[grepl("R", conditions)]` or
-    #'     recover the original vector via
-    #'     `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`. `NA` when
-    #'     no conditions were reported.
-    #'   - `tape` (character): Tape identifier.
+    #' @param currency (scalar<character> | NULL) ISO 4217 currency. Default
+    #'   `"USD"`.
+    #' @param sort (scalar<character> | NULL) `"asc"` or `"desc"`.
+    #' @param page_token (scalar<character> | NULL) cursor for pagination.
+    #' @return (Quote | promise<Quote>) **one row per quote**. Columns:
+    #'   `timestamp` (POSIXct), `ask_exchange`, `bid_exchange`, `tape`
+    #'   (character), `ask_price`, `bid_price` (numeric), `ask_size`, `bid_size`
+    #'   (integer), and `conditions` (character, `;`-separated quote condition
+    #'   codes e.g. `"R;F"`; `NA` when no conditions were reported). Filter with
+    #'   `dt[grepl("R", conditions)]` or recover via
+    #'   `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
     get_quotes = function(
       symbol,
       start = NULL,
@@ -1069,8 +1166,20 @@ AlpacaMarketData <- R6::R6Class(
       asof = NULL,
       currency = NULL
     ) {
+      assert_args_AlpacaMarketData__get_quotes(
+        symbol,
+        start,
+        end,
+        limit,
+        asof,
+        feed,
+        currency,
+        sort,
+        page_token
+      )
+      assert::assert_nonempty_strings(symbol)
       endpoint <- paste0("/v2/stocks/", symbol, "/quotes")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(
           start = start,
@@ -1083,6 +1192,11 @@ AlpacaMarketData <- R6::R6Class(
           currency = currency
         ),
         .parser = function(data) parse_quotes(data$quotes)
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_quotes,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -1127,27 +1241,20 @@ AlpacaMarketData <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param status Character or NULL; filter by status (`"active"`, `"inactive"`).
-    #' @param asset_class Character or NULL; filter by class (`"us_equity"`,
-    #'   `"us_option"`, `"crypto"`).
-    #' @param exchange Character or NULL; filter by exchange (`"AMEX"`, `"ARCA"`,
-    #'   `"BATS"`, `"NYSE"`, `"NASDAQ"`, `"NYSEARCA"`, `"OTC"`).
-    #' @param attributes Character or NULL; comma-separated attribute filters.
-    #'   Returns assets matching any of the listed attributes. Supported values:
-    #'   `"ptp_no_exception"`, `"ptp_with_exception"`, `"ipo"`, `"has_options"`,
-    #'   `"options_late_close"`, `"fractional_eh_enabled"`, `"overnight_tradable"`,
-    #'   `"overnight_halted"`.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `id` (character): Asset UUID.
-    #'   - `class` (character): Asset class.
-    #'   - `exchange` (character): Exchange.
-    #'   - `symbol` (character): Ticker symbol.
-    #'   - `name` (character): Company name.
-    #'   - `status` (character): Active/inactive.
-    #'   - `tradable` (logical): Whether the asset is tradable.
-    #'   - `marginable` (logical): Whether margin is available.
-    #'   - `shortable` (logical): Whether short selling is available.
-    #'   - `fractionable` (logical): Whether fractional shares are available.
+    #' @param status (scalar<character> | NULL) filter by status (`"active"`,
+    #'   `"inactive"`).
+    #' @param asset_class (scalar<character> | NULL) filter by class
+    #'   (`"us_equity"`, `"us_option"`, `"crypto"`).
+    #' @param exchange (scalar<character> | NULL) filter by exchange (`"AMEX"`,
+    #'   `"ARCA"`, `"BATS"`, `"NYSE"`, `"NASDAQ"`, `"NYSEARCA"`, `"OTC"`).
+    #' @param attributes (scalar<character> | NULL) comma-separated attribute
+    #'   filters. Returns assets matching any of the listed attributes. Supported
+    #'   values: `"ptp_no_exception"`, `"ptp_with_exception"`, `"ipo"`,
+    #'   `"has_options"`, `"options_late_close"`, `"fractional_eh_enabled"`,
+    #'   `"overnight_tradable"`, `"overnight_halted"`.
+    #' @return (Asset | promise<Asset>) the assets. Columns: `id`,
+    #'   `class`, `exchange`, `symbol`, `name`, `status` (character); `tradable`,
+    #'   `marginable`, `shortable`, `fractionable` (logical).
     #'
     #' @examples
     #' \dontrun{
@@ -1156,10 +1263,16 @@ AlpacaMarketData <- R6::R6Class(
     #' print(assets[1:5, .(symbol, name, exchange, tradable)])
     #' }
     get_assets = function(status = NULL, asset_class = NULL, exchange = NULL, attributes = NULL) {
-      return(private$.request(
+      assert_args_AlpacaMarketData__get_assets(status, asset_class, exchange, attributes)
+      result <- private$.request(
         endpoint = "/v2/assets",
         query = list(status = status, asset_class = asset_class, exchange = exchange, attributes = attributes),
         .parser = parse_assets
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_assets,
+        is_async = private$.is_async
       ))
     },
 
@@ -1199,9 +1312,9 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbol_or_id Character; ticker symbol or asset UUID.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   the same columns as `get_assets()`, single row.
+    #' @param symbol_or_id (scalar<character>) ticker symbol or asset UUID.
+    #' @return (Asset | promise<Asset>) the asset, with the same
+    #'   columns as `get_assets()`, single row.
     #'
     #' @examples
     #' \dontrun{
@@ -1210,10 +1323,17 @@ AlpacaMarketData <- R6::R6Class(
     #' print(aapl)
     #' }
     get_asset = function(symbol_or_id) {
+      assert_args_AlpacaMarketData__get_asset(symbol_or_id)
+      assert::assert_nonempty_strings(symbol_or_id)
       endpoint <- paste0("/v2/assets/", symbol_or_id)
-      return(private$.request(
+      result <- private$.request(
         endpoint = endpoint,
         .parser = parse_asset
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_asset,
+        is_async = private$.is_async
       ))
     },
 
@@ -1249,18 +1369,14 @@ AlpacaMarketData <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param start Character or NULL; start date (`"YYYY-MM-DD"`).
-    #' @param end Character or NULL; end date (`"YYYY-MM-DD"`).
-    #' @param date_type Character or NULL; one of `"TRADING"` or `"SETTLEMENT"`.
-    #'   Determines whether `start`/`end` are interpreted as trading dates
-    #'   (default) or settlement dates.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `date` (Date): Trading date.
-    #'   - `open` (POSIXct, `America/New_York`): Regular-hours market open.
-    #'   - `close` (POSIXct, `America/New_York`): Regular-hours market close.
-    #'   - `session_open` (POSIXct, `America/New_York`): Extended-hours session open.
-    #'   - `session_close` (POSIXct, `America/New_York`): Extended-hours session close.
-    #'   - `settlement_date` (Date): Settlement date for trades executed on `date`.
+    #' @param start (scalar<character> | NULL) start date (`"YYYY-MM-DD"`).
+    #' @param end (scalar<character> | NULL) end date (`"YYYY-MM-DD"`).
+    #' @param date_type (scalar<character> | NULL) one of `"TRADING"` or
+    #'   `"SETTLEMENT"`. Determines whether `start`/`end` are interpreted as
+    #'   trading dates (default) or settlement dates.
+    #' @return (Calendar | promise<Calendar>) the calendar. Columns: `date`
+    #'   and `settlement_date` (Date); `open`, `close`, `session_open`,
+    #'   `session_close` (POSIXct, `America/New_York`).
     #'
     #' Alpaca's API returns market times without an offset; per the
     #' Alpaca docs they are Eastern Time. We localise to
@@ -1273,16 +1389,17 @@ AlpacaMarketData <- R6::R6Class(
     #' print(cal)
     #' }
     get_calendar = function(start = NULL, end = NULL, date_type = NULL) {
+      assert_args_AlpacaMarketData__get_calendar(start, end, date_type)
       if (!is.null(date_type)) {
         rlang::arg_match0(date_type, c("TRADING", "SETTLEMENT"))
       }
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/calendar",
         query = list(start = start, end = end, date_type = date_type),
         .parser = function(items) {
           dt <- as_dt_list(items)
           if (nrow(dt) == 0L) {
-            return(dt)
+            return(empty_dt_calendar())
           }
           # Snapshot the date column before we reassign it to Date below;
           # the time-combine calls need the original "YYYY-MM-DD" character.
@@ -1299,6 +1416,11 @@ AlpacaMarketData <- R6::R6Class(
           parse_date_cols(dt, c("date", "settlement_date"))
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_calendar,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -1332,11 +1454,9 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `timestamp` (POSIXct, `America/New_York`): Current server timestamp.
-    #'   - `is_open` (logical): Whether the market is currently open.
-    #'   - `next_open` (POSIXct, `America/New_York`): Next market open time.
-    #'   - `next_close` (POSIXct, `America/New_York`): Next market close time.
+    #' @return (Clock | promise<Clock>) the clock. Columns:
+    #'   `timestamp`, `next_open`, `next_close` (POSIXct, `America/New_York`) and
+    #'   `is_open` (logical).
     #'
     #' The Alpaca clock endpoint returns ISO-8601 timestamps with an
     #' explicit offset; we parse the instant exactly and display it in
@@ -1350,7 +1470,7 @@ AlpacaMarketData <- R6::R6Class(
     #' cat("Market open:", clock$is_open, "\n")
     #' }
     get_clock = function() {
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/clock",
         .parser = function(x) {
           dt <- as_dt_row(x)
@@ -1361,6 +1481,11 @@ AlpacaMarketData <- R6::R6Class(
           )
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_clock,
+        is_async = private$.is_async
       ))
     },
 
@@ -1414,31 +1539,22 @@ AlpacaMarketData <- R6::R6Class(
     #' ]
     #' ```
     #'
-    #' @param ca_types Character; comma-separated corporate action types. Valid
-    #'   values: `"dividend"`, `"merger"`, `"spinoff"`, `"split"`.
-    #' @param since Character; start date (`"YYYY-MM-DD"`). Required.
-    #' @param until Character; end date (`"YYYY-MM-DD"`). Required.
-    #' @param symbol Character or NULL; filter by ticker symbol.
-    #' @param cusip Character or NULL; filter by CUSIP.
-    #' @param date_type Character or NULL; which date field `since`/`until` refer
-    #'   to. Alpaca's documented / SDK values are
-    #'   `"declaration_date"`, `"ex_date"`, `"record_date"`, `"payable_date"`
-    #'   (default server-side: `"ex_date"`). Validated client-side; invalid
-    #'   values abort before the request.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `id` (character): Announcement UUID.
-    #'   - `corporate_action_id` (character): Corporate action ID.
-    #'   - `ca_type` (character): Action type.
-    #'   - `ca_sub_type` (character): Action sub-type.
-    #'   - `initiating_symbol` (character): Symbol initiating the action.
-    #'   - `target_symbol` (character): Target symbol (for mergers).
-    #'   - `declaration_date` (Date): Declaration date.
-    #'   - `ex_date` (Date): Ex-date.
-    #'   - `record_date` (Date): Record date.
-    #'   - `payable_date` (Date): Payable date.
-    #'   - `cash` (character): Cash amount (for dividends).
-    #'   - `old_rate` (character): Old rate (for splits).
-    #'   - `new_rate` (character): New rate (for splits).
+    #' @param ca_types (scalar<character>) comma-separated corporate action
+    #'   types. Valid values: `"dividend"`, `"merger"`, `"spinoff"`, `"split"`.
+    #' @param since (scalar<character>) start date (`"YYYY-MM-DD"`). Required.
+    #' @param until (scalar<character>) end date (`"YYYY-MM-DD"`). Required.
+    #' @param symbol (scalar<character> | NULL) filter by ticker symbol.
+    #' @param cusip (scalar<character> | NULL) filter by CUSIP.
+    #' @param date_type (scalar<character> | NULL) which date field `since`/`until`
+    #'   refer to. Alpaca's documented / SDK values are `"declaration_date"`,
+    #'   `"ex_date"`, `"record_date"`, `"payable_date"` (default server-side:
+    #'   `"ex_date"`). Validated client-side; invalid values abort before the
+    #'   request.
+    #' @return (CorporateAction | promise<CorporateAction>) the announcements.
+    #'   Columns: `id`, `corporate_action_id`, `ca_type`, `ca_sub_type`,
+    #'   `initiating_symbol`, `target_symbol`, `cash`, `old_rate`, `new_rate`
+    #'   (character); `declaration_date`, `ex_date`, `record_date`,
+    #'   `payable_date` (Date).
     #'
     #' @examples
     #' \dontrun{
@@ -1464,6 +1580,14 @@ AlpacaMarketData <- R6::R6Class(
       cusip = NULL,
       date_type = NULL
     ) {
+      assert_args_AlpacaMarketData__get_corporate_actions(
+        ca_types,
+        since,
+        until,
+        symbol,
+        cusip,
+        date_type
+      )
       if (!is.null(date_type)) {
         rlang::arg_match0(
           date_type,
@@ -1480,7 +1604,7 @@ AlpacaMarketData <- R6::R6Class(
         .frequency = "regularly",
         .frequency_id = "get_corporate_actions_deprecated"
       )
-      return(private$.request(
+      result <- private$.request(
         endpoint = "/v2/corporate_actions/announcements",
         query = list(
           ca_types = ca_types,
@@ -1491,6 +1615,9 @@ AlpacaMarketData <- R6::R6Class(
           date_type = date_type
         ),
         .parser = function(items) {
+          if (is.null(items) || length(items) == 0) {
+            return(empty_dt_corporate_actions())
+          }
           dt <- as_dt_list(items)
           parse_date_cols(
             dt,
@@ -1503,6 +1630,11 @@ AlpacaMarketData <- R6::R6Class(
           )
           return(dt)
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_corporate_actions,
+        is_async = private$.is_async
       ))
     },
     # nolint end
@@ -1549,44 +1681,31 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character or NULL; comma-separated symbols to filter
-    #'   (e.g., `"AAPL,MSFT"`).
-    #' @param start Character or NULL; start date/time (RFC-3339).
-    #' @param end Character or NULL; end date/time (RFC-3339).
-    #' @param limit Integer or NULL; max articles (default 10, max 50).
-    #' @param sort Character or NULL; `"desc"` (default, newest first) or `"asc"`.
-    #' @param include_content Logical or NULL; if `TRUE`, include full article content.
-    #' @param exclude_contentless Logical or NULL; if `TRUE`, exclude articles
-    #'   without content.
-    #' @param page_token Character or NULL; cursor for pagination.
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   **one row per article**. Columns:
-    #'   - `id` (integer): Article ID.
-    #'   - `headline` (character): Article headline.
-    #'   - `author` (character): Author name.
-    #'   - `source` (character): News source.
-    #'   - `summary` (character): Article summary.
-    #'   - `url` (character): Article URL.
-    #'   - `created_at` (POSIXct, UTC): Publication timestamp.
-    #'   - `updated_at` (POSIXct, UTC): Last update timestamp.
-    #'   - `symbols` (character): Semicolon-separated related tickers, e.g.
-    #'     `"AAPL;MSFT"`. Filter with `dt[grepl("AAPL", symbols)]`; recover
-    #'     the original vector via
-    #'     `strsplit(dt$symbols[1], ";", fixed = TRUE)[[1]]`.
-    #'   - `image_sizes` (character): Semicolon-separated image size labels
-    #'     parallel to `image_urls`. `NA` when the article has no images.
-    #'     When some images on an article report a `size` and others omit
-    #'     it, the missing values become **empty tokens** (e.g.
-    #'     `"large;"`) — never the literal string `"NA"` — so a real
-    #'     value is unambiguous from a missing one.
-    #'   - `image_urls` (character): Semicolon-separated image URLs.
-    #'     The join is **lossless** for any input URL: each URL is
-    #'     double-encoded (`%` → `%25` first, then `;` → `%3B`) before
-    #'     joining, so a single pass of `URLdecode()` after splitting
-    #'     recovers the original string even when it already contained
-    #'     `%3B` or other percent-escapes. Recover with
-    #'     `vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]],
-    #'     URLdecode, character(1))`.
+    #' @param symbols (character | NULL) comma-separated symbols to filter
+    #'   (e.g., `"AAPL,MSFT"`), or a character vector of symbols.
+    #' @param start (scalar<character> | NULL) start date/time (RFC-3339).
+    #' @param end (scalar<character> | NULL) end date/time (RFC-3339).
+    #' @param limit (scalar<count in [1, Inf[> | NULL) max articles (default 10,
+    #'   max 50 server-side).
+    #' @param sort (scalar<character> | NULL) `"desc"` (default, newest first) or
+    #'   `"asc"`.
+    #' @param include_content (scalar<logical> | NULL) if `TRUE`, include full
+    #'   article content.
+    #' @param exclude_contentless (scalar<logical> | NULL) if `TRUE`, exclude
+    #'   articles without content.
+    #' @param page_token (scalar<character> | NULL) cursor for pagination.
+    #' @return (News | promise<News>) **one row per article**.
+    #'   Columns: `id` (integer); `headline`, `author`, `source`, `summary`,
+    #'   `url` (character); `created_at`, `updated_at` (POSIXct, UTC); `symbols`
+    #'   (character, `;`-separated related tickers, e.g. `"AAPL;MSFT"`);
+    #'   `image_sizes` (character, `;`-separated image size labels parallel to
+    #'   `image_urls`, `NA` when the article has no images — missing per-image
+    #'   sizes become empty tokens e.g. `"large;"`, never the literal `"NA"`);
+    #'   and `image_urls` (character, `;`-separated image URLs, losslessly
+    #'   double-encoded `%` → `%25` then `;` → `%3B` so a single `URLdecode()`
+    #'   after splitting recovers the original). Filter symbols with
+    #'   `dt[grepl("AAPL", symbols)]`; recover URLs with
+    #'   `vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))`.
     #'
     #' @examples
     #' \dontrun{
@@ -1609,11 +1728,21 @@ AlpacaMarketData <- R6::R6Class(
       exclude_contentless = NULL,
       page_token = NULL
     ) {
+      assert_args_AlpacaMarketData__get_news(
+        symbols,
+        start,
+        end,
+        limit,
+        sort,
+        include_content,
+        exclude_contentless,
+        page_token
+      )
       # Join symbols with comma like other multi-symbol methods
       if (!is.null(symbols) && length(symbols) > 1) {
         symbols <- paste(symbols, collapse = ",")
       }
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = "/v1beta1/news",
         query = list(
           symbols = symbols,
@@ -1626,6 +1755,11 @@ AlpacaMarketData <- R6::R6Class(
           page_token = page_token
         ),
         .parser = function(data) parse_news(data$news)
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_news,
+        is_async = private$.is_async
       ))
     },
 
@@ -1668,18 +1802,13 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param symbols Character vector; crypto symbols (e.g. `"BTC/USD"`).
-    #' @param loc Character; location code, `"us"` (default).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with
-    #'   one row per `(symbol, side, level)`. Columns:
-    #'   - `symbol` (character): Crypto symbol.
-    #'   - `side` (character): `"bid"` or `"ask"`.
-    #'   - `level` (integer): 1-based depth within the side. `level = 1` is
-    #'     top of book (best bid / best ask); `level = 2` is the next-best,
-    #'     and so on. Ordering is preserved from the Alpaca response.
-    #'   - `price` (numeric): Price at this level.
-    #'   - `size` (numeric): Quantity at this level.
-    #'   - `timestamp` (POSIXct): Orderbook timestamp.
+    #' @param symbols (character) crypto symbols (e.g. `"BTC/USD"`).
+    #' @param loc (scalar<character>) location code, `"us"` (default).
+    #' @return (CryptoOrderbook | promise<CryptoOrderbook>) one row per
+    #'   `(symbol, side, level)`. Columns: `symbol`, `side` (`"bid"` or `"ask"`)
+    #'   (character); `level` (integer, 1-based depth within the side — `level = 1`
+    #'   is top of book, ordering preserved from the Alpaca response); `price`,
+    #'   `size` (numeric); and `timestamp` (POSIXct).
     #'
     #' @examples
     #' \dontrun{
@@ -1688,11 +1817,12 @@ AlpacaMarketData <- R6::R6Class(
     #' print(ob)
     #' }
     get_crypto_orderbook = function(symbols, loc = "us") {
+      assert_args_AlpacaMarketData__get_crypto_orderbook(symbols, loc)
       if (length(symbols) > 1) {
         symbols <- paste(symbols, collapse = ",")
       }
       endpoint <- paste0("/v1beta3/crypto/", loc, "/latest/orderbooks")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(symbols = symbols),
         .parser = function(data) {
@@ -1736,6 +1866,11 @@ AlpacaMarketData <- R6::R6Class(
           }
           return(dt[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_crypto_orderbook,
+        is_async = private$.is_async
       ))
     },
 
@@ -1773,12 +1908,14 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param by Character or NULL; ranking metric: `"volume"` (default) or `"trades"`.
-    #' @param top Integer or NULL; number of results to return (default 10).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `symbol` (character): Ticker symbol.
-    #'   - `volume` (numeric): Trading volume.
-    #'   - `trade_count` (numeric): Number of trades.
+    #' @param by (scalar<character> | NULL) ranking metric: `"volume"` (default)
+    #'   or `"trades"`.
+    #' @param top (scalar<count in [1, Inf[> | NULL) number of results to return
+    #'   (default 10).
+    #' @return (MostActives | promise<MostActives>) the most active stocks.
+    #'   Columns: `symbol` (character); `volume`, `trade_count` (count — the
+    #'   parser coerces both whole-number counters to a `numeric` double so a
+    #'   large volume cannot overflow `integer`).
     #'
     #' @examples
     #' \dontrun{
@@ -1787,10 +1924,25 @@ AlpacaMarketData <- R6::R6Class(
     #' print(actives)
     #' }
     get_most_actives = function(by = NULL, top = NULL) {
-      return(private$.data_request(
+      assert_args_AlpacaMarketData__get_most_actives(by, top)
+      result <- private$.data_request(
         endpoint = "/v1beta1/screener/stocks/most-actives",
         query = list(by = by, top = top),
-        .parser = function(data) as_dt_list(data$most_actives)
+        .parser = function(data) {
+          if (is.null(data$most_actives) || length(data$most_actives) == 0) {
+            return(empty_dt_most_actives())
+          }
+          dt <- as_dt_list(data$most_actives)
+          # `volume` / `trade_count` are whole-number counters; coerce both to a
+          # clean `numeric` double so a large volume cannot overflow `integer`.
+          coerce_cols(dt, c("volume", "trade_count"), as.numeric)
+          return(dt[])
+        }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_most_actives,
+        is_async = private$.is_async
       ))
     },
 
@@ -1830,13 +1982,12 @@ AlpacaMarketData <- R6::R6Class(
     #' }
     #' ```
     #'
-    #' @param market_type Character; `"stocks"` (default) or `"crypto"`.
-    #' @param top Integer or NULL; number of results per direction (default 10).
-    #' @return `data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-    #'   - `symbol` (character): Ticker symbol.
-    #'   - `percent_change` (numeric): Percentage change.
-    #'   - `change` (numeric): Absolute price change.
-    #'   - `price` (numeric): Current price.
+    #' @param market_type (scalar<character>) `"stocks"` (default) or `"crypto"`.
+    #' @param top (scalar<count in [1, Inf[> | NULL) number of results per
+    #'   direction (default 10).
+    #' @return (Movers | promise<Movers>) the movers. Columns: `symbol`
+    #'   (character); `percent_change`, `change`, `price` (numeric); plus a
+    #'   `direction` column (`"gainer"` / `"loser"`).
     #'
     #' @examples
     #' \dontrun{
@@ -1845,8 +1996,9 @@ AlpacaMarketData <- R6::R6Class(
     #' print(movers)
     #' }
     get_movers = function(market_type = "stocks", top = NULL) {
+      assert_args_AlpacaMarketData__get_movers(market_type, top)
       endpoint <- paste0("/v1beta1/screener/", market_type, "/movers")
-      return(private$.data_request(
+      result <- private$.data_request(
         endpoint = endpoint,
         query = list(top = top),
         .parser = function(data) {
@@ -1868,10 +2020,15 @@ AlpacaMarketData <- R6::R6Class(
             dts <- c(dts, list(l))
           }
           if (length(dts) == 0) {
-            return(data.table::data.table()[])
+            return(empty_dt_movers())
           }
           return(data.table::rbindlist(dts, fill = TRUE)[])
         }
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_movers,
+        is_async = private$.is_async
       ))
     }
   ),

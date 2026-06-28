@@ -7,10 +7,12 @@
 time_convert_from_alpaca(x)
 }
 \arguments{
-\item{x}{Character vector; RFC-3339 timestamp string(s).}
+\item{x}{(character | logical | NA | NULL) RFC-3339 timestamp string(s), or a
+bare \code{NA} (\code{logical}), or \code{NULL}.}
 }
 \value{
-POSIXct vector in UTC, or \code{NA} if input is \code{NULL}/\code{NA}.
+(POSIXct | NA) the parsed UTC date-times, or \code{NA} if input is
+\code{NULL}/\code{NA}.
 }
 \description{
 Parses an RFC-3339 timestamp string (e.g., \code{"2024-01-15T14:30:00Z"}) into
