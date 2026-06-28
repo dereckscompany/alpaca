@@ -7,7 +7,9 @@
 # They are skipped by default. Use paper trading credentials only!
 #
 # IMPORTANT: These tests use PAPER TRADING. Never use live credentials.
-# Order tests are read-only (get_orders) or use cancel immediately.
+# Order-placing tests rest a non-marketable limit order on a symbol the account
+# holds no position/order in (to avoid a wash-trade self-cross) and cancel it
+# immediately; they skip gracefully if the broker still flags a wash trade.
 
 skip_if_not(
   identical(Sys.getenv("ALPACA_LIVE_TESTS"), "true"),
@@ -98,6 +100,72 @@ test_that("[LIVE] get_activities returns data.table", {
 
 trading <- AlpacaTrading$new(keys = .keys, base_url = .base_url)
 
+# ---- Wash-trade-safe order helpers ----
+#
+# The paper account may already hold a position or a resting order in a given
+# symbol; a fresh order on that same symbol can be rejected with
+# "403 ... potential wash trade detected" (a self-cross). These helpers pick a
+# liquid symbol the account is NOT currently exposed to, and skip the test
+# gracefully if the broker still flags a wash trade -- so the suite is never red
+# purely from transient account state.
+
+.held_symbols <- function() {
+  held <- character(0)
+  pos <- tryCatch(acct$get_positions(), error = function(e) NULL)
+  if (!is.null(pos) && nrow(pos) > 0) {
+    held <- c(held, pos$symbol)
+  }
+  ords <- tryCatch(trading$get_orders(status = "open", limit = 500), error = function(e) NULL)
+  if (!is.null(ords) && nrow(ords) > 0) {
+    held <- c(held, ords$symbol)
+  }
+  return(unique(held))
+}
+
+# Liquid large-caps, all priced far above the $1 resting limit below, so the
+# order never becomes marketable (rests, never fills).
+.throwaway_candidates <- c(
+  "F", "T", "INTC", "PFE", "KO", "CSCO", "BAC", "VZ", "SBUX", "HPQ", "MU", "KEY"
+)
+
+# Return `n` liquid symbols the account currently holds no position or open
+# order in; skip the test if not enough are free (rather than risk a self-cross).
+.pick_throwaway_symbols <- function(n = 1) {
+  free <- setdiff(.throwaway_candidates, .held_symbols())
+  if (length(free) < n) {
+    testthat::skip(sprintf(
+      "Need %d throwaway symbol(s) free of current positions/orders; none available — skipping to avoid a wash-trade self-cross.",
+      n
+    ))
+  }
+  return(free[seq_len(n)])
+}
+
+# Place a resting, non-marketable buy limit order on `symbol`; skip (not fail)
+# if the broker still rejects it as a potential wash trade from account state.
+.add_resting_order_or_skip <- function(symbol, ...) {
+  return(tryCatch(
+    trading$add_order(
+      symbol = symbol,
+      side = "buy",
+      type = "limit",
+      time_in_force = "day",
+      qty = 1,
+      limit_price = 1.00,
+      ...
+    ),
+    error = function(e) {
+      if (grepl("wash trade", conditionMessage(e), ignore.case = TRUE)) {
+        testthat::skip(paste(
+          "Broker rejected the order as a potential wash trade (account state):",
+          conditionMessage(e)
+        ))
+      }
+      stop(e)
+    }
+  ))
+}
+
 test_that("[LIVE] get_orders returns data.table of orders", {
   dt <- trading$get_orders(status = "all", limit = 5)
   expect_s3_class(dt, "data.table")
@@ -105,18 +173,13 @@ test_that("[LIVE] get_orders returns data.table of orders", {
 })
 
 test_that("[LIVE] place and immediately cancel a limit order", {
-  # Place a limit order far from market price (won't fill)
-  order <- trading$add_order(
-    symbol = "AAPL",
-    side = "buy",
-    type = "limit",
-    time_in_force = "day",
-    qty = 1,
-    limit_price = 1.00 # Far below market — won't execute
-  )
+  # Use a symbol the account holds no position/order in, so a buy can't
+  # self-cross into a wash-trade rejection. Limit far below market — won't fill.
+  sym <- .pick_throwaway_symbols(1)
+  order <- .add_resting_order_or_skip(sym)
   expect_s3_class(order, "data.table")
   expect_equal(nrow(order), 1)
-  expect_true(order$symbol == "AAPL")
+  expect_true(order$symbol == sym)
   expect_true(order$side == "buy")
 
   throttle()
@@ -133,24 +196,11 @@ test_that("[LIVE] place and immediately cancel a limit order", {
 })
 
 test_that("[LIVE] cancel_all_orders works", {
-  # Place two cheap orders
-  trading$add_order(
-    symbol = "AAPL",
-    side = "buy",
-    type = "limit",
-    time_in_force = "day",
-    qty = 1,
-    limit_price = 1.00
-  )
+  # Two resting orders on symbols the account isn't exposed to (no self-cross).
+  syms <- .pick_throwaway_symbols(2)
+  .add_resting_order_or_skip(syms[1])
   throttle()
-  trading$add_order(
-    symbol = "MSFT",
-    side = "buy",
-    type = "limit",
-    time_in_force = "day",
-    qty = 1,
-    limit_price = 1.00
-  )
+  .add_resting_order_or_skip(syms[2])
   throttle()
 
   # Cancel all
@@ -263,16 +313,9 @@ test_that("[LIVE] modify_account_config round-trips correctly", {
 test_that("[LIVE] get_order_by_client_id retrieves order", {
   client_id <- paste0("test-", format(Sys.time(), "%H%M%S"), "-", sample(1000:9999, 1))
 
-  # Place order with custom client_order_id
-  order <- trading$add_order(
-    symbol = "AAPL",
-    side = "buy",
-    type = "limit",
-    time_in_force = "day",
-    qty = 1,
-    limit_price = 1.00,
-    client_order_id = client_id
-  )
+  # Place order with custom client_order_id on a non-exposed symbol.
+  sym <- .pick_throwaway_symbols(1)
+  order <- .add_resting_order_or_skip(sym, client_order_id = client_id)
   expect_equal(order$client_order_id, client_id)
   throttle()
 
