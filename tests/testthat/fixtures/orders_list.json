@@ -1,0 +1,22 @@
+[
+  {
+    "id": "order-1",
+    "symbol": "AAPL",
+    "side": "buy",
+    "type": "limit",
+    "status": "new",
+    "qty": "1",
+    "filled_qty": "0",
+    "created_at": "2024-01-15T14:30:00Z"
+  },
+  {
+    "id": "order-2",
+    "symbol": "MSFT",
+    "side": "sell",
+    "type": "market",
+    "status": "filled",
+    "qty": "10",
+    "filled_qty": "10",
+    "created_at": "2024-01-15T14:31:00Z"
+  }
+]

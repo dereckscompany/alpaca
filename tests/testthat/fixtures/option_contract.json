@@ -1,0 +1,18 @@
+{
+  "id": "opt-uuid-1",
+  "symbol": "AAPL240621C00200000",
+  "name": "AAPL Jun 21 2024 200.00 Call",
+  "status": "active",
+  "tradable": true,
+  "type": "call",
+  "strike_price": "200.00",
+  "expiration_date": "2024-06-21",
+  "underlying_symbol": "AAPL",
+  "style": "american",
+  "root_symbol": "AAPL",
+  "size": "100",
+  "open_interest": "1234",
+  "open_interest_date": "2025-03-07",
+  "close_price": "5.50",
+  "close_price_date": "2025-03-07"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "order-uuid-123",
+  "client_order_id": "client-123",
+  "symbol": "AAPL",
+  "side": "buy",
+  "type": "limit",
+  "time_in_force": "day",
+  "status": "accepted",
+  "qty": "1",
+  "filled_qty": "0",
+  "filled_avg_price": null,
+  "limit_price": "150.00",
+  "stop_price": null,
+  "created_at": "2024-01-15T14:30:00Z",
+  "submitted_at": "2024-01-15T14:30:00Z"
+}

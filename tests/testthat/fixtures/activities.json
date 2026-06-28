@@ -1,0 +1,20 @@
+[
+  {
+    "id": "act-1",
+    "activity_type": "FILL",
+    "symbol": "AAPL",
+    "side": "buy",
+    "qty": "10",
+    "price": "185.50",
+    "transaction_time": "2024-01-15T14:30:00Z"
+  },
+  {
+    "id": "act-2",
+    "activity_type": "FILL",
+    "symbol": "MSFT",
+    "side": "sell",
+    "qty": "5",
+    "price": "374.00",
+    "transaction_time": "2024-01-15T14:31:00Z"
+  }
+]

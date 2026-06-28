@@ -112,7 +112,8 @@ box::use(
     get_base_url,
     get_data_base_url
   ],
-  ./tests/testthat/mock_router[mock_router]
+  connectcore[local_mock_api],
+  ./tests/testthat/mock_router[.mock_routes]
 )
 
 KEYS <- get_api_keys(
@@ -123,7 +124,11 @@ KEYS <- get_api_keys(
 TBASE <- "https://paper-api.alpaca.markets"
 DBASE <- "https://data.alpaca.markets"
 
-options(httr2_mock = mock_router)
+# httr2 exposes a native global mock hook: connectcore::local_mock_api installs
+# the .mock_routes dispatcher as the httr2_mock option for the rest of this
+# scope, so every request below is served from canned fixtures -- no network,
+# no real credentials.
+local_mock_api(.mock_routes)
 
 # normal imports
 box::use(

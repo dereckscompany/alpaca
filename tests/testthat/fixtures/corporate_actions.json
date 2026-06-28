@@ -1,0 +1,32 @@
+[
+  {
+    "id": "ca-uuid-1",
+    "corporate_action_id": "CA123",
+    "ca_type": "dividend",
+    "ca_sub_type": "cash",
+    "initiating_symbol": "AAPL",
+    "target_symbol": "AAPL",
+    "declaration_date": "2024-01-25",
+    "ex_date": "2024-02-09",
+    "record_date": "2024-02-12",
+    "payable_date": "2024-02-15",
+    "cash": "0.24",
+    "old_rate": null,
+    "new_rate": null
+  },
+  {
+    "id": "ca-uuid-2",
+    "corporate_action_id": "CA456",
+    "ca_type": "split",
+    "ca_sub_type": "forward",
+    "initiating_symbol": "NVDA",
+    "target_symbol": "NVDA",
+    "declaration_date": "2024-05-22",
+    "ex_date": "2024-06-10",
+    "record_date": "2024-06-07",
+    "payable_date": "2024-06-10",
+    "cash": null,
+    "old_rate": "1",
+    "new_rate": "10"
+  }
+]

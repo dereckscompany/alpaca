@@ -1,0 +1,35 @@
+{
+  "id": "acct-uuid-123",
+  "account_number": "PA1234567",
+  "status": "ACTIVE",
+  "currency": "USD",
+  "cash": "100000",
+  "portfolio_value": "100000",
+  "equity": "100000",
+  "last_equity": "99500",
+  "buying_power": "400000",
+  "initial_margin": "0",
+  "maintenance_margin": "0",
+  "long_market_value": "0",
+  "short_market_value": "0",
+  "pattern_day_trader": false,
+  "trading_blocked": false,
+  "transfers_blocked": false,
+  "account_blocked": false,
+  "daytrade_count": 0,
+  "daytrading_buying_power": "0",
+  "regt_buying_power": "200000",
+  "multiplier": "4",
+  "sma": "0",
+  "created_at": "2024-01-01T00:00:00Z",
+  "admin_configurations": {
+    "max_margin_multiplier": "4",
+    "max_options_trading_level": 3
+  },
+  "user_configurations": {
+    "dtbp_check": "entry",
+    "no_shorting": false,
+    "suspend_trade": false,
+    "trade_confirm_email": "all"
+  }
+}

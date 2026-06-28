@@ -1,0 +1,17 @@
+{
+  "id": "uuid-1",
+  "class": "us_equity",
+  "exchange": "NASDAQ",
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "status": "active",
+  "tradable": true,
+  "marginable": true,
+  "shortable": true,
+  "fractionable": true,
+  "attributes": [
+    "fractional_eh_enabled",
+    "has_options",
+    "overnight_tradable"
+  ]
+}

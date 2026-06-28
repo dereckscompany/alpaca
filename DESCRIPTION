@@ -26,7 +26,8 @@ Imports:
     lubridate,
     jsonlite,
     assert,
-    connectcore (>= 0.1.0)
+    promises,
+    connectcore (>= 0.2.0)
 Remotes:
     dereckscompany/assert,
     dereckscompany/roxyassert,
@@ -41,7 +42,6 @@ Suggests:
     later,
     lintr,
     pkgdown,
-    promises,
     rcmdcheck,
     rmarkdown,
     roxyassert (>= 0.9.1),
