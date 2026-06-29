@@ -2363,6 +2363,23 @@ assert_args_alpaca_fetch_bars <- function(symbol, timeframe, start, end, keys, d
 
 assert_return_alpaca_fetch_bars <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
+  assert_datetime(value[["timestamp"]])
+  assert_no_missing_values(value[["timestamp"]])
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
+  assert_double(value[["volume"]])
+  assert_no_missing_values(value[["volume"]])
+  assert_double(value[["trade_count"]])
+  assert_no_missing_values(value[["trade_count"]])
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   return(value)
 }
 

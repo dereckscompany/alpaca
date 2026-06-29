@@ -1,3 +1,9 @@
+# alpaca 0.4.3
+
+## Documented the bar-backfill return shape with typed columns
+
+* **`alpaca_fetch_bars()` now documents its `data.table` return as the typed `Bars` shape rather than a bare `data.table` with a prose column list.** The helper combines `parse_bars()` segments (and the empty path is `empty_dt_bars()`), so it always emits the canonical OHLCV columns; pointing its `@return` at the shared `Bars` `@type` makes the contract roclet generate the per-column `assert_has_columns` / type checks (`timestamp` POSIXct, the OHLC and `vwap` doubles, the `volume` / `trade_count` counts) that every other bar-returning method already carries. The three genuinely variable-shape endpoints (`cancel_all_orders`, `close_all_positions`, `cancel_watchlist_symbol`) keep their bare `data.table` return because their column set differs by response path.
+
 # alpaca 0.4.2
 
 ## Test harness migrated onto the connectcore mock framework

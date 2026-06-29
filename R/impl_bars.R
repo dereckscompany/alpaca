@@ -42,9 +42,10 @@ alpaca_timeframe_map <- c(
 #'   Default 10000.
 #' @param sleep (scalar<numeric in [0, Inf[>) seconds to sleep between requests.
 #'   Default 0.2.
-#' @return (data.table | promise<data.table>) a table with columns: timestamp,
-#'   open, high, low, close, volume, trade_count, vwap (a promise thereof in
-#'   async mode).
+#' @return (Bars | promise<Bars>) the deduplicated, time-sorted bars (a promise
+#'   thereof in async mode). The result combines `parse_bars()` segments, so it
+#'   carries the `Bars` columns (timestamp, open, high, low, close, volume,
+#'   trade_count, vwap).
 #'
 #' @keywords internal
 #' @noRd
