@@ -1,7 +1,7 @@
 {
   "template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-  "commit": "5f86cbc79d59efc845845db678820e28ad63d905",
-  "checkout": null,
+  "commit": "74ad5ab669ff92f5fcc1d6f33900429f897d351e",
+  "checkout": "74ad5ab669ff92f5fcc1d6f33900429f897d351e",
   "context": {
     "cookiecutter": {
       "package_name": "alpaca",
@@ -20,7 +20,7 @@
         "scripts/*"
       ],
       "_template": "https://github.com/dereckscompany/templates-cookiecutter.git",
-      "_commit": "5f86cbc79d59efc845845db678820e28ad63d905"
+      "_commit": "74ad5ab669ff92f5fcc1d6f33900429f897d351e"
     }
   },
   "directory": "template-r-package",

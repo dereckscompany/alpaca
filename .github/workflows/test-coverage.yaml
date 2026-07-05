@@ -1,5 +1,5 @@
-# Runs test coverage and deploys HTML report to GitHub Pages.
-# Coverage report: https://dereckscompany.github.io/alpaca/coverage/
+# Test coverage workflow - generates HTML report and deploys to GitHub Pages
+# Coverage report available at: https://dereckscompany.github.io/alpaca/coverage/
 #
 # renv is the package manager everywhere: dependencies come from
 # renv.lock via setup-renv (covr + DT included as dev dependencies).
@@ -7,7 +7,6 @@ on:
   push:
     branches: [master, main]
   pull_request:
-    branches: [master, main]
   workflow_dispatch:
 
 name: test-coverage
@@ -34,23 +33,32 @@ jobs:
 
       - uses: r-lib/actions/setup-renv@v2
 
-      - name: Run coverage and generate report
+      - name: Generate coverage report
         run: |
-          cov <- covr::package_coverage()
+          # Calculate coverage (this runs tests internally)
+          # type = "tests" ensures we're measuring test coverage
+          cov <- covr::package_coverage(type = "tests")
+
+          # Get percentage for badge
           pct <- covr::percent_coverage(cov)
+
+          # Determine badge color
           color <- if (pct >= 80) "brightgreen" else if (pct >= 60) "yellow" else "red"
 
-          cat(sprintf("Overall Coverage: %.1f%%\n", pct))
-
+          # Create output directory
           dir.create("coverage", showWarnings = FALSE)
+
+          # Generate HTML report
           covr::report(cov, file = "coverage/index.html", browse = FALSE)
 
+          # Create JSON for shields.io badge
           badge_json <- sprintf('{"schemaVersion":1,"label":"coverage","message":"%.1f%%","color":"%s"}', pct, color)
           writeLines(badge_json, "coverage/badge.json")
 
-          if (pct < 50) {
-            stop(sprintf("Coverage %.1f%% is below 50%% threshold", pct))
-          }
+          # Print summary
+          cat("\n=== Coverage Summary ===\n")
+          cat(sprintf("Overall: %.2f%%\n", pct))
+          print(cov)
         shell: Rscript {0}
 
       - name: Deploy coverage to GitHub Pages

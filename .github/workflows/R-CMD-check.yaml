@@ -1,12 +1,17 @@
-# Runs R CMD check (validates package structure, NAMESPACE, docs, tests).
-# Based on r-lib/actions check-release template — single platform is sufficient
-# for a pure-R package with no compiled code.
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 #
 # renv is the package manager everywhere: dependencies come from
 # renv.lock via setup-renv (renv::restore() + cache) — the same
 # versions you develop against locally. Dev tooling (rcmdcheck etc.)
 # is recorded in the lockfile via `renv::snapshot(dev = TRUE)`.
+# The matrix tests the locked environment on all three OSes; testing
+# devel/oldrel R against a pinned lockfile contradicts the lockfile,
+# so those rows are intentionally gone.
 on:
+  push:
+    branches: [master, main]
+  pull_request:
   workflow_dispatch:
 
 name: R-CMD-check
@@ -19,15 +24,29 @@ concurrency:
 
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: macos-latest, r: 'release'}
+          - {os: windows-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'release'}
+
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
 
     steps:
       - uses: actions/checkout@v4
 
+      - uses: r-lib/actions/setup-pandoc@v2
+
       - uses: r-lib/actions/setup-r@v2
         with:
+          r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-renv@v2
