@@ -7,8 +7,8 @@
 alpaca_backfill_bars(
   symbols,
   timeframes = "1Day",
-  start,
-  end = Sys.time(),
+  from,
+  to = lubridate::now(tzone = "UTC"),
   path = "alpaca_bars.csv",
   adjustment = "raw",
   feed = NULL,
@@ -23,9 +23,10 @@ alpaca_backfill_bars(
 \item{timeframes}{(character) bar timeframes (e.g., \code{c("1Day", "1Hour")}).
 See \code{alpaca_timeframe_map} for valid values.}
 
-\item{start}{(POSIXct | character) start date/time.}
+\item{from}{(POSIXct | character) start date/time.}
 
-\item{end}{(POSIXct | character) end date/time. Defaults to \code{Sys.time()}.}
+\item{to}{(POSIXct | character) end date/time. Defaults to the current UTC
+time (\code{\link[lubridate:now]{lubridate::now()}}).}
 
 \item{path}{(scalar<character>) file path for CSV output. Default
 \code{"alpaca_bars.csv"}.}
@@ -63,7 +64,7 @@ reading existing data and skipping completed symbol-timeframe combinations.
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT"),
   timeframes = "1Day",
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 
@@ -71,7 +72,7 @@ dt <- alpaca_backfill_bars(
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 }

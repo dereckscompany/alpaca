@@ -25,7 +25,7 @@ test_that("alpaca_paginate follows next_page_token across pages", {
   expect_s3_class(result, "data.table")
   expect_equal(nrow(result), 2)
   expect_equal(call_count, 2L)
-  expect_true("timestamp" %in% names(result))
+  expect_true("datetime" %in% names(result))
 })
 
 test_that("alpaca_paginate stops at max_pages", {

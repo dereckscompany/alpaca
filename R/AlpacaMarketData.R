@@ -214,7 +214,7 @@ AlpacaMarketData <- R6::R6Class(
     #'   `warning()`.
     #' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between page
     #'   requests (rate-limit throttle; sync only). Default 0.3.
-    #' @return (Bars | promise<Bars>) the bars. Columns: `timestamp`
+    #' @return (Bars | promise<Bars>) the bars. Columns: `datetime`
     #'   (POSIXct, UTC), `open`, `high`, `low`, `close`, `vwap` (numeric), and
     #'   `volume`, `trade_count` (integer).
     #'
@@ -1834,7 +1834,7 @@ AlpacaMarketData <- R6::R6Class(
               level = integer(),
               price = numeric(),
               size = numeric(),
-              timestamp = as.POSIXct(character())
+              timestamp = lubridate::as_datetime(character(), tz = "UTC")
             ))
           }
           dts <- lapply(names(ob_map), function(sym) {

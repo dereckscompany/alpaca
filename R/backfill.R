@@ -10,8 +10,9 @@
 #' @param symbols (character) ticker symbols (e.g., `c("AAPL", "MSFT")`).
 #' @param timeframes (character) bar timeframes (e.g., `c("1Day", "1Hour")`).
 #'   See `alpaca_timeframe_map` for valid values.
-#' @param start (POSIXct | character) start date/time.
-#' @param end (POSIXct | character) end date/time. Defaults to `Sys.time()`.
+#' @param from (POSIXct | character) start date/time.
+#' @param to (POSIXct | character) end date/time. Defaults to the current UTC
+#'   time ([lubridate::now()]).
 #' @param path (scalar<character>) file path for CSV output. Default
 #'   `"alpaca_bars.csv"`.
 #' @param adjustment (scalar<character>) price adjustment type. Default `"raw"`.
@@ -36,7 +37,7 @@
 #' dt <- alpaca_backfill_bars(
 #'   symbols = c("AAPL", "MSFT"),
 #'   timeframes = "1Day",
-#'   start = "2020-01-01",
+#'   from = "2020-01-01",
 #'   path = "data/bars.csv"
 #' )
 #'
@@ -44,7 +45,7 @@
 #' dt <- alpaca_backfill_bars(
 #'   symbols = c("AAPL", "MSFT", "TSLA"),
 #'   timeframes = c("1Day", "1Hour"),
-#'   start = "2020-01-01",
+#'   from = "2020-01-01",
 #'   path = "data/bars.csv"
 #' )
 #' }
@@ -53,8 +54,8 @@
 alpaca_backfill_bars <- function(
   symbols,
   timeframes = "1Day",
-  start,
-  end = Sys.time(),
+  from,
+  to = lubridate::now(tzone = "UTC"),
   path = "alpaca_bars.csv",
   adjustment = "raw",
   feed = NULL,
@@ -65,8 +66,8 @@ alpaca_backfill_bars <- function(
   assert_args_alpaca_backfill_bars(
     symbols,
     timeframes,
-    start,
-    end,
+    from,
+    to,
     path,
     adjustment,
     feed,
@@ -74,11 +75,11 @@ alpaca_backfill_bars <- function(
     keys,
     data_base_url
   )
-  if (is.character(start)) {
-    start <- lubridate::as_datetime(start, tz = "UTC")
+  if (is.character(from)) {
+    from <- lubridate::as_datetime(from, tz = "UTC")
   }
-  if (is.character(end)) {
-    end <- lubridate::as_datetime(end, tz = "UTC")
+  if (is.character(to)) {
+    to <- lubridate::as_datetime(to, tz = "UTC")
   }
 
   # Read existing CSV for resume support
@@ -117,8 +118,8 @@ alpaca_backfill_bars <- function(
         alpaca_fetch_bars(
           symbol = sym,
           timeframe = tf,
-          start = start,
-          end = end,
+          start = from,
+          end = to,
           keys = keys,
           data_base_url = data_base_url,
           adjustment = adjustment,
@@ -158,9 +159,9 @@ alpaca_backfill_bars <- function(
   combined <- data.table::rbindlist(results, fill = TRUE)
 
   # Deduplicate
-  if (nrow(combined) > 0 && "timestamp" %in% names(combined)) {
-    combined <- unique(combined, by = c("symbol", "timeframe", "timestamp"))
-    data.table::setorder(combined, symbol, timeframe, timestamp)
+  if (nrow(combined) > 0 && "datetime" %in% names(combined)) {
+    combined <- unique(combined, by = c("symbol", "timeframe", "datetime"))
+    data.table::setorder(combined, symbol, timeframe, datetime)
   }
 
   # Write CSV

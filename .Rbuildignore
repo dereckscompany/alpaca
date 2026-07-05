@@ -42,4 +42,5 @@ log.txt
 ^local$
 ^\.cruft\.json$
 ^\.clang-format$
+^\.formatignore$
 ^LICENSE$

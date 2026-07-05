@@ -7,6 +7,7 @@ utils::globalVariables(c(
   "symbol",
   "timeframe",
   "timestamp",
+  "datetime",
   # data.table NSE inside parsers (assigned via `dt[, col := ...]`)
   "leg_index",
   "parent_order_id",

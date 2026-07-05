@@ -125,7 +125,18 @@ trading <- AlpacaTrading$new(keys = .keys, base_url = .base_url)
 # Liquid large-caps, all priced far above the $1 resting limit below, so the
 # order never becomes marketable (rests, never fills).
 .throwaway_candidates <- c(
-  "F", "T", "INTC", "PFE", "KO", "CSCO", "BAC", "VZ", "SBUX", "HPQ", "MU", "KEY"
+  "F",
+  "T",
+  "INTC",
+  "PFE",
+  "KO",
+  "CSCO",
+  "BAC",
+  "VZ",
+  "SBUX",
+  "HPQ",
+  "MU",
+  "KEY"
 )
 
 # Return `n` liquid symbols the account currently holds no position or open

@@ -290,7 +290,7 @@ acct$cancel_watchlist("some-uuid")
 }
 }
 \seealso{
-\code{\link[=AlpacaAccount$get_activities]{AlpacaAccount$get_activities()}} — the sibling method
+\link{AlpacaAccount}'s \code{get_activities()} — the sibling method
 includes the worked id-cursor pagination loop in its
 \verb{@section Pagination}. This method follows the same contract.
 }

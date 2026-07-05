@@ -37,8 +37,9 @@ transformations applied:
     (e.g. `latestTrade`, `nextClose`) are converted to snake_case
     (`latest_trade`, `next_close`). A handful of endpoints additionally
     expand abbreviated single-letter keys returned by Alpaca’s
-    bar/trade/quote feeds (e.g. `t` → `timestamp`, `p` → `price`,
-    `o`/`h`/`l`/`c` → `open`/`high`/`low`/`close`, `vw` →
+    bar/trade/quote feeds (e.g. `t` → `datetime` on a bar’s reference
+    time and `t` → `timestamp` on a trade/quote event time, `p` →
+    `price`, `o`/`h`/`l`/`c` → `open`/`high`/`low`/`close`, `vw` →
     `volume_weighted_avg_price`) so the resulting column names are
     self-describing. The full mapping per endpoint is documented in the
     method-level `@return` blocks.
@@ -214,10 +215,10 @@ bars <- market$get_bars(
 bars[]
 ```
 
-    #>              timestamp   open   high    low  close   volume trade_count    vwap
-    #>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
-    #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
-    #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
+    #>               datetime  open  high   low close  volume trade_count  vwap
+    #>                 <POSc> <num> <num> <num> <num>   <num>       <num> <num>
+    #> 1: 2024-01-02 05:00:00   100   110    95   105 1000000       10000 102.5
+    #> 2: 2024-01-03 05:00:00   105   115   100   112 1100000       11000 108.0
 
 `get_bars()` and `get_bars_multi()` **auto-paginate**: they follow
 Alpaca’s `next_page_token` and return the full date range as one
@@ -233,7 +234,7 @@ trade[]
 ```
 
     #>              timestamp price  size exchange   tape    id conditions
-    #>                 <POSc> <num> <int>   <char> <char> <int>     <char>
+    #>                 <POSc> <num> <int>   <char> <char> <num>     <char>
     #> 1: 2024-01-15 14:30:00 185.5   100        V      C 12345          @
 
 ### Latest Quote (NBBO)
@@ -271,14 +272,18 @@ assets[]
     #>    <char>    <char>   <char> <char>                <char> <char>   <lgcl>
     #> 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE
     #> 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE
-    #>    marginable shortable fractionable
-    #>        <lgcl>    <lgcl>       <lgcl>
-    #> 1:       TRUE      TRUE         TRUE
-    #> 2:       TRUE      TRUE         TRUE
-    #>                                              attributes
-    #>                                                  <char>
-    #> 1: fractional_eh_enabled;has_options;overnight_tradable
-    #> 2:                                                 <NA>
+    #>    marginable maintenance_margin_requirement margin_requirement_long
+    #>        <lgcl>                          <int>                  <char>
+    #> 1:       TRUE                             30                      30
+    #> 2:       TRUE                             30                      30
+    #>    margin_requirement_short shortable easy_to_borrow  borrow_status
+    #>                      <char>    <lgcl>         <lgcl>         <char>
+    #> 1:                       30      TRUE           TRUE easy_to_borrow
+    #> 2:                       30      TRUE           TRUE easy_to_borrow
+    #>    fractionable                                           attributes
+    #>          <lgcl>                                               <char>
+    #> 1:         TRUE fractional_eh_enabled;has_options;overnight_tradable
+    #> 2:         TRUE                                                 <NA>
 
 ### Market News
 
@@ -371,10 +376,30 @@ order[, .(id, symbol, side, type, status, limit_price)]
 trading$get_orders(status = "open")
 ```
 
-    #>         id symbol   side   type status    qty filled_qty          created_at
-    #>     <char> <char> <char> <char> <char> <char>     <char>              <POSc>
-    #> 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15 14:30:00
-    #> 2: order-2   MSFT   sell market filled     10         10 2024-01-15 14:31:00
+    #>         id client_order_id          created_at          updated_at
+    #>     <char>          <char>              <POSc>              <POSc>
+    #> 1: order-1  client-order-1 2024-01-15 14:30:00 2024-01-15 14:30:00
+    #> 2: order-2  client-order-2 2024-01-15 14:31:00 2024-01-15 14:31:05
+    #>           submitted_at           filled_at expired_at canceled_at failed_at
+    #>                 <POSc>              <POSc>     <POSc>      <POSc>    <POSc>
+    #> 1: 2024-01-15 14:30:00                <NA>       <NA>        <NA>      <NA>
+    #> 2: 2024-01-15 14:31:00 2024-01-15 14:31:05       <NA>        <NA>      <NA>
+    #>    replaced_at replaced_by replaces  asset_id symbol asset_class notional
+    #>         <POSc>      <lgcl>   <lgcl>    <char> <char>      <char>   <lgcl>
+    #> 1:        <NA>          NA       NA uuid-aapl   AAPL   us_equity       NA
+    #> 2:        <NA>          NA       NA uuid-msft   MSFT   us_equity       NA
+    #>       qty filled_qty filled_avg_price order_class order_type   type   side
+    #>    <char>     <char>           <char>      <char>     <char> <char> <char>
+    #> 1:      1          0             <NA>                  limit  limit    buy
+    #> 2:     10         10           374.00                 market market   sell
+    #>    position_intent time_in_force limit_price stop_price status extended_hours
+    #>             <char>        <char>      <char>     <lgcl> <char>         <lgcl>
+    #> 1:     buy_to_open           day      150.00         NA    new          FALSE
+    #> 2:   sell_to_close           day        <NA>         NA filled          FALSE
+    #>    trail_percent trail_price    hwm subtag source           expires_at
+    #>           <lgcl>      <lgcl> <lgcl> <lgcl> <lgcl>               <char>
+    #> 1:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z
+    #> 2:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z
     #>    leg_index parent_order_id
     #>        <int>          <char>
     #> 1:        NA            <NA>
@@ -432,10 +457,38 @@ chain[]
     #>                     <num>                  <num>                 <int>
     #> 1:                    5.6                    5.4                    50
     #> 2:                    3.3                    3.1                    30
-    #>    latest_quote_bid_size latest_quote_conditions
-    #>                    <int>                  <char>
-    #> 1:                    40                       A
-    #> 2:                    25                    <NA>
+    #>    latest_quote_bid_size latest_quote_conditions minute_bar_timestamp
+    #>                    <int>                  <char>               <POSc>
+    #> 1:                    40                       A  2024-06-15 14:30:00
+    #> 2:                    25                    <NA>                 <NA>
+    #>    minute_bar_open minute_bar_high minute_bar_low minute_bar_close
+    #>              <num>           <num>          <num>            <num>
+    #> 1:            5.45             5.6            5.4              5.5
+    #> 2:              NA              NA             NA               NA
+    #>    minute_bar_volume minute_bar_trade_count minute_bar_vwap daily_bar_timestamp
+    #>                <int>                  <int>           <num>              <POSc>
+    #> 1:               120                      8            5.48 2024-06-15 04:00:00
+    #> 2:                NA                     NA              NA                <NA>
+    #>    daily_bar_open daily_bar_high daily_bar_low daily_bar_close daily_bar_volume
+    #>             <num>          <num>         <num>           <num>            <int>
+    #> 1:            5.2            5.7           5.1             5.5             3500
+    #> 2:             NA             NA            NA              NA               NA
+    #>    daily_bar_trade_count daily_bar_vwap prev_daily_bar_timestamp
+    #>                    <int>          <num>                   <POSc>
+    #> 1:                   210           5.42      2024-06-14 04:00:00
+    #> 2:                    NA             NA                     <NA>
+    #>    prev_daily_bar_open prev_daily_bar_high prev_daily_bar_low
+    #>                  <num>               <num>              <num>
+    #> 1:                 4.9                 5.3                4.8
+    #> 2:                  NA                  NA                 NA
+    #>    prev_daily_bar_close prev_daily_bar_volume prev_daily_bar_trade_count
+    #>                   <num>                 <int>                      <int>
+    #> 1:                  5.2                  4100                        260
+    #> 2:                   NA                    NA                         NA
+    #>    prev_daily_bar_vwap
+    #>                  <num>
+    #> 1:                5.09
+    #> 2:                  NA
 
 ## Short Selling
 
@@ -466,7 +519,7 @@ multiple symbols and timeframes with CSV-based resume support:
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 
@@ -474,7 +527,7 @@ dt <- alpaca_backfill_bars(
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA", "GOOGL"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 ```
@@ -489,7 +542,7 @@ data(alpaca_aapl_1day_bars, package = "alpaca")
 head(alpaca_aapl_1day_bars)
 ```
 
-    #>              timestamp   open   high    low  close    volume trade_count   vwap
+    #>               datetime   open   high    low  close    volume trade_count   vwap
     #>                 <POSc>  <num>  <num>  <num>  <num>     <int>       <int>  <num>
     #> 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60
     #> 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32
@@ -525,11 +578,57 @@ while (!later::loop_empty()) {
 }
 ```
 
-    #>              timestamp   open   high    low  close   volume trade_count    vwap
-    #>                 <POSc>  <num>  <num>  <num>  <num>    <int>       <int>   <num>
-    #> 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831
-    #> 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567
-    #> Market open: TRUE
+    #>      close     high      low trade_count    open            datetime   volume
+    #>      <num>    <num>    <num>       <num>   <num>              <POSc>    <num>
+    #>  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943
+    #>  2: 184.25 185.8800 183.4300      656956 184.220 2024-01-03 05:00:00 58418916
+    #>  3: 181.91 183.0872 180.8800      712850 182.150 2024-01-04 05:00:00 71992243
+    #>  4: 181.18 182.7600 180.1700      682335 181.990 2024-01-05 05:00:00 62379661
+    #>  5: 185.56 185.6000 181.5000      669304 182.085 2024-01-08 05:00:00 59151720
+    #>  6: 185.14 185.1500 182.7300      538297 183.920 2024-01-09 05:00:00 42848219
+    #>  7: 186.19 186.4000 183.9200      554884 184.350 2024-01-10 05:00:00 46797681
+    #>  8: 185.59 187.0500 183.6200      584114 186.540 2024-01-11 05:00:00 49133996
+    #>  9: 185.92 186.7400 185.1900      477050 186.060 2024-01-12 05:00:00 40477782
+    #> 10: 183.63 184.2600 180.9340      767431 182.160 2024-01-16 05:00:00 65612289
+    #> 11: 182.68 182.9300 180.3000      594725 181.270 2024-01-17 05:00:00 47321545
+    #> 12: 188.63 189.1400 185.8300      787472 186.090 2024-01-18 05:00:00 78031784
+    #> 13: 191.56 191.9500 188.8200      682664 189.330 2024-01-19 05:00:00 68902985
+    #> 14: 193.89 195.3300 192.2600      718256 192.300 2024-01-22 05:00:00 60139948
+    #> 15: 195.18 195.7500 193.8299      533198 195.020 2024-01-23 05:00:00 42360151
+    #> 16: 194.50 196.3800 194.3400      594907 195.420 2024-01-24 05:00:00 53636461
+    #> 17: 194.17 196.2675 193.1125      644776 195.220 2024-01-25 05:00:00 54834147
+    #> 18: 192.42 194.7600 191.9400      534166 194.270 2024-01-26 05:00:00 44594011
+    #> 19: 191.73 192.2000 189.5800      599512 192.010 2024-01-29 05:00:00 47145521
+    #> 20: 188.04 191.8000 187.4700      690706 190.940 2024-01-30 05:00:00 55854611
+    #> 21: 184.40 187.0950 184.3500      679844 187.040 2024-01-31 05:00:00 55467803
+    #>      close     high      low trade_count    open            datetime   volume
+    #>      <num>    <num>    <num>       <num>   <num>              <POSc>    <num>
+    #>         vwap
+    #>        <num>
+    #>  1: 185.8462
+    #>  2: 184.3197
+    #>  3: 182.0131
+    #>  4: 181.4839
+    #>  5: 184.4009
+    #>  6: 184.3641
+    #>  7: 185.2238
+    #>  8: 185.0222
+    #>  9: 185.8182
+    #> 10: 182.8303
+    #> 11: 181.8952
+    #> 12: 187.9687
+    #> 13: 190.6088
+    #> 14: 194.0135
+    #> 15: 194.8158
+    #> 16: 195.2364
+    #> 17: 194.7833
+    #> 18: 193.1369
+    #> 19: 191.2808
+    #> 20: 188.8236
+    #> 21: 185.3675
+    #>         vwap
+    #>        <num>
+    #> Market open: FALSE
 
 ## Available Classes
 

@@ -237,7 +237,7 @@ test_that("parse_bars returns exactly the expected columns", {
   )
   dt <- parse_bars(bars)
 
-  expected_cols <- c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap")
+  expected_cols <- c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap")
   expect_equal(names(dt), expected_cols)
 })
 
@@ -318,11 +318,11 @@ test_that("backfill CSV with old column names causes silent issues on resume", {
     symbol = "AAPL",
     timeframe = "1Day",
     old_timestamp = "2024-01-02T05:00:00Z", # wrong column name
-    open = 187.15,
-    high = 188.44,
-    low = 183.89,
-    close = 185.64,
-    volume = 82488700L
+    open = 100,
+    high = 110,
+    low = 95,
+    close = 105,
+    volume = 1000000L
   )
   data.table::fwrite(old_data, outfile)
 
@@ -330,21 +330,21 @@ test_that("backfill CSV with old column names causes silent issues on resume", {
   new_data <- data.table::data.table(
     symbol = "AAPL",
     timeframe = "1Day",
-    timestamp = "2024-01-03T05:00:00Z", # correct column name
-    open = 184.22,
-    high = 185.88,
-    low = 183.43,
-    close = 184.25,
-    volume = 58414500L
+    datetime = "2024-01-03T05:00:00Z", # correct column name
+    open = 105,
+    high = 115,
+    low = 100,
+    close = 112,
+    volume = 1100000L
   )
 
   existing <- data.table::fread(outfile)
   combined <- data.table::rbindlist(list(existing, new_data), fill = TRUE)
 
-  # Both old_timestamp and timestamp columns exist, with NAs cross-filled
+  # Both old_timestamp and datetime columns exist, with NAs cross-filled
   expect_true("old_timestamp" %in% names(combined))
-  expect_true("timestamp" %in% names(combined))
-  expect_true(is.na(combined$timestamp[1])) # old row missing new col
+  expect_true("datetime" %in% names(combined))
+  expect_true(is.na(combined$datetime[1])) # old row missing new col
   expect_true(is.na(combined$old_timestamp[2])) # new row missing old col
   expect_equal(nrow(combined), 2L)
   expect_equal(ncol(combined), 9L) # 8 unique + 1 duplicate = 9 columns

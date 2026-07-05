@@ -20,8 +20,8 @@ test_that("get_bars returns data.table with correct columns", {
   dt <- new_market()$get_bars("AAPL", timeframe = "1Day")
   expect_s3_class(dt, "data.table")
   expect_equal(nrow(dt), 2L)
-  expect_true(all(c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap") %in% names(dt)))
-  expect_s3_class(dt$timestamp, "POSIXct")
+  expect_true(all(c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap") %in% names(dt)))
+  expect_s3_class(dt$datetime, "POSIXct")
 })
 
 test_that("get_bars_multi returns data.table with symbol column", {

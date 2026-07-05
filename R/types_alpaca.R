@@ -35,7 +35,7 @@
 #' @type Bars (data.table) one row per OHLCV bar. The parser coerces the OHLC and
 #'   vwap price columns to `numeric` (a whole-number price Alpaca sends without a
 #'   decimal would otherwise realise as `integer`):
-#' - timestamp (POSIXct) bar open time (UTC).
+#' - datetime (POSIXct) bar open time (UTC).
 #' - open (numeric) open price.
 #' - high (numeric) high price.
 #' - low (numeric) low price.
