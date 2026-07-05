@@ -242,7 +242,7 @@ hhmm_to_hh_mm <- function(x) {
 #' column names.
 #'
 #' @param bars (list | NULL) bar objects from the Alpaca API.
-#' @return (class<data.table>) a table with columns: `timestamp`, `open`,
+#' @return (class<data.table>) a table with columns: `datetime`, `open`,
 #'   `high`, `low`, `close`, `volume`, `trade_count`, `vwap`.
 #'
 #' @keywords internal
@@ -254,7 +254,7 @@ parse_bars <- function(bars) {
   }
   dt <- data.table::rbindlist(bars, fill = TRUE)
   name_map <- c(
-    t = "timestamp",
+    t = "datetime",
     o = "open",
     h = "high",
     l = "low",
@@ -268,7 +268,7 @@ parse_bars <- function(bars) {
     data.table::setnames(dt, names(dt)[idx], name_map[names(dt)[idx]])
   }
   data.table::setnames(dt, to_snake_case(names(dt)))
-  parse_timestamp_cols(dt, "timestamp")
+  parse_timestamp_cols(dt, "datetime")
   # Alpaca sends a whole-number price without a decimal, so the raw JSON
   # parser realises that bar's price as `integer`. Coerce every price/vwap
   # column to a clean `numeric` double so the column is always a double.
@@ -667,14 +667,22 @@ parse_news <- function(news_items) {
       sizes <- vapply(
         imgs,
         function(img) {
-          return(if (is.null(img$size)) "" else as.character(img$size))
+          size <- ""
+          if (!is.null(img$size)) {
+            size <- as.character(img$size)
+          }
+          return(size)
         },
         character(1)
       )
       urls <- vapply(
         imgs,
         function(img) {
-          return(if (is.null(img$url)) "" else as.character(img$url))
+          url <- ""
+          if (!is.null(img$url)) {
+            url <- as.character(img$url)
+          }
+          return(url)
         },
         character(1)
       )
@@ -991,7 +999,7 @@ parse_orders <- function(items) {
 #' @noassert
 empty_dt_bars <- function() {
   return(data.table::data.table(
-    timestamp = lubridate::as_datetime(character(0), tz = "UTC"),
+    datetime = lubridate::as_datetime(character(0), tz = "UTC"),
     open = numeric(0),
     high = numeric(0),
     low = numeric(0),

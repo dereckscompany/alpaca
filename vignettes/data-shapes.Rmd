@@ -252,7 +252,7 @@ The multi-leg shape uses `leg_index` (NA on parent, 1..N on legs) +
 
 | Function | What it does |
 |---|---|
-| `alpaca_backfill_bars(symbols, timeframes, start, path)` | Bulk download bars for many symbols × timeframes to CSV with resume support. Used for backtests / pre-computing features |
+| `alpaca_backfill_bars(symbols, timeframes, from, path)` | Bulk download bars for many symbols × timeframes to CSV with resume support. Used for backtests / pre-computing features |
 | `alpaca_paginate(base_url, endpoint, ...)` | Low-level cursor-based pagination loop with a `sleep` throttle and `max_pages` guard (warns + returns the partial result on truncation, never discards fetched pages). `get_bars()` / `get_bars_multi()` use it to fetch every page automatically; exposed for users who want fine-grained control |
 | `alpaca_build_request(base_url, endpoint, ...)` | Low-level single-request HTTP primitive. The single point through which all Alpaca calls flow |
 | `time_convert_to_alpaca(x)` / `time_convert_from_alpaca(x)` | RFC-3339 ↔ `POSIXct` |

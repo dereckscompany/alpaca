@@ -7,7 +7,7 @@
 #'
 #' @format A [data.table::data.table] with 250 rows and 8 columns:
 #' \describe{
-#'   \item{timestamp}{POSIXct. Bar timestamp in UTC.}
+#'   \item{datetime}{POSIXct. Bar reference time in UTC.}
 #'   \item{open}{Numeric. Opening price.}
 #'   \item{high}{Numeric. Highest price during the day.}
 #'   \item{low}{Numeric. Lowest price during the day.}

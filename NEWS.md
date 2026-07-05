@@ -1,3 +1,28 @@
+# alpaca 0.5.0
+
+## Breaking changes (fleet-convergence pass)
+
+* **The bar/candle reference-time column is renamed `timestamp` -> `datetime`.** Per the ratified connector convention (CONNECTOR-CONVENTIONS.md I.2.5: `datetime` for a bar/candle reference time, `timestamp` for an event/transaction time), `get_bars()`, `get_bars_multi()`, `get_latest_bar()`, `get_latest_bars_multi()`, the `alpaca_fetch_bars()` / `alpaca_backfill_bars()` helpers, the `Bars` / `BarsMulti` `@type` shapes, and the bundled `alpaca_aapl_1day_bars` sample dataset now carry `datetime` instead of `timestamp`. Event-time and transaction-time columns are unchanged: trades, quotes, snapshots (the nested `*_timestamp` fields), the crypto orderbook, the market clock, and portfolio-history points all keep `timestamp`.
+* **`alpaca_backfill_bars()` renames its time-range arguments `start` / `end` -> `from` / `to`.** This aligns the backfill family with the fleet majority (D5); the default for `to` is the current UTC time (`lubridate::now()`).
+
+## Fixtures rewritten as authored-synthetic (constitution I.3.6)
+
+* **The test fixtures are authored-synthetic, not captures.** Per ruling I.3.6 (fully synthetic, never captured from the live API even scrubbed), the market-data fixtures that still carried real-looking captured bar values are rewritten with obviously-fake, round-number values; every fixture's shape was re-verified against the live Alpaca API (populated, representative records — never a single sample). This corrects the 0.4.2 NEWS description of the fixtures as "derived from real read-only Alpaca API captures ... scrubbed to synthetic placeholders".
+* **`dev/capture-alpaca.R` is documented as a shape-verification tool only.** Its header now states loudly that captures NEVER enter the repo; it hits the live API read-only, writes solely to the git-ignored `local/raw-data/`, and exists purely to confirm the authored fixtures stay shape-faithful.
+
+## Convention and dependency alignment
+
+* **`connectcore (>= 0.3.0)`.** The `Imports` floor is raised to the released `connectcore` 0.3.0; `Remotes` stays bare (repo-only) with reproducibility pinned in `renv.lock` per the ratified dependency policy (I.6.7).
+* **Date/time helpers use lubridate throughout.** The base `Sys.time()` backfill default and the base `as.POSIXct(character())` empty crypto-orderbook timestamp are replaced with `lubridate::now(tzone = "UTC")` and `lubridate::as_datetime(character(), tz = "UTC")`.
+* **`alpaca_fetch_bars()` types its return as the `Bars` shape.** The bar-backfill helper documented a bare `data.table` return, so its contract only checked the class; it now points its `@return` at the shared `Bars` `@type`, generating the per-column `assert_has_columns` / type checks every other bar-returning method carries.
+* **House-style cleanups.** The value-returning `return(if ... else ...)` expressions in the news image-field parser become default-then-update assignments; a `test-empty-constructors.R` guards the typed-empty invariant (zero-row, non-zero columns, no list column) for all 22 `empty_dt_*()` constructors.
+
+## Infrastructure
+
+* **`renv.lock` regenerated.** The lock recorded `connectcore` 0.1.0 (below the `Imports` floor) and omitted `assert` and `roxyassert` entirely, so `setup-renv` could not restore a clean runner and the test-coverage, R-CMD-check and pkgdown gates were red. The lock now records `connectcore` 0.3.0 with `assert`, `roxyassert`, `websocket` and `AsioHeaders` restored.
+* **pkgdown reference completeness.** The `alpaca_shapes` return-shape page is added to `_pkgdown.yml` under a "Data Shapes" section, matching the sibling packages, so the pkgdown gate no longer fails on a missing topic.
+* **`.cruft.json`.** Re-pinned to the current `templates-cookiecutter` master.
+
 # alpaca 0.4.2
 
 ## Test harness migrated onto the connectcore mock framework

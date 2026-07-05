@@ -33,7 +33,7 @@ We invite you to read the source code and make contributions if you find a bug o
 
 All API responses are returned as `data.table` objects with three transformations applied:
 
-1. **snake_case column names** -- camelCase keys from the JSON response (e.g. `latestTrade`, `nextClose`) are converted to snake_case (`latest_trade`, `next_close`). A handful of endpoints additionally expand abbreviated single-letter keys returned by Alpaca's bar/trade/quote feeds (e.g. `t` → `timestamp`, `p` → `price`, `o`/`h`/`l`/`c` → `open`/`high`/`low`/`close`, `vw` → `volume_weighted_avg_price`) so the resulting column names are self-describing. The full mapping per endpoint is documented in the method-level `@return` blocks.
+1. **snake_case column names** -- camelCase keys from the JSON response (e.g. `latestTrade`, `nextClose`) are converted to snake_case (`latest_trade`, `next_close`). A handful of endpoints additionally expand abbreviated single-letter keys returned by Alpaca's bar/trade/quote feeds (e.g. `t` → `datetime` on a bar's reference time and `t` → `timestamp` on a trade/quote event time, `p` → `price`, `o`/`h`/`l`/`c` → `open`/`high`/`low`/`close`, `vw` → `volume_weighted_avg_price`) so the resulting column names are self-describing. The full mapping per endpoint is documented in the method-level `@return` blocks.
 
 2. **All RFC-3339 timestamps are `POSIXct`** -- Every timestamp the Alpaca API emits in RFC-3339 form is parsed for you, regardless of endpoint: bars, trades, quotes, snapshots (incl. the five nested `*_timestamp` fields), orderbooks, news (`created_at`, `updated_at`), orders (`created_at`, `updated_at`, `submitted_at`, `filled_at`, `expired_at`, `canceled_at`, `failed_at`, `replaced_at`), account `created_at`, watchlist `created_at` / `updated_at`, and activities `transaction_time`. POSIXct columns are displayed in UTC by default. See each method's `@return` for the per-column types.
 
@@ -321,7 +321,7 @@ multiple symbols and timeframes with CSV-based resume support:
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 
@@ -329,7 +329,7 @@ dt <- alpaca_backfill_bars(
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA", "GOOGL"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 ```

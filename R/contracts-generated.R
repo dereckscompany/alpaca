@@ -597,9 +597,9 @@ assert_args_AlpacaMarketData__get_bars <- function(symbol, timeframe, start, end
 
 assert_return_AlpacaMarketData__get_bars <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
   assert_double(value[["open"]])
   assert_no_missing_values(value[["open"]])
   assert_double(value[["high"]])
@@ -667,9 +667,9 @@ assert_args_AlpacaMarketData__get_bars_multi <- function(symbols, timeframe, sta
 
 assert_return_AlpacaMarketData__get_bars_multi <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
   assert_double(value[["open"]])
   assert_no_missing_values(value[["open"]])
   assert_double(value[["high"]])
@@ -699,9 +699,9 @@ assert_args_AlpacaMarketData__get_latest_bar <- function(symbol, feed) {
 
 assert_return_AlpacaMarketData__get_latest_bar <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
   assert_double(value[["open"]])
   assert_no_missing_values(value[["open"]])
   assert_double(value[["high"]])
@@ -825,9 +825,9 @@ assert_args_AlpacaMarketData__get_latest_bars_multi <- function(symbols, feed, c
 
 assert_return_AlpacaMarketData__get_latest_bars_multi <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
   assert_double(value[["open"]])
   assert_no_missing_values(value[["open"]])
   assert_double(value[["high"]])
@@ -1492,9 +1492,9 @@ assert_args_AlpacaOptions__get_option_bars <- function(symbols, timeframe, start
 
 assert_return_AlpacaOptions__get_option_bars <- function(value) {
   assert_data_table(value)
-  assert_has_columns(value, c("timestamp", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
-  assert_datetime(value[["timestamp"]])
-  assert_no_missing_values(value[["timestamp"]])
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap", "symbol"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
   assert_double(value[["open"]])
   assert_no_missing_values(value[["open"]])
   assert_double(value[["high"]])
@@ -1983,13 +1983,13 @@ assert_return_AlpacaTrading__cancel_all_orders <- function(value) {
   return(value)
 }
 
-assert_args_alpaca_backfill_bars <- function(symbols, timeframes, start, end, path, adjustment, feed, sleep, keys, data_base_url) {
+assert_args_alpaca_backfill_bars <- function(symbols, timeframes, from, to, path, adjustment, feed, sleep, keys, data_base_url) {
   assert_character(symbols)
   assert_no_missing_values(symbols)
   assert_character(timeframes)
   assert_no_missing_values(timeframes)
   assert_any_of(
-    start,
+    from,
     function(.x) {
       assert_datetime(.x)
       assert_no_missing_values(.x)
@@ -2000,7 +2000,7 @@ assert_args_alpaca_backfill_bars <- function(symbols, timeframes, start, end, pa
     }
   )
   assert_any_of(
-    end,
+    to,
     function(.x) {
       assert_datetime(.x)
       assert_no_missing_values(.x)
@@ -2363,6 +2363,23 @@ assert_args_alpaca_fetch_bars <- function(symbol, timeframe, start, end, keys, d
 
 assert_return_alpaca_fetch_bars <- function(value) {
   assert_data_table(value)
+  assert_has_columns(value, c("datetime", "open", "high", "low", "close", "volume", "trade_count", "vwap"))
+  assert_datetime(value[["datetime"]])
+  assert_no_missing_values(value[["datetime"]])
+  assert_double(value[["open"]])
+  assert_no_missing_values(value[["open"]])
+  assert_double(value[["high"]])
+  assert_no_missing_values(value[["high"]])
+  assert_double(value[["low"]])
+  assert_no_missing_values(value[["low"]])
+  assert_double(value[["close"]])
+  assert_no_missing_values(value[["close"]])
+  assert_double(value[["volume"]])
+  assert_no_missing_values(value[["volume"]])
+  assert_double(value[["trade_count"]])
+  assert_no_missing_values(value[["trade_count"]])
+  assert_double(value[["vwap"]])
+  assert_no_missing_values(value[["vwap"]])
   return(value)
 }
 

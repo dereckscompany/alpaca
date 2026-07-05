@@ -1102,7 +1102,7 @@ AlpacaAccount <- R6::R6Class(
     #'   per-activity cursor used for paging. An empty response returns a
     #'   zero-row table carrying the `Activity` columns.
     #'
-    #' @seealso [AlpacaAccount$get_activities()] — the sibling method
+    #' @seealso [AlpacaAccount]'s `get_activities()` — the sibling method
     #'   includes the worked id-cursor pagination loop in its
     #'   `@section Pagination`. This method follows the same contract.
     #'

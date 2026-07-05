@@ -13,8 +13,8 @@ test_that("alpaca_backfill_bars warns per failure and emits a final summary warn
         suppressMessages(alpaca_backfill_bars(
           symbols = "AAPL",
           timeframes = "1Day",
-          start = "2024-01-01",
-          end = "2024-01-31",
+          from = "2024-01-01",
+          to = "2024-01-31",
           path = outfile,
           sleep = 0,
           keys = list(api_key = "x", api_secret = "y"),

@@ -500,7 +500,7 @@ requests (rate-limit throttle; sync only). Default 0.3.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-(Bars | promise<Bars>) the bars. Columns: \code{timestamp}
+(Bars | promise<Bars>) the bars. Columns: \code{datetime}
 (POSIXct, UTC), \code{open}, \code{high}, \code{low}, \code{close}, \code{vwap} (numeric), and
 \code{volume}, \code{trade_count} (integer).
 }
