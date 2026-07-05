@@ -38,42 +38,80 @@ depending on the `async` parameter at construction.
 
 ### Official Documentation
 
-- [Account](https://docs.alpaca.markets/reference/getaccount-1)
+- [Account](https://docs.alpaca.markets/us/reference/getaccount-1)
 
-- [Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
+- [Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
 
 - [Portfolio
-  History](https://docs.alpaca.markets/reference/getportfoliohistory)
+  History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
 
 - [Account
-  Activities](https://docs.alpaca.markets/reference/getaccountactivities)
+  Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
 
 ### Endpoints Covered
 
-|                         |                                                |        |
-|-------------------------|------------------------------------------------|--------|
-| Method                  | Endpoint                                       | HTTP   |
-| get_account             | `GET /v2/account`                              | GET    |
-| get_positions           | `GET /v2/positions`                            | GET    |
-| get_position            | `GET /v2/positions/\{symbol_or_id\}`           | GET    |
-| close_position          | `DELETE /v2/positions/\{symbol_or_id\}`        | DELETE |
-| close_all_positions     | `DELETE /v2/positions`                         | DELETE |
-| get_account_config      | `GET /v2/account/configurations`               | GET    |
-| modify_account_config   | `PATCH /v2/account/configurations`             | PATCH  |
-| exercise_option         | `POST /v2/positions/\{symbol_or_id\}/exercise` | POST   |
-| get_portfolio_history   | `GET /v2/account/portfolio/history`            | GET    |
-| get_activities          | `GET /v2/account/activities`                   | GET    |
-| get_activities_by_type  | `GET /v2/account/activities/\{type\}`          | GET    |
-| get_watchlists          | `GET /v2/watchlists`                           | GET    |
-| get_watchlist           | `GET /v2/watchlists/\{id\}`                    | GET    |
-| add_watchlist           | `POST /v2/watchlists`                          | POST   |
-| modify_watchlist        | `PUT /v2/watchlists/\{id\}`                    | PUT    |
-| add_watchlist_symbol    | `POST /v2/watchlists/\{id\}`                   | POST   |
-| cancel_watchlist_symbol | `DELETE /v2/watchlists/\{id\}/\{symbol\}`      | DELETE |
-| cancel_watchlist        | `DELETE /v2/watchlists/\{id\}`                 | DELETE |
+|  |  |  |
+|----|----|----|
+| Method | Endpoint | HTTP |
+| get_account | `GET /v2/account` | GET |
+| get_positions | `GET /v2/positions` | GET |
+| get_position | `GET /v2/positions/\{symbol_or_id\}` | GET |
+| close_position | `DELETE /v2/positions/\{symbol_or_id\}` | DELETE |
+| close_all_positions | `DELETE /v2/positions` | DELETE |
+| get_account_config | `GET /v2/account/configurations` | GET |
+| modify_account_config | `PATCH /v2/account/configurations` | PATCH |
+| exercise_option | `POST /v2/positions/\{symbol_or_id\}/exercise` | POST |
+| get_portfolio_history | `GET /v2/account/portfolio/history` | GET |
+| get_activities | `GET /v2/account/activities` | GET |
+| get_activities_by_type | `GET /v2/account/activities/\{type\}` | GET |
+| get_watchlists | `GET /v2/watchlists` | GET |
+| get_watchlist | `GET /v2/watchlists/\{id\}` | GET |
+| add_watchlist | `POST /v2/watchlists` | POST |
+| modify_watchlist | `PUT /v2/watchlists/\{id\}` | PUT |
+| add_watchlist_symbol | `POST /v2/watchlists/\{id\}` | POST |
+| cancel_watchlist_symbol | `DELETE /v2/watchlists/\{id\}/\{symbol\}` | DELETE |
+| cancel_watchlist | `DELETE /v2/watchlists/\{id\}` | DELETE |
 
-## Super class
+## Pagination
 
+This method does **not** auto-paginate. To walk every activity that
+matches your filters, pass the last row's `id` back in as `page_token`;
+stop when a returned page is shorter than `page_size` (i.e. you've
+reached the tail). A worked example:
+
+    library(data.table)
+    acct <- AlpacaAccount$new()
+
+    pages <- list()
+    token <- NULL
+    repeat {
+      dt <- acct$get_activities(
+        activity_types = "FILL",
+        direction = "desc",
+        page_size = 100L,        # the hard server-side cap
+        page_token = token
+      )
+      if (nrow(dt) == 0L) break
+      pages[[length(pages) + 1L]] <- dt
+      if (nrow(dt) < 100L) break # short page == last page
+      token <- tail(dt$id, 1L)
+    }
+    all_fills <- rbindlist(pages, use.names = TRUE, fill = TRUE)
+
+Automated pagination (drop `page_size`, add `n` / `max_total`) is
+planned for a follow-up release; this method's public API will remain
+backward-compatible.
+
+## See also
+
+AlpacaAccount's `get_activities()` — the sibling method includes the
+worked id-cursor pagination loop in its `@section Pagination`. This
+method follows the same contract.
+
+## Super classes
+
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaAccount`
 
@@ -138,8 +176,8 @@ cash, margin, and account status.
 
 #### Official Documentation
 
-[Get Account](https://docs.alpaca.markets/reference/getaccount-1)
-Verified: 2026-03-10
+[Get Account](https://docs.alpaca.markets/us/reference/getaccount-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -180,41 +218,12 @@ Verified: 2026-03-10
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Account UUID.
-
-- `account_number` (character): Account number.
-
-- `status` (character): Account status (e.g., `"ACTIVE"`).
-
-- `currency` (character): Account currency (e.g., `"USD"`).
-
-- `cash` (character): Cash balance.
-
-- `portfolio_value` (character): Total portfolio value.
-
-- `equity` (character): Account equity.
-
-- `buying_power` (character): Available buying power.
-
-- `initial_margin` (character): Initial margin requirement.
-
-- `maintenance_margin` (character): Maintenance margin requirement.
-
-- `long_market_value` (character): Market value of long positions.
-
-- `short_market_value` (character): Market value of short positions.
-
-- `pattern_day_trader` (logical): Whether flagged as PDT.
-
-- `trading_blocked` (logical): Whether trading is blocked.
-
-- `daytrade_count` (integer): Number of day trades in the last 5 days.
-
-- `daytrading_buying_power` (character): Day trading buying power.
-
-- `created_at` (character): Account creation timestamp.
+(Account \| promise\<Account\>) the account details. Columns include
+`id`, `account_number`, `status`, `currency`, `cash`, `portfolio_value`,
+`equity`, `buying_power`, `initial_margin`, `maintenance_margin`,
+`long_market_value`, `short_market_value`, `daytrading_buying_power`
+(all character); `pattern_day_trader` and `trading_blocked` (logical);
+`daytrade_count` (integer); and `created_at` (POSIXct, UTC).
 
 #### Examples
 
@@ -232,7 +241,7 @@ Verified: 2026-03-10
 Get Account Configurations
 
 Retrieves the current account configuration settings including DTBP
-check behavior, trade confirmation emails, and shorting restrictions.
+check behaviour, trade confirmation emails, and shorting restrictions.
 
 #### API Endpoint
 
@@ -241,8 +250,8 @@ check behavior, trade confirmation emails, and shorting restrictions.
 #### Official Documentation
 
 [Get Account
-Configurations](https://docs.alpaca.markets/reference/getaccountconfig-1)
-Verified: 2026-03-10
+Configurations](https://docs.alpaca.markets/us/reference/getaccountconfig-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -258,8 +267,7 @@ Verified: 2026-03-10
       "trade_confirm_email": "all",
       "fractional_trading": true,
       "max_margin_multiplier": "4",
-      "pdt_check": "entry",
-      "max_options_trading_level": 2
+      "pdt_check": "entry"
     }
 
 #### Usage
@@ -268,23 +276,10 @@ Verified: 2026-03-10
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `dtbp_check` (character): Day trading buying power check method.
-
-- `no_shorting` (logical): Whether shorting is disabled.
-
-- `suspend_trade` (logical): Whether trading is suspended.
-
-- `trade_confirm_email` (character): Trade confirmation email setting.
-
-- `fractional_trading` (logical): Whether fractional trading is enabled.
-
-- `max_margin_multiplier` (character): Maximum margin multiplier.
-
-- `pdt_check` (character): PDT check method.
-
-- `max_options_trading_level` (integer): Options trading level.
+(AccountConfig \| promise\<AccountConfig\>) the configuration. Columns
+include `dtbp_check`, `trade_confirm_email`, `max_margin_multiplier`,
+`pdt_check` (character); and `no_shorting`, `suspend_trade`,
+`fractional_trading` (logical).
 
 #### Examples
 
@@ -309,8 +304,8 @@ Modifies one or more account configuration settings.
 #### Official Documentation
 
 [Update Account
-Configurations](https://docs.alpaca.markets/reference/patchaccountconfig-1)
-Verified: 2026-03-10
+Configurations](https://docs.alpaca.markets/us/reference/patchaccountconfig-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -335,8 +330,7 @@ Verified: 2026-03-10
       "trade_confirm_email": "all",
       "fractional_trading": false,
       "max_margin_multiplier": "4",
-      "pdt_check": "entry",
-      "max_options_trading_level": 2
+      "pdt_check": "entry"
     }
 
 #### Usage
@@ -349,47 +343,61 @@ Verified: 2026-03-10
       fractional_trading = NULL,
       max_margin_multiplier = NULL,
       pdt_check = NULL,
-      max_options_trading_level = NULL
+      max_options_trading_level = NULL,
+      ptp_no_exception_entry = NULL,
+      disable_overnight_trading = NULL
     )
 
 #### Arguments
 
 - `dtbp_check`:
 
-  Character or NULL; DTBP check method: `"both"`, `"entry"`, `"exit"`.
+  (scalar\<character\> \| NULL) DTBP check method: `"both"`, `"entry"`,
+  `"exit"`.
 
 - `no_shorting`:
 
-  Logical or NULL; if `TRUE`, disables short selling.
+  (scalar\<logical\> \| NULL) if `TRUE`, disables short selling.
 
 - `suspend_trade`:
 
-  Logical or NULL; if `TRUE`, suspends all trading.
+  (scalar\<logical\> \| NULL) if `TRUE`, suspends all trading.
 
 - `trade_confirm_email`:
 
-  Character or NULL; `"all"`, `"none"`.
+  (scalar\<character\> \| NULL) `"all"`, `"none"`.
 
 - `fractional_trading`:
 
-  Logical or NULL; enable/disable fractional trading.
+  (scalar\<logical\> \| NULL) enable/disable fractional trading.
 
 - `max_margin_multiplier`:
 
-  Character or NULL; `"1"` (no margin) or `"2"` (Reg-T).
+  (scalar\<character\> \| NULL) `"1"`, `"2"`, or `"4"`.
 
 - `pdt_check`:
 
-  Character or NULL; `"both"`, `"entry"`, `"exit"`.
+  (scalar\<character\> \| NULL) `"both"`, `"entry"`, `"exit"`.
 
 - `max_options_trading_level`:
 
-  Integer or NULL; options trading level (0-2).
+  (scalar\<count in \[0, Inf\[\> \| NULL) options trading level
+  (0=disabled, 1=Covered Call/Cash-Secured Put, 2=Long Call/Put,
+  3=Spreads/Straddles).
+
+- `ptp_no_exception_entry`:
+
+  (scalar\<logical\> \| NULL) if `TRUE`, accept orders for PTP symbols
+  with no exception.
+
+- `disable_overnight_trading`:
+
+  (scalar\<logical\> \| NULL) if `TRUE`, disable overnight trading on
+  the account.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the
-updated configuration.
+(AccountConfig \| promise\<AccountConfig\>) the updated configuration.
 
 #### Examples
 
@@ -413,8 +421,8 @@ Retrieves all currently open positions in the account.
 #### Official Documentation
 
 [Get All Open
-Positions](https://docs.alpaca.markets/reference/getallopenpositions-1)
-Verified: 2026-03-10
+Positions](https://docs.alpaca.markets/us/reference/getallopenpositions)
+Verified: 2026-05-21
 
 #### curl
 
@@ -448,35 +456,11 @@ Verified: 2026-03-10
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `asset_id` (character): Asset UUID.
-
-- `symbol` (character): Ticker symbol.
-
-- `exchange` (character): Exchange.
-
-- `asset_class` (character): Asset class (e.g., `"us_equity"`).
-
-- `avg_entry_price` (character): Average entry price.
-
-- `qty` (character): Quantity held.
-
-- `side` (character): Position side (`"long"` or `"short"`).
-
-- `market_value` (character): Current market value.
-
-- `cost_basis` (character): Total cost basis.
-
-- `unrealized_pl` (character): Unrealised profit/loss.
-
-- `unrealized_plpc` (character): Unrealised P/L percentage.
-
-- `current_price` (character): Current asset price.
-
-- `lastday_price` (character): Previous close price.
-
-- `change_today` (character): Percentage change today.
+(Position \| promise\<Position\>) the open positions. Columns include
+`asset_id`, `symbol`, `exchange`, `asset_class`, `avg_entry_price`,
+`qty`, `side`, `market_value`, `cost_basis`, `unrealized_pl`,
+`unrealized_plpc`, `current_price`, `lastday_price` and `change_today`
+(all character).
 
 #### Examples
 
@@ -501,8 +485,8 @@ Retrieves a single open position by symbol or asset UUID.
 #### Official Documentation
 
 [Get Open
-Position](https://docs.alpaca.markets/reference/getopenposition-1)
-Verified: 2026-03-10
+Position](https://docs.alpaca.markets/us/reference/getopenposition-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -536,12 +520,12 @@ Verified: 2026-03-10
 
 - `symbol_or_id`:
 
-  Character; ticker symbol (e.g., `"AAPL"`) or asset UUID.
+  (scalar\<character\>) ticker symbol (e.g., `"AAPL"`) or asset UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the same
-columns as `get_positions()`, single row.
+(Position \| promise\<Position\>) the position, with the same columns as
+`get_positions()`, single row.
 
 #### Examples
 
@@ -566,8 +550,9 @@ position or a partial amount by quantity or percentage.
 
 #### Official Documentation
 
-[Close Position](https://docs.alpaca.markets/reference/deleteposition)
-Verified: 2026-03-10
+[Close
+Position](https://docs.alpaca.markets/us/reference/deleteopenposition-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -600,22 +585,25 @@ Verified: 2026-03-10
 
 - `symbol_or_id`:
 
-  Character; ticker symbol or asset UUID.
+  (scalar\<character\>) ticker symbol or asset UUID.
 
 - `qty`:
 
-  Numeric or NULL; number of shares to close. Mutually exclusive with
-  `percentage`.
+  (scalar\<numeric\> \| NULL) number of shares to close. Mutually
+  exclusive with `percentage`.
 
 - `percentage`:
 
-  Numeric or NULL; percentage of position to close (0-100). Mutually
-  exclusive with `qty`.
+  (scalar\<numeric\> \| NULL) percentage of position to close (0-100).
+  Mutually exclusive with `qty`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the
-closing order details.
+(OrderCore \| promise\<OrderCore\>) the closing order as a single row
+(the core order columns; the venue returns the richer single-order
+fields as un-asserted extras). Unlike the list/single-order endpoints
+this path bypasses `parse_order()`, so it carries no `leg_index` /
+`parent_order_id` columns.
 
 #### Examples
 
@@ -647,8 +635,8 @@ Closes all open positions. Optionally cancels all open orders first.
 #### Official Documentation
 
 [Close All
-Positions](https://docs.alpaca.markets/reference/deleteallopenpositions)
-Verified: 2026-03-10
+Positions](https://docs.alpaca.markets/us/reference/deleteallopenpositions-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -694,18 +682,16 @@ Verified: 2026-03-10
 
 - `cancel_orders`:
 
-  Logical; if `TRUE`, cancels all open orders before liquidating
-  positions. Default `FALSE`.
+  (scalar\<logical\>) if `TRUE`, cancels all open orders before
+  liquidating positions. Default `FALSE`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`). When
+(data.table \| promise\<data.table\>) the closed positions. When
 positions are closed, one row per position with full order details. When
-no open positions exist, a single confirmation row with columns:
-
-- `cancel_orders` (logical): Whether orders were also cancelled.
-
-- `status` (character): `"closed"`.
+no open positions exist, a single confirmation row with `cancel_orders`
+(logical, whether orders were also cancelled) and `status` (character,
+`"closed"`).
 
 #### Examples
 
@@ -729,8 +715,8 @@ Exercises an options position. Only applicable to options contracts.
 #### Official Documentation
 
 [Exercise
-Option](https://docs.alpaca.markets/reference/postpositionsymboloridexercise)
-Verified: 2026-03-10
+Option](https://docs.alpaca.markets/us/reference/optionexercise)
+Verified: 2026-05-21
 
 #### curl
 
@@ -755,16 +741,13 @@ confirmation `data.table`:
 
 - `symbol_or_id`:
 
-  Character; OCC option symbol or asset UUID.
+  (scalar\<character\>) OCC option symbol or asset UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`), single row
-with columns:
-
-- `symbol` (character): The exercised option symbol or asset UUID.
-
-- `status` (character): `"exercised"`.
+(ExerciseAck \| promise\<ExerciseAck\>) a single-row confirmation with
+`symbol` (the exercised option symbol or asset UUID) and `status`
+(always `"exercised"`).
 
 #### Examples
 
@@ -788,8 +771,8 @@ Retrieves the portfolio value history as a time series.
 #### Official Documentation
 
 [Portfolio
-History](https://docs.alpaca.markets/reference/getportfoliohistory)
-Verified: 2026-03-10
+History](https://docs.alpaca.markets/us/reference/getaccountportfoliohistory-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -812,53 +795,63 @@ Verified: 2026-03-10
     AlpacaAccount$get_portfolio_history(
       period = NULL,
       timeframe = NULL,
-      date_start = NULL,
-      date_end = NULL,
+      start = NULL,
+      end = NULL,
       intraday_reporting = NULL,
-      pnl_reset = NULL
+      pnl_reset = NULL,
+      date_start = NULL,
+      date_end = NULL
     )
 
 #### Arguments
 
 - `period`:
 
-  Character or NULL; time period for the history. Examples: `"1D"`,
-  `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Cannot be used with
-  `date_start`/`date_end`.
+  (scalar\<character\> \| NULL) time period for the history. Examples:
+  `"1D"`, `"1W"`, `"1M"`, `"3M"`, `"1A"`, `"all"`. Mutually exclusive
+  with providing both `start` and `end`.
 
 - `timeframe`:
 
-  Character or NULL; resolution of the time series: `"1Min"`, `"5Min"`,
-  `"15Min"`, `"1H"`, `"1D"`.
+  (scalar\<character\> \| NULL) resolution of the time series: `"1Min"`,
+  `"5Min"`, `"15Min"`, `"1H"`, `"1D"`.
 
-- `date_start`:
+- `start`:
 
-  Character or NULL; start date (`"YYYY-MM-DD"`). Use with `date_end`
-  instead of `period`.
+  (scalar\<character\> \| NULL) start timestamp in RFC3339 format.
+  Defaults to `end` minus `period`.
 
-- `date_end`:
+- `end`:
 
-  Character or NULL; end date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) end timestamp in RFC3339 format.
 
 - `intraday_reporting`:
 
-  Character or NULL; `"market_hours"` (default) or `"extended_hours"`.
+  (scalar\<character\> \| NULL) `"market_hours"` (default),
+  `"extended_hours"`, or `"continuous"` (for 24/7 crypto charts).
 
 - `pnl_reset`:
 
-  Character or NULL; `"per_day"` (default) or `"no_reset"`.
+  (scalar\<character\> \| NULL) `"per_day"` (default) or `"no_reset"`.
+  Set to `"no_reset"` for continuous crypto PnL.
+
+- `date_start`:
+
+  (scalar\<character\> \| NULL) deprecated alias for `start`. Earlier
+  releases used this name but it was silently ignored by the API. Now
+  forwarded to `start` with a deprecation warning. Will be removed in a
+  future release.
+
+- `date_end`:
+
+  (scalar\<character\> \| NULL) deprecated alias for `end`. Same notes
+  as `date_start`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `timestamp` (POSIXct): Snapshot timestamp in UTC.
-
-- `equity` (numeric): Portfolio equity value.
-
-- `profit_loss` (numeric): Profit/loss.
-
-- `profit_loss_pct` (numeric): Profit/loss percentage.
+(PortfolioHistory \| promise\<PortfolioHistory\>) the portfolio history.
+Columns: `timestamp` (POSIXct, UTC), `equity` (numeric), `profit_loss`
+(numeric) and `profit_loss_pct` (numeric).
 
 #### Examples
 
@@ -884,8 +877,8 @@ include order fills, dividends, transfers, and other events.
 #### Official Documentation
 
 [Account
-Activities](https://docs.alpaca.markets/reference/getaccountactivities)
-Verified: 2026-03-10
+Activities](https://docs.alpaca.markets/us/reference/getaccountactivities-2)
+Verified: 2026-05-21
 
 #### curl
 
@@ -920,44 +913,64 @@ Verified: 2026-03-10
       after = NULL,
       direction = NULL,
       page_size = NULL,
-      page_token = NULL
+      page_token = NULL,
+      category = NULL
     )
 
 #### Arguments
 
 - `activity_types`:
 
-  Character or NULL; comma-separated activity types to filter (e.g.,
-  `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
+  (scalar\<character\> \| NULL) comma-separated activity types to filter
+  (e.g., `"FILL"`, `"DIV"`, `"TRANS"`). See Alpaca docs for full list.
+  Mutually exclusive with `category`.
 
 - `date`:
 
-  Character or NULL; filter to a specific date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) filter to a specific date
+  (`"YYYY-MM-DD"`).
 
 - `until`:
 
-  Character or NULL; only activities before this timestamp.
+  (scalar\<character\> \| NULL) only activities before this timestamp.
 
 - `after`:
 
-  Character or NULL; only activities after this timestamp.
+  (scalar\<character\> \| NULL) only activities after this timestamp.
 
 - `direction`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `page_size`:
 
-  Integer or NULL; max results per page (default 100, max 100).
+  (scalar\<count in \[1, 101\[\> \| NULL) max results per page. Alpaca
+  caps this at **100** for `/v2/account/activities`; values above 100
+  return HTTP 422 server-side. This method validates the cap up-front
+  and `abort()`s with a clear message rather than letting the vendor
+  error leak through. Must be a single non-NA integerish value when
+  provided. Default `NULL` lets Alpaca pick its server-side default
+  (currently 100).
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for the next page. For activities
+  this is the **`id` of the last row from the previous page** (Alpaca's
+  activity IDs are sortable cursors, not opaque tokens). See the
+  "Pagination" section below.
+
+- `category`:
+
+  (scalar\<character\> \| NULL) broad category filter:
+  `"trade_activity"` or `"non_trade_activity"`. Mutually exclusive with
+  `activity_types`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with activity
-details. Columns vary by activity type.
+(Activity \| promise\<Activity\>) the activities. Columns beyond the
+guaranteed `Activity` set vary by activity type. `id` is the
+per-activity cursor used for paging (see "Pagination"). An empty
+response returns a zero-row table carrying the `Activity` columns.
 
 #### Examples
 
@@ -982,8 +995,8 @@ Retrieves account activities filtered to a specific type.
 #### Official Documentation
 
 [Get Account Activities by
-Type](https://docs.alpaca.markets/reference/getaccountactivitiesbyactivitytype)
-Verified: 2026-03-10
+Type](https://docs.alpaca.markets/us/reference/getaccountactivitiesbyactivitytype-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1025,37 +1038,49 @@ Verified: 2026-03-10
 
 - `activity_type`:
 
-  Character; activity type (e.g., `"FILL"`, `"DIV"`, `"TRANS"`,
-  `"JNLC"`, `"JNLS"`, `"CSD"`, `"CSW"`).
+  (scalar\<character\>) activity type (e.g., `"FILL"`, `"DIV"`,
+  `"TRANS"`, `"JNLC"`, `"JNLS"`, `"CSD"`, `"CSW"`).
 
 - `date`:
 
-  Character or NULL; filter to a specific date.
+  (scalar\<character\> \| NULL) filter to a specific date.
 
 - `until`:
 
-  Character or NULL; only activities before this timestamp.
+  (scalar\<character\> \| NULL) only activities before this timestamp.
 
 - `after`:
 
-  Character or NULL; only activities after this timestamp.
+  (scalar\<character\> \| NULL) only activities after this timestamp.
 
 - `direction`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `page_size`:
 
-  Integer or NULL; max results per page.
+  (scalar\<count in \[1, 101\[\> \| NULL) max results per page. Alpaca
+  caps this at **100** for `/v2/account/activities/{type}`; values above
+  100 return HTTP 422 server-side. This method validates the cap
+  up-front and `abort()`s with a clear message rather than letting the
+  vendor error leak through. Must be a single non-NA integerish value
+  when provided. Default `NULL` lets Alpaca pick its server-side default
+  (currently 100). For multi-page walks see the "Pagination" section on
+  `get_activities()` — the id-cursor recipe is identical for this
+  method.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for the next page — the **`id` of
+  the last row from the previous page**. See the "Pagination" section on
+  `get_activities()` for a worked example; the recipe is identical for
+  this method.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with activity
-details.
+(Activity \| promise\<Activity\>) the activities. `id` is the
+per-activity cursor used for paging. An empty response returns a
+zero-row table carrying the `Activity` columns.
 
 #### Examples
 
@@ -1079,8 +1104,8 @@ Retrieves all watchlists for the account.
 
 #### Official Documentation
 
-[Watchlists](https://docs.alpaca.markets/reference/getwatchlists)
-Verified: 2026-03-10
+[Watchlists](https://docs.alpaca.markets/us/reference/getwatchlists-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1112,17 +1137,9 @@ Verified: 2026-03-10
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Watchlist UUID.
-
-- `account_id` (character): Account UUID.
-
-- `name` (character): Watchlist name.
-
-- `created_at` (character): Creation timestamp.
-
-- `updated_at` (character): Last update timestamp.
+(Watchlists \| promise\<Watchlists\>) the watchlists. Columns: `id`,
+`account_id`, `name` (character); `created_at` and `updated_at`
+(POSIXct, UTC).
 
 #### Examples
 
@@ -1147,8 +1164,8 @@ Retrieves a single watchlist including its asset entries.
 #### Official Documentation
 
 [Get Watchlist by
-ID](https://docs.alpaca.markets/reference/getwatchlistbyid) Verified:
-2026-03-10
+ID](https://docs.alpaca.markets/us/reference/getwatchlistbyid-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1191,15 +1208,18 @@ ID](https://docs.alpaca.markets/reference/getwatchlistbyid) Verified:
 
 - `watchlist_id`:
 
-  Character; watchlist UUID.
+  (scalar\<character\>) watchlist UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) in long format
-with one row per asset in the watchlist. Columns include watchlist
-metadata (`id`, `account_id`, `name`, `created_at`, `updated_at`) and
-asset columns prefixed with `asset_` (`asset_id`, `asset_symbol`,
-`asset_name`, etc.).
+(Watchlist \| promise\<Watchlist\>) a long-format table with one row per
+asset in the watchlist. Columns include watchlist metadata (`id`,
+`account_id`, `name`, `created_at`, `updated_at`) and asset columns
+prefixed with `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
+`asset_attributes`, etc.). `asset_attributes` is a `;`-separated
+character column (e.g. `"fractional_eh_enabled;has_options"`) — `NA`
+when the asset has no attributes. Recover the original vector with
+`strsplit(dt$asset_attributes, ";", fixed = TRUE)[[1]]`.
 
 #### Examples
 
@@ -1223,8 +1243,9 @@ Creates a new watchlist with an optional initial set of symbols.
 
 #### Official Documentation
 
-[Create Watchlist](https://docs.alpaca.markets/reference/postwatchlist)
-Verified: 2026-03-10
+[Create
+Watchlist](https://docs.alpaca.markets/us/reference/postwatchlist-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1263,16 +1284,20 @@ Verified: 2026-03-10
 
 - `name`:
 
-  Character; watchlist name.
+  (scalar\<character\>) watchlist name.
 
 - `symbols`:
 
-  Character vector or NULL; initial symbols (e.g., `c("AAPL", "MSFT")`).
+  (character \| NULL) initial symbols (e.g., `c("AAPL", "MSFT")`).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the
-created watchlist details.
+(Watchlist \| promise\<Watchlist\>) the same long-format shape as
+`get_watchlist()`: one row per asset, with watchlist metadata (`id`,
+`account_id`, `name`, `created_at`, `updated_at`) replicated and asset
+columns prefixed `asset_` (`asset_id`, `asset_symbol`, `asset_name`,
+`asset_attributes`, ...). A watchlist created with no symbols returns
+one row with asset columns set to `NA`.
 
 #### Examples
 
@@ -1297,8 +1322,8 @@ Replaces the name and/or symbols of an existing watchlist.
 #### Official Documentation
 
 [Update
-Watchlist](https://docs.alpaca.markets/reference/putwatchlistbyid)
-Verified: 2026-03-10
+Watchlist](https://docs.alpaca.markets/us/reference/updatewatchlistbyid-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1336,20 +1361,21 @@ Verified: 2026-03-10
 
 - `watchlist_id`:
 
-  Character; watchlist UUID.
+  (scalar\<character\>) watchlist UUID.
 
 - `name`:
 
-  Character; new watchlist name.
+  (scalar\<character\>) new watchlist name.
 
 - `symbols`:
 
-  Character vector; new full list of symbols (replaces existing).
+  (character) new full list of symbols (replaces existing).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with updated
-watchlist details.
+(Watchlist \| promise\<Watchlist\>) the same long-format shape as
+`get_watchlist()`: one row per asset (after the modification), watchlist
+metadata replicated on each row, asset columns prefixed `asset_`.
 
 #### Examples
 
@@ -1374,8 +1400,8 @@ Appends a single symbol to an existing watchlist.
 #### Official Documentation
 
 [Add Symbol to
-Watchlist](https://docs.alpaca.markets/reference/postwatchlistbyid)
-Verified: 2026-03-10
+Watchlist](https://docs.alpaca.markets/us/reference/addassettowatchlist-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1413,16 +1439,16 @@ Verified: 2026-03-10
 
 - `watchlist_id`:
 
-  Character; watchlist UUID.
+  (scalar\<character\>) watchlist UUID.
 
 - `symbol`:
 
-  Character; ticker symbol to add (e.g., `"AAPL"`).
+  (scalar\<character\>) ticker symbol to add (e.g., `"AAPL"`).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the
-updated watchlist.
+(Watchlist \| promise\<Watchlist\>) the same long-format shape as
+`get_watchlist()`: one row per asset in the updated watchlist.
 
 #### Examples
 
@@ -1446,8 +1472,8 @@ Removes a single symbol from a watchlist.
 #### Official Documentation
 
 [Remove Symbol from
-Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyidsymbol)
-Verified: 2026-03-10
+Watchlist](https://docs.alpaca.markets/us/reference/removeassetfromwatchlist-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1473,23 +1499,19 @@ confirmation `data.table`:
 
 - `watchlist_id`:
 
-  Character; watchlist UUID.
+  (scalar\<character\>) watchlist UUID.
 
 - `symbol`:
 
-  Character; ticker symbol to remove.
+  (scalar\<character\>) ticker symbol to remove.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`). When the API
-returns the updated watchlist, a single row with watchlist details. On
-204 No Content, a single confirmation row with columns:
-
-- `watchlist_id` (character): The watchlist UUID.
-
-- `symbol` (character): The removed ticker symbol.
-
-- `status` (character): `"removed"`.
+(data.table \| promise\<data.table\>) the result. When the API returns
+the updated watchlist, a single row with watchlist details. On 204 No
+Content, a single confirmation row with `watchlist_id` (character, the
+watchlist UUID), `symbol` (character, the removed ticker symbol) and
+`status` (character, `"removed"`).
 
 #### Examples
 
@@ -1513,8 +1535,8 @@ Permanently deletes a watchlist.
 #### Official Documentation
 
 [Delete
-Watchlist](https://docs.alpaca.markets/reference/deletewatchlistbyid)
-Verified: 2026-03-10
+Watchlist](https://docs.alpaca.markets/us/reference/deletewatchlistbyid-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1539,16 +1561,13 @@ confirmation `data.table`:
 
 - `watchlist_id`:
 
-  Character; watchlist UUID.
+  (scalar\<character\>) watchlist UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`), single row
-with columns:
-
-- `watchlist_id` (character): The deleted watchlist UUID.
-
-- `status` (character): `"deleted"`.
+(CancelWatchlistAck \| promise\<CancelWatchlistAck\>) a single-row
+confirmation with `watchlist_id` (the deleted watchlist UUID) and
+`status` (always `"deleted"`).
 
 #### Examples
 

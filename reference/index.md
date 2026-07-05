@@ -68,3 +68,10 @@ Low-level request building, execution, and pagination
   : Build and Execute an Alpaca API Request
 - [`alpaca_paginate()`](https://dereckscompany.github.io/alpaca/reference/alpaca_paginate.md)
   : Auto-Paginate an Alpaca API Endpoint
+
+## Data Shapes
+
+Column shapes of the data.tables returned by the API methods
+
+- [`alpaca_shapes`](https://dereckscompany.github.io/alpaca/reference/alpaca_shapes.md)
+  : Alpaca return shapes

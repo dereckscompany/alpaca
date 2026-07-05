@@ -8,14 +8,15 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/dereckscompany/alpaca/blob/v0.0.1/inst/CITATION)
+[`inst/CITATION`](https://github.com/dereckscompany/alpaca/blob/v0.5.0/inst/CITATION)
 
-Mezquita, D. (2026). alpaca: R API Wrapper to Alpaca Trading Platform. R
-package version 0.1.0.
+Mezquita D (2026). *alpaca: API Wrapper to Alpaca Trading Platform*. R
+package version 0.5.0, <https://dereckscompany.github.io/alpaca/>.
 
-    @Manual{,
-      title = {alpaca: R API Wrapper to Alpaca Trading Platform},
+    @Manual{alpaca-2026,
+      title = {alpaca: API Wrapper to Alpaca Trading Platform},
       author = {Dereck Mezquita},
       year = {2026},
-      note = {R package version 0.1.0},
+      note = {R package version 0.5.0},
+      url = {https://dereckscompany.github.io/alpaca/},
     }

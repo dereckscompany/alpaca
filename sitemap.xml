@@ -2,9 +2,9 @@
 <url><loc>https://dereckscompany.github.io/alpaca/404.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/CONTRIBUTING.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/LICENSE-text.html</loc></url>
-<url><loc>https://dereckscompany.github.io/alpaca/LICENSE.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/ROADMAP.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/articles/async-usage.html</loc></url>
+<url><loc>https://dereckscompany.github.io/alpaca/articles/data-shapes.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/articles/getting-started.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/articles/index.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/articles/margin-short-selling.html</loc></url>
@@ -20,6 +20,7 @@
 <url><loc>https://dereckscompany.github.io/alpaca/reference/alpaca_backfill_bars.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/reference/alpaca_build_request.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/reference/alpaca_paginate.html</loc></url>
+<url><loc>https://dereckscompany.github.io/alpaca/reference/alpaca_shapes.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/reference/get_api_keys.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/reference/get_base_url.html</loc></url>
 <url><loc>https://dereckscompany.github.io/alpaca/reference/get_data_base_url.html</loc></url>

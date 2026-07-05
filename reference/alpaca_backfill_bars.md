@@ -11,8 +11,8 @@ symbol-timeframe combinations.
 alpaca_backfill_bars(
   symbols,
   timeframes = "1Day",
-  start,
-  end = Sys.time(),
+  from,
+  to = lubridate::now(tzone = "UTC"),
   path = "alpaca_bars.csv",
   adjustment = "raw",
   feed = NULL,
@@ -26,54 +26,61 @@ alpaca_backfill_bars(
 
 - symbols:
 
-  Character vector; ticker symbols (e.g., `c("AAPL", "MSFT")`).
+  (character) ticker symbols (e.g., `c("AAPL", "MSFT")`).
 
 - timeframes:
 
-  Character vector; bar timeframes (e.g., `c("1Day", "1Hour")`). See
+  (character) bar timeframes (e.g., `c("1Day", "1Hour")`). See
   `alpaca_timeframe_map` for valid values.
 
-- start:
+- from:
 
-  Character or POSIXct; start date/time.
+  (POSIXct \| character) start date/time.
 
-- end:
+- to:
 
-  Character or POSIXct; end date/time. Defaults to
-  [`Sys.time()`](https://rdrr.io/r/base/Sys.time.html).
+  (POSIXct \| character) end date/time. Defaults to the current UTC time
+  ([`lubridate::now()`](https://lubridate.tidyverse.org/reference/now.html)).
 
 - path:
 
-  Character; file path for CSV output. Default `"alpaca_bars.csv"`.
+  (scalar\<character\>) file path for CSV output. Default
+  `"alpaca_bars.csv"`.
 
 - adjustment:
 
-  Character; price adjustment type. Default `"raw"`.
+  (scalar\<character\>) price adjustment type. Default `"raw"`.
 
 - feed:
 
-  Character or NULL; data feed (`"iex"` or `"sip"`).
+  (scalar\<character\> \| NULL) data feed (`"iex"` or `"sip"`).
 
 - sleep:
 
-  Numeric; seconds to pause between requests (rate limiting). Default
-  `0.25`.
+  (scalar\<numeric in \[0, Inf\[\>) seconds to pause between requests
+  (rate limiting). Default `0.25`.
 
 - keys:
 
-  List; API credentials. Defaults to
+  (list) API credentials. Defaults to
   [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - data_base_url:
 
-  Character; market data base URL. Defaults to
+  (scalar\<character\>) market data base URL. Defaults to
   [`get_data_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_data_base_url.md).
 
 ## Value
 
-`data.table` with all downloaded data (invisibly). Also writes to CSV.
-Has a `"failures"` attribute listing any symbol-timeframe combos that
-failed.
+(class\<data.table\>) all downloaded data (invisibly). Also writes to
+CSV.
+
+Per-combo failures are surfaced as warnings during the run (one
+[`rlang::warn()`](https://rlang.r-lib.org/reference/abort.html) per
+failed `(symbol, timeframe)` pair, with the underlying error message).
+After the loop, if any combinations failed, a final summary warning
+lists the count and the affected pairs. No failure data is hidden on the
+return value.
 
 ## Examples
 
@@ -83,7 +90,7 @@ if (FALSE) { # \dontrun{
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT"),
   timeframes = "1Day",
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 
@@ -91,7 +98,7 @@ dt <- alpaca_backfill_bars(
 dt <- alpaca_backfill_bars(
   symbols = c("AAPL", "MSFT", "TSLA"),
   timeframes = c("1Day", "1Hour"),
-  start = "2020-01-01",
+  from = "2020-01-01",
   path = "data/bars.csv"
 )
 } # }

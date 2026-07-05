@@ -19,12 +19,12 @@ get_data_base_url(url = Sys.getenv("ALPACA_DATA_ENDPOINT"))
 
 - url:
 
-  Character string; explicit base URL. Defaults to
+  (scalar\<character\> \| NULL) explicit base URL. Defaults to
   `Sys.getenv("ALPACA_DATA_ENDPOINT")`.
 
 ## Value
 
-Character string; the Market Data API base URL.
+(scalar\<character\>) the Market Data API base URL.
 
 ## Examples
 

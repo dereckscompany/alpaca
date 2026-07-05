@@ -13,17 +13,19 @@ time_convert_to_alpaca(x)
 
 - x:
 
-  POSIXct; a datetime object (or character coercible to POSIXct).
+  (POSIXct \| character \| logical \| NULL) a date-time (or character
+  coercible to POSIXct), or a bare `NA` (`logical`), or `NULL`.
 
 ## Value
 
-Character string in RFC-3339 format (e.g., `"2024-01-15T14:30:00Z"`).
+(character \| NA) RFC-3339 strings (e.g., `"2024-01-15T14:30:00Z"`), or
+`NA` if input is `NULL`/`NA`.
 
 ## Examples
 
 ``` r
 time_convert_to_alpaca(Sys.time())
-#> [1] "2026-03-11T21:57:01Z"
+#> [1] "2026-07-05T23:11:09Z"
 time_convert_to_alpaca(as.POSIXct("2024-01-15 14:30:00", tz = "UTC"))
 #> [1] "2024-01-15T14:30:00Z"
 ```

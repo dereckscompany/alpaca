@@ -19,12 +19,12 @@ get_base_url(url = Sys.getenv("ALPACA_API_ENDPOINT"))
 
 - url:
 
-  Character string; explicit base URL. Defaults to
+  (scalar\<character\> \| NULL) explicit base URL. Defaults to
   `Sys.getenv("ALPACA_API_ENDPOINT")`.
 
 ## Value
 
-Character string; the API base URL.
+(scalar\<character\>) the API base URL.
 
 ## Examples
 

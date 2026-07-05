@@ -29,7 +29,8 @@ depending on the `async` parameter at construction.
 
 ### Official Documentation
 
-[Orders](https://docs.alpaca.markets/reference/orders-4)
+[Orders](https://docs.alpaca.markets/us/reference/orders-4) Verified:
+2026-05-22
 
 ### Endpoints Covered
 
@@ -44,8 +45,10 @@ depending on the `async` parameter at construction.
 | cancel_order           | `DELETE /v2/orders/\{order_id\}`    | DELETE |
 | cancel_all_orders      | `DELETE /v2/orders`                 | DELETE |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaTrading`
 
@@ -89,8 +92,8 @@ advanced order classes (bracket, OCO, OTO).
 
 #### Official Documentation
 
-[Create Order](https://docs.alpaca.markets/reference/postorder)
-Verified: 2026-03-10
+[Create Order](https://docs.alpaca.markets/us/reference/postorder)
+Verified: 2026-05-22
 
 #### curl
 
@@ -153,8 +156,8 @@ Verified: 2026-03-10
 #### Usage
 
     AlpacaTrading$add_order(
-      symbol,
-      side,
+      symbol = NULL,
+      side = NULL,
       type,
       time_in_force,
       qty = NULL,
@@ -168,110 +171,114 @@ Verified: 2026-03-10
       order_class = NULL,
       take_profit = NULL,
       stop_loss = NULL,
-      position_intent = NULL
+      position_intent = NULL,
+      legs = NULL,
+      advanced_instructions = NULL
     )
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol (e.g., `"AAPL"`).
+  (scalar\<character\> \| NULL) ticker symbol (e.g., `"AAPL"`). Required
+  for all order classes except `"mleg"` (multi-leg options), where each
+  leg carries its own symbol.
 
 - `side`:
 
-  Character; `"buy"` or `"sell"`.
+  (scalar\<character\> \| NULL) `"buy"` or `"sell"`. Required for all
+  order classes except `"mleg"`, where each leg carries its own side.
 
 - `type`:
 
-  Character; order type: `"market"`, `"limit"`, `"stop"`,
+  (scalar\<character\>) order type: `"market"`, `"limit"`, `"stop"`,
   `"stop_limit"`, `"trailing_stop"`.
 
 - `time_in_force`:
 
-  Character; `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`, `"fok"`.
+  (scalar\<character\>) `"day"`, `"gtc"`, `"opg"`, `"cls"`, `"ioc"`,
+  `"fok"`.
 
 - `qty`:
 
-  Numeric or NULL; number of shares. Mutually exclusive with `notional`.
+  (scalar\<numeric\> \| NULL) number of shares. Mutually exclusive with
+  `notional`.
 
 - `notional`:
 
-  Numeric or NULL; dollar amount. Market/day orders only.
+  (scalar\<numeric\> \| NULL) dollar amount. Market/day orders only.
 
 - `limit_price`:
 
-  Numeric or NULL; limit price. Required for `"limit"` and
+  (scalar\<numeric\> \| NULL) limit price. Required for `"limit"` and
   `"stop_limit"` orders.
 
 - `stop_price`:
 
-  Numeric or NULL; stop trigger price. Required for `"stop"` and
-  `"stop_limit"` orders.
+  (scalar\<numeric\> \| NULL) stop trigger price. Required for `"stop"`
+  and `"stop_limit"` orders.
 
 - `trail_price`:
 
-  Numeric or NULL; trailing stop dollar offset.
+  (scalar\<numeric\> \| NULL) trailing stop dollar offset.
 
 - `trail_percent`:
 
-  Numeric or NULL; trailing stop percentage offset.
+  (scalar\<numeric\> \| NULL) trailing stop percentage offset.
 
 - `extended_hours`:
 
-  Logical or NULL; allow pre/post market execution.
+  (scalar\<logical\> \| NULL) allow pre/post market execution.
 
 - `client_order_id`:
 
-  Character or NULL; unique client order ID (max 128 chars).
+  (scalar\<character\> \| NULL) unique client order ID (max 128 chars).
 
 - `order_class`:
 
-  Character or NULL; `"simple"`, `"bracket"`, `"oco"`, `"oto"`.
+  (scalar\<character\> \| NULL) `"simple"`, `"bracket"`, `"oco"`,
+  `"oto"`.
 
 - `take_profit`:
 
-  List or NULL; `list(limit_price = ...)` for bracket orders.
+  (list \| NULL) `list(limit_price = ...)` for bracket orders.
 
 - `stop_loss`:
 
-  List or NULL; `list(stop_price = ..., limit_price = ...)` for bracket
+  (list \| NULL) `list(stop_price = ..., limit_price = ...)` for bracket
   orders.
 
 - `position_intent`:
 
-  Character or NULL; `"buy_to_open"`, `"buy_to_close"`,
+  (scalar\<character\> \| NULL) `"buy_to_open"`, `"buy_to_close"`,
   `"sell_to_open"`, `"sell_to_close"`.
+
+- `legs`:
+
+  (list \| NULL) leg objects (max 4) for multi-leg options strategies.
+  Required when `order_class = "mleg"`.
+
+- `advanced_instructions`:
+
+  (list \| NULL) routing instructions for Alpaca Elite Smart Router.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Order UUID.
-
-- `client_order_id` (character): Client order ID.
-
-- `symbol` (character): Ticker symbol.
-
-- `side` (character): `"buy"` or `"sell"`.
-
-- `type` (character): Order type.
-
-- `time_in_force` (character): Time in force.
-
-- `status` (character): Order status (e.g., `"accepted"`, `"new"`,
-  `"filled"`).
-
-- `qty` (character): Requested quantity.
-
-- `filled_qty` (character): Quantity filled so far.
-
-- `filled_avg_price` (character): Average fill price.
-
-- `limit_price` (character): Limit price (if set).
-
-- `stop_price` (character): Stop price (if set).
-
-- `created_at` (character): Order creation timestamp.
+(Order \| promise\<Order\>) the order(s). A simple order returns a
+single row. A `bracket` / `oco` / `oto` / `mleg` order returns the
+parent row plus one row per leg — see the "Multi-leg orders" section in
+the README and
+[`vignette("data-shapes")`](https://dereckscompany.github.io/alpaca/articles/data-shapes.md)
+for the parent + leg layout. Columns include `id`, `client_order_id`,
+`symbol`, `side`, `type`, `time_in_force`, `status`, `qty`,
+`filled_qty`, `filled_avg_price`, `limit_price` and `stop_price` (all
+character); the order timestamps `created_at`, `updated_at`,
+`submitted_at`, `filled_at`, `expired_at`, `canceled_at`, `failed_at`
+and `replaced_at` (POSIXct, UTC) when present; `leg_index` (integer,
+`NA` on the parent row, `1..N` on each leg); and `parent_order_id`
+(character, `NA` on the parent row, the parent's `id` on each leg). Use
+`dt[is.na(parent_order_id)]` to keep just parent rows, or
+`dt[parent_order_id == "<uuid>"]` for the legs of one bracket.
 
 #### Examples
 
@@ -314,8 +321,8 @@ side, and date range. Supports pagination.
 
 #### Official Documentation
 
-[List Orders](https://docs.alpaca.markets/reference/getallorders)
-Verified: 2026-03-10
+[List Orders](https://docs.alpaca.markets/us/reference/getallorders-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -371,47 +378,72 @@ Verified: 2026-03-10
       direction = NULL,
       nested = NULL,
       symbols = NULL,
-      side = NULL
+      side = NULL,
+      asset_class = NULL,
+      before_order_id = NULL,
+      after_order_id = NULL
     )
 
 #### Arguments
 
 - `status`:
 
-  Character or NULL; `"open"`, `"closed"`, `"all"`. Default `"open"`.
+  (scalar\<character\> \| NULL) `"open"`, `"closed"`, `"all"`. Default
+  `"open"`.
 
 - `limit`:
 
-  Integer or NULL; max orders (default 50, max 500).
+  (scalar\<count in \[1, Inf\[\> \| NULL) max orders (default 50, max
+  500).
 
 - `after`:
 
-  Character or NULL; only orders submitted after this timestamp.
+  (scalar\<character\> \| NULL) only orders submitted after this
+  timestamp.
 
 - `until`:
 
-  Character or NULL; only orders submitted before this timestamp.
+  (scalar\<character\> \| NULL) only orders submitted before this
+  timestamp.
 
 - `direction`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `nested`:
 
-  Logical or NULL; roll up multi-leg orders under `legs`.
+  (scalar\<logical\> \| NULL) roll up multi-leg orders under `legs`.
 
 - `symbols`:
 
-  Character or NULL; comma-separated symbol filter.
+  (scalar\<character\> \| NULL) comma-separated symbol filter.
 
 - `side`:
 
-  Character or NULL; filter by side.
+  (scalar\<character\> \| NULL) filter by side.
+
+- `asset_class`:
+
+  (scalar\<character\> \| NULL) comma-separated asset classes (e.g.,
+  `"us_equity"`, `"us_option"`, `"crypto"`). With `"us_option"`,
+  `symbols` can filter by underlying.
+
+- `before_order_id`:
+
+  (scalar\<character\> \| NULL) return orders submitted before this
+  order ID. Mutually exclusive with `after_order_id`. Do not combine
+  with `after`/`until`.
+
+- `after_order_id`:
+
+  (scalar\<character\> \| NULL) return orders submitted after this order
+  ID. Mutually exclusive with `before_order_id`. Do not combine with
+  `after`/`until`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the same
-columns as `add_order()` return value.
+(Order \| promise\<Order\>) the orders, with the same columns as
+`add_order()` return value.
 
 #### Examples
 
@@ -435,8 +467,9 @@ Retrieves a single order by its UUID.
 
 #### Official Documentation
 
-[Get Order](https://docs.alpaca.markets/reference/getorderbyorderid)
-Verified: 2026-03-10
+[Get
+Order](https://docs.alpaca.markets/us/reference/getorderbyorderid-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -488,15 +521,21 @@ Verified: 2026-03-10
 
 - `order_id`:
 
-  Character; order UUID.
+  (scalar\<character\>) order UUID.
 
 - `nested`:
 
-  Logical or NULL; include leg orders.
+  (scalar\<logical\> \| NULL) include leg orders. When `TRUE`, a bracket
+  / OCO / OTO / multi-leg order returns the parent row plus one row per
+  leg, distinguished by `leg_index` (`NA` on parent, `1..N` on legs) and
+  `parent_order_id` (`NA` on parent, parent's `id` on legs). Simple
+  orders return a single row regardless.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`), single row.
+(Order \| promise\<Order\>) the order, with the same columns as
+`add_order()`. Multi-row when `nested = TRUE` and the order has legs;
+otherwise single row.
 
 #### Examples
 
@@ -522,8 +561,8 @@ order tracking in production systems.
 #### Official Documentation
 
 [Get Order by Client
-ID](https://docs.alpaca.markets/reference/getorderbyclientorderid)
-Verified: 2026-03-10
+ID](https://docs.alpaca.markets/us/reference/getorderbyclientorderid)
+Verified: 2026-05-22
 
 #### curl
 
@@ -575,11 +614,14 @@ Verified: 2026-03-10
 
 - `client_order_id`:
 
-  Character; the client order ID (max 128 chars).
+  (scalar\<character\>) the client order ID (max 128 chars).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`), single row.
+(Order \| promise\<Order\>) the order, with the same columns as
+`add_order()`. A simple order returns a single row; a bracket / OCO /
+OTO / multi-leg order returns the parent row plus one row per leg,
+distinguished by `leg_index` and `parent_order_id`.
 
 #### Examples
 
@@ -604,8 +646,9 @@ is cancelled and a new order is created atomically.
 
 #### Official Documentation
 
-[Replace Order](https://docs.alpaca.markets/reference/patchorder)
-Verified: 2026-03-10
+[Replace
+Order](https://docs.alpaca.markets/us/reference/patchorderbyorderid-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -671,43 +714,55 @@ Verified: 2026-03-10
       limit_price = NULL,
       stop_price = NULL,
       trail = NULL,
-      client_order_id = NULL
+      client_order_id = NULL,
+      notional = NULL,
+      advanced_instructions = NULL
     )
 
 #### Arguments
 
 - `order_id`:
 
-  Character; order UUID to replace.
+  (scalar\<character\>) order UUID to replace.
 
 - `qty`:
 
-  Numeric or NULL; new quantity.
+  (scalar\<numeric\> \| NULL) new quantity. Mutually exclusive with
+  `notional`.
 
 - `time_in_force`:
 
-  Character or NULL; new time in force.
+  (scalar\<character\> \| NULL) new time in force.
 
 - `limit_price`:
 
-  Numeric or NULL; new limit price.
+  (scalar\<numeric\> \| NULL) new limit price.
 
 - `stop_price`:
 
-  Numeric or NULL; new stop price.
+  (scalar\<numeric\> \| NULL) new stop price.
 
 - `trail`:
 
-  Numeric or NULL; new trail value.
+  (scalar\<numeric\> \| NULL) new trail value (for
+  `type = "trailing_stop"`).
 
 - `client_order_id`:
 
-  Character or NULL; new client order ID.
+  (scalar\<character\> \| NULL) new client order ID.
+
+- `notional`:
+
+  (scalar\<numeric\> \| NULL) new notional (dollar) amount. Only valid
+  for IPO indications of interest (`asset_class = "ipo"`).
+
+- `advanced_instructions`:
+
+  (list \| NULL) routing instructions for Alpaca Elite Smart Router.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the
-replacement order details.
+(Order \| promise\<Order\>) the replacement order details.
 
 #### Examples
 
@@ -732,8 +787,8 @@ Cancels a single open order by its UUID.
 #### Official Documentation
 
 [Cancel
-Order](https://docs.alpaca.markets/reference/deleteorderbyorderid)
-Verified: 2026-03-10
+Order](https://docs.alpaca.markets/us/reference/deleteorderbyorderid-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -758,16 +813,13 @@ confirmation `data.table`:
 
 - `order_id`:
 
-  Character; order UUID to cancel.
+  (scalar\<character\>) order UUID to cancel.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`), single row
-with columns:
-
-- `order_id` (character): The cancelled order UUID.
-
-- `status` (character): `"cancelled"`.
+(CancelOrderAck \| promise\<CancelOrderAck\>) a single-row confirmation
+with `order_id` (the cancelled order UUID) and `status` (always
+`"cancelled"`).
 
 #### Examples
 
@@ -791,8 +843,8 @@ Cancels all open orders. Returns a list of orders that were cancelled.
 #### Official Documentation
 
 [Cancel All
-Orders](https://docs.alpaca.markets/reference/deleteallorders) Verified:
-2026-03-10
+Orders](https://docs.alpaca.markets/us/reference/deleteallorders-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -848,11 +900,10 @@ Orders](https://docs.alpaca.markets/reference/deleteallorders) Verified:
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`). When orders
+(data.table \| promise\<data.table\>) the cancelled orders. When orders
 are cancelled, one row per order with full order details. When no open
-orders exist, a single confirmation row with columns:
-
-- `status` (character): `"cancelled"`.
+orders exist, a single confirmation row with a `status` (character)
+column set to `"cancelled"`.
 
 #### Examples
 

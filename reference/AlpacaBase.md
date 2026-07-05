@@ -8,7 +8,14 @@ AlpacaBase: Abstract Base Class for Alpaca API Clients
 
 Provides shared infrastructure for all Alpaca R6 classes, including API
 credential management, sync/async execution mode, and a standardised
-method for calling implementation functions.
+request funnel.
+
+Inherits the transport from
+[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+and customises the two venue-specific seams: `.sign()` adds Alpaca's
+API-key headers, and `.parse_envelope()` reads Alpaca's error shape.
+Every endpoint method on a subclass delegates to the inherited
+`private$.request()`.
 
 ### Sync vs Async
 
@@ -36,7 +43,8 @@ Alpaca uses header-based authentication with two headers:
 
 - `APCA-API-SECRET-KEY`: Your API secret key
 
-No HMAC signing is required — credentials are sent directly in headers.
+No HMAC signing is required — credentials are sent directly in headers,
+which is exactly what the `.sign()` override does.
 
 ### Design
 
@@ -46,29 +54,10 @@ This class is not meant to be instantiated directly. Subclasses (e.g.,
 inherit from it and define their own public methods that delegate to
 `private$.request()`.
 
-## Fields
+## Super class
 
-All fields are private:
-
-- `.keys`: List; API credentials from
-  [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
-
-- `.base_url`: Character; API base URL from
-  [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
-
-- `.perform`: Function; either
-  [httr2::req_perform](https://httr2.r-lib.org/reference/req_perform.html)
-  or
-  [httr2::req_perform_promise](https://httr2.r-lib.org/reference/req_perform_promise.html).
-
-- `.is_async`: Logical; whether the instance is in async mode.
-
-## Active bindings
-
-- `is_async`:
-
-  Logical; read-only flag indicating whether this instance operates in
-  async mode.
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\> `AlpacaBase`
 
 ## Methods
 
@@ -92,23 +81,24 @@ Initialise an AlpacaBase Object
 
 - `keys`:
 
-  List; API credentials from
+  (list) API credentials from
   [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
   Defaults to
   [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `base_url`:
 
-  Character; API base URL. Defaults to
+  (scalar\<character\>) API base URL. Defaults to
   [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `async`:
 
-  Logical; if `TRUE`, methods return promises. Default `FALSE`.
+  (scalar\<logical\>) if `TRUE`, methods return promises. Default
+  `FALSE`.
 
 #### Returns
 
-Invisible self.
+(class\<AlpacaBase\>) invisibly, self.
 
 ------------------------------------------------------------------------
 

@@ -21,6 +21,7 @@ No special endpoints or classes are needed — `AlpacaTrading` and
 ## Setup
 
 ``` r
+
 library(alpaca)
 
 trading <- AlpacaTrading$new()
@@ -31,6 +32,7 @@ market <- AlpacaMarketData$new()
 ## Check Margin Status
 
 ``` r
+
 info <- acct$get_account()
 
 # Key margin fields
@@ -51,6 +53,7 @@ info[, .(
 ## Check if a Stock is Shortable/Marginable
 
 ``` r
+
 # Check asset attributes
 asset <- market$get_asset(symbol_or_id = "AAPL")
 cat("Shortable:", asset$shortable, "\n")
@@ -71,6 +74,7 @@ you don’t currently own. Alpaca handles the borrow automatically.
 ### Open a Short Position
 
 ``` r
+
 # Short 100 shares of AAPL at market
 order <- trading$add_order(
   symbol = "AAPL",
@@ -85,6 +89,7 @@ print(order[, .(id, symbol, side, type, status)])
 ### Monitor the Short Position
 
 ``` r
+
 # Check the position — side will be "short"
 pos <- acct$get_position(symbol_or_id = "AAPL")
 print(pos[, .(
@@ -97,6 +102,7 @@ print(pos[, .(
 ### Close the Short (Buy to Cover)
 
 ``` r
+
 # Option 1: Buy the shares back manually
 trading$add_order(
   symbol = "AAPL",
@@ -116,6 +122,7 @@ acct$close_position(symbol_or_id = "AAPL", percentage = 50)
 ### Short with a Bracket Order (Risk Management)
 
 ``` r
+
 # Short with automatic take-profit and stop-loss
 order <- trading$add_order(
   symbol = "TSLA",
@@ -136,6 +143,7 @@ order <- trading$add_order(
 With a margin account, you can buy more shares than your cash allows.
 
 ``` r
+
 # Your buying power is 2x (or 4x for day trades) your equity
 info <- acct$get_account()
 cat("Cash:", info$cash, "\n")
@@ -156,6 +164,7 @@ order <- trading$add_order(
 For options, use `position_intent` to signal your intent:
 
 ``` r
+
 opts <- AlpacaOptions$new()
 
 # Find an options contract
@@ -195,6 +204,7 @@ trading$add_order(
 Monitor dividends and splits that affect your positions:
 
 ``` r
+
 # Get upcoming dividends for your positions
 divs <- market$get_corporate_actions(
   ca_types = "dividend",
@@ -217,6 +227,7 @@ splits <- market$get_corporate_actions(
 Use the news endpoint for event-driven strategies:
 
 ``` r
+
 # Get latest news for your watchlist
 news <- market$get_news(symbols = "AAPL,TSLA,NVDA", limit = 10)
 print(news[, .(headline, source, created_at)])
@@ -225,6 +236,7 @@ print(news[, .(headline, source, created_at)])
 ## Portfolio Risk Monitoring
 
 ``` r
+
 # Full position overview
 positions <- acct$get_positions()
 if (nrow(positions) > 0) {
@@ -247,6 +259,7 @@ print(fills)
 ## Emergency: Close Everything
 
 ``` r
+
 # Cancel all open orders and close all positions
 acct$close_all_positions(cancel_orders = TRUE)
 ```

@@ -7,12 +7,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>API Wrapper to Alpaca Trading Platform • alpaca</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="API Wrapper to Alpaca Trading Platform">
-<meta name="description" content="R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Supports US equities, options, and crypto via Alpaca's REST API.">
-<meta property="og:description" content="R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Supports US equities, options, and crypto via Alpaca's REST API.">
+<meta name="description" content="R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Wraps the US equities and options surfaces of Alpaca's REST API. Some shared endpoints (e.g. assets, screener movers) accept `&quot;crypto&quot;` as a filter value and pass it through, but dedicated crypto, forex and international-market endpoints are tracked as planned follow-on work.">
+<meta property="og:description" content="R API wrapper to the Alpaca trading platform supporting both synchronous and asynchronous (promise based) operations. Provides R6 classes for market data, stock trading, options, account management, and positions. Wraps the US equities and options surfaces of Alpaca's REST API. Some shared endpoints (e.g. assets, screener movers) accept `&quot;crypto&quot;` as a filter value and pass it through, but dedicated crypto, forex and international-market endpoints are tracked as planned follow-on work.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,6 +36,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/getting-started.html">Getting Started with alpaca</a></li>
+    <li><a class="dropdown-item" href="articles/data-shapes.html">Package Tour and Data-Shape Conventions</a></li>
     <li><a class="dropdown-item" href="articles/async-usage.html">Asynchronous Usage with alpaca</a></li>
     <li><a class="dropdown-item" href="articles/margin-short-selling.html">Margin Trading and Short Selling with alpaca</a></li>
   </ul>
@@ -68,32 +69,115 @@
 <div class="section level2">
 <h2 id="design-philosophy">Design Philosophy<a class="anchor" aria-label="anchor" href="#design-philosophy"></a>
 </h2>
-<p>All API responses are returned as <code>data.table</code> objects with two transformations applied:</p>
+<p>All API responses are returned as <code>data.table</code> objects with three transformations applied:</p>
 <ol style="list-style-type: decimal">
-<li><p><strong>snake_case column names</strong> – camelCase keys from the JSON response (e.g. <code>latestTrade</code>, <code>nextClose</code>) are converted to snake_case (<code>latest_trade</code>, <code>next_close</code>) via a mechanical transformation. No columns are renamed beyond this.</p></li>
-<li><p><strong>Timestamps to POSIXct</strong> – Columns containing RFC-3339 timestamps or epoch seconds are converted to <code>POSIXct</code> in-place under their snake_case name.</p></li>
+<li><p><strong>snake_case column names</strong> – camelCase keys from the JSON response (e.g. <code>latestTrade</code>, <code>nextClose</code>) are converted to snake_case (<code>latest_trade</code>, <code>next_close</code>). A handful of endpoints additionally expand abbreviated single-letter keys returned by Alpaca’s bar/trade/quote feeds (e.g. <code>t</code> → <code>datetime</code> on a bar’s reference time and <code>t</code> → <code>timestamp</code> on a trade/quote event time, <code>p</code> → <code>price</code>, <code>o</code>/<code>h</code>/<code>l</code>/<code>c</code> → <code>open</code>/<code>high</code>/<code>low</code>/<code>close</code>, <code>vw</code> → <code>volume_weighted_avg_price</code>) so the resulting column names are self-describing. The full mapping per endpoint is documented in the method-level <code>@return</code> blocks.</p></li>
+<li><p><strong>All RFC-3339 timestamps are <code>POSIXct</code></strong> – Every timestamp the Alpaca API emits in RFC-3339 form is parsed for you, regardless of endpoint: bars, trades, quotes, snapshots (incl. the five nested <code>*_timestamp</code> fields), orderbooks, news (<code>created_at</code>, <code>updated_at</code>), orders (<code>created_at</code>, <code>updated_at</code>, <code>submitted_at</code>, <code>filled_at</code>, <code>expired_at</code>, <code>canceled_at</code>, <code>failed_at</code>, <code>replaced_at</code>), account <code>created_at</code>, watchlist <code>created_at</code> / <code>updated_at</code>, and activities <code>transaction_time</code>. POSIXct columns are displayed in UTC by default. See each method’s <code>@return</code> for the per-column types.</p></li>
+<li><p><strong>One entity = one row, no list columns</strong> – For every endpoint normalised under the shape policy (see <em>Data-shape conventions</em> below) the returned <code>data.table</code> contains no list columns. A small number of legacy endpoints that go through the generic parser may still surface nested arrays as list columns; those are called out individually in their <code>@return</code>.</p></li>
 </ol>
-<p>That’s it. <strong>No fields are dropped and no columns are renamed</strong> beyond the camelCase-to-snake_case conversion. If a column exists in the Alpaca API response, it will exist in the returned <code>data.table</code>. If you don’t need a column, drop it yourself.</p>
+<p><strong>No fields are dropped</strong> by the normalising parsers (<code>parse_trades</code>, <code>parse_quotes</code>, <code>parse_news</code>, <code>parse_snapshot</code>, <code>parse_asset</code>/<code>parse_assets</code>, <code>parse_order</code>/<code>parse_orders</code>, <code>parse_watchlist</code>). Every scalar and array field present in the Alpaca response surfaces as a column on the resulting <code>data.table</code> – collapsed, exploded, or wide-prefixed per the shape policy. If you don’t need a column, drop it yourself.</p>
+</div>
+<div class="section level2">
+<h2 id="data-shape-conventions">Data-shape conventions<a class="anchor" aria-label="anchor" href="#data-shape-conventions"></a>
+</h2>
+<p>Alpaca’s JSON responses sometimes contain nested arrays and objects. To keep returns intuitive (and consistent across the <code>alpaca</code> / <code>binance</code> / <code>kucoin</code> packages), every method follows one rule: <strong>identify the entity for the endpoint, and return one row per entity</strong>. The four cases:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Nested shape</th>
+<th>Treatment</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Array of plain strings (<code>conditions</code>, <code>attributes</code>, <code>permissions</code>, <code>symbols</code>, <code>image_urls</code>)</td>
+<td>Collapsed into a single character column joined by <code>;</code>.</td>
+<td>
+<code>dt$attributes</code> -&gt; <code>"fractional_eh_enabled;has_options;overnight_tradable"</code>
+</td>
+</tr>
+<tr>
+<td>Array of objects (orderbook levels, watchlist assets, multi-leg orders)</td>
+<td>Exploded to long format with parent fields replicated. A position-index column is added when order matters (<code>level</code>, <code>leg_index</code>).</td>
+<td>
+<code>get_crypto_orderbook("BTC/USD")</code> -&gt; one row per <code>(side, level)</code>.</td>
+</tr>
+<tr>
+<td>Fixed-schema nested object (snapshot bars, account configurations)</td>
+<td>Flattened to wide <code>parent_child</code> columns.</td>
+<td>
+<code>get_account()</code> -&gt; <code>admin_configurations_max_options_trading_level</code>.</td>
+</tr>
+<tr>
+<td>Empty / null array</td>
+<td>
+<code>NA_character_</code> (no list cells). Empty responses -&gt; empty <code>data.table</code> (not stub rows).</td>
+<td>An asset with no attributes -&gt; <code>attributes = NA</code>.</td>
+</tr>
+</tbody>
+</table>
+<div class="section level3">
+<h3 id="recovering-the-original-values">Recovering the original values<a class="anchor" aria-label="anchor" href="#recovering-the-original-values"></a>
+</h3>
+<p>Filter with <code>grepl</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># All assets that support options trading</span></span>
+<span><span class="va">options_assets</span> <span class="op">&lt;-</span> <span class="va">assets</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"has_options"</span>, <span class="va">attributes</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># All trades reported on the consolidated tape</span></span>
+<span><span class="va">trades_on_tape</span> <span class="op">&lt;-</span> <span class="va">trades</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"T"</span>, <span class="va">conditions</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
+<p>Split back into the original character vector:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">dt</span><span class="op">$</span><span class="va">attributes</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">";"</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co"># [1] "fractional_eh_enabled" "has_options" "overnight_tradable"</span></span></code></pre></div>
+<p>URL-encoded fields (currently just news <code>image_urls</code>, where Alpaca legitimately uses <code>;</code> inside some URLs) round-trip via <code><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode()</a></code>. The encoding is <strong>lossless</strong> in both directions: each URL is double-encoded (<code>%</code> → <code>%25</code>, then <code>;</code> → <code>%3B</code>) before joining, so a single <code><a href="https://rdrr.io/r/utils/URLencode.html" class="external-link">URLdecode()</a></code> after splitting recovers the original string even when the upstream URL already contained <code>%3B</code> or other percent-escapes:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/strsplit.html" class="external-link">strsplit</a></span><span class="op">(</span><span class="va">news</span><span class="op">$</span><span class="va">image_urls</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="st">";"</span>, fixed <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">urls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">urls</span>, <span class="va">URLdecode</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>For parallel arrays like <code>image_sizes</code> / <code>image_urls</code>, when one element omits a per-image field the missing value becomes an <strong>empty token</strong> (e.g. <code>"large;"</code>), never the literal string <code>"NA"</code> — so a real <code>"NA"</code> value remains unambiguous from a missing one.</p>
+</div>
+<div class="section level3">
+<h3 id="multi-leg-orders-bracket--oco--oto">Multi-leg orders (<code>bracket</code> / <code>oco</code> / <code>oto</code>)<a class="anchor" aria-label="anchor" href="#multi-leg-orders-bracket--oco--oto"></a>
+</h3>
+<p>Multi-leg orders return a flat <code>data.table</code> with one row per “order” (parent and legs treated equally). Two helper columns disambiguate:</p>
+<ul>
+<li>
+<code>leg_index</code> (integer) – <code>NA</code> on the parent row; <code>1, 2, ...</code> on each leg.</li>
+<li>
+<code>parent_order_id</code> (character) – <code>NA</code> on the parent row; the parent’s <code>id</code> on each leg.</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Just the parent orders (filter out legs)</span></span>
+<span><span class="va">dt</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">parent_order_id</span><span class="op">)</span><span class="op">]</span></span>
+<span></span>
+<span><span class="co"># All legs of one specific bracket</span></span>
+<span><span class="va">dt</span><span class="op">[</span><span class="va">parent_order_id</span> <span class="op">==</span> <span class="st">"&lt;parent-uuid&gt;"</span><span class="op">]</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"dereckscompany/alpaca"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="setup">Setup<a class="anchor" aria-label="anchor" href="#setup"></a>
 </h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># special mock for local build</span></span>
-<span><span class="fu">box</span><span class="fu">::</span><span class="fu"><a href="http://klmr.me/box/reference/use.html" class="external-link">use</a></span><span class="op">(</span></span>
+<span><span class="fu">box</span><span class="fu">::</span><span class="fu"><a href="https://klmr.me/box/reference/use.html" class="external-link">use</a></span><span class="op">(</span></span>
 <span>  <span class="va">alpaca</span><span class="op">[</span></span>
 <span>    <span class="va">get_api_keys</span>,</span>
 <span>    <span class="va">get_base_url</span>,</span>
 <span>    <span class="va">get_data_base_url</span></span>
 <span>  <span class="op">]</span>,</span>
-<span>  <span class="va">.</span><span class="op">/</span><span class="va">tests</span><span class="op">/</span><span class="va">testthat</span><span class="op">/</span><span class="va">mock_router</span><span class="op">[</span><span class="va">mock_router</span><span class="op">]</span></span>
+<span>  <span class="va">connectcore</span><span class="op">[</span><span class="va">local_mock_api</span><span class="op">]</span>,</span>
+<span>  <span class="va">.</span><span class="op">/</span><span class="va">tests</span><span class="op">/</span><span class="va">testthat</span><span class="op">/</span><span class="va">mock_router</span><span class="op">[</span><span class="va">.mock_routes</span><span class="op">]</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">KEYS</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/get_api_keys.html">get_api_keys</a></span><span class="op">(</span></span>
@@ -104,10 +188,14 @@
 <span><span class="va">TBASE</span> <span class="op">&lt;-</span> <span class="st">"https://paper-api.alpaca.markets"</span></span>
 <span><span class="va">DBASE</span> <span class="op">&lt;-</span> <span class="st">"https://data.alpaca.markets"</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>httr2_mock <span class="op">=</span> <span class="va">mock_router</span><span class="op">)</span></span>
+<span><span class="co"># httr2 exposes a native global mock hook: connectcore::local_mock_api installs</span></span>
+<span><span class="co"># the .mock_routes dispatcher as the httr2_mock option for the rest of this</span></span>
+<span><span class="co"># scope, so every request below is served from canned fixtures -- no network,</span></span>
+<span><span class="co"># no real credentials.</span></span>
+<span><span class="fu">local_mock_api</span><span class="op">(</span><span class="va">.mock_routes</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># normal imports</span></span>
-<span><span class="fu">box</span><span class="fu">::</span><span class="fu"><a href="http://klmr.me/box/reference/use.html" class="external-link">use</a></span><span class="op">(</span></span>
+<span><span class="fu">box</span><span class="fu">::</span><span class="fu"><a href="https://klmr.me/box/reference/use.html" class="external-link">use</a></span><span class="op">(</span></span>
 <span>  <span class="va">alpaca</span><span class="op">[</span></span>
 <span>    <span class="va">AlpacaMarketData</span>,</span>
 <span>    <span class="va">AlpacaTrading</span>,</span>
@@ -116,21 +204,21 @@
 <span>  <span class="op">]</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Set your API credentials as environment variables in <code>.Renviron</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">ALPACA_API_KEY</span> = your-api-key</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="ex">ALPACA_API_SECRET</span> = your-api-secret</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="ex">ALPACA_API_ENDPOINT</span> = https://paper-api.alpaca.markets</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="ex">ALPACA_API_KEY</span> = your-api-key</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">ALPACA_API_SECRET</span> = your-api-secret</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="ex">ALPACA_API_ENDPOINT</span> = https://paper-api.alpaca.markets</span></code></pre></div>
 <p>If you don’t have a key, visit the <a href="https://app.alpaca.markets/" class="external-link">Alpaca dashboard</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start--market-data">Quick Start – Market Data<a class="anchor" aria-label="anchor" href="#quick-start--market-data"></a>
 </h2>
 <p>All endpoints require authentication (even market data).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">market</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaMarketData.html">AlpacaMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>keys <span class="op">=</span> <span class="va">KEYS</span>, base_url <span class="op">=</span> <span class="va">TBASE</span>, data_base_url <span class="op">=</span> <span class="va">DBASE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="historical-bars">Historical Bars<a class="anchor" aria-label="anchor" href="#historical-bars"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bars</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_bars</span><span class="op">(</span></span>
 <span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
 <span>  timeframe <span class="op">=</span> <span class="st">"1Day"</span>,</span>
@@ -138,126 +226,134 @@
 <span>  end <span class="op">=</span> <span class="st">"2024-01-31"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">bars</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co">#&gt;              timestamp   open   high    low  close   volume trade_count    vwap</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;int&gt;       &lt;int&gt;   &lt;num&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831</span></span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#&gt;               datetime  open  high   low close  volume trade_count  vwap</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;   &lt;num&gt;       &lt;num&gt; &lt;num&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-02 05:00:00   100   110    95   105 1000000       10000 102.5</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-03 05:00:00   105   115   100   112 1100000       11000 108.0</span></span></code></pre></div>
+<p><code>get_bars()</code> and <code>get_bars_multi()</code> <strong>auto-paginate</strong>: they follow Alpaca’s <code>next_page_token</code> and return the full date range as one <code>data.table</code>, not just the first ~1,000-row page the API caps each response at. Tune the page size, throttle and page cap with <code>limit</code> / <code>sleep</code> / <code>max_pages</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="latest-trade">Latest Trade<a class="anchor" aria-label="anchor" href="#latest-trade"></a>
 </h3>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_trade</span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="va">trade</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">#&gt;              timestamp price  size exchange   tape    id condition</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;int&gt;   &lt;char&gt; &lt;char&gt; &lt;int&gt;    &lt;char&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00 185.5   100        V      C 12345         @</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#&gt;              timestamp price  size exchange   tape    id conditions</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;int&gt;   &lt;char&gt; &lt;char&gt; &lt;num&gt;     &lt;char&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00 185.5   100        V      C 12345          @</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="latest-quote-nbbo">Latest Quote (NBBO)<a class="anchor" aria-label="anchor" href="#latest-quote-nbbo"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">quote</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_latest_quote</span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="va">quote</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#&gt;              timestamp ask_exchange ask_price ask_size bid_exchange bid_price</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;       &lt;char&gt;     &lt;num&gt;    &lt;int&gt;       &lt;char&gt;     &lt;num&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5</span></span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt;    bid_size conditions   tape</span></span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt;       &lt;int&gt;     &lt;list&gt; &lt;char&gt;</span></span>
-<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; 1:      300  &lt;list[1]&gt;      C</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt;              timestamp ask_exchange ask_price ask_size bid_exchange bid_price</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;       &lt;char&gt;     &lt;num&gt;    &lt;int&gt;       &lt;char&gt;     &lt;num&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5</span></span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt;    bid_size   tape conditions</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt;       &lt;int&gt; &lt;char&gt;     &lt;char&gt;</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; 1:      300      C          R</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="market-clock">Market Clock<a class="anchor" aria-label="anchor" href="#market-clock"></a>
 </h3>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">market</span><span class="op">$</span><span class="fu">get_clock</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co">#&gt;                        timestamp is_open                 next_open</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="co">#&gt;                           &lt;char&gt;  &lt;lgcl&gt;                    &lt;char&gt;</span></span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15T14:30:00.000-05:00    TRUE 2024-01-16T09:30:00-05:00</span></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co">#&gt;                   next_close</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="co">#&gt;                       &lt;char&gt;</span></span>
-<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15T16:00:00-05:00</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#&gt;              timestamp is_open           next_open          next_close</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;  &lt;lgcl&gt;              &lt;POSc&gt;              &lt;POSc&gt;</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00    TRUE 2024-01-16 09:30:00 2024-01-15 16:00:00</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="available-assets">Available Assets<a class="anchor" aria-label="anchor" href="#available-assets"></a>
 </h3>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">assets</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_assets</span><span class="op">(</span>status <span class="op">=</span> <span class="st">"active"</span>, asset_class <span class="op">=</span> <span class="st">"us_equity"</span><span class="op">)</span></span>
 <span><span class="va">assets</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co">#&gt;        id     class exchange symbol                  name status tradable</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;    &lt;char&gt;   &lt;char&gt; &lt;char&gt;                &lt;char&gt; &lt;char&gt;   &lt;lgcl&gt;</span></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt; 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE</span></span>
-<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt;    marginable shortable fractionable</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt;        &lt;lgcl&gt;    &lt;lgcl&gt;       &lt;lgcl&gt;</span></span>
-<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; 1:       TRUE      TRUE         TRUE</span></span>
-<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; 2:       TRUE      TRUE         TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co">#&gt;        id     class exchange symbol                  name status tradable</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;    &lt;char&gt;   &lt;char&gt; &lt;char&gt;                &lt;char&gt; &lt;char&gt;   &lt;lgcl&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co">#&gt; 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co">#&gt; 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="co">#&gt;    marginable maintenance_margin_requirement margin_requirement_long</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co">#&gt;        &lt;lgcl&gt;                          &lt;int&gt;                  &lt;char&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a><span class="co">#&gt; 1:       TRUE                             30                      30</span></span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a><span class="co">#&gt; 2:       TRUE                             30                      30</span></span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a><span class="co">#&gt;    margin_requirement_short shortable easy_to_borrow  borrow_status</span></span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a><span class="co">#&gt;                      &lt;char&gt;    &lt;lgcl&gt;         &lt;lgcl&gt;         &lt;char&gt;</span></span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a><span class="co">#&gt; 1:                       30      TRUE           TRUE easy_to_borrow</span></span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a><span class="co">#&gt; 2:                       30      TRUE           TRUE easy_to_borrow</span></span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a><span class="co">#&gt;    fractionable                                           attributes</span></span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a><span class="co">#&gt;          &lt;lgcl&gt;                                               &lt;char&gt;</span></span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a><span class="co">#&gt; 1:         TRUE fractional_eh_enabled;has_options;overnight_tradable</span></span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a><span class="co">#&gt; 2:         TRUE                                                 &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="market-news">Market News<a class="anchor" aria-label="anchor" href="#market-news"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">news</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_news</span><span class="op">(</span>symbols <span class="op">=</span> <span class="st">"AAPL"</span>, limit <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">news</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">headline</span>, <span class="va">source</span>, <span class="va">created_at</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb16"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co">#&gt;                              headline   source           created_at</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt;                                &lt;char&gt;   &lt;char&gt;               &lt;char&gt;</span></span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; 3: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; 4: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co">#&gt;                                      headline   source          created_at</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="co">#&gt;                                        &lt;char&gt;   &lt;char&gt;              &lt;POSc&gt;</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a><span class="co">#&gt; 1:           Apple Reports Record Q1 Earnings benzinga 2024-01-25 18:30:00</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co">#&gt; 2:         Tech Sector Rallies on AI Optimism  reuters 2024-01-25 16:00:00</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="co">#&gt; 3:              Some Generic Markets Headline     wire 2024-01-25 15:00:00</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a><span class="co">#&gt; 4:                        URL with semicolons     test 2024-01-25 14:00:00</span></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co">#&gt; 5:  URL with a pre-existing %3B in the source     test 2024-01-25 13:00:00</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="co">#&gt; 6: Article with partially-missing image sizes     test 2024-01-25 12:00:00</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="account">Account<a class="anchor" aria-label="anchor" href="#account"></a>
 </h2>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acct</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaAccount.html">AlpacaAccount</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>keys <span class="op">=</span> <span class="va">KEYS</span>, base_url <span class="op">=</span> <span class="va">TBASE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="account-info">Account Info<a class="anchor" aria-label="anchor" href="#account-info"></a>
 </h3>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">info</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_account</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">info</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">status</span>, <span class="va">equity</span>, <span class="va">buying_power</span>, <span class="va">cash</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co">#&gt;    status equity buying_power   cash</span></span>
-<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;char&gt;       &lt;char&gt; &lt;char&gt;</span></span>
-<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a><span class="co">#&gt; 1: ACTIVE 100000       400000 100000</span></span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">#&gt;    status equity buying_power   cash</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt; &lt;char&gt;       &lt;char&gt; &lt;char&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">#&gt; 1: ACTIVE 100000       400000 100000</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="open-positions">Open Positions<a class="anchor" aria-label="anchor" href="#open-positions"></a>
 </h3>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acct</span><span class="op">$</span><span class="fu">get_positions</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co">#&gt;     asset_id symbol exchange asset_class avg_entry_price    qty   side</span></span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="co">#&gt;       &lt;char&gt; &lt;char&gt;   &lt;char&gt;      &lt;char&gt;          &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a><span class="co">#&gt; 1: uuid-aapl   AAPL   NASDAQ   us_equity          185.50     10   long</span></span>
-<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a><span class="co">#&gt;    market_value cost_basis unrealized_pl unrealized_plpc current_price</span></span>
-<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a><span class="co">#&gt;          &lt;char&gt;     &lt;char&gt;        &lt;char&gt;          &lt;char&gt;        &lt;char&gt;</span></span>
-<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="co">#&gt; 1:      1870.00    1855.00         15.00           0.008        187.00</span></span>
-<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co">#&gt;    lastday_price change_today</span></span>
-<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="co">#&gt;           &lt;char&gt;       &lt;char&gt;</span></span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co">#&gt; 1:        186.00        0.005</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co">#&gt;     asset_id symbol exchange asset_class avg_entry_price    qty   side</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="co">#&gt;       &lt;char&gt; &lt;char&gt;   &lt;char&gt;      &lt;char&gt;          &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a><span class="co">#&gt; 1: uuid-aapl   AAPL   NASDAQ   us_equity          185.50     10   long</span></span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a><span class="co">#&gt;    market_value cost_basis unrealized_pl unrealized_plpc current_price</span></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="co">#&gt;          &lt;char&gt;     &lt;char&gt;        &lt;char&gt;          &lt;char&gt;        &lt;char&gt;</span></span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a><span class="co">#&gt; 1:      1870.00    1855.00         15.00           0.008        187.00</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a><span class="co">#&gt;    lastday_price change_today</span></span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a><span class="co">#&gt;           &lt;char&gt;       &lt;char&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a><span class="co">#&gt; 1:        186.00        0.005</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="portfolio-history">Portfolio History<a class="anchor" aria-label="anchor" href="#portfolio-history"></a>
 </h3>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">acct</span><span class="op">$</span><span class="fu">get_portfolio_history</span><span class="op">(</span>period <span class="op">=</span> <span class="st">"1M"</span>, timeframe <span class="op">=</span> <span class="st">"1D"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb23"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co">#&gt;     timestamp    equity profit_loss profit_loss_pct</span></span>
-<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="co">#&gt;        &lt;POSc&gt;     &lt;num&gt;       &lt;num&gt;           &lt;num&gt;</span></span>
-<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-01 100000.00        0.00          0.0000</span></span>
-<span id="cb23-4"><a href="#cb23-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-02 100150.50      150.50          0.0015</span></span>
-<span id="cb23-5"><a href="#cb23-5" tabindex="-1"></a><span class="co">#&gt; 3: 2024-01-03  99800.25     -200.25         -0.0020</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co">#&gt;     timestamp    equity profit_loss profit_loss_pct</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="co">#&gt;        &lt;POSc&gt;     &lt;num&gt;       &lt;num&gt;           &lt;num&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-01 100000.00        0.00        0.000000</span></span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-02 100150.50      150.50        0.001505</span></span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a><span class="co">#&gt; 3: 2024-01-03  99800.25     -200.25       -0.002000</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="trading">Trading<a class="anchor" aria-label="anchor" href="#trading"></a>
 </h2>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trading</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaTrading.html">AlpacaTrading</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>keys <span class="op">=</span> <span class="va">KEYS</span>, base_url <span class="op">=</span> <span class="va">TBASE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="place-a-limit-order">Place a Limit Order<a class="anchor" aria-label="anchor" href="#place-a-limit-order"></a>
 </h3>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">order</span> <span class="op">&lt;-</span> <span class="va">trading</span><span class="op">$</span><span class="fu">add_order</span><span class="op">(</span></span>
 <span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
 <span>  side <span class="op">=</span> <span class="st">"buy"</span>,</span>
@@ -267,39 +363,63 @@
 <span>  limit_price <span class="op">=</span> <span class="fl">150</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">order</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">id</span>, <span class="va">symbol</span>, <span class="va">side</span>, <span class="va">type</span>, <span class="va">status</span>, <span class="va">limit_price</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb26"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="co">#&gt;                id symbol   side   type   status limit_price</span></span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a><span class="co">#&gt;            &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;   &lt;char&gt;      &lt;char&gt;</span></span>
-<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a><span class="co">#&gt; 1: order-uuid-123   AAPL    buy  limit accepted      150.00</span></span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#&gt;                id symbol   side   type   status limit_price</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="co">#&gt;            &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;   &lt;char&gt;      &lt;char&gt;</span></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; 1: order-uuid-123   AAPL    buy  limit accepted      150.00</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="list-open-orders">List Open Orders<a class="anchor" aria-label="anchor" href="#list-open-orders"></a>
 </h3>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trading</span><span class="op">$</span><span class="fu">get_orders</span><span class="op">(</span>status <span class="op">=</span> <span class="st">"open"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb28"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="co">#&gt;         id symbol   side   type status    qty filled_qty           created_at</span></span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;     &lt;char&gt;               &lt;char&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a><span class="co">#&gt; 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z</span></span>
-<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a><span class="co">#&gt; 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co">#&gt;         id client_order_id          created_at          updated_at</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="co">#&gt;     &lt;char&gt;          &lt;char&gt;              &lt;POSc&gt;              &lt;POSc&gt;</span></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a><span class="co">#&gt; 1: order-1  client-order-1 2024-01-15 14:30:00 2024-01-15 14:30:00</span></span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a><span class="co">#&gt; 2: order-2  client-order-2 2024-01-15 14:31:00 2024-01-15 14:31:05</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a><span class="co">#&gt;           submitted_at           filled_at expired_at canceled_at failed_at</span></span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;              &lt;POSc&gt;     &lt;POSc&gt;      &lt;POSc&gt;    &lt;POSc&gt;</span></span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-15 14:30:00                &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;      &lt;NA&gt;</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-15 14:31:00 2024-01-15 14:31:05       &lt;NA&gt;        &lt;NA&gt;      &lt;NA&gt;</span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a><span class="co">#&gt;    replaced_at replaced_by replaces  asset_id symbol asset_class notional</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a><span class="co">#&gt;         &lt;POSc&gt;      &lt;lgcl&gt;   &lt;lgcl&gt;    &lt;char&gt; &lt;char&gt;      &lt;char&gt;   &lt;lgcl&gt;</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a><span class="co">#&gt; 1:        &lt;NA&gt;          NA       NA uuid-aapl   AAPL   us_equity       NA</span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a><span class="co">#&gt; 2:        &lt;NA&gt;          NA       NA uuid-msft   MSFT   us_equity       NA</span></span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a><span class="co">#&gt;       qty filled_qty filled_avg_price order_class order_type   type   side</span></span>
+<span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a><span class="co">#&gt;    &lt;char&gt;     &lt;char&gt;           &lt;char&gt;      &lt;char&gt;     &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
+<span id="cb32-15"><a href="#cb32-15" tabindex="-1"></a><span class="co">#&gt; 1:      1          0             &lt;NA&gt;                  limit  limit    buy</span></span>
+<span id="cb32-16"><a href="#cb32-16" tabindex="-1"></a><span class="co">#&gt; 2:     10         10           374.00                 market market   sell</span></span>
+<span id="cb32-17"><a href="#cb32-17" tabindex="-1"></a><span class="co">#&gt;    position_intent time_in_force limit_price stop_price status extended_hours</span></span>
+<span id="cb32-18"><a href="#cb32-18" tabindex="-1"></a><span class="co">#&gt;             &lt;char&gt;        &lt;char&gt;      &lt;char&gt;     &lt;lgcl&gt; &lt;char&gt;         &lt;lgcl&gt;</span></span>
+<span id="cb32-19"><a href="#cb32-19" tabindex="-1"></a><span class="co">#&gt; 1:     buy_to_open           day      150.00         NA    new          FALSE</span></span>
+<span id="cb32-20"><a href="#cb32-20" tabindex="-1"></a><span class="co">#&gt; 2:   sell_to_close           day        &lt;NA&gt;         NA filled          FALSE</span></span>
+<span id="cb32-21"><a href="#cb32-21" tabindex="-1"></a><span class="co">#&gt;    trail_percent trail_price    hwm subtag source           expires_at</span></span>
+<span id="cb32-22"><a href="#cb32-22" tabindex="-1"></a><span class="co">#&gt;           &lt;lgcl&gt;      &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt;               &lt;char&gt;</span></span>
+<span id="cb32-23"><a href="#cb32-23" tabindex="-1"></a><span class="co">#&gt; 1:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z</span></span>
+<span id="cb32-24"><a href="#cb32-24" tabindex="-1"></a><span class="co">#&gt; 2:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z</span></span>
+<span id="cb32-25"><a href="#cb32-25" tabindex="-1"></a><span class="co">#&gt;    leg_index parent_order_id</span></span>
+<span id="cb32-26"><a href="#cb32-26" tabindex="-1"></a><span class="co">#&gt;        &lt;int&gt;          &lt;char&gt;</span></span>
+<span id="cb32-27"><a href="#cb32-27" tabindex="-1"></a><span class="co">#&gt; 1:        NA            &lt;NA&gt;</span></span>
+<span id="cb32-28"><a href="#cb32-28" tabindex="-1"></a><span class="co">#&gt; 2:        NA            &lt;NA&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="cancel-an-order">Cancel an Order<a class="anchor" aria-label="anchor" href="#cancel-an-order"></a>
 </h3>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trading</span><span class="op">$</span><span class="fu">cancel_order</span><span class="op">(</span>order_id <span class="op">=</span> <span class="st">"order-uuid-123"</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb30"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="co">#&gt;          order_id    status</span></span>
-<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="co">#&gt;            &lt;char&gt;    &lt;char&gt;</span></span>
-<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="co">#&gt; 1: order-uuid-123 cancelled</span></span></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="co">#&gt;          order_id    status</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a><span class="co">#&gt;            &lt;char&gt;    &lt;char&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a><span class="co">#&gt; 1: order-uuid-123 cancelled</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="options">Options<a class="anchor" aria-label="anchor" href="#options"></a>
 </h2>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">opts</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaOptions.html">AlpacaOptions</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>keys <span class="op">=</span> <span class="va">KEYS</span>, base_url <span class="op">=</span> <span class="va">TBASE</span>, data_base_url <span class="op">=</span> <span class="va">DBASE</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="list-contracts">List Contracts<a class="anchor" aria-label="anchor" href="#list-contracts"></a>
 </h3>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">contracts</span> <span class="op">&lt;-</span> <span class="va">opts</span><span class="op">$</span><span class="fu">get_contracts</span><span class="op">(</span></span>
 <span>  underlying_symbols <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"call"</span>,</span>
@@ -307,36 +427,68 @@
 <span>  limit <span class="op">=</span> <span class="fl">10</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">contracts</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">symbol</span>, <span class="va">type</span>, <span class="va">strike_price</span>, <span class="va">expiration_date</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb33"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co">#&gt;                 symbol   type strike_price expiration_date</span></span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;char&gt; &lt;char&gt;       &lt;char&gt;          &lt;char&gt;</span></span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="co">#&gt; 1: AAPL240621C00200000   call       200.00      2024-06-21</span></span>
-<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a><span class="co">#&gt; 2: AAPL240621P00180000    put       180.00      2024-06-21</span></span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="co">#&gt;                 symbol   type strike_price expiration_date</span></span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;char&gt; &lt;char&gt;       &lt;char&gt;          &lt;Date&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" tabindex="-1"></a><span class="co">#&gt; 1: AAPL240621C00200000   call       200.00      2024-06-21</span></span>
+<span id="cb37-4"><a href="#cb37-4" tabindex="-1"></a><span class="co">#&gt; 2: AAPL240621P00180000    put       180.00      2024-06-21</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="options-chain">Options Chain<a class="anchor" aria-label="anchor" href="#options-chain"></a>
 </h3>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chain</span> <span class="op">&lt;-</span> <span class="va">opts</span><span class="op">$</span><span class="fu">get_option_chain</span><span class="op">(</span>underlying_symbol <span class="op">=</span> <span class="st">"AAPL"</span>, type <span class="op">=</span> <span class="st">"call"</span><span class="op">)</span></span>
 <span><span class="va">chain</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<div class="sourceCode" id="cb35"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co">#&gt;                 symbol latest_trade_timestamp latest_trade_price</span></span>
-<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;char&gt;                 &lt;char&gt;              &lt;num&gt;</span></span>
-<span id="cb35-3"><a href="#cb35-3" tabindex="-1"></a><span class="co">#&gt; 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5</span></span>
-<span id="cb35-4"><a href="#cb35-4" tabindex="-1"></a><span class="co">#&gt; 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2</span></span>
-<span id="cb35-5"><a href="#cb35-5" tabindex="-1"></a><span class="co">#&gt;    latest_trade_size latest_quote_timestamp latest_quote_ask_price</span></span>
-<span id="cb35-6"><a href="#cb35-6" tabindex="-1"></a><span class="co">#&gt;                &lt;int&gt;                 &lt;char&gt;                  &lt;num&gt;</span></span>
-<span id="cb35-7"><a href="#cb35-7" tabindex="-1"></a><span class="co">#&gt; 1:                10   2024-06-15T14:30:00Z                    5.6</span></span>
-<span id="cb35-8"><a href="#cb35-8" tabindex="-1"></a><span class="co">#&gt; 2:                 5   2024-06-15T14:30:00Z                    3.3</span></span>
-<span id="cb35-9"><a href="#cb35-9" tabindex="-1"></a><span class="co">#&gt;    latest_quote_bid_price latest_quote_ask_size latest_quote_bid_size</span></span>
-<span id="cb35-10"><a href="#cb35-10" tabindex="-1"></a><span class="co">#&gt;                     &lt;num&gt;                 &lt;int&gt;                 &lt;int&gt;</span></span>
-<span id="cb35-11"><a href="#cb35-11" tabindex="-1"></a><span class="co">#&gt; 1:                    5.4                    50                    40</span></span>
-<span id="cb35-12"><a href="#cb35-12" tabindex="-1"></a><span class="co">#&gt; 2:                    3.1                    30                    25</span></span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co">#&gt;                 symbol latest_trade_timestamp latest_trade_price</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;char&gt;                 &lt;POSc&gt;              &lt;num&gt;</span></span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a><span class="co">#&gt; 1: AAPL240621C00200000    2024-06-15 14:30:00                5.5</span></span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co">#&gt; 2: AAPL240621C00210000    2024-06-15 14:30:00                3.2</span></span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">#&gt;    latest_trade_size latest_trade_conditions latest_quote_timestamp</span></span>
+<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="co">#&gt;                &lt;int&gt;                  &lt;char&gt;                 &lt;POSc&gt;</span></span>
+<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a><span class="co">#&gt; 1:                10                       g    2024-06-15 14:30:00</span></span>
+<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="co">#&gt; 2:                 5                    &lt;NA&gt;    2024-06-15 14:30:00</span></span>
+<span id="cb39-9"><a href="#cb39-9" tabindex="-1"></a><span class="co">#&gt;    latest_quote_ask_price latest_quote_bid_price latest_quote_ask_size</span></span>
+<span id="cb39-10"><a href="#cb39-10" tabindex="-1"></a><span class="co">#&gt;                     &lt;num&gt;                  &lt;num&gt;                 &lt;int&gt;</span></span>
+<span id="cb39-11"><a href="#cb39-11" tabindex="-1"></a><span class="co">#&gt; 1:                    5.6                    5.4                    50</span></span>
+<span id="cb39-12"><a href="#cb39-12" tabindex="-1"></a><span class="co">#&gt; 2:                    3.3                    3.1                    30</span></span>
+<span id="cb39-13"><a href="#cb39-13" tabindex="-1"></a><span class="co">#&gt;    latest_quote_bid_size latest_quote_conditions minute_bar_timestamp</span></span>
+<span id="cb39-14"><a href="#cb39-14" tabindex="-1"></a><span class="co">#&gt;                    &lt;int&gt;                  &lt;char&gt;               &lt;POSc&gt;</span></span>
+<span id="cb39-15"><a href="#cb39-15" tabindex="-1"></a><span class="co">#&gt; 1:                    40                       A  2024-06-15 14:30:00</span></span>
+<span id="cb39-16"><a href="#cb39-16" tabindex="-1"></a><span class="co">#&gt; 2:                    25                    &lt;NA&gt;                 &lt;NA&gt;</span></span>
+<span id="cb39-17"><a href="#cb39-17" tabindex="-1"></a><span class="co">#&gt;    minute_bar_open minute_bar_high minute_bar_low minute_bar_close</span></span>
+<span id="cb39-18"><a href="#cb39-18" tabindex="-1"></a><span class="co">#&gt;              &lt;num&gt;           &lt;num&gt;          &lt;num&gt;            &lt;num&gt;</span></span>
+<span id="cb39-19"><a href="#cb39-19" tabindex="-1"></a><span class="co">#&gt; 1:            5.45             5.6            5.4              5.5</span></span>
+<span id="cb39-20"><a href="#cb39-20" tabindex="-1"></a><span class="co">#&gt; 2:              NA              NA             NA               NA</span></span>
+<span id="cb39-21"><a href="#cb39-21" tabindex="-1"></a><span class="co">#&gt;    minute_bar_volume minute_bar_trade_count minute_bar_vwap daily_bar_timestamp</span></span>
+<span id="cb39-22"><a href="#cb39-22" tabindex="-1"></a><span class="co">#&gt;                &lt;int&gt;                  &lt;int&gt;           &lt;num&gt;              &lt;POSc&gt;</span></span>
+<span id="cb39-23"><a href="#cb39-23" tabindex="-1"></a><span class="co">#&gt; 1:               120                      8            5.48 2024-06-15 04:00:00</span></span>
+<span id="cb39-24"><a href="#cb39-24" tabindex="-1"></a><span class="co">#&gt; 2:                NA                     NA              NA                &lt;NA&gt;</span></span>
+<span id="cb39-25"><a href="#cb39-25" tabindex="-1"></a><span class="co">#&gt;    daily_bar_open daily_bar_high daily_bar_low daily_bar_close daily_bar_volume</span></span>
+<span id="cb39-26"><a href="#cb39-26" tabindex="-1"></a><span class="co">#&gt;             &lt;num&gt;          &lt;num&gt;         &lt;num&gt;           &lt;num&gt;            &lt;int&gt;</span></span>
+<span id="cb39-27"><a href="#cb39-27" tabindex="-1"></a><span class="co">#&gt; 1:            5.2            5.7           5.1             5.5             3500</span></span>
+<span id="cb39-28"><a href="#cb39-28" tabindex="-1"></a><span class="co">#&gt; 2:             NA             NA            NA              NA               NA</span></span>
+<span id="cb39-29"><a href="#cb39-29" tabindex="-1"></a><span class="co">#&gt;    daily_bar_trade_count daily_bar_vwap prev_daily_bar_timestamp</span></span>
+<span id="cb39-30"><a href="#cb39-30" tabindex="-1"></a><span class="co">#&gt;                    &lt;int&gt;          &lt;num&gt;                   &lt;POSc&gt;</span></span>
+<span id="cb39-31"><a href="#cb39-31" tabindex="-1"></a><span class="co">#&gt; 1:                   210           5.42      2024-06-14 04:00:00</span></span>
+<span id="cb39-32"><a href="#cb39-32" tabindex="-1"></a><span class="co">#&gt; 2:                    NA             NA                     &lt;NA&gt;</span></span>
+<span id="cb39-33"><a href="#cb39-33" tabindex="-1"></a><span class="co">#&gt;    prev_daily_bar_open prev_daily_bar_high prev_daily_bar_low</span></span>
+<span id="cb39-34"><a href="#cb39-34" tabindex="-1"></a><span class="co">#&gt;                  &lt;num&gt;               &lt;num&gt;              &lt;num&gt;</span></span>
+<span id="cb39-35"><a href="#cb39-35" tabindex="-1"></a><span class="co">#&gt; 1:                 4.9                 5.3                4.8</span></span>
+<span id="cb39-36"><a href="#cb39-36" tabindex="-1"></a><span class="co">#&gt; 2:                  NA                  NA                 NA</span></span>
+<span id="cb39-37"><a href="#cb39-37" tabindex="-1"></a><span class="co">#&gt;    prev_daily_bar_close prev_daily_bar_volume prev_daily_bar_trade_count</span></span>
+<span id="cb39-38"><a href="#cb39-38" tabindex="-1"></a><span class="co">#&gt;                   &lt;num&gt;                 &lt;int&gt;                      &lt;int&gt;</span></span>
+<span id="cb39-39"><a href="#cb39-39" tabindex="-1"></a><span class="co">#&gt; 1:                  5.2                  4100                        260</span></span>
+<span id="cb39-40"><a href="#cb39-40" tabindex="-1"></a><span class="co">#&gt; 2:                   NA                    NA                         NA</span></span>
+<span id="cb39-41"><a href="#cb39-41" tabindex="-1"></a><span class="co">#&gt;    prev_daily_bar_vwap</span></span>
+<span id="cb39-42"><a href="#cb39-42" tabindex="-1"></a><span class="co">#&gt;                  &lt;num&gt;</span></span>
+<span id="cb39-43"><a href="#cb39-43" tabindex="-1"></a><span class="co">#&gt; 1:                5.09</span></span>
+<span id="cb39-44"><a href="#cb39-44" tabindex="-1"></a><span class="co">#&gt; 2:                  NA</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="short-selling">Short Selling<a class="anchor" aria-label="anchor" href="#short-selling"></a>
 </h2>
 <p>Alpaca integrates margin and short selling directly into the standard trading API – no special classes needed. To short a stock, simply place a sell order for a symbol you don’t own:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Short 100 shares of AAPL at market</span></span>
 <span><span class="va">trading</span><span class="op">$</span><span class="fu">add_order</span><span class="op">(</span></span>
 <span>  symbol <span class="op">=</span> <span class="st">"AAPL"</span>,</span>
@@ -353,11 +505,11 @@
 <h2 id="bulk-historical-data">Bulk Historical Data<a class="anchor" aria-label="anchor" href="#bulk-historical-data"></a>
 </h2>
 <p>The <code><a href="reference/alpaca_backfill_bars.html">alpaca_backfill_bars()</a></code> function downloads historical bar data for multiple symbols and timeframes with CSV-based resume support:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/alpaca_backfill_bars.html">alpaca_backfill_bars</a></span><span class="op">(</span></span>
 <span>  symbols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AAPL"</span>, <span class="st">"MSFT"</span>, <span class="st">"TSLA"</span><span class="op">)</span>,</span>
 <span>  timeframes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1Day"</span>, <span class="st">"1Hour"</span><span class="op">)</span>,</span>
-<span>  start <span class="op">=</span> <span class="st">"2020-01-01"</span>,</span>
+<span>  from <span class="op">=</span> <span class="st">"2020-01-01"</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"data/bars.csv"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -365,7 +517,7 @@
 <span><span class="va">dt</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/alpaca_backfill_bars.html">alpaca_backfill_bars</a></span><span class="op">(</span></span>
 <span>  symbols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AAPL"</span>, <span class="st">"MSFT"</span>, <span class="st">"TSLA"</span>, <span class="st">"GOOGL"</span><span class="op">)</span>,</span>
 <span>  timeframes <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"1Day"</span>, <span class="st">"1Hour"</span><span class="op">)</span>,</span>
-<span>  start <span class="op">=</span> <span class="st">"2020-01-01"</span>,</span>
+<span>  from <span class="op">=</span> <span class="st">"2020-01-01"</span>,</span>
 <span>  path <span class="op">=</span> <span class="st">"data/bars.csv"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -373,23 +525,23 @@
 <h2 id="sample-data">Sample Data<a class="anchor" aria-label="anchor" href="#sample-data"></a>
 </h2>
 <p>The package includes a bundled dataset of simulated AAPL daily bars for testing and demonstration:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">alpaca_aapl_1day_bars</span>, package <span class="op">=</span> <span class="st">"alpaca"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">alpaca_aapl_1day_bars</span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb39"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co">#&gt;              timestamp   open   high    low  close    volume trade_count   vwap</span></span>
-<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;     &lt;int&gt;       &lt;int&gt;  &lt;num&gt;</span></span>
-<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60</span></span>
-<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32</span></span>
-<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="co">#&gt; 3: 2024-01-04 05:00:00 187.83 189.45 187.83 188.51  95992257      784214 188.84</span></span>
-<span id="cb39-6"><a href="#cb39-6" tabindex="-1"></a><span class="co">#&gt; 4: 2024-01-05 05:00:00 190.50 191.47 189.27 190.39 111126156     1312892 190.31</span></span>
-<span id="cb39-7"><a href="#cb39-7" tabindex="-1"></a><span class="co">#&gt; 5: 2024-01-08 05:00:00 192.39 192.39 190.41 191.64 106732757     1218918 191.42</span></span>
-<span id="cb39-8"><a href="#cb39-8" tabindex="-1"></a><span class="co">#&gt; 6: 2024-01-09 05:00:00 190.84 192.20 190.19 191.43  98753716     1029576 191.44</span></span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="co">#&gt;               datetime   open   high    low  close    volume trade_count   vwap</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;     &lt;int&gt;       &lt;int&gt;  &lt;num&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60</span></span>
+<span id="cb43-4"><a href="#cb43-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32</span></span>
+<span id="cb43-5"><a href="#cb43-5" tabindex="-1"></a><span class="co">#&gt; 3: 2024-01-04 05:00:00 187.83 189.45 187.83 188.51  95992257      784214 188.84</span></span>
+<span id="cb43-6"><a href="#cb43-6" tabindex="-1"></a><span class="co">#&gt; 4: 2024-01-05 05:00:00 190.50 191.47 189.27 190.39 111126156     1312892 190.31</span></span>
+<span id="cb43-7"><a href="#cb43-7" tabindex="-1"></a><span class="co">#&gt; 5: 2024-01-08 05:00:00 192.39 192.39 190.41 191.64 106732757     1218918 191.42</span></span>
+<span id="cb43-8"><a href="#cb43-8" tabindex="-1"></a><span class="co">#&gt; 6: 2024-01-09 05:00:00 190.84 192.20 190.19 191.43  98753716     1029576 191.44</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="async-usage">Async Usage<a class="anchor" aria-label="anchor" href="#async-usage"></a>
 </h2>
 <p>All classes accept <code>async = TRUE</code>, causing methods to return promises. Use <code><a href="https://coro.r-lib.org/reference/async.html" class="external-link">coro::async()</a></code> to write sequential-looking async code:</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">market_async</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/AlpacaMarketData.html">AlpacaMarketData</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>async <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">main</span> <span class="op">&lt;-</span> <span class="fu">coro</span><span class="fu">::</span><span class="fu"><a href="https://coro.r-lib.org/reference/async.html" class="external-link">async</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
@@ -409,57 +561,57 @@
 <span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/loop_empty.html" class="external-link">loop_empty</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/run_now.html" class="external-link">run_now</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb41"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open           timestamp   volume</span></span>
-<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;int&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;int&gt;</span></span>
-<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a><span class="co">#&gt;  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943</span></span>
-<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a><span class="co">#&gt;  2: 184.25 185.8800 183.4300      656956 184.220 2024-01-03 05:00:00 58418916</span></span>
-<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a><span class="co">#&gt;  3: 181.91 183.0872 180.8800      712850 182.150 2024-01-04 05:00:00 71992243</span></span>
-<span id="cb41-6"><a href="#cb41-6" tabindex="-1"></a><span class="co">#&gt;  4: 181.18 182.7600 180.1700      682335 181.990 2024-01-05 05:00:00 62379661</span></span>
-<span id="cb41-7"><a href="#cb41-7" tabindex="-1"></a><span class="co">#&gt;  5: 185.56 185.6000 181.5000      669304 182.085 2024-01-08 05:00:00 59151720</span></span>
-<span id="cb41-8"><a href="#cb41-8" tabindex="-1"></a><span class="co">#&gt;  6: 185.14 185.1500 182.7300      538297 183.920 2024-01-09 05:00:00 42848219</span></span>
-<span id="cb41-9"><a href="#cb41-9" tabindex="-1"></a><span class="co">#&gt;  7: 186.19 186.4000 183.9200      554884 184.350 2024-01-10 05:00:00 46797681</span></span>
-<span id="cb41-10"><a href="#cb41-10" tabindex="-1"></a><span class="co">#&gt;  8: 185.59 187.0500 183.6200      584114 186.540 2024-01-11 05:00:00 49133996</span></span>
-<span id="cb41-11"><a href="#cb41-11" tabindex="-1"></a><span class="co">#&gt;  9: 185.92 186.7400 185.1900      477050 186.060 2024-01-12 05:00:00 40477782</span></span>
-<span id="cb41-12"><a href="#cb41-12" tabindex="-1"></a><span class="co">#&gt; 10: 183.63 184.2600 180.9340      767431 182.160 2024-01-16 05:00:00 65612289</span></span>
-<span id="cb41-13"><a href="#cb41-13" tabindex="-1"></a><span class="co">#&gt; 11: 182.68 182.9300 180.3000      594725 181.270 2024-01-17 05:00:00 47321545</span></span>
-<span id="cb41-14"><a href="#cb41-14" tabindex="-1"></a><span class="co">#&gt; 12: 188.63 189.1400 185.8300      787472 186.090 2024-01-18 05:00:00 78031784</span></span>
-<span id="cb41-15"><a href="#cb41-15" tabindex="-1"></a><span class="co">#&gt; 13: 191.56 191.9500 188.8200      682664 189.330 2024-01-19 05:00:00 68902985</span></span>
-<span id="cb41-16"><a href="#cb41-16" tabindex="-1"></a><span class="co">#&gt; 14: 193.89 195.3300 192.2600      718256 192.300 2024-01-22 05:00:00 60139948</span></span>
-<span id="cb41-17"><a href="#cb41-17" tabindex="-1"></a><span class="co">#&gt; 15: 195.18 195.7500 193.8299      533198 195.020 2024-01-23 05:00:00 42360151</span></span>
-<span id="cb41-18"><a href="#cb41-18" tabindex="-1"></a><span class="co">#&gt; 16: 194.50 196.3800 194.3400      594907 195.420 2024-01-24 05:00:00 53636461</span></span>
-<span id="cb41-19"><a href="#cb41-19" tabindex="-1"></a><span class="co">#&gt; 17: 194.17 196.2675 193.1125      644776 195.220 2024-01-25 05:00:00 54834147</span></span>
-<span id="cb41-20"><a href="#cb41-20" tabindex="-1"></a><span class="co">#&gt; 18: 192.42 194.7600 191.9400      534166 194.270 2024-01-26 05:00:00 44594011</span></span>
-<span id="cb41-21"><a href="#cb41-21" tabindex="-1"></a><span class="co">#&gt; 19: 191.73 192.2000 189.5800      599512 192.010 2024-01-29 05:00:00 47145521</span></span>
-<span id="cb41-22"><a href="#cb41-22" tabindex="-1"></a><span class="co">#&gt; 20: 188.04 191.8000 187.4700      690706 190.940 2024-01-30 05:00:00 55854611</span></span>
-<span id="cb41-23"><a href="#cb41-23" tabindex="-1"></a><span class="co">#&gt; 21: 184.40 187.0950 184.3500      679844 187.040 2024-01-31 05:00:00 55467803</span></span>
-<span id="cb41-24"><a href="#cb41-24" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open           timestamp   volume</span></span>
-<span id="cb41-25"><a href="#cb41-25" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;int&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;int&gt;</span></span>
-<span id="cb41-26"><a href="#cb41-26" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
-<span id="cb41-27"><a href="#cb41-27" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
-<span id="cb41-28"><a href="#cb41-28" tabindex="-1"></a><span class="co">#&gt;  1: 185.8462</span></span>
-<span id="cb41-29"><a href="#cb41-29" tabindex="-1"></a><span class="co">#&gt;  2: 184.3197</span></span>
-<span id="cb41-30"><a href="#cb41-30" tabindex="-1"></a><span class="co">#&gt;  3: 182.0131</span></span>
-<span id="cb41-31"><a href="#cb41-31" tabindex="-1"></a><span class="co">#&gt;  4: 181.4839</span></span>
-<span id="cb41-32"><a href="#cb41-32" tabindex="-1"></a><span class="co">#&gt;  5: 184.4009</span></span>
-<span id="cb41-33"><a href="#cb41-33" tabindex="-1"></a><span class="co">#&gt;  6: 184.3641</span></span>
-<span id="cb41-34"><a href="#cb41-34" tabindex="-1"></a><span class="co">#&gt;  7: 185.2238</span></span>
-<span id="cb41-35"><a href="#cb41-35" tabindex="-1"></a><span class="co">#&gt;  8: 185.0222</span></span>
-<span id="cb41-36"><a href="#cb41-36" tabindex="-1"></a><span class="co">#&gt;  9: 185.8182</span></span>
-<span id="cb41-37"><a href="#cb41-37" tabindex="-1"></a><span class="co">#&gt; 10: 182.8303</span></span>
-<span id="cb41-38"><a href="#cb41-38" tabindex="-1"></a><span class="co">#&gt; 11: 181.8952</span></span>
-<span id="cb41-39"><a href="#cb41-39" tabindex="-1"></a><span class="co">#&gt; 12: 187.9687</span></span>
-<span id="cb41-40"><a href="#cb41-40" tabindex="-1"></a><span class="co">#&gt; 13: 190.6088</span></span>
-<span id="cb41-41"><a href="#cb41-41" tabindex="-1"></a><span class="co">#&gt; 14: 194.0135</span></span>
-<span id="cb41-42"><a href="#cb41-42" tabindex="-1"></a><span class="co">#&gt; 15: 194.8158</span></span>
-<span id="cb41-43"><a href="#cb41-43" tabindex="-1"></a><span class="co">#&gt; 16: 195.2364</span></span>
-<span id="cb41-44"><a href="#cb41-44" tabindex="-1"></a><span class="co">#&gt; 17: 194.7833</span></span>
-<span id="cb41-45"><a href="#cb41-45" tabindex="-1"></a><span class="co">#&gt; 18: 193.1369</span></span>
-<span id="cb41-46"><a href="#cb41-46" tabindex="-1"></a><span class="co">#&gt; 19: 191.2808</span></span>
-<span id="cb41-47"><a href="#cb41-47" tabindex="-1"></a><span class="co">#&gt; 20: 188.8236</span></span>
-<span id="cb41-48"><a href="#cb41-48" tabindex="-1"></a><span class="co">#&gt; 21: 185.3675</span></span>
-<span id="cb41-49"><a href="#cb41-49" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
-<span id="cb41-50"><a href="#cb41-50" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
-<span id="cb41-51"><a href="#cb41-51" tabindex="-1"></a><span class="co">#&gt; Market open: FALSE</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open            datetime   volume</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;num&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;num&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="co">#&gt;  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="co">#&gt;  2: 184.25 185.8800 183.4300      656956 184.220 2024-01-03 05:00:00 58418916</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="co">#&gt;  3: 181.91 183.0872 180.8800      712850 182.150 2024-01-04 05:00:00 71992243</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a><span class="co">#&gt;  4: 181.18 182.7600 180.1700      682335 181.990 2024-01-05 05:00:00 62379661</span></span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a><span class="co">#&gt;  5: 185.56 185.6000 181.5000      669304 182.085 2024-01-08 05:00:00 59151720</span></span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a><span class="co">#&gt;  6: 185.14 185.1500 182.7300      538297 183.920 2024-01-09 05:00:00 42848219</span></span>
+<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a><span class="co">#&gt;  7: 186.19 186.4000 183.9200      554884 184.350 2024-01-10 05:00:00 46797681</span></span>
+<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a><span class="co">#&gt;  8: 185.59 187.0500 183.6200      584114 186.540 2024-01-11 05:00:00 49133996</span></span>
+<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a><span class="co">#&gt;  9: 185.92 186.7400 185.1900      477050 186.060 2024-01-12 05:00:00 40477782</span></span>
+<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a><span class="co">#&gt; 10: 183.63 184.2600 180.9340      767431 182.160 2024-01-16 05:00:00 65612289</span></span>
+<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a><span class="co">#&gt; 11: 182.68 182.9300 180.3000      594725 181.270 2024-01-17 05:00:00 47321545</span></span>
+<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a><span class="co">#&gt; 12: 188.63 189.1400 185.8300      787472 186.090 2024-01-18 05:00:00 78031784</span></span>
+<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a><span class="co">#&gt; 13: 191.56 191.9500 188.8200      682664 189.330 2024-01-19 05:00:00 68902985</span></span>
+<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a><span class="co">#&gt; 14: 193.89 195.3300 192.2600      718256 192.300 2024-01-22 05:00:00 60139948</span></span>
+<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a><span class="co">#&gt; 15: 195.18 195.7500 193.8299      533198 195.020 2024-01-23 05:00:00 42360151</span></span>
+<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a><span class="co">#&gt; 16: 194.50 196.3800 194.3400      594907 195.420 2024-01-24 05:00:00 53636461</span></span>
+<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a><span class="co">#&gt; 17: 194.17 196.2675 193.1125      644776 195.220 2024-01-25 05:00:00 54834147</span></span>
+<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a><span class="co">#&gt; 18: 192.42 194.7600 191.9400      534166 194.270 2024-01-26 05:00:00 44594011</span></span>
+<span id="cb45-21"><a href="#cb45-21" tabindex="-1"></a><span class="co">#&gt; 19: 191.73 192.2000 189.5800      599512 192.010 2024-01-29 05:00:00 47145521</span></span>
+<span id="cb45-22"><a href="#cb45-22" tabindex="-1"></a><span class="co">#&gt; 20: 188.04 191.8000 187.4700      690706 190.940 2024-01-30 05:00:00 55854611</span></span>
+<span id="cb45-23"><a href="#cb45-23" tabindex="-1"></a><span class="co">#&gt; 21: 184.40 187.0950 184.3500      679844 187.040 2024-01-31 05:00:00 55467803</span></span>
+<span id="cb45-24"><a href="#cb45-24" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open            datetime   volume</span></span>
+<span id="cb45-25"><a href="#cb45-25" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;num&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;num&gt;</span></span>
+<span id="cb45-26"><a href="#cb45-26" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
+<span id="cb45-27"><a href="#cb45-27" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
+<span id="cb45-28"><a href="#cb45-28" tabindex="-1"></a><span class="co">#&gt;  1: 185.8462</span></span>
+<span id="cb45-29"><a href="#cb45-29" tabindex="-1"></a><span class="co">#&gt;  2: 184.3197</span></span>
+<span id="cb45-30"><a href="#cb45-30" tabindex="-1"></a><span class="co">#&gt;  3: 182.0131</span></span>
+<span id="cb45-31"><a href="#cb45-31" tabindex="-1"></a><span class="co">#&gt;  4: 181.4839</span></span>
+<span id="cb45-32"><a href="#cb45-32" tabindex="-1"></a><span class="co">#&gt;  5: 184.4009</span></span>
+<span id="cb45-33"><a href="#cb45-33" tabindex="-1"></a><span class="co">#&gt;  6: 184.3641</span></span>
+<span id="cb45-34"><a href="#cb45-34" tabindex="-1"></a><span class="co">#&gt;  7: 185.2238</span></span>
+<span id="cb45-35"><a href="#cb45-35" tabindex="-1"></a><span class="co">#&gt;  8: 185.0222</span></span>
+<span id="cb45-36"><a href="#cb45-36" tabindex="-1"></a><span class="co">#&gt;  9: 185.8182</span></span>
+<span id="cb45-37"><a href="#cb45-37" tabindex="-1"></a><span class="co">#&gt; 10: 182.8303</span></span>
+<span id="cb45-38"><a href="#cb45-38" tabindex="-1"></a><span class="co">#&gt; 11: 181.8952</span></span>
+<span id="cb45-39"><a href="#cb45-39" tabindex="-1"></a><span class="co">#&gt; 12: 187.9687</span></span>
+<span id="cb45-40"><a href="#cb45-40" tabindex="-1"></a><span class="co">#&gt; 13: 190.6088</span></span>
+<span id="cb45-41"><a href="#cb45-41" tabindex="-1"></a><span class="co">#&gt; 14: 194.0135</span></span>
+<span id="cb45-42"><a href="#cb45-42" tabindex="-1"></a><span class="co">#&gt; 15: 194.8158</span></span>
+<span id="cb45-43"><a href="#cb45-43" tabindex="-1"></a><span class="co">#&gt; 16: 195.2364</span></span>
+<span id="cb45-44"><a href="#cb45-44" tabindex="-1"></a><span class="co">#&gt; 17: 194.7833</span></span>
+<span id="cb45-45"><a href="#cb45-45" tabindex="-1"></a><span class="co">#&gt; 18: 193.1369</span></span>
+<span id="cb45-46"><a href="#cb45-46" tabindex="-1"></a><span class="co">#&gt; 19: 191.2808</span></span>
+<span id="cb45-47"><a href="#cb45-47" tabindex="-1"></a><span class="co">#&gt; 20: 188.8236</span></span>
+<span id="cb45-48"><a href="#cb45-48" tabindex="-1"></a><span class="co">#&gt; 21: 185.3675</span></span>
+<span id="cb45-49"><a href="#cb45-49" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
+<span id="cb45-50"><a href="#cb45-50" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
+<span id="cb45-51"><a href="#cb45-51" tabindex="-1"></a><span class="co">#&gt; Market open: FALSE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="available-classes">Available Classes<a class="anchor" aria-label="anchor" href="#available-classes"></a>
@@ -469,24 +621,24 @@
 <col width="50%">
 <col width="50%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th>Class</th>
 <th>Purpose</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><code>AlpacaMarketData</code></td>
 <td>Historical bars, latest trades/quotes, snapshots, assets, calendar, clock, news, screener, corporate actions</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>AlpacaTrading</code></td>
 <td>Place, modify, cancel, and query orders</td>
 </tr>
-<tr class="odd">
+<tr>
 <td><code>AlpacaAccount</code></td>
 <td>Account info, positions, portfolio history, activities, watchlists</td>
 </tr>
-<tr class="even">
+<tr>
 <td><code>AlpacaOptions</code></td>
 <td>Options contracts, bars, trades, quotes, snapshots, chain</td>
 </tr>
@@ -498,7 +650,7 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use this package in your work, please cite it:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"alpaca"</span><span class="op">)</span></span></code></pre></div>
 <blockquote>
 <p>Mezquita, D. (2026). alpaca: R API Wrapper to Alpaca Trading Platform. R package version 0.1.0.</p>
@@ -522,8 +674,7 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a></li>
 </ul>
 </div>
 

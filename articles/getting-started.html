@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Getting Started with alpaca • alpaca</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started with alpaca">
 </head>
@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting Started with alpaca</a></li>
+    <li><a class="dropdown-item" href="../articles/data-shapes.html">Package Tour and Data-Shape Conventions</a></li>
     <li><a class="dropdown-item" href="../articles/async-usage.html">Asynchronous Usage with alpaca</a></li>
     <li><a class="dropdown-item" href="../articles/margin-short-selling.html">Margin Trading and Short Selling with alpaca</a></li>
   </ul>
@@ -62,7 +63,7 @@
 Mezquita</h4>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.0.1/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.5.0/vignettes/getting-started.Rmd" class="external-link"><code>vignettes/getting-started.Rmd</code></a></small>
       <div class="d-none name"><code>getting-started.Rmd</code></div>
     </div>
 
@@ -113,10 +114,16 @@ and real-time stock market data.</p>
 <span>  end <span class="op">=</span> <span class="st">"2024-01-31"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">bars</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;              timestamp   open   high    low  close   volume trade_count    vwap</span></span>
-<span><span class="co">#&gt;                 &lt;POSc&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;  &lt;num&gt;    &lt;int&gt;       &lt;int&gt;   &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-02 05:00:00 187.15 188.44 183.89 185.64 82488700     1036517 185.831</span></span>
-<span><span class="co">#&gt; 2: 2024-01-03 05:00:00 184.22 185.88 183.43 184.25 58414500      729382 184.567</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;               datetime  open  high   low close  volume trade_count  vwap</span></span>
+<span><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;   &lt;num&gt;       &lt;num&gt; &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-02 05:00:00   100   110    95   105 1000000       10000 102.5</span></span>
+<span><span class="co">#&gt; 2: 2024-01-03 05:00:00   105   115   100   112 1100000       11000 108.0</span></span></code></pre>
+<p><code>get_bars()</code> and <code>get_bars_multi()</code>
+<strong>auto-paginate</strong>: they follow Alpaca’s
+<code>next_page_token</code> and return the full date range as one
+<code>data.table</code>, not just the first ~1,000-row page the API caps
+each response at. Tune the page size, throttle and page cap with
+<code>limit</code> / <code>sleep</code> / <code>max_pages</code>.</p>
 </div>
 <div class="section level3">
 <h3 id="latest-trade">Latest Trade<a class="anchor" aria-label="anchor" href="#latest-trade"></a>
@@ -124,9 +131,9 @@ and real-time stock market data.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="va">md</span><span class="op">$</span><span class="fu">get_latest_trade</span><span class="op">(</span>symbol <span class="op">=</span> <span class="st">"AAPL"</span><span class="op">)</span></span>
 <span><span class="va">trade</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;              timestamp price  size exchange   tape    id condition</span></span>
-<span><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;int&gt;   &lt;char&gt; &lt;char&gt; &lt;int&gt;    &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-15 14:30:00 185.5   100        V      C 12345         @</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;              timestamp price  size exchange   tape    id conditions</span></span>
+<span><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;int&gt;   &lt;char&gt; &lt;char&gt; &lt;num&gt;     &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-15 14:30:00 185.5   100        V      C 12345          @</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="latest-quote">Latest Quote<a class="anchor" aria-label="anchor" href="#latest-quote"></a>
@@ -137,9 +144,9 @@ and real-time stock market data.</p>
 <pre><code><span><span class="co">#&gt;              timestamp ask_exchange ask_price ask_size bid_exchange bid_price</span></span>
 <span><span class="co">#&gt;                 &lt;POSc&gt;       &lt;char&gt;     &lt;num&gt;    &lt;int&gt;       &lt;char&gt;     &lt;num&gt;</span></span>
 <span><span class="co">#&gt; 1: 2024-01-15 14:30:00            V    185.55      200            Q     185.5</span></span>
-<span><span class="co">#&gt;    bid_size conditions   tape</span></span>
-<span><span class="co">#&gt;       &lt;int&gt;     &lt;list&gt; &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:      300  &lt;list[1]&gt;      C</span></span></code></pre>
+<span><span class="co">#&gt;    bid_size   tape conditions</span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;char&gt;     &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:      300      C          R</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="market-clock">Market Clock<a class="anchor" aria-label="anchor" href="#market-clock"></a>
@@ -147,12 +154,9 @@ and real-time stock market data.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">clock</span> <span class="op">&lt;-</span> <span class="va">md</span><span class="op">$</span><span class="fu">get_clock</span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">clock</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;                        timestamp is_open                 next_open</span></span>
-<span><span class="co">#&gt;                           &lt;char&gt;  &lt;lgcl&gt;                    &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-15T14:30:00.000-05:00    TRUE 2024-01-16T09:30:00-05:00</span></span>
-<span><span class="co">#&gt;                   next_close</span></span>
-<span><span class="co">#&gt;                       &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-15T16:00:00-05:00</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;              timestamp is_open           next_open          next_close</span></span>
+<span><span class="co">#&gt;                 &lt;POSc&gt;  &lt;lgcl&gt;              &lt;POSc&gt;              &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-15 14:30:00    TRUE 2024-01-16 09:30:00 2024-01-15 16:00:00</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="available-assets">Available Assets<a class="anchor" aria-label="anchor" href="#available-assets"></a>
@@ -164,10 +168,18 @@ and real-time stock market data.</p>
 <span><span class="co">#&gt;    &lt;char&gt;    &lt;char&gt;   &lt;char&gt; &lt;char&gt;                &lt;char&gt; &lt;char&gt;   &lt;lgcl&gt;</span></span>
 <span><span class="co">#&gt; 1: uuid-1 us_equity   NASDAQ   AAPL            Apple Inc. active     TRUE</span></span>
 <span><span class="co">#&gt; 2: uuid-2 us_equity   NASDAQ   MSFT Microsoft Corporation active     TRUE</span></span>
-<span><span class="co">#&gt;    marginable shortable fractionable</span></span>
-<span><span class="co">#&gt;        &lt;lgcl&gt;    &lt;lgcl&gt;       &lt;lgcl&gt;</span></span>
-<span><span class="co">#&gt; 1:       TRUE      TRUE         TRUE</span></span>
-<span><span class="co">#&gt; 2:       TRUE      TRUE         TRUE</span></span></code></pre>
+<span><span class="co">#&gt;    marginable maintenance_margin_requirement margin_requirement_long</span></span>
+<span><span class="co">#&gt;        &lt;lgcl&gt;                          &lt;int&gt;                  &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:       TRUE                             30                      30</span></span>
+<span><span class="co">#&gt; 2:       TRUE                             30                      30</span></span>
+<span><span class="co">#&gt;    margin_requirement_short shortable easy_to_borrow  borrow_status</span></span>
+<span><span class="co">#&gt;                      &lt;char&gt;    &lt;lgcl&gt;         &lt;lgcl&gt;         &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:                       30      TRUE           TRUE easy_to_borrow</span></span>
+<span><span class="co">#&gt; 2:                       30      TRUE           TRUE easy_to_borrow</span></span>
+<span><span class="co">#&gt;    fractionable                                           attributes</span></span>
+<span><span class="co">#&gt;          &lt;lgcl&gt;                                               &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:         TRUE fractional_eh_enabled;has_options;overnight_tradable</span></span>
+<span><span class="co">#&gt; 2:         TRUE                                                 &lt;NA&gt;</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="market-calendar">Market Calendar<a class="anchor" aria-label="anchor" href="#market-calendar"></a>
@@ -175,10 +187,14 @@ and real-time stock market data.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cal</span> <span class="op">&lt;-</span> <span class="va">md</span><span class="op">$</span><span class="fu">get_calendar</span><span class="op">(</span>start <span class="op">=</span> <span class="st">"2024-01-01"</span>, end <span class="op">=</span> <span class="st">"2024-01-31"</span><span class="op">)</span></span>
 <span><span class="va">cal</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;          date   open  close</span></span>
-<span><span class="co">#&gt;        &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-02  09:30  16:00</span></span>
-<span><span class="co">#&gt; 2: 2024-01-03  09:30  16:00</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;          date                open               close        session_open</span></span>
+<span><span class="co">#&gt;        &lt;Date&gt;              &lt;POSc&gt;              &lt;POSc&gt;              &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-02 2024-01-02 09:30:00 2024-01-02 16:00:00 2024-01-02 04:00:00</span></span>
+<span><span class="co">#&gt; 2: 2024-01-03 2024-01-03 09:30:00 2024-01-03 16:00:00 2024-01-03 04:00:00</span></span>
+<span><span class="co">#&gt;          session_close settlement_date</span></span>
+<span><span class="co">#&gt;                 &lt;POSc&gt;          &lt;Date&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-02 20:00:00      2024-01-04</span></span>
+<span><span class="co">#&gt; 2: 2024-01-03 20:00:00      2024-01-05</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="market-news">Market News<a class="anchor" aria-label="anchor" href="#market-news"></a>
@@ -186,12 +202,14 @@ and real-time stock market data.</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">news</span> <span class="op">&lt;-</span> <span class="va">md</span><span class="op">$</span><span class="fu">get_news</span><span class="op">(</span>symbols <span class="op">=</span> <span class="st">"AAPL"</span>, limit <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">news</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">headline</span>, <span class="va">source</span>, <span class="va">created_at</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;                              headline   source           created_at</span></span>
-<span><span class="co">#&gt;                                &lt;char&gt;   &lt;char&gt;               &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:   Apple Reports Record Q1 Earnings benzinga 2024-01-25T18:30:00Z</span></span>
-<span><span class="co">#&gt; 2: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span>
-<span><span class="co">#&gt; 3: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span>
-<span><span class="co">#&gt; 4: Tech Sector Rallies on AI Optimism  reuters 2024-01-25T16:00:00Z</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;                                      headline   source          created_at</span></span>
+<span><span class="co">#&gt;                                        &lt;char&gt;   &lt;char&gt;              &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1:           Apple Reports Record Q1 Earnings benzinga 2024-01-25 18:30:00</span></span>
+<span><span class="co">#&gt; 2:         Tech Sector Rallies on AI Optimism  reuters 2024-01-25 16:00:00</span></span>
+<span><span class="co">#&gt; 3:              Some Generic Markets Headline     wire 2024-01-25 15:00:00</span></span>
+<span><span class="co">#&gt; 4:                        URL with semicolons     test 2024-01-25 14:00:00</span></span>
+<span><span class="co">#&gt; 5:  URL with a pre-existing %3B in the source     test 2024-01-25 13:00:00</span></span>
+<span><span class="co">#&gt; 6: Article with partially-missing image sizes     test 2024-01-25 12:00:00</span></span></code></pre>
 <hr>
 </div>
 </div>
@@ -238,9 +256,9 @@ details, positions, and portfolio history.</p>
 <span><span class="va">history</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;     timestamp    equity profit_loss profit_loss_pct</span></span>
 <span><span class="co">#&gt;        &lt;POSc&gt;     &lt;num&gt;       &lt;num&gt;           &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: 2024-01-01 100000.00        0.00          0.0000</span></span>
-<span><span class="co">#&gt; 2: 2024-01-02 100150.50      150.50          0.0015</span></span>
-<span><span class="co">#&gt; 3: 2024-01-03  99800.25     -200.25         -0.0020</span></span></code></pre>
+<span><span class="co">#&gt; 1: 2024-01-01 100000.00        0.00        0.000000</span></span>
+<span><span class="co">#&gt; 2: 2024-01-02 100150.50      150.50        0.001505</span></span>
+<span><span class="co">#&gt; 3: 2024-01-03  99800.25     -200.25       -0.002000</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="account-activities">Account Activities<a class="anchor" aria-label="anchor" href="#account-activities"></a>
@@ -248,10 +266,14 @@ details, positions, and portfolio history.</p>
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">activities</span> <span class="op">&lt;-</span> <span class="va">acct</span><span class="op">$</span><span class="fu">get_activities</span><span class="op">(</span>activity_types <span class="op">=</span> <span class="st">"FILL"</span><span class="op">)</span></span>
 <span><span class="va">activities</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;        id activity_type symbol   side    qty  price     transaction_time</span></span>
-<span><span class="co">#&gt;    &lt;char&gt;        &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;               &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1:  act-1          FILL   AAPL    buy     10 185.50 2024-01-15T14:30:00Z</span></span>
-<span><span class="co">#&gt; 2:  act-2          FILL   MSFT   sell      5 374.00 2024-01-15T14:31:00Z</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;        id activity_type    transaction_time   type  price    qty   side symbol</span></span>
+<span><span class="co">#&gt;    &lt;char&gt;        &lt;char&gt;              &lt;POSc&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:  act-1          FILL 2024-01-15 14:30:00   fill 185.50     10    buy   AAPL</span></span>
+<span><span class="co">#&gt; 2:  act-2          FILL 2024-01-15 14:31:00   fill 374.00      5   sell   MSFT</span></span>
+<span><span class="co">#&gt;    leaves_qty       order_id cum_qty order_status swap_rate</span></span>
+<span><span class="co">#&gt;        &lt;char&gt;         &lt;char&gt;  &lt;char&gt;       &lt;char&gt;    &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:          0 order-uuid-001      10       filled         1</span></span>
+<span><span class="co">#&gt; 2:          0 order-uuid-002       5       filled         1</span></span></code></pre>
 <hr>
 </div>
 </div>
@@ -286,10 +308,34 @@ details, positions, and portfolio history.</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">open_orders</span> <span class="op">&lt;-</span> <span class="va">trading</span><span class="op">$</span><span class="fu">get_orders</span><span class="op">(</span>status <span class="op">=</span> <span class="st">"open"</span><span class="op">)</span></span>
 <span><span class="va">open_orders</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;         id symbol   side   type status    qty filled_qty           created_at</span></span>
-<span><span class="co">#&gt;     &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt; &lt;char&gt;     &lt;char&gt;               &lt;char&gt;</span></span>
-<span><span class="co">#&gt; 1: order-1   AAPL    buy  limit    new      1          0 2024-01-15T14:30:00Z</span></span>
-<span><span class="co">#&gt; 2: order-2   MSFT   sell market filled     10         10 2024-01-15T14:31:00Z</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;         id client_order_id          created_at          updated_at</span></span>
+<span><span class="co">#&gt;     &lt;char&gt;          &lt;char&gt;              &lt;POSc&gt;              &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1: order-1  client-order-1 2024-01-15 14:30:00 2024-01-15 14:30:00</span></span>
+<span><span class="co">#&gt; 2: order-2  client-order-2 2024-01-15 14:31:00 2024-01-15 14:31:05</span></span>
+<span><span class="co">#&gt;           submitted_at           filled_at expired_at canceled_at failed_at</span></span>
+<span><span class="co">#&gt;                 &lt;POSc&gt;              &lt;POSc&gt;     &lt;POSc&gt;      &lt;POSc&gt;    &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1: 2024-01-15 14:30:00                &lt;NA&gt;       &lt;NA&gt;        &lt;NA&gt;      &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2: 2024-01-15 14:31:00 2024-01-15 14:31:05       &lt;NA&gt;        &lt;NA&gt;      &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;    replaced_at replaced_by replaces  asset_id symbol asset_class notional</span></span>
+<span><span class="co">#&gt;         &lt;POSc&gt;      &lt;lgcl&gt;   &lt;lgcl&gt;    &lt;char&gt; &lt;char&gt;      &lt;char&gt;   &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:        &lt;NA&gt;          NA       NA uuid-aapl   AAPL   us_equity       NA</span></span>
+<span><span class="co">#&gt; 2:        &lt;NA&gt;          NA       NA uuid-msft   MSFT   us_equity       NA</span></span>
+<span><span class="co">#&gt;       qty filled_qty filled_avg_price order_class order_type   type   side</span></span>
+<span><span class="co">#&gt;    &lt;char&gt;     &lt;char&gt;           &lt;char&gt;      &lt;char&gt;     &lt;char&gt; &lt;char&gt; &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:      1          0             &lt;NA&gt;                  limit  limit    buy</span></span>
+<span><span class="co">#&gt; 2:     10         10           374.00                 market market   sell</span></span>
+<span><span class="co">#&gt;    position_intent time_in_force limit_price stop_price status extended_hours</span></span>
+<span><span class="co">#&gt;             &lt;char&gt;        &lt;char&gt;      &lt;char&gt;     &lt;lgcl&gt; &lt;char&gt;         &lt;lgcl&gt;</span></span>
+<span><span class="co">#&gt; 1:     buy_to_open           day      150.00         NA    new          FALSE</span></span>
+<span><span class="co">#&gt; 2:   sell_to_close           day        &lt;NA&gt;         NA filled          FALSE</span></span>
+<span><span class="co">#&gt;    trail_percent trail_price    hwm subtag source           expires_at</span></span>
+<span><span class="co">#&gt;           &lt;lgcl&gt;      &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt; &lt;lgcl&gt;               &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z</span></span>
+<span><span class="co">#&gt; 2:            NA          NA     NA     NA     NA 2024-04-15T20:00:00Z</span></span>
+<span><span class="co">#&gt;    leg_index parent_order_id</span></span>
+<span><span class="co">#&gt;        &lt;int&gt;          &lt;char&gt;</span></span>
+<span><span class="co">#&gt; 1:        NA            &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2:        NA            &lt;NA&gt;</span></span></code></pre>
 </div>
 <div class="section level3">
 <h3 id="cancel-a-specific-order">Cancel a Specific Order<a class="anchor" aria-label="anchor" href="#cancel-a-specific-order"></a>
@@ -330,7 +376,7 @@ contracts and data.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">contracts</span><span class="op">[</span>, <span class="fu">.</span><span class="op">(</span><span class="va">symbol</span>, <span class="va">type</span>, <span class="va">strike_price</span>, <span class="va">expiration_date</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;                 symbol   type strike_price expiration_date</span></span>
-<span><span class="co">#&gt;                 &lt;char&gt; &lt;char&gt;       &lt;char&gt;          &lt;char&gt;</span></span>
+<span><span class="co">#&gt;                 &lt;char&gt; &lt;char&gt;       &lt;char&gt;          &lt;Date&gt;</span></span>
 <span><span class="co">#&gt; 1: AAPL240621C00200000   call       200.00      2024-06-21</span></span>
 <span><span class="co">#&gt; 2: AAPL240621P00180000    put       180.00      2024-06-21</span></span></code></pre>
 </div>
@@ -341,17 +387,49 @@ contracts and data.</p>
 <code class="sourceCode R"><span><span class="va">chain</span> <span class="op">&lt;-</span> <span class="va">opts</span><span class="op">$</span><span class="fu">get_option_chain</span><span class="op">(</span>underlying_symbol <span class="op">=</span> <span class="st">"AAPL"</span>, type <span class="op">=</span> <span class="st">"call"</span><span class="op">)</span></span>
 <span><span class="va">chain</span><span class="op">[</span><span class="op">]</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt;                 symbol latest_trade_timestamp latest_trade_price</span></span>
-<span><span class="co">#&gt;                 &lt;char&gt;                 &lt;char&gt;              &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1: AAPL240621C00200000   2024-06-15T14:30:00Z                5.5</span></span>
-<span><span class="co">#&gt; 2: AAPL240621C00210000   2024-06-15T14:30:00Z                3.2</span></span>
-<span><span class="co">#&gt;    latest_trade_size latest_quote_timestamp latest_quote_ask_price</span></span>
-<span><span class="co">#&gt;                &lt;int&gt;                 &lt;char&gt;                  &lt;num&gt;</span></span>
-<span><span class="co">#&gt; 1:                10   2024-06-15T14:30:00Z                    5.6</span></span>
-<span><span class="co">#&gt; 2:                 5   2024-06-15T14:30:00Z                    3.3</span></span>
-<span><span class="co">#&gt;    latest_quote_bid_price latest_quote_ask_size latest_quote_bid_size</span></span>
-<span><span class="co">#&gt;                     &lt;num&gt;                 &lt;int&gt;                 &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1:                    5.4                    50                    40</span></span>
-<span><span class="co">#&gt; 2:                    3.1                    30                    25</span></span></code></pre>
+<span><span class="co">#&gt;                 &lt;char&gt;                 &lt;POSc&gt;              &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1: AAPL240621C00200000    2024-06-15 14:30:00                5.5</span></span>
+<span><span class="co">#&gt; 2: AAPL240621C00210000    2024-06-15 14:30:00                3.2</span></span>
+<span><span class="co">#&gt;    latest_trade_size latest_trade_conditions latest_quote_timestamp</span></span>
+<span><span class="co">#&gt;                &lt;int&gt;                  &lt;char&gt;                 &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1:                10                       g    2024-06-15 14:30:00</span></span>
+<span><span class="co">#&gt; 2:                 5                    &lt;NA&gt;    2024-06-15 14:30:00</span></span>
+<span><span class="co">#&gt;    latest_quote_ask_price latest_quote_bid_price latest_quote_ask_size</span></span>
+<span><span class="co">#&gt;                     &lt;num&gt;                  &lt;num&gt;                 &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:                    5.6                    5.4                    50</span></span>
+<span><span class="co">#&gt; 2:                    3.3                    3.1                    30</span></span>
+<span><span class="co">#&gt;    latest_quote_bid_size latest_quote_conditions minute_bar_timestamp</span></span>
+<span><span class="co">#&gt;                    &lt;int&gt;                  &lt;char&gt;               &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1:                    40                       A  2024-06-15 14:30:00</span></span>
+<span><span class="co">#&gt; 2:                    25                    &lt;NA&gt;                 &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;    minute_bar_open minute_bar_high minute_bar_low minute_bar_close</span></span>
+<span><span class="co">#&gt;              &lt;num&gt;           &lt;num&gt;          &lt;num&gt;            &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:            5.45             5.6            5.4              5.5</span></span>
+<span><span class="co">#&gt; 2:              NA              NA             NA               NA</span></span>
+<span><span class="co">#&gt;    minute_bar_volume minute_bar_trade_count minute_bar_vwap daily_bar_timestamp</span></span>
+<span><span class="co">#&gt;                &lt;int&gt;                  &lt;int&gt;           &lt;num&gt;              &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1:               120                      8            5.48 2024-06-15 04:00:00</span></span>
+<span><span class="co">#&gt; 2:                NA                     NA              NA                &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;    daily_bar_open daily_bar_high daily_bar_low daily_bar_close daily_bar_volume</span></span>
+<span><span class="co">#&gt;             &lt;num&gt;          &lt;num&gt;         &lt;num&gt;           &lt;num&gt;            &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:            5.2            5.7           5.1             5.5             3500</span></span>
+<span><span class="co">#&gt; 2:             NA             NA            NA              NA               NA</span></span>
+<span><span class="co">#&gt;    daily_bar_trade_count daily_bar_vwap prev_daily_bar_timestamp</span></span>
+<span><span class="co">#&gt;                    &lt;int&gt;          &lt;num&gt;                   &lt;POSc&gt;</span></span>
+<span><span class="co">#&gt; 1:                   210           5.42      2024-06-14 04:00:00</span></span>
+<span><span class="co">#&gt; 2:                    NA             NA                     &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;    prev_daily_bar_open prev_daily_bar_high prev_daily_bar_low</span></span>
+<span><span class="co">#&gt;                  &lt;num&gt;               &lt;num&gt;              &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                 4.9                 5.3                4.8</span></span>
+<span><span class="co">#&gt; 2:                  NA                  NA                 NA</span></span>
+<span><span class="co">#&gt;    prev_daily_bar_close prev_daily_bar_volume prev_daily_bar_trade_count</span></span>
+<span><span class="co">#&gt;                   &lt;num&gt;                 &lt;int&gt;                      &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1:                  5.2                  4100                        260</span></span>
+<span><span class="co">#&gt; 2:                   NA                    NA                         NA</span></span>
+<span><span class="co">#&gt;    prev_daily_bar_vwap</span></span>
+<span><span class="co">#&gt;                  &lt;num&gt;</span></span>
+<span><span class="co">#&gt; 1:                5.09</span></span>
+<span><span class="co">#&gt; 2:                  NA</span></span></code></pre>
 <hr>
 </div>
 </div>

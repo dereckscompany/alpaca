@@ -17,17 +17,21 @@ get_api_keys(
 
 - api_key:
 
-  Character string; Alpaca API key ID. Defaults to
+  (scalar\<character\>) Alpaca API key ID. Defaults to
   `Sys.getenv("ALPACA_API_KEY")`.
 
 - api_secret:
 
-  Character string; Alpaca API secret key. Defaults to
+  (scalar\<character\>) Alpaca API secret key. Defaults to
   `Sys.getenv("ALPACA_API_SECRET")`.
 
 ## Value
 
-Named list with `api_key` and `api_secret`.
+(list) the credentials:
+
+- api_key (scalar\<character\>) the API key ID.
+
+- api_secret (scalar\<character\>) the API secret key.
 
 ## Examples
 

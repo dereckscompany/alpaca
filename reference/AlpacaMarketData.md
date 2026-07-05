@@ -46,39 +46,68 @@ URL. Both are configurable via constructor parameters.
 ### Official Documentation
 
 - [Market Data
-  API](https://docs.alpaca.markets/docs/about-market-data-api)
+  API](https://docs.alpaca.markets/us/docs/about-market-data-api)
 
 - [Historical Stock
-  Data](https://docs.alpaca.markets/docs/historical-stock-data-1)
+  Data](https://docs.alpaca.markets/us/docs/historical-stock-data-1)
 
 ### Endpoints Covered
 
-|                         |                                                |         |
-|-------------------------|------------------------------------------------|---------|
-| Method                  | Endpoint                                       | Base    |
-| get_bars                | `GET /v2/stocks/\{symbol\}/bars`               | data    |
-| get_bars_multi          | `GET /v2/stocks/bars`                          | data    |
-| get_latest_bar          | `GET /v2/stocks/\{symbol\}/bars/latest`        | data    |
-| get_latest_trade        | `GET /v2/stocks/\{symbol\}/trades/latest`      | data    |
-| get_latest_quote        | `GET /v2/stocks/\{symbol\}/quotes/latest`      | data    |
-| get_snapshot            | `GET /v2/stocks/\{symbol\}/snapshot`           | data    |
-| get_trades              | `GET /v2/stocks/\{symbol\}/trades`             | data    |
-| get_quotes              | `GET /v2/stocks/\{symbol\}/quotes`             | data    |
-| get_assets              | `GET /v2/assets`                               | trading |
-| get_asset               | `GET /v2/assets/\{symbol\}`                    | trading |
-| get_calendar            | `GET /v2/calendar`                             | trading |
-| get_clock               | `GET /v2/clock`                                | trading |
-| get_corporate_actions   | `GET /v2/corporate_actions/announcements`      | trading |
-| get_news                | `GET /v1beta1/news`                            | data    |
-| get_latest_bars_multi   | `GET /v2/stocks/bars/latest`                   | data    |
-| get_latest_trades_multi | `GET /v2/stocks/trades/latest`                 | data    |
-| get_latest_quotes_multi | `GET /v2/stocks/quotes/latest`                 | data    |
-| get_snapshots_multi     | `GET /v2/stocks/snapshots`                     | data    |
-| get_most_actives        | `GET /v1beta1/screener/stocks/most-actives`    | data    |
-| get_movers              | `GET /v1beta1/screener/\{market_type\}/movers` | data    |
+|  |  |  |
+|----|----|----|
+| Method | Endpoint | Base |
+| get_bars | `GET /v2/stocks/\{symbol\}/bars` | data |
+| get_bars_multi | `GET /v2/stocks/bars` | data |
+| get_latest_bar | `GET /v2/stocks/\{symbol\}/bars/latest` | data |
+| get_latest_trade | `GET /v2/stocks/\{symbol\}/trades/latest` | data |
+| get_latest_quote | `GET /v2/stocks/\{symbol\}/quotes/latest` | data |
+| get_snapshot | `GET /v2/stocks/\{symbol\}/snapshot` | data |
+| get_trades | `GET /v2/stocks/\{symbol\}/trades` | data |
+| get_quotes | `GET /v2/stocks/\{symbol\}/quotes` | data |
+| get_assets | `GET /v2/assets` | trading |
+| get_asset | `GET /v2/assets/\{symbol\}` | trading |
+| get_calendar | `GET /v2/calendar` | trading |
+| get_clock | `GET /v2/clock` | trading |
+| get_corporate_actions | `GET /v2/corporate_actions/announcements` | trading |
+| get_news | `GET /v1beta1/news` | data |
+| get_latest_bars_multi | `GET /v2/stocks/bars/latest` | data |
+| get_latest_trades_multi | `GET /v2/stocks/trades/latest` | data |
+| get_latest_quotes_multi | `GET /v2/stocks/quotes/latest` | data |
+| get_snapshots_multi | `GET /v2/stocks/snapshots` | data |
+| get_most_actives | `GET /v1beta1/screener/stocks/most-actives` | data |
+| get_movers | `GET /v1beta1/screener/\{market_type\}/movers` | data |
 
-## Super class
+### Timezones
 
+This client wraps Alpaca's `/v2/` market-data endpoints, which are
+US-only. All returned date / time columns are coerced to `Date` or
+`POSIXct` for ergonomic use:
+
+- Endpoints whose JSON carries an explicit RFC-3339 offset (bars,
+  trades, quotes, news, snapshots, clock) are parsed at the exact
+  instant. Clock is displayed in `America/New_York`; bars / trades /
+  quotes / news in UTC. Use
+  [`lubridate::with_tz()`](https://lubridate.tidyverse.org/reference/with_tz.html)
+  to view in any other timezone.
+
+- The calendar endpoint returns *naive* wall-clock times (`"09:30"`,
+  `"0400"`) with no offset in the payload. Alpaca does **not**
+  explicitly document the timezone on the calendar reference page, but
+  the values are Eastern Time by inference (US-only venues, `09:30`
+  matches the NYSE/NASDAQ open, every other SDK treats them as ET, and
+  the market-data FAQ confirms NY tz for bar aggregation). We localise
+  with the named tz `America/New_York`, so DST transitions flip
+  automatically.
+
+This assumption is safe for `/v2/`. When Alpaca's `/v3/` multi-market
+endpoints are adopted, per-market timezone lookup will replace the
+single hard-coded tz. The constant lives in `R/helpers_parse.R` (search
+for `TODO(v3)`).
+
+## Super classes
+
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaMarketData`
 
@@ -124,6 +153,8 @@ URL. Both are configurable via constructor parameters.
 
 - [`AlpacaMarketData$get_news()`](#method-AlpacaMarketData-get_news)
 
+- [`AlpacaMarketData$get_crypto_orderbook()`](#method-AlpacaMarketData-get_crypto_orderbook)
+
 - [`AlpacaMarketData$get_most_actives()`](#method-AlpacaMarketData-get_most_actives)
 
 - [`AlpacaMarketData$get_movers()`](#method-AlpacaMarketData-get_movers)
@@ -146,8 +177,8 @@ credentials and base URLs for subsequent method calls.
 
 #### Official Documentation
 
-- [Authentication](https://docs.alpaca.markets/docs/getting-started)
-  Verifieid: 2026-03-10
+- [Authentication](https://docs.alpaca.markets/us/docs/getting-started)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -172,26 +203,27 @@ credentials and base URLs for subsequent method calls.
 
 - `keys`:
 
-  List; API credentials from
+  (list) API credentials from
   [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `base_url`:
 
-  Character; trading API base URL. Defaults to
+  (scalar\<character\>) trading API base URL. Defaults to
   [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `data_base_url`:
 
-  Character; market data API base URL. Defaults to
+  (scalar\<character\>) market data API base URL. Defaults to
   [`get_data_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_data_base_url.md).
 
 - `async`:
 
-  Logical; if `TRUE`, methods return promises. Default `FALSE`.
+  (scalar\<logical\>) if `TRUE`, methods return promises. Default
+  `FALSE`.
 
 #### Returns
 
-Invisible self.
+(class\<AlpacaMarketData\>) invisibly, self.
 
 ------------------------------------------------------------------------
 
@@ -208,8 +240,9 @@ include open, high, low, close, volume, trade count, and VWAP.
 
 #### Official Documentation
 
-[Historical Stock Bars](https://docs.alpaca.markets/reference/stockbars)
-Verifieid: 2026-03-10
+[Historical Stock
+Bars](https://docs.alpaca.markets/us/reference/stockbarsingle-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -233,74 +266,96 @@ Verifieid: 2026-03-10
       timeframe = "1Day",
       start = NULL,
       end = NULL,
-      limit = NULL,
+      limit = 10000L,
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL,
+      max_pages = 1000L,
+      sleep = 0.3
     )
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol (e.g., `"AAPL"`).
+  (scalar\<character\>) ticker symbol (e.g., `"AAPL"`).
 
 - `timeframe`:
 
-  Character; bar timeframe. Valid values: `"1Min"` to `"59Min"`,
-  `"1Hour"` to `"23Hour"`, `"1Day"`, `"1Week"`, `"1Month"` to
+  (scalar\<character\>) bar timeframe. Valid values: `"1Min"` to
+  `"59Min"`, `"1Hour"` to `"23Hour"`, `"1Day"`, `"1Week"`, `"1Month"` to
   `"12Month"`.
 
 - `start`:
 
-  Character or NULL; start date/time (RFC-3339 or `"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) start date/time (RFC-3339 or
+  `"YYYY-MM-DD"`).
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max bars (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max bars **per page**
+  (1-10000, default 10000). The method auto-paginates via
+  `next_page_token`, so the full `start`..`end` range is returned
+  regardless of `limit`; this only sets the page size (and thus the
+  number of requests).
 
 - `adjustment`:
 
-  Character or NULL; price adjustment type: `"raw"`, `"split"`,
-  `"dividend"`, `"all"`. Default `"raw"`.
+  (scalar\<character\> \| NULL) price adjustment type. One or a
+  comma-separated combination of: `"raw"`, `"split"`, `"dividend"`,
+  `"spin-off"`, `"all"`. Default `"raw"`.
 
 - `feed`:
 
-  Character or NULL; data feed source: `"iex"` (free), `"sip"` (paid,
-  all exchanges).
+  (scalar\<character\> \| NULL) data feed source: `"sip"` (default, all
+  US exchanges), `"iex"`, `"otc"`, `"boats"`.
 
 - `sort`:
 
-  Character or NULL; `"asc"` (default) or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` (default) or `"desc"`.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) starting cursor. Normally left NULL —
+  auto-pagination begins at `start` and follows the cursor itself.
+
+- `asof`:
+
+  (scalar\<character\> \| NULL) as-of date (`"YYYY-MM-DD"`) used to
+  identify the underlying entity when symbols have been renamed (e.g. FB
+  -\> META). Pass `"-"` to skip symbol mapping.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency for returned prices.
+  Default `"USD"`.
+
+- `max_pages`:
+
+  (scalar\<numeric in \[1, Inf\]\> \| scalar\<integer in \[1, Inf\[\>)
+  cap on pages fetched (runaway guard). Default 1000 — high enough that
+  real requests complete, low enough to bound a fat-fingered pull. Pass
+  `Inf` for unbounded. If hit while more data remains, the partial
+  result is returned with a
+  [`warning()`](https://rdrr.io/r/base/warning.html).
+
+- `sleep`:
+
+  (scalar\<numeric in \[0, Inf\[\>) seconds to pause between page
+  requests (rate-limit throttle; sync only). Default 0.3.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `timestamp` (POSIXct): Bar timestamp in UTC.
-
-- `open` (numeric): Opening price.
-
-- `high` (numeric): Highest price.
-
-- `low` (numeric): Lowest price.
-
-- `close` (numeric): Closing price.
-
-- `volume` (integer): Volume traded.
-
-- `trade_count` (integer): Number of trades.
-
-- `vwap` (numeric): Volume-weighted average price.
+(Bars \| promise\<Bars\>) the bars. Columns: `datetime` (POSIXct, UTC),
+`open`, `high`, `low`, `close`, `vwap` (numeric), and `volume`,
+`trade_count` (integer).
 
 #### Examples
 
@@ -324,8 +379,8 @@ Retrieves historical bar data for multiple symbols in a single request.
 
 #### Official Documentation
 
-[Multi Stock Bars](https://docs.alpaca.markets/reference/stockbars-1)
-Verifieid: 2026-03-10
+[Multi Stock Bars](https://docs.alpaca.markets/us/reference/stockbars)
+Verified: 2026-05-21
 
 #### curl
 
@@ -353,55 +408,89 @@ Verifieid: 2026-03-10
       timeframe = "1Day",
       start = NULL,
       end = NULL,
-      limit = NULL,
+      limit = 10000L,
       adjustment = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL,
+      max_pages = 1000L,
+      sleep = 0.3
     )
 
 #### Arguments
 
 - `symbols`:
 
-  Character vector; ticker symbols (max 100).
+  (character) ticker symbols (max 100).
 
 - `timeframe`:
 
-  Character; bar timeframe (see `get_bars()` for valid values).
+  (scalar\<character\>) bar timeframe (see `get_bars()` for valid
+  values).
 
 - `start`:
 
-  Character or NULL; start date/time.
+  (scalar\<character\> \| NULL) start date/time.
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max bars per symbol (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max bars **per page**
+  (1-10000, default 10000). NOTE: Alpaca applies this as a *total row
+  budget across all requested symbols per page* (not per symbol),
+  filling symbols alphabetically. The method auto-paginates via
+  `next_page_token`, so the full range for every symbol is returned
+  regardless of `limit`.
 
 - `adjustment`:
 
-  Character or NULL; `"raw"`, `"split"`, `"dividend"`, `"all"`.
+  (scalar\<character\> \| NULL) one or comma-separated combination of
+  `"raw"`, `"split"`, `"dividend"`, `"spin-off"`, `"all"`.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`, `"otc"`,
+  `"boats"`.
 
 - `sort`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) starting cursor. Normally left NULL —
+  auto-pagination begins at `start` and follows the cursor itself.
+
+- `asof`:
+
+  (scalar\<character\> \| NULL) as-of date for symbol mapping
+  (`"YYYY-MM-DD"` or `"-"` to skip).
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
+
+- `max_pages`:
+
+  (scalar\<numeric in \[1, Inf\]\> \| scalar\<integer in \[1, Inf\[\>)
+  cap on pages fetched (runaway guard). Default 1000; pass `Inf` for
+  unbounded. If hit while more data remains, the partial result is
+  returned with a [`warning()`](https://rdrr.io/r/base/warning.html).
+
+- `sleep`:
+
+  (scalar\<numeric in \[0, Inf\[\>) seconds to pause between page
+  requests (rate-limit throttle; sync only). Default 0.3.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
-`symbol` column prepended plus the same columns as `get_bars()`.
+(BarsMulti \| promise\<BarsMulti\>) the bars, with a `symbol` column
+prepended plus the same columns as `get_bars()`.
 
 #### Examples
 
@@ -425,8 +514,9 @@ Retrieves the most recent bar for a single symbol.
 
 #### Official Documentation
 
-[Latest Stock Bar](https://docs.alpaca.markets/reference/stocklatestbar)
-Verifieid: 2026-03-10
+[Latest Stock
+Bar](https://docs.alpaca.markets/us/reference/stocklatestbarsingle-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -457,16 +547,16 @@ Verifieid: 2026-03-10
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"iex"` or `"sip"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the same
-columns as `get_bars()`, single row.
+(Bars \| promise\<Bars\>) the bar, with the same columns as
+`get_bars()`, single row.
 
 #### Examples
 
@@ -490,8 +580,9 @@ Retrieves the most recent trade for a symbol.
 
 #### Official Documentation
 
-[Latest Trade](https://docs.alpaca.markets/reference/stocklatesttrade)
-Verifieid: 2026-03-10
+[Latest
+Trade](https://docs.alpaca.markets/us/reference/stocklatesttradesingle-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -515,36 +606,32 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_latest_trade(symbol, feed = NULL)
+    AlpacaMarketData$get_latest_trade(symbol, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) in long format
-with one row per trade condition. Columns:
-
-- `timestamp` (POSIXct): Trade timestamp.
-
-- `price` (numeric): Trade price.
-
-- `size` (integer): Trade size.
-
-- `exchange` (character): Exchange code.
-
-- `tape` (character): SIP tape.
-
-- `id` (integer): Trade ID.
-
-- `condition` (character): Trade condition code.
+(Trade \| promise\<Trade\>) **one row per trade** (a single row for this
+single-trade method). Columns: `timestamp` (POSIXct), `price` (numeric),
+`size` (integer), `exchange` (character), `tape` (character), `id`
+(integer), and `conditions` (character, semicolon-separated condition
+codes e.g. `"@;T"`; `NA` when the trade carries no condition codes).
+Filter with `dt[grepl("T", conditions)]`; recover the original vector
+via `strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
 
 #### Examples
 
@@ -568,8 +655,9 @@ Retrieves the most recent National Best Bid and Offer for a symbol.
 
 #### Official Documentation
 
-[Latest Quote](https://docs.alpaca.markets/reference/stocklatestquote)
-Verifieid: 2026-03-10
+[Latest
+Quote](https://docs.alpaca.markets/us/reference/stocklatestquotesingle-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -595,35 +683,32 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_latest_quote(symbol, feed = NULL)
+    AlpacaMarketData$get_latest_quote(symbol, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `timestamp` (POSIXct): Quote timestamp.
-
-- `ask_exchange` (character): Ask exchange code.
-
-- `ask_price` (numeric): Ask price.
-
-- `ask_size` (integer): Ask size.
-
-- `bid_exchange` (character): Bid exchange code.
-
-- `bid_price` (numeric): Bid price.
-
-- `bid_size` (integer): Bid size.
+(Quote \| promise\<Quote\>) **one row per quote**. Columns: `timestamp`
+(POSIXct), `ask_exchange`, `bid_exchange`, `tape` (character),
+`ask_price`, `bid_price` (numeric), `ask_size`, `bid_size` (integer),
+and `conditions` (character, `;`-separated quote condition codes e.g.
+`"R;F"`; `NA` when no conditions were reported). Filter with
+`dt[grepl("R", conditions)]` or recover via
+`strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
 
 #### Examples
 
@@ -648,8 +733,9 @@ latest quote, minute bar, daily bar, and previous daily bar.
 
 #### Official Documentation
 
-[Stock Snapshot](https://docs.alpaca.markets/reference/stocksnapshot)
-Verifieid: 2026-03-10
+[Stock
+Snapshot](https://docs.alpaca.markets/us/reference/stocksnapshotsingle)
+Verified: 2026-05-22
 
 #### curl
 
@@ -668,22 +754,27 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_snapshot(symbol, feed = NULL)
+    AlpacaMarketData$get_snapshot(symbol, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with flattened
-snapshot fields (prefixed by section name).
+(Snapshot \| promise\<Snapshot\>) the flattened snapshot fields
+(prefixed by section name).
 
 #### Examples
 
@@ -708,8 +799,8 @@ Retrieves the most recent bar for multiple symbols in a single request.
 #### Official Documentation
 
 [Latest Multi
-Bars](https://docs.alpaca.markets/reference/stocklatestbars) Verifieid:
-2026-03-10
+Bars](https://docs.alpaca.markets/us/reference/stocklatestbars-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -727,22 +818,27 @@ Bars](https://docs.alpaca.markets/reference/stocklatestbars) Verifieid:
 
 #### Usage
 
-    AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL)
+    AlpacaMarketData$get_latest_bars_multi(symbols, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbols`:
 
-  Character vector; ticker symbols.
+  (character) ticker symbols.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
-`symbol` column and the same columns as `get_bars()`.
+(BarsMulti \| promise\<BarsMulti\>) the bars, with a `symbol` column and
+the same columns as `get_bars()`.
 
 #### Examples
 
@@ -768,8 +864,8 @@ request.
 #### Official Documentation
 
 [Latest Multi
-Trades](https://docs.alpaca.markets/reference/stocklatesttrades)
-Verifieid: 2026-03-10
+Trades](https://docs.alpaca.markets/us/reference/stocklatesttrades-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -787,22 +883,29 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL)
+    AlpacaMarketData$get_latest_trades_multi(symbols, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbols`:
 
-  Character vector; ticker symbols.
+  (character) ticker symbols.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
-`symbol` column and trade columns.
+(TradesMulti \| promise\<TradesMulti\>) the trades, with a leading
+`symbol` column and the same per-trade columns as `get_latest_trade()`:
+`timestamp`, `price`, `size`, `exchange`, `conditions` (`;`-collapsed),
+`tape`, `id`. One row per symbol.
 
 ------------------------------------------------------------------------
 
@@ -820,8 +923,8 @@ request.
 #### Official Documentation
 
 [Latest Multi
-Quotes](https://docs.alpaca.markets/reference/stocklatestquotes)
-Verifieid: 2026-03-10
+Quotes](https://docs.alpaca.markets/us/reference/stocklatestquotes-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -839,22 +942,29 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL)
+    AlpacaMarketData$get_latest_quotes_multi(symbols, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbols`:
 
-  Character vector; ticker symbols.
+  (character) ticker symbols.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
-`symbol` column and quote columns.
+(QuotesMulti \| promise\<QuotesMulti\>) the quotes, with a `symbol`
+column and quote columns (`timestamp`, `ask_*`, `bid_*`, `conditions`,
+`tape`). `conditions` is a `;`-separated character column following the
+package's array-collapse convention.
 
 ------------------------------------------------------------------------
 
@@ -871,8 +981,8 @@ Retrieves real-time snapshots for multiple symbols in a single request.
 #### Official Documentation
 
 [Multi Stock
-Snapshots](https://docs.alpaca.markets/reference/stocksnapshots)
-Verifieid: 2026-03-10
+Snapshots](https://docs.alpaca.markets/us/reference/stocksnapshots-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -900,21 +1010,26 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL)
+    AlpacaMarketData$get_snapshots_multi(symbols, feed = NULL, currency = NULL)
 
 #### Arguments
 
 - `symbols`:
 
-  Character vector; ticker symbols.
+  (character) ticker symbols.
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`,
+  `"delayed_sip"`, `"otc"`, `"boats"`, `"overnight"`.
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
+(SnapshotMulti \| promise\<SnapshotMulti\>) the snapshots, with a
 `symbol` column and flattened snapshot fields.
 
 #### Examples
@@ -940,8 +1055,8 @@ Retrieves historical trade data for a symbol.
 #### Official Documentation
 
 [Historical Stock
-Trades](https://docs.alpaca.markets/reference/stocktrades) Verifieid:
-2026-03-10
+Trades](https://docs.alpaca.markets/us/reference/stocktradesingle-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -969,57 +1084,59 @@ Trades](https://docs.alpaca.markets/reference/stocktrades) Verifieid:
       limit = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     )
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `start`:
 
-  Character or NULL; start date/time.
+  (scalar\<character\> \| NULL) start date/time.
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max trades (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max trades (1-10000, default
+  1000).
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`, `"otc"`,
+  `"boats"`.
 
 - `sort`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `asof`:
+
+  (scalar\<character\> \| NULL) as-of date for symbol mapping
+  (`"YYYY-MM-DD"` or `"-"` to skip).
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) in long format
-with one row per trade condition. Columns:
-
-- `timestamp` (POSIXct): Trade timestamp.
-
-- `price` (numeric): Trade price.
-
-- `size` (integer): Trade size.
-
-- `exchange` (character): Exchange code.
-
-- `tape` (character): SIP tape.
-
-- `id` (integer): Trade ID.
-
-- `condition` (character): Trade condition code.
+(Trade \| promise\<Trade\>) **one row per trade**. Columns: `timestamp`
+(POSIXct), `price` (numeric), `size` (integer), `exchange` (character),
+`tape` (character), `id` (integer), and `conditions` (character,
+semicolon-separated condition codes e.g. `"@;T"`). Filter with
+`dt[grepl("T", conditions)]`.
 
 ------------------------------------------------------------------------
 
@@ -1036,8 +1153,8 @@ Retrieves historical quote (NBBO) data for a symbol.
 #### Official Documentation
 
 [Historical Stock
-Quotes](https://docs.alpaca.markets/reference/stockquotes) Verifieid:
-2026-03-10
+Quotes](https://docs.alpaca.markets/us/reference/stockquotesingle-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -1064,56 +1181,61 @@ Quotes](https://docs.alpaca.markets/reference/stockquotes) Verifieid:
       limit = NULL,
       feed = NULL,
       sort = NULL,
-      page_token = NULL
+      page_token = NULL,
+      asof = NULL,
+      currency = NULL
     )
 
 #### Arguments
 
 - `symbol`:
 
-  Character; ticker symbol.
+  (scalar\<character\>) ticker symbol.
 
 - `start`:
 
-  Character or NULL; start date/time.
+  (scalar\<character\> \| NULL) start date/time.
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max quotes (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max quotes (1-10000, default
+  1000).
 
 - `feed`:
 
-  Character or NULL; `"iex"` or `"sip"`.
+  (scalar\<character\> \| NULL) `"sip"` (default), `"iex"`, `"otc"`,
+  `"boats"`.
 
 - `sort`:
 
-  Character or NULL; `"asc"` or `"desc"`.
+  (scalar\<character\> \| NULL) `"asc"` or `"desc"`.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `asof`:
+
+  (scalar\<character\> \| NULL) as-of date for symbol mapping
+  (`"YYYY-MM-DD"` or `"-"` to skip).
+
+- `currency`:
+
+  (scalar\<character\> \| NULL) ISO 4217 currency. Default `"USD"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `timestamp` (POSIXct): Quote timestamp.
-
-- `ask_exchange` (character): Ask exchange code.
-
-- `ask_price` (numeric): Ask price.
-
-- `ask_size` (integer): Ask size.
-
-- `bid_exchange` (character): Bid exchange code.
-
-- `bid_price` (numeric): Bid price.
-
-- `bid_size` (integer): Bid size.
+(Quote \| promise\<Quote\>) **one row per quote**. Columns: `timestamp`
+(POSIXct), `ask_exchange`, `bid_exchange`, `tape` (character),
+`ask_price`, `bid_price` (numeric), `ask_size`, `bid_size` (integer),
+and `conditions` (character, `;`-separated quote condition codes e.g.
+`"R;F"`; `NA` when no conditions were reported). Filter with
+`dt[grepl("R", conditions)]` or recover via
+`strsplit(dt$conditions[1], ";", fixed = TRUE)[[1]]`.
 
 ------------------------------------------------------------------------
 
@@ -1129,8 +1251,8 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 
 #### Official Documentation
 
-[Assets](https://docs.alpaca.markets/reference/get-v2-assets) Verifieid:
-2026-03-10
+[Assets](https://docs.alpaca.markets/us/reference/get-v2-assets-1)
+Verified: 2026-05-22
 
 #### curl
 
@@ -1158,46 +1280,43 @@ Retrieves a list of available assets (stocks, crypto, etc.).
 
 #### Usage
 
-    AlpacaMarketData$get_assets(status = NULL, asset_class = NULL, exchange = NULL)
+    AlpacaMarketData$get_assets(
+      status = NULL,
+      asset_class = NULL,
+      exchange = NULL,
+      attributes = NULL
+    )
 
 #### Arguments
 
 - `status`:
 
-  Character or NULL; filter by status (`"active"`, `"inactive"`).
+  (scalar\<character\> \| NULL) filter by status (`"active"`,
+  `"inactive"`).
 
 - `asset_class`:
 
-  Character or NULL; filter by class (`"us_equity"`, `"us_option"`,
-  `"crypto"`).
+  (scalar\<character\> \| NULL) filter by class (`"us_equity"`,
+  `"us_option"`, `"crypto"`).
 
 - `exchange`:
 
-  Character or NULL; filter by exchange.
+  (scalar\<character\> \| NULL) filter by exchange (`"AMEX"`, `"ARCA"`,
+  `"BATS"`, `"NYSE"`, `"NASDAQ"`, `"NYSEARCA"`, `"OTC"`).
+
+- `attributes`:
+
+  (scalar\<character\> \| NULL) comma-separated attribute filters.
+  Returns assets matching any of the listed attributes. Supported
+  values: `"ptp_no_exception"`, `"ptp_with_exception"`, `"ipo"`,
+  `"has_options"`, `"options_late_close"`, `"fractional_eh_enabled"`,
+  `"overnight_tradable"`, `"overnight_halted"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Asset UUID.
-
-- `class` (character): Asset class.
-
-- `exchange` (character): Exchange.
-
-- `symbol` (character): Ticker symbol.
-
-- `name` (character): Company name.
-
-- `status` (character): Active/inactive.
-
-- `tradable` (logical): Whether the asset is tradable.
-
-- `marginable` (logical): Whether margin is available.
-
-- `shortable` (logical): Whether short selling is available.
-
-- `fractionable` (logical): Whether fractional shares are available.
+(Asset \| promise\<Asset\>) the assets. Columns: `id`, `class`,
+`exchange`, `symbol`, `name`, `status` (character); `tradable`,
+`marginable`, `shortable`, `fractionable` (logical).
 
 #### Examples
 
@@ -1222,8 +1341,8 @@ Retrieves metadata for a single asset.
 #### Official Documentation
 
 [Asset by ID or
-Symbol](https://docs.alpaca.markets/reference/get-v2-assets-symbol_or_asset_id)
-Verifieid: 2026-03-10
+Symbol](https://docs.alpaca.markets/us/reference/get-v2-assets-symbol_or_asset_id)
+Verified: 2026-05-22
 
 #### curl
 
@@ -1255,12 +1374,12 @@ Verifieid: 2026-03-10
 
 - `symbol_or_id`:
 
-  Character; ticker symbol or asset UUID.
+  (scalar\<character\>) ticker symbol or asset UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the same
-columns as `get_assets()`, single row.
+(Asset \| promise\<Asset\>) the asset, with the same columns as
+`get_assets()`, single row.
 
 #### Examples
 
@@ -1285,8 +1404,8 @@ early closure information.
 
 #### Official Documentation
 
-[Calendar](https://docs.alpaca.markets/reference/get-v2-calendar)
-Verifieid: 2026-03-10
+[Calendar](https://docs.alpaca.markets/us/reference/legacycalendar)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1304,27 +1423,33 @@ Verifieid: 2026-03-10
 
 #### Usage
 
-    AlpacaMarketData$get_calendar(start = NULL, end = NULL)
+    AlpacaMarketData$get_calendar(start = NULL, end = NULL, date_type = NULL)
 
 #### Arguments
 
 - `start`:
 
-  Character or NULL; start date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) start date (`"YYYY-MM-DD"`).
 
 - `end`:
 
-  Character or NULL; end date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) end date (`"YYYY-MM-DD"`).
+
+- `date_type`:
+
+  (scalar\<character\> \| NULL) one of `"TRADING"` or `"SETTLEMENT"`.
+  Determines whether `start`/`end` are interpreted as trading dates
+  (default) or settlement dates.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+(Calendar \| promise\<Calendar\>) the calendar. Columns: `date` and
+`settlement_date` (Date); `open`, `close`, `session_open`,
+`session_close` (POSIXct, `America/New_York`).
 
-- `date` (character): Trading date.
-
-- `open` (character): Market open time (ET).
-
-- `close` (character): Market close time (ET).
+Alpaca's API returns market times without an offset; per the Alpaca docs
+they are Eastern Time. We localise to `America/New_York` (the named tz
+handles DST automatically).
 
 #### Examples
 
@@ -1349,8 +1474,8 @@ and the next open/close times.
 
 #### Official Documentation
 
-[Clock](https://docs.alpaca.markets/reference/get-v2-clock) Verifieid:
-2026-03-10
+[Clock](https://docs.alpaca.markets/us/reference/legacyclock) Verified:
+2026-05-21
 
 #### curl
 
@@ -1372,15 +1497,15 @@ and the next open/close times.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
+(Clock \| promise\<Clock\>) the clock. Columns: `timestamp`,
+`next_open`, `next_close` (POSIXct, `America/New_York`) and `is_open`
+(logical).
 
-- `timestamp` (character): Current server timestamp.
-
-- `is_open` (logical): Whether the market is currently open.
-
-- `next_open` (character): Next market open time.
-
-- `next_close` (character): Next market close time.
+The Alpaca clock endpoint returns ISO-8601 timestamps with an explicit
+offset; we parse the instant exactly and display it in
+`America/New_York` for consistency with `get_calendar()`. Use
+[`lubridate::with_tz()`](https://lubridate.tidyverse.org/reference/with_tz.html)
+to view in another timezone.
 
 #### Examples
 
@@ -1407,8 +1532,14 @@ systems that need to handle position adjustments.
 #### Official Documentation
 
 [Corporate
-Actions](https://docs.alpaca.markets/reference/get-v2-corporate_actions-announcements)
-Verifieid: 2026-03-10
+Actions](https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1)
+Verified: 2026-05-21
+
+Note: as of 2026-05, the `/v2/corporate_actions/announcements` endpoint
+is marked DEPRECATED by Alpaca. It still works and the wrapper still
+calls it, but Alpaca recommends migrating to the newer corporate-actions
+market-data endpoint (`/v1beta1/corporate-actions`). Migration is
+tracked as a follow-up.
 
 #### curl
 
@@ -1450,59 +1581,40 @@ Verifieid: 2026-03-10
 
 - `ca_types`:
 
-  Character; comma-separated corporate action types. Valid values:
-  `"dividend"`, `"merger"`, `"spinoff"`, `"split"`.
+  (scalar\<character\>) comma-separated corporate action types. Valid
+  values: `"dividend"`, `"merger"`, `"spinoff"`, `"split"`.
 
 - `since`:
 
-  Character; start date (`"YYYY-MM-DD"`). Required.
+  (scalar\<character\>) start date (`"YYYY-MM-DD"`). Required.
 
 - `until`:
 
-  Character; end date (`"YYYY-MM-DD"`). Required.
+  (scalar\<character\>) end date (`"YYYY-MM-DD"`). Required.
 
 - `symbol`:
 
-  Character or NULL; filter by ticker symbol.
+  (scalar\<character\> \| NULL) filter by ticker symbol.
 
 - `cusip`:
 
-  Character or NULL; filter by CUSIP.
+  (scalar\<character\> \| NULL) filter by CUSIP.
 
 - `date_type`:
 
-  Character or NULL; which date field `since`/`until` refer to:
-  `"declaration"`, `"ex"`, `"record"`, `"payable"`. Default `"ex"`.
+  (scalar\<character\> \| NULL) which date field `since`/`until` refer
+  to. Alpaca's documented / SDK values are `"declaration_date"`,
+  `"ex_date"`, `"record_date"`, `"payable_date"` (default server-side:
+  `"ex_date"`). Validated client-side; invalid values abort before the
+  request.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Announcement UUID.
-
-- `corporate_action_id` (character): Corporate action ID.
-
-- `ca_type` (character): Action type.
-
-- `ca_sub_type` (character): Action sub-type.
-
-- `initiating_symbol` (character): Symbol initiating the action.
-
-- `target_symbol` (character): Target symbol (for mergers).
-
-- `declaration_date` (character): Declaration date.
-
-- `ex_date` (character): Ex-date.
-
-- `record_date` (character): Record date.
-
-- `payable_date` (character): Payable date.
-
-- `cash` (character): Cash amount (for dividends).
-
-- `old_rate` (character): Old rate (for splits).
-
-- `new_rate` (character): New rate (for splits).
+(CorporateAction \| promise\<CorporateAction\>) the announcements.
+Columns: `id`, `corporate_action_id`, `ca_type`, `ca_sub_type`,
+`initiating_symbol`, `target_symbol`, `cash`, `old_rate`, `new_rate`
+(character); `declaration_date`, `ex_date`, `record_date`,
+`payable_date` (Date).
 
 #### Examples
 
@@ -1537,8 +1649,8 @@ range, or content. Useful for event-driven trading strategies.
 
 #### Official Documentation
 
-[News](https://docs.alpaca.markets/reference/news-1) Verifieid:
-2026-03-10
+[News](https://docs.alpaca.markets/us/reference/news-3) Verified:
+2026-05-22
 
 #### curl
 
@@ -1582,59 +1694,55 @@ range, or content. Useful for event-driven trading strategies.
 
 - `symbols`:
 
-  Character or NULL; comma-separated symbols to filter (e.g.,
-  `"AAPL,MSFT"`).
+  (character \| NULL) comma-separated symbols to filter (e.g.,
+  `"AAPL,MSFT"`), or a character vector of symbols.
 
 - `start`:
 
-  Character or NULL; start date/time (RFC-3339).
+  (scalar\<character\> \| NULL) start date/time (RFC-3339).
 
 - `end`:
 
-  Character or NULL; end date/time (RFC-3339).
+  (scalar\<character\> \| NULL) end date/time (RFC-3339).
 
 - `limit`:
 
-  Integer or NULL; max articles (default 10, max 50).
+  (scalar\<count in \[1, Inf\[\> \| NULL) max articles (default 10, max
+  50 server-side).
 
 - `sort`:
 
-  Character or NULL; `"desc"` (default, newest first) or `"asc"`.
+  (scalar\<character\> \| NULL) `"desc"` (default, newest first) or
+  `"asc"`.
 
 - `include_content`:
 
-  Logical or NULL; if `TRUE`, include full article content.
+  (scalar\<logical\> \| NULL) if `TRUE`, include full article content.
 
 - `exclude_contentless`:
 
-  Logical or NULL; if `TRUE`, exclude articles without content.
+  (scalar\<logical\> \| NULL) if `TRUE`, exclude articles without
+  content.
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) in long format
-with one row per related symbol. Columns:
-
-- `id` (integer): Article ID.
-
-- `headline` (character): Article headline.
-
-- `author` (character): Author name.
-
-- `source` (character): News source.
-
-- `summary` (character): Article summary.
-
-- `url` (character): Article URL.
-
-- `created_at` (character): Publication timestamp.
-
-- `updated_at` (character): Last update timestamp.
-
-- `symbol` (character): Related ticker symbol.
+(News \| promise\<News\>) **one row per article**. Columns: `id`
+(integer); `headline`, `author`, `source`, `summary`, `url` (character);
+`created_at`, `updated_at` (POSIXct, UTC); `symbols` (character,
+`;`-separated related tickers, e.g. `"AAPL;MSFT"`); `image_sizes`
+(character, `;`-separated image size labels parallel to `image_urls`,
+`NA` when the article has no images — missing per-image sizes become
+empty tokens e.g. `"large;"`, never the literal `"NA"`); and
+`image_urls` (character, `;`-separated image URLs, losslessly
+double-encoded `%` → `%25` then `;` → `%3B` so a single
+[`URLdecode()`](https://rdrr.io/r/utils/URLencode.html) after splitting
+recovers the original). Filter symbols with
+`dt[grepl("AAPL", symbols)]`; recover URLs with
+`vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))`.
 
 #### Examples
 
@@ -1651,6 +1759,77 @@ with one row per related symbol. Columns:
 
 ------------------------------------------------------------------------
 
+### Method `get_crypto_orderbook()`
+
+Get Latest Crypto Orderbook
+
+Retrieves the latest orderbook (top of book) for a crypto symbol.
+
+#### API Endpoint
+
+`GET https://data.alpaca.markets/v1beta3/crypto/{loc}/latest/orderbooks`
+
+#### Official Documentation
+
+[Latest Crypto
+Orderbooks](https://docs.alpaca.markets/us/reference/cryptolatestorderbooks-1)
+Verified: 2026-05-22
+
+#### curl
+
+    curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+      'https://data.alpaca.markets/v1beta3/crypto/us/latest/orderbooks?symbols=BTC/USD'
+
+#### JSON Response
+
+    {
+      "orderbooks": {
+        "BTC/USD": {
+          "t": "2024-01-15T20:00:00.123456Z",
+          "b": [
+            {"p": 42950.50, "s": 0.5},
+            {"p": 42949.00, "s": 1.2}
+          ],
+          "a": [
+            {"p": 42951.00, "s": 0.3},
+            {"p": 42952.50, "s": 0.8}
+          ]
+        }
+      }
+    }
+
+#### Usage
+
+    AlpacaMarketData$get_crypto_orderbook(symbols, loc = "us")
+
+#### Arguments
+
+- `symbols`:
+
+  (character) crypto symbols (e.g. `"BTC/USD"`).
+
+- `loc`:
+
+  (scalar\<character\>) location code, `"us"` (default).
+
+#### Returns
+
+(CryptoOrderbook \| promise\<CryptoOrderbook\>) one row per
+`(symbol, side, level)`. Columns: `symbol`, `side` (`"bid"` or `"ask"`)
+(character); `level` (integer, 1-based depth within the side —
+`level = 1` is top of book, ordering preserved from the Alpaca
+response); `price`, `size` (numeric); and `timestamp` (POSIXct).
+
+#### Examples
+
+    \dontrun{
+    market <- AlpacaMarketData$new()
+    ob <- market$get_crypto_orderbook("BTC/USD")
+    print(ob)
+    }
+
+------------------------------------------------------------------------
+
 ### Method `get_most_actives()`
 
 Get Most Active Stocks
@@ -1663,8 +1842,9 @@ Retrieves the most active stocks by volume or trade count.
 
 #### Official Documentation
 
-[Most Active Stocks](https://docs.alpaca.markets/reference/mostactives)
-Verifieid: 2026-03-10
+[Most Active
+Stocks](https://docs.alpaca.markets/us/reference/mostactives-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1692,21 +1872,20 @@ Verifieid: 2026-03-10
 
 - `by`:
 
-  Character or NULL; ranking metric: `"volume"` (default) or `"trades"`.
+  (scalar\<character\> \| NULL) ranking metric: `"volume"` (default) or
+  `"trades"`.
 
 - `top`:
 
-  Integer or NULL; number of results to return (default 10).
+  (scalar\<count in \[1, Inf\[\> \| NULL) number of results to return
+  (default 10).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `symbol` (character): Ticker symbol.
-
-- `volume` (numeric): Trading volume.
-
-- `trade_count` (numeric): Number of trades.
+(MostActives \| promise\<MostActives\>) the most active stocks. Columns:
+`symbol` (character); `volume`, `trade_count` (count — the parser
+coerces both whole-number counters to a `numeric` double so a large
+volume cannot overflow `integer`).
 
 #### Examples
 
@@ -1731,8 +1910,8 @@ change.
 
 #### Official Documentation
 
-[Top Market Movers](https://docs.alpaca.markets/reference/movers)
-Verifieid: 2026-03-10
+[Top Market Movers](https://docs.alpaca.markets/us/reference/movers-1)
+Verified: 2026-05-21
 
 #### curl
 
@@ -1764,23 +1943,18 @@ Verifieid: 2026-03-10
 
 - `market_type`:
 
-  Character; `"stocks"` (default) or `"crypto"`.
+  (scalar\<character\>) `"stocks"` (default) or `"crypto"`.
 
 - `top`:
 
-  Integer or NULL; number of results per direction (default 10).
+  (scalar\<count in \[1, Inf\[\> \| NULL) number of results per
+  direction (default 10).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `symbol` (character): Ticker symbol.
-
-- `percent_change` (numeric): Percentage change.
-
-- `change` (numeric): Absolute price change.
-
-- `price` (numeric): Current price.
+(Movers \| promise\<Movers\>) the movers. Columns: `symbol` (character);
+`percent_change`, `change`, `price` (numeric); plus a `direction` column
+(`"gainer"` / `"loser"`).
 
 #### Examples
 
@@ -1979,6 +2153,16 @@ print(news[, .(headline, source, created_at)])
 
 # News with full content
 news <- market$get_news(symbols = "TSLA", include_content = TRUE)
+} # }
+
+## ------------------------------------------------
+## Method `AlpacaMarketData$get_crypto_orderbook`
+## ------------------------------------------------
+
+if (FALSE) { # \dontrun{
+market <- AlpacaMarketData$new()
+ob <- market$get_crypto_orderbook("BTC/USD")
+print(ob)
 } # }
 
 ## ------------------------------------------------

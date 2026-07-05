@@ -13,11 +13,13 @@ time_convert_from_alpaca(x)
 
 - x:
 
-  Character vector; RFC-3339 timestamp string(s).
+  (character \| logical \| NA \| NULL) RFC-3339 timestamp string(s), or
+  a bare `NA` (`logical`), or `NULL`.
 
 ## Value
 
-POSIXct vector in UTC, or `NA` if input is `NULL`/`NA`.
+(POSIXct \| NA) the parsed UTC date-times, or `NA` if input is
+`NULL`/`NA`.
 
 ## Examples
 

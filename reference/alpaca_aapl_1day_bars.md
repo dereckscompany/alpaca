@@ -17,9 +17,9 @@ A
 [data.table::data.table](https://rdrr.io/pkg/data.table/man/data.table.html)
 with 250 rows and 8 columns:
 
-- timestamp:
+- datetime:
 
-  POSIXct. Bar timestamp in UTC.
+  POSIXct. Bar reference time in UTC.
 
 - open:
 
@@ -58,7 +58,7 @@ Simulated data (random walk with parameters based on AAPL 2024).
 ``` r
 data(alpaca_aapl_1day_bars)
 head(alpaca_aapl_1day_bars)
-#>              timestamp   open   high    low  close    volume trade_count   vwap
+#>               datetime   open   high    low  close    volume trade_count   vwap
 #>                 <POSc>  <num>  <num>  <num>  <num>     <int>       <int>  <num>
 #> 1: 2024-01-02 05:00:00 188.28 190.81 188.28 188.90 119197246      746404 188.60
 #> 2: 2024-01-03 05:00:00 187.42 189.19 186.50 187.39  75079489      523028 187.32

@@ -33,28 +33,30 @@ Contract metadata endpoints use the trading base URL.
 ### Official Documentation
 
 - [Options
-  Contracts](https://docs.alpaca.markets/reference/optioncontracts)
+  Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
 
 - [Options Market
-  Data](https://docs.alpaca.markets/docs/options-market-data)
+  Data](https://docs.alpaca.markets/us/docs/historical-option-data)
 
 ### Endpoints Covered
 
-|                          |                                                        |         |
-|--------------------------|--------------------------------------------------------|---------|
-| Method                   | Endpoint                                               | Base    |
-| get_contracts            | `GET /v2/options/contracts`                            | trading |
-| get_contract             | `GET /v2/options/contracts/\{symbol_or_id\}`           | trading |
-| get_option_bars          | `GET /v1beta1/options/bars`                            | data    |
-| get_option_trades        | `GET /v1beta1/options/trades`                          | data    |
-| get_option_latest_quotes | `GET /v1beta1/options/quotes/latest`                   | data    |
-| get_option_snapshots     | `GET /v1beta1/options/snapshots`                       | data    |
-| get_option_snapshot      | `GET /v1beta1/options/snapshots/\{symbol\}`            | data    |
-| get_option_latest_trades | `GET /v1beta1/options/trades/latest`                   | data    |
-| get_option_chain         | `GET /v1beta1/options/snapshots/\{underlying_symbol\}` | data    |
+|  |  |  |
+|----|----|----|
+| Method | Endpoint | Base |
+| get_contracts | `GET /v2/options/contracts` | trading |
+| get_contract | `GET /v2/options/contracts/\{symbol_or_id\}` | trading |
+| get_option_bars | `GET /v1beta1/options/bars` | data |
+| get_option_trades | `GET /v1beta1/options/trades` | data |
+| get_option_latest_quotes | `GET /v1beta1/options/quotes/latest` | data |
+| get_option_snapshots | `GET /v1beta1/options/snapshots` | data |
+| get_option_snapshot | `GET /v1beta1/options/snapshots/\{symbol\}` | data |
+| get_option_latest_trades | `GET /v1beta1/options/trades/latest` | data |
+| get_option_chain | `GET /v1beta1/options/snapshots/\{underlying_symbol\}` | data |
 
-## Super class
+## Super classes
 
+[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+-\>
 [`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaOptions`
 
@@ -100,8 +102,8 @@ Constructor only — no HTTP request is made.
 #### Official Documentation
 
 - [Options Trading
-  Overview](https://docs.alpaca.markets/docs/options-trading) Verifieid:
-  2026-03-10
+  Overview](https://docs.alpaca.markets/us/docs/options-trading)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -126,26 +128,27 @@ Constructor only — no HTTP request is made.
 
 - `keys`:
 
-  List; API credentials from
+  (list) API credentials from
   [`get_api_keys()`](https://dereckscompany.github.io/alpaca/reference/get_api_keys.md).
 
 - `base_url`:
 
-  Character; trading API base URL. Defaults to
+  (scalar\<character\>) trading API base URL. Defaults to
   [`get_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_base_url.md).
 
 - `data_base_url`:
 
-  Character; market data API base URL. Defaults to
+  (scalar\<character\>) market data API base URL. Defaults to
   [`get_data_base_url()`](https://dereckscompany.github.io/alpaca/reference/get_data_base_url.md).
 
 - `async`:
 
-  Logical; if `TRUE`, methods return promises. Default `FALSE`.
+  (scalar\<logical\>) if `TRUE`, methods return promises. Default
+  `FALSE`.
 
 #### Returns
 
-Invisible self.
+(class\<AlpacaOptions\>) invisibly, self.
 
 ------------------------------------------------------------------------
 
@@ -163,8 +166,8 @@ symbol, type, expiration date, strike price, and more.
 #### Official Documentation
 
 - [Get Options
-  Contracts](https://docs.alpaca.markets/reference/optioncontracts)
-  Verifieid: 2026-03-10
+  Contracts](https://docs.alpaca.markets/us/reference/get-options-contracts)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -210,91 +213,94 @@ symbol, type, expiration date, strike price, and more.
       root_symbol = NULL,
       style = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      show_deliverables = NULL,
+      ppind = NULL
     )
 
 #### Arguments
 
 - `underlying_symbols`:
 
-  Character or NULL; comma-separated underlying symbols to filter (e.g.,
-  `"AAPL"` or `"AAPL,MSFT"`).
+  (scalar\<character\> \| NULL) comma-separated underlying symbols to
+  filter (e.g., `"AAPL"` or `"AAPL,MSFT"`).
 
 - `status`:
 
-  Character or NULL; contract status (`"active"`, `"inactive"`).
+  (scalar\<character\> \| NULL) contract status (`"active"`,
+  `"inactive"`).
 
 - `type`:
 
-  Character or NULL; option type (`"call"`, `"put"`).
+  (scalar\<character\> \| NULL) option type (`"call"`, `"put"`).
 
 - `expiration_date`:
 
-  Character or NULL; exact expiration date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) exact expiration date (`"YYYY-MM-DD"`).
 
 - `expiration_date_gte`:
 
-  Character or NULL; expiration on or after this date.
+  (scalar\<character\> \| NULL) expiration on or after this date.
 
 - `expiration_date_lte`:
 
-  Character or NULL; expiration on or before this date.
+  (scalar\<character\> \| NULL) expiration on or before this date.
 
 - `strike_price_gte`:
 
-  Numeric or NULL; minimum strike price.
+  (scalar\<numeric\> \| NULL) minimum strike price.
 
 - `strike_price_lte`:
 
-  Numeric or NULL; maximum strike price.
+  (scalar\<numeric\> \| NULL) maximum strike price.
 
 - `root_symbol`:
 
-  Character or NULL; options root symbol.
+  (scalar\<character\> \| NULL) options root symbol.
 
 - `style`:
 
-  Character or NULL; option style (`"american"`, `"european"`).
+  (scalar\<character\> \| NULL) option style (`"american"`,
+  `"european"`).
 
 - `limit`:
 
-  Integer or NULL; max contracts to return (default 100, max 10000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max contracts to return
+  (default 100, max 10000).
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `show_deliverables`:
+
+  (scalar\<logical\> \| NULL) if `TRUE`, include the `deliverables`
+  array in the response.
+
+- `ppind`:
+
+  (scalar\<logical\> \| NULL) filter by Penny Program Indicator. `TRUE`
+  returns only contracts eligible for penny price increments.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with columns:
-
-- `id` (character): Contract UUID.
-
-- `symbol` (character): OCC option symbol.
-
-- `name` (character): Human-readable contract name.
-
-- `status` (character): Contract status.
-
-- `tradable` (logical): Whether the contract is tradable.
-
-- `type` (character): `"call"` or `"put"`.
-
-- `strike_price` (character): Strike price.
-
-- `expiration_date` (character): Expiration date.
-
-- `underlying_symbol` (character): Underlying ticker symbol.
-
-- `style` (character): Option style.
-
-- `root_symbol` (character): Root symbol.
-
-- `size` (character): Contract size (typically `"100"`).
-
-- `open_interest` (character): Open interest.
-
-- `close_price` (character): Last close price.
+(Contract \| promise\<Contract\>) the contracts. With
+`show_deliverables = NULL` (default) or `FALSE`, returns one row per
+contract. With `show_deliverables = TRUE`, the nested `deliverables`
+array is exploded to one row per `(contract, deliverable)`; contract
+fields are replicated on each row, deliverable fields appear as
+`deliverable_*` columns, and a 1-indexed `deliverable_index` is added.
+Filter to canonical per-contract rows with
+`dt[deliverable_index == 1L | is.na(deliverable_index)]`. Contract
+columns: `id`, `symbol`, `name`, `status`, `type`, `strike_price`,
+`underlying_symbol`, `style`, `root_symbol`, `size`, `open_interest`,
+`close_price` (character); `tradable` (logical); `expiration_date`,
+`open_interest_date`, `close_price_date` (Date). Deliverable columns
+(only when `show_deliverables = TRUE`): `deliverable_index`,
+`deliverable_type`, `deliverable_symbol`, `deliverable_asset_id`,
+`deliverable_amount`, `deliverable_allocation_percentage`,
+`deliverable_settlement_type`, `deliverable_settlement_method`,
+`deliverable_delayed_settlement`.
 
 #### Examples
 
@@ -326,8 +332,8 @@ Retrieves a single options contract by its OCC symbol or UUID.
 #### Official Documentation
 
 - [Get Option Contract by ID or
-  Symbol](https://docs.alpaca.markets/reference/getoptioncontract)
-  Verifieid: 2026-03-10
+  Symbol](https://docs.alpaca.markets/us/reference/get-option-contract-symbol_or_id)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -364,12 +370,12 @@ Retrieves a single options contract by its OCC symbol or UUID.
 
 - `symbol_or_id`:
 
-  Character; OCC option symbol or contract UUID.
+  (scalar\<character\>) OCC option symbol or contract UUID.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with the same
-columns as `get_contracts()`, single row.
+(Contract \| promise\<Contract\>) the contract, with the same columns as
+`get_contracts()`, single row.
 
 #### Examples
 
@@ -393,8 +399,8 @@ Retrieves historical bar data for options contracts.
 
 #### Official Documentation
 
-- [Options Bars](https://docs.alpaca.markets/reference/optionbars)
-  Verifieid: 2026-03-10
+- [Options Bars](https://docs.alpaca.markets/us/reference/optionbars)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -439,39 +445,48 @@ Retrieves historical bar data for options contracts.
       start = NULL,
       end = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      sort = NULL
     )
 
 #### Arguments
 
 - `symbols`:
 
-  Character; comma-separated OCC option symbols.
+  (scalar\<character\>) comma-separated OCC option symbols.
 
 - `timeframe`:
 
-  Character; bar timeframe (e.g., `"1Day"`, `"1Hour"`).
+  (scalar\<character\>) bar timeframe (e.g., `"1Day"`, `"1Hour"`).
 
 - `start`:
 
-  Character or NULL; start date/time (RFC-3339 or `"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) start date/time (RFC-3339 or
+  `"YYYY-MM-DD"`).
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max bars (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max bars (1-10000, default
+  1000).
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `sort`:
+
+  (scalar\<character\> \| NULL) `"asc"` (default) or `"desc"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with a
-`symbol` column and the same bar columns as stock bars.
+(BarsMulti \| promise\<BarsMulti\>) **one row per bar** with a leading
+`symbol` column. Bar columns mirror the equity `get_bars()` output:
+`timestamp` (POSIXct), `open`, `high`, `low`, `close`, `vwap` (numeric),
+`volume`, `trade_count` (integer).
 
 #### Examples
 
@@ -498,8 +513,9 @@ Retrieves historical trade data for options contracts.
 
 #### Official Documentation
 
-- [Options Trades](https://docs.alpaca.markets/reference/optiontrades)
-  Verifieid: 2026-03-10
+- [Options
+  Trades](https://docs.alpaca.markets/us/reference/optiontrades)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -537,35 +553,46 @@ Retrieves historical trade data for options contracts.
       start = NULL,
       end = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      sort = NULL
     )
 
 #### Arguments
 
 - `symbols`:
 
-  Character; comma-separated OCC option symbols.
+  (scalar\<character\>) comma-separated OCC option symbols.
 
 - `start`:
 
-  Character or NULL; start date/time.
+  (scalar\<character\> \| NULL) start date/time.
 
 - `end`:
 
-  Character or NULL; end date/time.
+  (scalar\<character\> \| NULL) end date/time.
 
 - `limit`:
 
-  Integer or NULL; max trades (1-10000, default 1000).
+  (scalar\<count in \[1, 10001\[\> \| NULL) max trades (1-10000, default
+  1000).
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `sort`:
+
+  (scalar\<character\> \| NULL) `"asc"` (default) or `"desc"`.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with trade
-columns.
+(OptionTradesMulti \| promise\<OptionTradesMulti\>) **one row per
+trade** with a leading `symbol` column. Columns: `timestamp` (POSIXct),
+`price` (numeric), `size` (integer), `exchange` (character),
+`conditions` (character, `;`-separated trade condition codes or a
+single-character code; `NA` when none reported), `id` (integer). The
+options trade payload carries no consolidated tape, so there is no
+`tape` column (unlike the equity trade shape).
 
 ------------------------------------------------------------------------
 
@@ -582,8 +609,8 @@ Retrieves the latest NBBO quotes for one or more options contracts.
 #### Official Documentation
 
 - [Latest Options
-  Quotes](https://docs.alpaca.markets/reference/optionlatestquotes)
-  Verifieid: 2026-03-10
+  Quotes](https://docs.alpaca.markets/us/reference/optionlatestquotes)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -615,16 +642,21 @@ Retrieves the latest NBBO quotes for one or more options contracts.
 
 - `symbols`:
 
-  Character; comma-separated OCC option symbols.
+  (scalar\<character\>) comma-separated OCC option symbols.
 
 - `feed`:
 
-  Character or NULL; data feed.
+  (scalar\<character\> \| NULL) `"opra"` (default, official OPRA feed)
+  or `"indicative"` (free, delayed/modified).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with quote
-columns plus a `symbol` column.
+(OptionQuotesMulti \| promise\<OptionQuotesMulti\>) **one row per
+contract** with a leading `symbol` column. Columns: `timestamp`
+(POSIXct); `ask_exchange`, `ask_price`, `ask_size`, `bid_exchange`,
+`bid_price`, `bid_size`; and `conditions` (character, `;`-separated
+quote condition codes or a single-character code; `NA` when none
+reported).
 
 ------------------------------------------------------------------------
 
@@ -641,8 +673,8 @@ Retrieves the latest trades for one or more options contracts.
 #### Official Documentation
 
 - [Latest Options
-  Trades](https://docs.alpaca.markets/reference/optionlatesttrades)
-  Verifieid: 2026-03-10
+  Trades](https://docs.alpaca.markets/us/reference/optionlatesttrades)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -671,16 +703,21 @@ Retrieves the latest trades for one or more options contracts.
 
 - `symbols`:
 
-  Character; comma-separated OCC option symbols.
+  (scalar\<character\>) comma-separated OCC option symbols.
 
 - `feed`:
 
-  Character or NULL; data feed.
+  (scalar\<character\> \| NULL) data feed.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with trade
-columns plus a `symbol` column.
+(OptionTradesMulti \| promise\<OptionTradesMulti\>) **one row per
+contract** with a leading `symbol` column. Columns: `timestamp`
+(POSIXct), `price` (numeric), `size` (integer), `exchange` (character),
+`conditions` (character, `;`-separated trade condition codes or a
+single-character code; `NA` when none reported), `id` (integer). The
+options trade payload carries no consolidated tape, so there is no
+`tape` column (unlike the equity trade shape).
 
 ------------------------------------------------------------------------
 
@@ -698,8 +735,8 @@ the latest trade, latest quote, and implied volatility.
 #### Official Documentation
 
 - [Options
-  Snapshots](https://docs.alpaca.markets/reference/optionsnapshots)
-  Verifieid: 2026-03-10
+  Snapshots](https://docs.alpaca.markets/us/reference/optionsnapshots)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -769,22 +806,52 @@ the latest trade, latest quote, and implied volatility.
 
 #### Usage
 
-    AlpacaOptions$get_option_snapshots(symbols, feed = NULL)
+    AlpacaOptions$get_option_snapshots(
+      symbols,
+      feed = NULL,
+      updated_since = NULL,
+      limit = NULL,
+      page_token = NULL
+    )
 
 #### Arguments
 
 - `symbols`:
 
-  Character; comma-separated OCC option symbols.
+  (scalar\<character\>) comma-separated OCC option symbols.
 
 - `feed`:
 
-  Character or NULL; data feed.
+  (scalar\<character\> \| NULL) `"opra"` (default) or `"indicative"`.
+
+- `updated_since`:
+
+  (scalar\<character\> \| NULL) only return snapshots updated at or
+  after this timestamp (RFC-3339 or `"YYYY-MM-DD"`).
+
+- `limit`:
+
+  (scalar\<count in \[1, 1001\[\> \| NULL) max snapshots (1-1000,
+  default 100).
+
+- `page_token`:
+
+  (scalar\<character\> \| NULL) cursor for pagination.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with flattened
-snapshot fields plus a `symbol` column.
+(SnapshotMulti \| promise\<SnapshotMulti\>) **one row per contract**.
+Columns: `symbol` (character, OCC option symbol); the flattened
+`latest_trade_*` / `latest_quote_*` / `minute_bar_*` / `daily_bar_*` /
+`prev_daily_bar_*` sections (see `get_snapshot()` for the per-field
+listing — `latest_trade_t` etc. expand to `latest_trade_timestamp` etc.;
+`latest_trade_conditions` / `latest_quote_conditions` are character
+columns, `;`-collapsed when Alpaca returns multiple codes); and the
+optional `implied_volatility` plus `greeks_delta` / `greeks_gamma` /
+`greeks_theta` / `greeks_vega` / `greeks_rho` (numeric) — present only
+when the account's options data subscription includes greeks/IV (absent
+on the default paper-trading `indicative` feed). Guard with
+`if ("implied_volatility" %in% names(dt)) ...` to handle both shapes.
 
 ------------------------------------------------------------------------
 
@@ -801,8 +868,13 @@ Retrieves a real-time snapshot for a single options contract.
 #### Official Documentation
 
 - [Option
-  Snapshot](https://docs.alpaca.markets/reference/optionsnapshot)
-  Verifieid: 2026-03-10
+  Snapshot](https://docs.alpaca.markets/us/reference/optionsnapshots)
+  Verified: 2026-05-21
+
+Note: Alpaca no longer documents a per-symbol snapshot endpoint; the URL
+`/v1beta1/options/snapshots/{symbol}` is the underlying-chain endpoint
+(see `get_option_chain()`). For a true single-contract snapshot, prefer
+`get_option_snapshots(symbols = "AAPL250620C00200000")`.
 
 #### curl
 
@@ -847,16 +919,18 @@ Retrieves a real-time snapshot for a single options contract.
 
 - `symbol`:
 
-  Character; OCC option symbol.
+  (scalar\<character\>) OCC option symbol.
 
 - `feed`:
 
-  Character or NULL; data feed.
+  (scalar\<character\> \| NULL) data feed.
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with flattened
-snapshot fields.
+(SnapshotMulti \| promise\<SnapshotMulti\>) the same shape as
+`get_option_chain()` — one row per contract in the chain rooted at
+`symbol`. Despite the legacy name, this is **not** a single-contract
+snapshot; for that, use `get_option_snapshots(symbols = "<OCC>")`.
 
 #### Examples
 
@@ -882,8 +956,8 @@ available contracts with their latest market data.
 #### Official Documentation
 
 - [Options Chain / Snapshots by
-  Underlying](https://docs.alpaca.markets/reference/optionchain)
-  Verifieid: 2026-03-10
+  Underlying](https://docs.alpaca.markets/us/reference/optionchain)
+  Verified: 2026-05-21
 
 #### curl
 
@@ -965,59 +1039,74 @@ available contracts with their latest market data.
       root_symbol = NULL,
       feed = NULL,
       limit = NULL,
-      page_token = NULL
+      page_token = NULL,
+      updated_since = NULL
     )
 
 #### Arguments
 
 - `underlying_symbol`:
 
-  Character; the underlying ticker symbol (e.g., `"AAPL"`).
+  (scalar\<character\>) the underlying ticker symbol (e.g., `"AAPL"`).
 
 - `type`:
 
-  Character or NULL; `"call"`, `"put"`.
+  (scalar\<character\> \| NULL) `"call"`, `"put"`.
 
 - `expiration_date`:
 
-  Character or NULL; exact expiration date (`"YYYY-MM-DD"`).
+  (scalar\<character\> \| NULL) exact expiration date (`"YYYY-MM-DD"`).
 
 - `expiration_date_gte`:
 
-  Character or NULL; expiration on or after this date.
+  (scalar\<character\> \| NULL) expiration on or after this date.
 
 - `expiration_date_lte`:
 
-  Character or NULL; expiration on or before this date.
+  (scalar\<character\> \| NULL) expiration on or before this date.
 
 - `strike_price_gte`:
 
-  Numeric or NULL; minimum strike price.
+  (scalar\<numeric\> \| NULL) minimum strike price.
 
 - `strike_price_lte`:
 
-  Numeric or NULL; maximum strike price.
+  (scalar\<numeric\> \| NULL) maximum strike price.
 
 - `root_symbol`:
 
-  Character or NULL; options root symbol.
+  (scalar\<character\> \| NULL) options root symbol.
 
 - `feed`:
 
-  Character or NULL; data feed.
+  (scalar\<character\> \| NULL) `"opra"` (default) or `"indicative"`.
 
 - `limit`:
 
-  Integer or NULL; max results. Default 100.
+  (scalar\<count in \[1, 1001\[\> \| NULL) max results (1-1000, default
+  100).
 
 - `page_token`:
 
-  Character or NULL; cursor for pagination.
+  (scalar\<character\> \| NULL) cursor for pagination.
+
+- `updated_since`:
+
+  (scalar\<character\> \| NULL) only snapshots updated at or after this
+  timestamp (RFC-3339 or `"YYYY-MM-DD"`).
 
 #### Returns
 
-`data.table` (or `promise<data.table>` if `async = TRUE`) with flattened
-snapshot fields plus a `symbol` column.
+(SnapshotMulti \| promise\<SnapshotMulti\>) **one row per contract in
+the chain**. Columns mirror `get_option_snapshots()`: a `symbol` key,
+the flattened `latest_trade_*` / `latest_quote_*` / `minute_bar_*` /
+`daily_bar_*` / `prev_daily_bar_*` blocks (including
+`latest_trade_conditions` / `latest_quote_conditions`), and — when the
+account's options data subscription includes them — the optional
+`implied_volatility` and `greeks_delta` / `greeks_gamma` /
+`greeks_theta` / `greeks_vega` / `greeks_rho` columns. The greeks/IV
+columns are absent for the default paper-trading `indicative` feed
+without a subscription.
 
 #### Examples
 
