@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/dereckscompany/alpaca/blob/master/inst/CITATION)
+[`inst/CITATION`](https://github.com/dereckscompany/alpaca/blob/v0.6.0/inst/CITATION)
 
 Mezquita D (2026). *alpaca: API Wrapper to Alpaca Trading Platform*. R
 package version 0.6.0, <https://dereckscompany.github.io/alpaca/>.
