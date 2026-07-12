@@ -339,6 +339,7 @@ parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
   )
 
   if (status < 200L || status >= 300L) {
+    body_text <- tryCatch(httr2::resp_body_string(resp), error = function(e) NULL)
     msg <- "No error message provided."
     if (!is.null(parsed)) {
       msg <- if (!is.null(parsed$message)) {
@@ -348,13 +349,10 @@ parse_alpaca_response <- function(resp, simplifyVector = FALSE) {
       } else {
         msg
       }
-    } else {
-      msg <- tryCatch(
-        httr2::resp_body_string(resp),
-        error = function(e) msg
-      )
+    } else if (!is.null(body_text)) {
+      msg <- body_text
     }
-    rlang::abort(paste0("Alpaca API error ", status, ": ", msg))
+    abort_alpaca_error(status = status, msg = msg, url = resp$url, body = body_text)
   }
 
   return(assert_return_parse_alpaca_response(parsed))

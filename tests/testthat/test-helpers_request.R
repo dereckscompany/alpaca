@@ -31,6 +31,38 @@ test_that("parse_alpaca_response throws on 422 with message", {
   expect_error(parse_alpaca_response(resp), "422.*qty is required")
 })
 
+test_that("parse_alpaca_response raises a typed condition catchable at three levels", {
+  resp <- mock_alpaca_error("slow down", status_code = 429L)
+
+  # per-status: catch only 429 without catching the rest of the family
+  status_hit <- tryCatch(parse_alpaca_response(resp), alpaca_api_error_429 = function(e) e)
+  expect_s3_class(status_hit, "alpaca_api_error_429")
+  expect_equal(status_hit$status, 429L)
+  expect_match(status_hit$body_snippet, "slow down")
+
+  # package family: any Alpaca HTTP failure
+  fam_hit <- tryCatch(parse_alpaca_response(resp), alpaca_api_error = function(e) e)
+  expect_s3_class(fam_hit, "alpaca_api_error")
+
+  # connectcore family: any HTTP failure fleet-wide, and any transport failure
+  cc_fam <- tryCatch(parse_alpaca_response(resp), connectcore_api_error = function(e) e)
+  expect_s3_class(cc_fam, "connectcore_api_error")
+  cc_root <- tryCatch(parse_alpaca_response(resp), connectcore_error = function(e) e)
+  expect_s3_class(cc_root, "connectcore_error")
+
+  # structured fields present and the class vector is ordered specific -> general
+  expect_s3_class(cc_root, "connectcore_api_error_429")
+  expect_equal(cc_root$status, 429L)
+  expect_true(!is.null(cc_root$url))
+  expect_match(cc_root$body_snippet, "slow down")
+})
+
+test_that("parse_alpaca_response error message is byte-identical to the legacy string", {
+  resp <- mock_alpaca_error("qty is required", status_code = 422L)
+  err <- tryCatch(parse_alpaca_response(resp), error = function(e) e)
+  expect_equal(conditionMessage(err), "Alpaca API error 422: qty is required")
+})
+
 # ---- alpaca_build_request ----
 
 test_that("alpaca_build_request adds auth headers", {
