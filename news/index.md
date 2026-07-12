@@ -1,5 +1,29 @@
 # Changelog
 
+## alpaca 0.6.0
+
+### Typed API-error conditions
+
+- HTTP failures from the request funnel (`parse_alpaca_response()`) now
+  signal a **classed condition** instead of a bare
+  [`rlang::abort()`](https://rlang.r-lib.org/reference/abort.html), so a
+  caller branches on error *type* and reads structured *fields* rather
+  than grepping the message text. The class vector is ordered specific
+  -\> general: `alpaca_api_error_<status>` (catch one status),
+  `alpaca_api_error` (any Alpaca HTTP failure), then the inherited
+  connectcore family `connectcore_api_error_<status>` /
+  `connectcore_api_error` / `connectcore_error` (any HTTP or transport
+  failure fleet-wide). The condition carries `status` (integer), `url`
+  (query-string credentials redacted), and `body_snippet` (the response
+  body) as fields — read `e$status`, not a regex.
+- The message string is **byte-identical** to the previous
+  `"Alpaca API error <status>: <msg>"`, so existing tests and downstream
+  message greps keep matching. The classes and fields are purely
+  additive.
+- This follows the connector-subclass recipe documented in connectcore
+  0.4.0 (`?connectcore_conditions`); the floor is bumped to
+  `connectcore (>= 0.4.0)`.
+
 ## alpaca 0.5.0
 
 ### Breaking changes (fleet-convergence pass)

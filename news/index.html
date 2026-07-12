@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,15 @@
       <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.0" id="alpaca-060">alpaca 0.6.0<a class="anchor" aria-label="anchor" href="#alpaca-060"></a></h2>
+<div class="section level3">
+<h3 id="typed-api-error-conditions-0-6-0">Typed API-error conditions<a class="anchor" aria-label="anchor" href="#typed-api-error-conditions-0-6-0"></a></h3>
+<ul><li>HTTP failures from the request funnel (<code>parse_alpaca_response()</code>) now signal a <strong>classed condition</strong> instead of a bare <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code>, so a caller branches on error <em>type</em> and reads structured <em>fields</em> rather than grepping the message text. The class vector is ordered specific -&gt; general: <code>alpaca_api_error_&lt;status&gt;</code> (catch one status), <code>alpaca_api_error</code> (any Alpaca HTTP failure), then the inherited connectcore family <code>connectcore_api_error_&lt;status&gt;</code> / <code>connectcore_api_error</code> / <code>connectcore_error</code> (any HTTP or transport failure fleet-wide). The condition carries <code>status</code> (integer), <code>url</code> (query-string credentials redacted), and <code>body_snippet</code> (the response body) as fields — read <code>e$status</code>, not a regex.</li>
+<li>The message string is <strong>byte-identical</strong> to the previous <code>"Alpaca API error &lt;status&gt;: &lt;msg&gt;"</code>, so existing tests and downstream message greps keep matching. The classes and fields are purely additive.</li>
+<li>This follows the connector-subclass recipe documented in connectcore 0.4.0 (<code>?connectcore_conditions</code>); the floor is bumped to <code>connectcore (&gt;= 0.4.0)</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="alpaca-050">alpaca 0.5.0<a class="anchor" aria-label="anchor" href="#alpaca-050"></a></h2>
 <div class="section level3">

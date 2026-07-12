@@ -25,7 +25,7 @@ time_convert_to_alpaca(x)
 
 ``` r
 time_convert_to_alpaca(Sys.time())
-#> [1] "2026-07-05T23:11:14Z"
+#> [1] "2026-07-12T03:17:47Z"
 time_convert_to_alpaca(as.POSIXct("2024-01-15 14:30:00", tz = "UTC"))
 #> [1] "2024-01-15T14:30:00Z"
 ```
