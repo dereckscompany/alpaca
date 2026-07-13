@@ -1,5 +1,39 @@
 # Changelog
 
+## alpaca 0.7.0
+
+### Typed input-validation conditions (the non-transport half of the taxonomy)
+
+- The connector’s 34 non-transport
+  [`rlang::abort()`](https://rlang.r-lib.org/reference/abort.html) sites
+  — a method’s argument or parameter is malformed or violates a rule
+  *before* any request is made (mutually-exclusive parameters supplied
+  together, a missing required order field, a `page_size` over the cap,
+  an unknown timeframe, a malformed `legs` list) — now signal a
+  **classed condition** through a new `abort_alpaca_validation_error()`
+  raiser, so a caller branches on error *type* instead of grepping the
+  message text. This completes the taxonomy alongside the request
+  funnel’s typed transport conditions.
+- The class vector is `c("alpaca_validation_error", "alpaca_error")`.
+  `alpaca_error` is the connector’s DOMAIN root, parallel to the
+  transport `connectcore_error` root: a validation failure is not a
+  transport failure, so the two roots never meet — exactly the
+  `core_error` / `connectcore_error` split the fleet already uses. Catch
+  `alpaca_validation_error` for input bugs specifically, or
+  `alpaca_error` for any non-transport Alpaca failure.
+- The message strings are **byte-identical** to the bare
+  [`rlang::abort()`](https://rlang.r-lib.org/reference/abort.html) calls
+  they replaced (a reverse-substitution proves all 34 reproduce master
+  exactly; golden tests pin two representative sites), so existing tests
+  and downstream message greps keep matching. The classes are purely
+  additive;
+  [`conditionMessage()`](https://rdrr.io/r/base/conditions.html) and
+  `inherits(e, "error")` are unchanged. No behaviour changes.
+- Follows the org convention (dereckscompany/tradebot-core#30;
+  discussion “throw typed errors, not bare strings”). The transport/API
+  funnel (`abort_alpaca_error`, rooted at `connectcore_error`) is
+  untouched.
+
 ## alpaca 0.6.0
 
 ### Typed API-error conditions

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,9 +35,19 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.6.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.7.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="alpaca-070">alpaca 0.7.0<a class="anchor" aria-label="anchor" href="#alpaca-070"></a></h2>
+<div class="section level3">
+<h3 id="typed-input-validation-conditions-the-non-transport-half-of-the-taxonomy-0-7-0">Typed input-validation conditions (the non-transport half of the taxonomy)<a class="anchor" aria-label="anchor" href="#typed-input-validation-conditions-the-non-transport-half-of-the-taxonomy-0-7-0"></a></h3>
+<ul><li>The connector’s 34 non-transport <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code> sites — a method’s argument or parameter is malformed or violates a rule <em>before</em> any request is made (mutually-exclusive parameters supplied together, a missing required order field, a <code>page_size</code> over the cap, an unknown timeframe, a malformed <code>legs</code> list) — now signal a <strong>classed condition</strong> through a new <code>abort_alpaca_validation_error()</code> raiser, so a caller branches on error <em>type</em> instead of grepping the message text. This completes the taxonomy alongside the request funnel’s typed transport conditions.</li>
+<li>The class vector is <code>c("alpaca_validation_error", "alpaca_error")</code>. <code>alpaca_error</code> is the connector’s DOMAIN root, parallel to the transport <code>connectcore_error</code> root: a validation failure is not a transport failure, so the two roots never meet — exactly the <code>core_error</code> / <code>connectcore_error</code> split the fleet already uses. Catch <code>alpaca_validation_error</code> for input bugs specifically, or <code>alpaca_error</code> for any non-transport Alpaca failure.</li>
+<li>The message strings are <strong>byte-identical</strong> to the bare <code><a href="https://rlang.r-lib.org/reference/abort.html" class="external-link">rlang::abort()</a></code> calls they replaced (a reverse-substitution proves all 34 reproduce master exactly; golden tests pin two representative sites), so existing tests and downstream message greps keep matching. The classes are purely additive; <code><a href="https://rdrr.io/r/base/conditions.html" class="external-link">conditionMessage()</a></code> and <code>inherits(e, "error")</code> are unchanged. No behaviour changes.</li>
+<li>Follows the org convention (dereckscompany/tradebot-core#30; discussion “throw typed errors, not bare strings”). The transport/API funnel (<code>abort_alpaca_error</code>, rooted at <code>connectcore_error</code>) is untouched.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="alpaca-060">alpaca 0.6.0<a class="anchor" aria-label="anchor" href="#alpaca-060"></a></h2>
 <div class="section level3">
