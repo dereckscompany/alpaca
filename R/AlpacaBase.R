@@ -64,7 +64,7 @@ AlpacaBase <- R6::R6Class(
     ) {
       assert_args_AlpacaBase__initialize(keys, base_url, async)
       if (isTRUE(async) && !requireNamespace("promises", quietly = TRUE)) {
-        rlang::abort(
+        abort_alpaca_validation_error(
           "Package 'promises' is required for async mode. Install with: install.packages('promises')"
         )
       }

@@ -87,7 +87,7 @@ alpaca_fetch_bars <- function(
 
   bar_seconds <- alpaca_timeframe_map[[timeframe]]
   if (is.null(bar_seconds)) {
-    rlang::abort(paste0(
+    abort_alpaca_validation_error(paste0(
       "Unknown timeframe: ",
       timeframe,
       ". Valid: ",

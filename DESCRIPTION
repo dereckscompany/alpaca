@@ -1,6 +1,6 @@
 Package: alpaca
 Title: API Wrapper to Alpaca Trading Platform
-Version: 0.6.0
+Version: 0.7.0
 URL: https://dereckscompany.github.io/alpaca/
 BugReports: https://github.com/dereckscompany/alpaca/issues
 Authors@R:
