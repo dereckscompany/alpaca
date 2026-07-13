@@ -529,7 +529,7 @@ AlpacaAccount <- R6::R6Class(
       assert_args_AlpacaAccount__close_position(symbol_or_id, qty, percentage)
       assert::assert_nonempty_strings(symbol_or_id)
       if (!is.null(qty) && !is.null(percentage)) {
-        rlang::abort("`qty` and `percentage` are mutually exclusive.")
+        abort_alpaca_validation_error("`qty` and `percentage` are mutually exclusive.")
       }
       if (!is.null(qty)) {
         qty <- as.character(qty)
@@ -814,7 +814,7 @@ AlpacaAccount <- R6::R6Class(
         if (is.null(end)) end <- date_end
       }
       if (!is.null(period) && !is.null(start) && !is.null(end)) {
-        rlang::abort("Only two of `start`, `end`, and `period` may be supplied at once.")
+        abort_alpaca_validation_error("Only two of `start`, `end`, and `period` may be supplied at once.")
       }
       if (!is.null(intraday_reporting)) {
         rlang::arg_match0(intraday_reporting, c("market_hours", "extended_hours", "continuous"))
@@ -987,7 +987,7 @@ AlpacaAccount <- R6::R6Class(
         page_token
       )
       if (!is.null(activity_types) && !is.null(category)) {
-        rlang::abort("`activity_types` and `category` are mutually exclusive.")
+        abort_alpaca_validation_error("`activity_types` and `category` are mutually exclusive.")
       }
       if (!is.null(category)) {
         rlang::arg_match0(category, c("trade_activity", "non_trade_activity"))
@@ -997,12 +997,12 @@ AlpacaAccount <- R6::R6Class(
       }
       if (!is.null(page_size)) {
         if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
-          rlang::abort(
+          abort_alpaca_validation_error(
             "`page_size` must be a single non-NA integerish value, or NULL."
           )
         }
         if (page_size > 100L) {
-          rlang::abort(paste0(
+          abort_alpaca_validation_error(paste0(
             "`page_size` must be <= 100 (Alpaca's documented cap for ",
             "/v2/account/activities). Got: ",
             page_size,
@@ -1132,12 +1132,12 @@ AlpacaAccount <- R6::R6Class(
       assert::assert_nonempty_strings(activity_type)
       if (!is.null(page_size)) {
         if (!is.numeric(page_size) || length(page_size) != 1L || is.na(page_size)) {
-          rlang::abort(
+          abort_alpaca_validation_error(
             "`page_size` must be a single non-NA integerish value, or NULL."
           )
         }
         if (page_size > 100L) {
-          rlang::abort(paste0(
+          abort_alpaca_validation_error(paste0(
             "`page_size` must be <= 100 (Alpaca's documented cap for ",
             "/v2/account/activities/{type}). Got: ",
             page_size,

@@ -66,3 +66,38 @@ abort_alpaca_error <- function(status, msg, url = NULL, body = NULL, message = N
     call = rlang::caller_env()
   ))
 }
+
+#' Raise a typed Alpaca input-validation error
+#'
+#' Signals a condition classed `c("alpaca_validation_error", "alpaca_error")` (on
+#' top of rlang's error classes) for a NON-transport failure: a method's argument
+#' or parameter is malformed or violates a rule before any request is made
+#' (mutually-exclusive parameters supplied together, a missing required order
+#' field, a `page_size` over the cap, an unknown timeframe, a malformed `legs`
+#' list). `alpaca_error` is the connector's DOMAIN root, parallel to the transport
+#' `connectcore_error` root: a validation failure is not a transport failure, so
+#' the two roots never meet -- exactly the `core_error` / `connectcore_error`
+#' split. The `message` is passed through verbatim, so the string stays
+#' byte-identical to the bare `rlang::abort()` this replaced. See
+#' [connectcore::connectcore_conditions] for the transport taxonomy.
+#'
+#' @param message (scalar<character>) the condition message, passed through
+#'   verbatim to [rlang::abort()].
+#' @param ... structured fields stored on the condition, read with `e[["field"]]`.
+#'   Forwarded to [rlang::abort()].
+#' @param call (environment) the environment blamed in the traceback; defaults to
+#'   the caller via [rlang::caller_env()].
+#' @return (class<alpaca_error>) never returns normally; signals the classed
+#'   condition described above.
+#' @importFrom rlang abort caller_env
+#' @keywords internal
+#' @noassert
+#' @noRd
+abort_alpaca_validation_error <- function(message, ..., call = rlang::caller_env()) {
+  return(rlang::abort(
+    message = message,
+    class = c("alpaca_validation_error", "alpaca_error"),
+    ...,
+    call = call
+  ))
+}

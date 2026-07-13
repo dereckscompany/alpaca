@@ -396,13 +396,13 @@ AlpacaTrading <- R6::R6Class(
         after_order_id
       )
       if (!is.null(before_order_id) && !is.null(after_order_id)) {
-        rlang::abort("`before_order_id` and `after_order_id` are mutually exclusive.")
+        abort_alpaca_validation_error("`before_order_id` and `after_order_id` are mutually exclusive.")
       }
       if (
         (!is.null(before_order_id) || !is.null(after_order_id)) &&
           (!is.null(after) || !is.null(until))
       ) {
-        rlang::abort(paste(
+        abort_alpaca_validation_error(paste(
           "Order-ID pagination (`before_order_id` / `after_order_id`)",
           "cannot be combined with timestamp pagination",
           "(`after` / `until`)."
@@ -729,7 +729,7 @@ AlpacaTrading <- R6::R6Class(
       )
       assert::assert_nonempty_strings(order_id)
       if (!is.null(qty) && !is.null(notional)) {
-        rlang::abort("`qty` and `notional` are mutually exclusive on a single replace request.")
+        abort_alpaca_validation_error("`qty` and `notional` are mutually exclusive on a single replace request.")
       }
       if (!is.null(qty)) {
         qty <- as.character(qty)

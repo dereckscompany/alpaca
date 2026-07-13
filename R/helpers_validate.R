@@ -75,7 +75,7 @@ validate_order_params <- function(
   # match case-insensitively so callers don't have to remember the casing.
   if (!is.null(order_class)) {
     if (!is.character(order_class) || length(order_class) != 1L) {
-      rlang::abort("Parameter 'order_class' must be a single character string.")
+      abort_alpaca_validation_error("Parameter 'order_class' must be a single character string.")
     }
     if (identical(order_class, "")) {
       order_class <- NULL
@@ -92,23 +92,27 @@ validate_order_params <- function(
     # Non-mleg orders require both symbol and side. mleg orders carry these
     # on each leg, so the top-level fields are optional.
     if (is.null(symbol) || !is.character(symbol) || !nzchar(symbol)) {
-      rlang::abort("Parameter 'symbol' must be a non-empty character string (omit only for `order_class = \"mleg\"`).")
+      abort_alpaca_validation_error(
+        "Parameter 'symbol' must be a non-empty character string (omit only for `order_class = \"mleg\"`)."
+      )
     }
     if (is.null(side) || !is.character(side) || !nzchar(side)) {
-      rlang::abort("Parameter 'side' must be 'buy' or 'sell' (omit only for `order_class = \"mleg\"`).")
+      abort_alpaca_validation_error(
+        "Parameter 'side' must be 'buy' or 'sell' (omit only for `order_class = \"mleg\"`)."
+      )
     }
     side <- tolower(side)
     rlang::arg_match0(side, c("buy", "sell"))
   } else {
     # mleg orders require legs (each leg carries its own symbol/side/qty).
     if (is.null(legs) || length(legs) == 0L) {
-      rlang::abort("`legs` is required for `order_class = \"mleg\"` (provide a list of leg objects).")
+      abort_alpaca_validation_error("`legs` is required for `order_class = \"mleg\"` (provide a list of leg objects).")
     }
     if (length(legs) > 4L) {
-      rlang::abort(paste0("`legs` may contain at most 4 entries (got ", length(legs), ")."))
+      abort_alpaca_validation_error(paste0("`legs` may contain at most 4 entries (got ", length(legs), ")."))
     }
     if (!is.list(legs)) {
-      rlang::abort("`legs` must be a list of leg objects (each itself a list).")
+      abort_alpaca_validation_error("`legs` must be a list of leg objects (each itself a list).")
     }
     bad <- which(
       !vapply(
@@ -123,7 +127,7 @@ validate_order_params <- function(
       )
     )
     if (length(bad) > 0L) {
-      rlang::abort(paste0(
+      abort_alpaca_validation_error(paste0(
         "Each entry in `legs` must be a list with at least `symbol`, `side`, ",
         "and `ratio_qty` fields. Offending leg position(s): ",
         paste(bad, collapse = ", "),
@@ -134,7 +138,7 @@ validate_order_params <- function(
     # order types. Stop / stop_limit / trailing_stop are single-leg-only;
     # the server rejects them with an opaque error, so catch it locally.
     if (!is.null(type) && !(tolower(type) %in% c("market", "limit"))) {
-      rlang::abort(paste0(
+      abort_alpaca_validation_error(paste0(
         "`order_class = \"mleg\"` only supports `type = \"market\"` or ",
         "`type = \"limit\"` (got '",
         type,
@@ -146,7 +150,7 @@ validate_order_params <- function(
     # contract quantities, which the per-leg `ratio_qty` carries. Sending
     # a top-level `notional` is rejected by the server.
     if (!is.null(notional)) {
-      rlang::abort(paste0(
+      abort_alpaca_validation_error(paste0(
         "`notional` is not supported for `order_class = \"mleg\"`. ",
         "Multi-leg orders use per-leg `ratio_qty`; pass `qty` at the ",
         "top level if you need to scale all legs together."
@@ -179,38 +183,42 @@ validate_order_params <- function(
   # Type-specific validation
   if (type == "market") {
     if (is.null(qty) && is.null(notional)) {
-      rlang::abort("Either 'qty' or 'notional' must be specified for market orders.")
+      abort_alpaca_validation_error("Either 'qty' or 'notional' must be specified for market orders.")
     }
     if (!is.null(qty) && !is.null(notional)) {
-      rlang::abort("Parameters 'qty' and 'notional' are mutually exclusive.")
+      abort_alpaca_validation_error("Parameters 'qty' and 'notional' are mutually exclusive.")
     }
   } else if (type == "limit") {
     if (is.null(qty)) {
-      rlang::abort("Parameter 'qty' is required for limit orders.")
+      abort_alpaca_validation_error("Parameter 'qty' is required for limit orders.")
     }
-    if (is.null(limit_price)) rlang::abort("Parameter 'limit_price' is required for limit orders.")
+    if (is.null(limit_price)) abort_alpaca_validation_error("Parameter 'limit_price' is required for limit orders.")
   } else if (type == "stop") {
     if (is.null(qty)) {
-      rlang::abort("Parameter 'qty' is required for stop orders.")
+      abort_alpaca_validation_error("Parameter 'qty' is required for stop orders.")
     }
-    if (is.null(stop_price)) rlang::abort("Parameter 'stop_price' is required for stop orders.")
+    if (is.null(stop_price)) abort_alpaca_validation_error("Parameter 'stop_price' is required for stop orders.")
   } else if (type == "stop_limit") {
     if (is.null(qty)) {
-      rlang::abort("Parameter 'qty' is required for stop-limit orders.")
+      abort_alpaca_validation_error("Parameter 'qty' is required for stop-limit orders.")
     }
     if (is.null(stop_price)) {
-      rlang::abort("Parameter 'stop_price' is required for stop-limit orders.")
+      abort_alpaca_validation_error("Parameter 'stop_price' is required for stop-limit orders.")
     }
-    if (is.null(limit_price)) rlang::abort("Parameter 'limit_price' is required for stop-limit orders.")
+    if (is.null(limit_price)) {
+      abort_alpaca_validation_error("Parameter 'limit_price' is required for stop-limit orders.")
+    }
   } else if (type == "trailing_stop") {
     if (is.null(qty)) {
-      rlang::abort("Parameter 'qty' is required for trailing stop orders.")
+      abort_alpaca_validation_error("Parameter 'qty' is required for trailing stop orders.")
     }
     if (is.null(trail_price) && is.null(trail_percent)) {
-      rlang::abort("Either 'trail_price' or 'trail_percent' must be specified for trailing stop orders.")
+      abort_alpaca_validation_error(
+        "Either 'trail_price' or 'trail_percent' must be specified for trailing stop orders."
+      )
     }
     if (!is.null(trail_price) && !is.null(trail_percent)) {
-      rlang::abort("Parameters 'trail_price' and 'trail_percent' are mutually exclusive.")
+      abort_alpaca_validation_error("Parameters 'trail_price' and 'trail_percent' are mutually exclusive.")
     }
   }
 
@@ -225,7 +233,7 @@ validate_order_params <- function(
     )
   }
   if (!is.null(client_order_id) && nchar(client_order_id) > 128L) {
-    rlang::abort("Parameter 'client_order_id' must not exceed 128 characters.")
+    abort_alpaca_validation_error("Parameter 'client_order_id' must not exceed 128 characters.")
   }
 
   # Build the result list, dropping NULLs
