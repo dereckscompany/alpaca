@@ -495,10 +495,12 @@ assert_return_AlpacaAccount__cancel_watchlist <- function(value) {
   return(value)
 }
 
-assert_args_AlpacaBase__initialize <- function(keys, base_url, async) {
+assert_args_AlpacaBase__initialize <- function(keys, base_url, async, max_tries) {
   assert_list(keys)
   assert_scalar_character(base_url)
   assert_scalar_logical(async)
+  assert_scalar_integer(max_tries)
+  assert_between(max_tries, lower = 1, upper = 10)
   return(invisible(NULL))
 }
 
@@ -2199,7 +2201,7 @@ assert_return_alpaca_serialize_body <- function(value) {
   return(value)
 }
 
-assert_args_alpaca_build_request <- function(base_url, endpoint, method, query, body, keys, .perform, .parser, is_async, timeout, simplifyVector) {
+assert_args_alpaca_build_request <- function(base_url, endpoint, method, query, body, keys, .perform, .parser, is_async, timeout, simplifyVector, max_tries) {
   assert_scalar_character(base_url)
   assert_scalar_character(endpoint)
   assert_scalar_character(method)
@@ -2216,6 +2218,8 @@ assert_args_alpaca_build_request <- function(base_url, endpoint, method, query, 
   assert_scalar_double(timeout)
   assert_between(timeout, lower = 0, lower_inclusive = FALSE, upper = Inf, upper_inclusive = FALSE)
   assert_scalar_logical(simplifyVector)
+  assert_scalar_integer(max_tries)
+  assert_between(max_tries, lower = 1, upper = 10)
   return(invisible(NULL))
 }
 
@@ -2223,7 +2227,7 @@ assert_return_alpaca_build_request <- function(value) {
   return(value)
 }
 
-assert_args_alpaca_paginate <- function(base_url, endpoint, method, query, keys, .perform, .parser, is_async, items_field, max_pages, sleep, timeout) {
+assert_args_alpaca_paginate <- function(base_url, endpoint, method, query, keys, .perform, .parser, is_async, items_field, max_pages, sleep, timeout, max_tries) {
   assert_scalar_character(base_url)
   assert_scalar_character(endpoint)
   assert_scalar_character(method)
@@ -2252,6 +2256,8 @@ assert_args_alpaca_paginate <- function(base_url, endpoint, method, query, keys,
   assert_between(sleep, lower = 0, upper = Inf, upper_inclusive = FALSE)
   assert_scalar_double(timeout)
   assert_between(timeout, lower = 0, lower_inclusive = FALSE, upper = Inf, upper_inclusive = FALSE)
+  assert_scalar_integer(max_tries)
+  assert_between(max_tries, lower = 1, upper = 10)
   return(invisible(NULL))
 }
 

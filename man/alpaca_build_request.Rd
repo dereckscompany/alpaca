@@ -15,7 +15,8 @@ alpaca_build_request(
   .parser = identity,
   is_async = FALSE,
   timeout = 10,
-  simplifyVector = FALSE
+  simplifyVector = FALSE,
+  max_tries = 1L
 )
 }
 \arguments{
@@ -47,6 +48,11 @@ Default \code{10}.}
 \item{simplifyVector}{(scalar<logical>) passed to \link[httr2:resp_body_raw]{httr2::resp_body_json}.
 Default \code{FALSE}. Set to \code{TRUE} for endpoints returning parallel arrays so
 JSON nulls become NA in atomic vectors.}
+
+\item{max_tries}{(scalar<integer in [1, 10]>) for an idempotent GET only,
+retry up to this many times on a transient failure (408/429/5xx or a
+connection failure). A non-GET verb is never auto-retried (the GET-only
+carve-out lives in \code{\link[connectcore:build_request]{connectcore::build_request()}}). Default \code{1} (no retry).}
 }
 \value{
 (any | promise<any>) parsed and post-processed API response data, or

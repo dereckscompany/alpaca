@@ -104,6 +104,10 @@ alpaca_serialize_body <- function(body) {
 #' @param simplifyVector (scalar<logical>) passed to [httr2::resp_body_json].
 #'   Default `FALSE`. Set to `TRUE` for endpoints returning parallel arrays so
 #'   JSON nulls become NA in atomic vectors.
+#' @param max_tries (scalar<integer in [1, 10]>) for an idempotent GET only,
+#'   retry up to this many times on a transient failure (408/429/5xx or a
+#'   connection failure). A non-GET verb is never auto-retried (the GET-only
+#'   carve-out lives in [connectcore::build_request()]). Default `1` (no retry).
 #' @return (any | promise<any>) parsed and post-processed API response data, or
 #'   a promise thereof.
 #'
@@ -120,7 +124,8 @@ alpaca_build_request <- function(
   .parser = identity,
   is_async = FALSE,
   timeout = 10,
-  simplifyVector = FALSE # nolint: object_name_linter. mirrors httr2::resp_body_json's argument name verbatim.
+  simplifyVector = FALSE, # nolint: object_name_linter. mirrors httr2::resp_body_json's argument name verbatim.
+  max_tries = 1L
 ) {
   assert_args_alpaca_build_request(
     base_url,
@@ -133,7 +138,8 @@ alpaca_build_request <- function(
     .parser,
     is_async,
     timeout,
-    simplifyVector
+    simplifyVector,
+    max_tries
   )
   return(assert_return_alpaca_build_request(connectcore::build_request(
     base_url = base_url,
@@ -148,7 +154,8 @@ alpaca_build_request <- function(
     .perform = .perform,
     .parser = .parser,
     is_async = is_async,
-    timeout = timeout
+    timeout = timeout,
+    max_tries = max_tries
   )))
 }
 
@@ -189,6 +196,10 @@ alpaca_build_request <- function(
 #'   200 req/min). Applied in synchronous mode only. Default `0`.
 #' @param timeout (scalar<numeric in ]0, Inf[>) request timeout in seconds.
 #'   Default `10`.
+#' @param max_tries (scalar<integer in [1, 10]>) retry each page request up to
+#'   this many times on a transient failure. Paginated endpoints are GETs, so
+#'   [connectcore::build_request()] applies the retry to every page. Default `1`
+#'   (no retry).
 #' @return (any | promise<any>) parsed and post-processed API response data, or
 #'   a promise thereof.
 #'
@@ -219,7 +230,8 @@ alpaca_paginate <- function(
   items_field = NULL,
   max_pages = Inf,
   sleep = 0,
-  timeout = 10
+  timeout = 10,
+  max_tries = 1L
 ) {
   assert_args_alpaca_paginate(
     base_url,
@@ -233,7 +245,8 @@ alpaca_paginate <- function(
     items_field,
     max_pages,
     sleep,
-    timeout
+    timeout,
+    max_tries
   )
   accumulator <- list()
   page_count <- 0L
@@ -252,7 +265,8 @@ alpaca_paginate <- function(
       keys = keys,
       .perform = .perform,
       is_async = is_async,
-      timeout = timeout
+      timeout = timeout,
+      max_tries = max_tries
     )
 
     return(connectcore::then_or_now(

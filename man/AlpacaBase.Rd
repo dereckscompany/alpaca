@@ -41,6 +41,19 @@ No HMAC signing is required — credentials are sent directly in headers, which
 is exactly what the \code{.sign()} override does.
 }
 
+\subsection{Retries}{
+
+\code{max_tries > 1} opts every GET this client makes — single requests and
+auto-paginated reads (e.g. historical bars) alike — into automatic retry on a
+transient failure (HTTP 408/429/5xx or a dropped connection) with jittered
+backoff, delegated to \code{\link[connectcore:build_request]{connectcore::build_request()}}. Retry is a hard
+\strong{GET-only} carve-out: a non-idempotent verb (an order \code{POST}, a cancel
+\code{DELETE}) is never auto-retried, so a resend can never double-submit an order.
+Leave it at the default \code{1} for live trading — there the trader layer is the
+single retry authority (it routes by typed error class and manages cooldowns);
+raise it only for research and backfill reads.
+}
+
 \subsection{Design}{
 
 This class is not meant to be instantiated directly. Subclasses (e.g.,
@@ -72,7 +85,12 @@ market_async <- AlpacaMarketData$new(async = TRUE)  # async
 \subsection{Method \code{new()}}{
 Initialise an AlpacaBase Object
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AlpacaBase$new(keys = get_api_keys(), base_url = get_base_url(), async = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaBase$new(
+  keys = get_api_keys(),
+  base_url = get_base_url(),
+  async = FALSE,
+  max_tries = 1L
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -86,6 +104,11 @@ Defaults to \code{get_api_keys()}.}
 
 \item{\code{async}}{(scalar<logical>) if \code{TRUE}, methods return promises. Default
 \code{FALSE}.}
+
+\item{\code{max_tries}}{(scalar<integer in [1, 10]>) for idempotent GET requests
+only, retry up to this many times on a transient failure. Default \code{1}
+(no retry). See the class \strong{Retries} section for the write-safety
+carve-out and why live trading should leave this at \code{1}.}
 }
 \if{html}{\out{</div>}}
 }

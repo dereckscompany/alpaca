@@ -16,7 +16,8 @@ alpaca_paginate(
   items_field = NULL,
   max_pages = Inf,
   sleep = 0,
-  timeout = 10
+  timeout = 10,
+  max_tries = 1L
 )
 }
 \arguments{
@@ -51,6 +52,11 @@ requests, to respect rate limits (Alpaca's free/Basic data tier caps at
 
 \item{timeout}{(scalar<numeric in ]0, Inf[>) request timeout in seconds.
 Default \code{10}.}
+
+\item{max_tries}{(scalar<integer in [1, 10]>) retry each page request up to
+this many times on a transient failure. Paginated endpoints are GETs, so
+\code{\link[connectcore:build_request]{connectcore::build_request()}} applies the retry to every page. Default \code{1}
+(no retry).}
 }
 \value{
 (any | promise<any>) parsed and post-processed API response data, or

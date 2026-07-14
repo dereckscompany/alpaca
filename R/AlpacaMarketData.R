@@ -278,7 +278,8 @@ AlpacaMarketData <- R6::R6Class(
         .parser = parse_bars,
         max_pages = max_pages,
         sleep = sleep,
-        timeout = 30
+        timeout = 30,
+        max_tries = private$.max_tries
       )
       return(connectcore::then_or_now(
         result,
@@ -410,7 +411,8 @@ AlpacaMarketData <- R6::R6Class(
         .parser = parse_multi_bars_items,
         max_pages = max_pages,
         sleep = sleep,
-        timeout = 30
+        timeout = 30,
+        max_tries = private$.max_tries
       )
       return(connectcore::then_or_now(
         result,
