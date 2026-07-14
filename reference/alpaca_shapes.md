@@ -27,8 +27,11 @@ parsed timestamps and `Date` for calendar dates. A column is marked
 Alpaca encodes a whole-number price without a decimal point, so the raw
 JSON parser realises such a bar/trade/ quote price as `integer`; the
 parsers coerce every price/vwap column to a clean `numeric` double with
-[`as.numeric()`](https://rdrr.io/r/base/numeric.html), so the contracts
-can stay strict.
+[`as.numeric()`](https://rdrr.io/r/base/numeric.html), so each such
+column is a stable `numeric` type (nullability is set separately, per
+the API's optional-field contract: measurement / venue-optional columns
+are `| NA`, structural columns stay strict, following
+dereckscompany/.github discussion \#2).
 
 `@genassert` is omitted: no generated `assert_type_<Shape>()` is called
 internally, and as a leaf connector nothing downstream consumes them, so

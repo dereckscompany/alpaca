@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,13 @@
       <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.0" id="alpaca-080">alpaca 0.8.0<a class="anchor" aria-label="anchor" href="#alpaca-080"></a></h2>
+<div class="section level3">
+<h3 id="column-type-na-audit-org-discussion-measurement-columns-tolerate-legitimately-missing-venue-values-0-8-0">Column-type NA audit (org discussion <a href="https://github.com/dereckscompany/alpaca/issues/2" class="external-link">#2</a>): measurement columns tolerate legitimately-missing venue values<a class="anchor" aria-label="anchor" href="#column-type-na-audit-org-discussion-measurement-columns-tolerate-legitimately-missing-venue-values-0-8-0"></a></h3>
+<p>The per-connector type-fidelity audit reaches alpaca. Thirty-five columns across nine return shapes move from strict to <code>| NA</code>, each grounded in the alpaca-py SDK’s own Optional markings — the venue’s authoritative statement of which fields can be absent on a normal response. The headline fixes are the ones that would have crashed a live loop: Position rows during volatile markets (market_value, unrealized_pl and friends go null when Alpaca cannot price a symbol), multi-leg parent Orders (symbol/side/type null on the parent row), notional orders (qty null), and CorporateAction date fields that are absent per action type. Structural identity columns stay strict. Every loosened string column gains a parser coercion so a venue null arrives as a typed NA rather than a bare logical (the known assert-crash trap), via new parse_account/parse_positions/parse_position helpers matching the sibling parse_* pattern. Adds test-na-audit.R (+96 assertions).</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="alpaca-070">alpaca 0.7.0<a class="anchor" aria-label="anchor" href="#alpaca-070"></a></h2>
 <div class="section level3">

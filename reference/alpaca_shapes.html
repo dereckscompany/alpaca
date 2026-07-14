@@ -20,7 +20,10 @@ Date for calendar dates. A column is marked | NA only where a value can
 legitimately be missing on a present row. Alpaca encodes a whole-number price
 without a decimal point, so the raw JSON parser realises such a bar/trade/
 quote price as integer; the parsers coerce every price/vwap column to a
-clean numeric double with as.numeric(), so the contracts can stay strict.
+clean numeric double with as.numeric(), so each such column is a stable
+numeric type (nullability is set separately, per the API's optional-field
+contract: measurement / venue-optional columns are | NA, structural columns
+stay strict, following dereckscompany/.github discussion #2).
 @genassert is omitted: no generated assert_type_&amp;lt;Shape&amp;gt;() is called
 internally, and as a leaf connector nothing downstream consumes them, so the
 shapes expand inline into the methods' assert_return_* contracts only."><meta property="og:description" content="Reusable roxyassert @type shapes for the data.tables returned
@@ -44,7 +47,10 @@ Date for calendar dates. A column is marked | NA only where a value can
 legitimately be missing on a present row. Alpaca encodes a whole-number price
 without a decimal point, so the raw JSON parser realises such a bar/trade/
 quote price as integer; the parsers coerce every price/vwap column to a
-clean numeric double with as.numeric(), so the contracts can stay strict.
+clean numeric double with as.numeric(), so each such column is a stable
+numeric type (nullability is set separately, per the API's optional-field
+contract: measurement / venue-optional columns are | NA, structural columns
+stay strict, following dereckscompany/.github discussion #2).
 @genassert is omitted: no generated assert_type_&amp;lt;Shape&amp;gt;() is called
 internally, and as a leaf connector nothing downstream consumes them, so the
 shapes expand inline into the methods' assert_return_* contracts only."></head><body>
@@ -55,7 +61,7 @@ shapes expand inline into the methods' assert_return_* contracts only."></head><
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,7 +115,10 @@ double) for true floating-point prices; <code>POSIXct</code> for parsed timestam
 legitimately be missing on a present row. Alpaca encodes a whole-number price
 without a decimal point, so the raw JSON parser realises such a bar/trade/
 quote price as <code>integer</code>; the parsers coerce every price/vwap column to a
-clean <code>numeric</code> double with <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code>, so the contracts can stay strict.</p>
+clean <code>numeric</code> double with <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code>, so each such column is a stable
+<code>numeric</code> type (nullability is set separately, per the API's optional-field
+contract: measurement / venue-optional columns are <code>| NA</code>, structural columns
+stay strict, following dereckscompany/.github discussion #2).</p>
 <p><code>@genassert</code> is omitted: no generated <code>assert_type_&lt;Shape&gt;()</code> is called
 internally, and as a leaf connector nothing downstream consumes them, so the
 shapes expand inline into the methods' <code>assert_return_*</code> contracts only.</p>
