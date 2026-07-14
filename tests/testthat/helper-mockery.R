@@ -108,6 +108,7 @@ mock_watchlist_response <- function() return(.fx("watchlist"))
 # ---- Corporate Actions Fixtures ----
 
 mock_corporate_actions_response <- function() return(.fx("corporate_actions"))
+mock_corporate_actions_history_response <- function() return(.fx("corporate_actions_history"))
 
 # ---- News Fixtures ----
 

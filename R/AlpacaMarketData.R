@@ -47,6 +47,7 @@
 #' | get_calendar | `GET /v2/calendar` | trading |
 #' | get_clock | `GET /v2/clock` | trading |
 #' | get_corporate_actions | `GET /v2/corporate_actions/announcements` | trading |
+#' | get_corporate_actions_history | `GET /v1/corporate-actions` | data |
 #' | get_news | `GET /v1beta1/news` | data |
 #' | get_latest_bars_multi | `GET /v2/stocks/bars/latest` | data |
 #' | get_latest_trades_multi | `GET /v2/stocks/trades/latest` | data |
@@ -1509,10 +1510,12 @@ AlpacaMarketData <- R6::R6Class(
     #' Verified: 2026-05-21
     #'
     #' Note: as of 2026-05, the `/v2/corporate_actions/announcements` endpoint is
-    #' marked DEPRECATED by Alpaca. It still works and the wrapper still calls
-    #' it, but Alpaca recommends migrating to the newer corporate-actions
-    #' market-data endpoint (`/v1beta1/corporate-actions`). Migration is tracked
-    #' as a follow-up.
+    #' marked DEPRECATED by Alpaca. It still works and the wrapper still calls it,
+    #' but Alpaca recommends migrating to the market-data corporate-actions
+    #' endpoint, now exposed as [`get_corporate_actions_history()`][AlpacaMarketData]
+    #' (`GET /v1/corporate-actions`, data host). This announcements feed is the
+    #' Trading API's recent-events view; that method is the historical archive back
+    #' to 2016.
     #'
     #' ### curl
     #' ```
@@ -1599,9 +1602,9 @@ AlpacaMarketData <- R6::R6Class(
       rlang::warn(
         paste0(
           "`get_corporate_actions()` wraps `/v2/corporate_actions/announcements`, ",
-          "which Alpaca has flagged DEPRECATED in favour of the newer ",
-          "`/v1beta1/corporate-actions` market-data endpoint. The wrapper still ",
-          "works today but migration is recommended."
+          "which Alpaca has flagged DEPRECATED in favour of the market-data ",
+          "corporate-actions endpoint. The wrapper still works today; for the ",
+          "historical archive use `get_corporate_actions_history()`."
         ),
         .frequency = "regularly",
         .frequency_id = "get_corporate_actions_deprecated"
@@ -1644,6 +1647,226 @@ AlpacaMarketData <- R6::R6Class(
       ))
     },
     # nolint end
+
+    # ---- Corporate Actions (market-data archive) ----
+
+    # nolint start: line_length_linter.
+    #' @description
+    #' Get Corporate Actions (Market-Data Archive)
+    #'
+    #' Retrieves the historical corporate-actions dataset — splits, dividends,
+    #' mergers, spin-offs, name changes, and more — from Alpaca's Market Data API,
+    #' reaching back to 2016. This is the endpoint an equities backtest needs to
+    #' reconstruct split/dividend adjustments correctly.
+    #'
+    #' ### Two corporate-actions endpoints — which to use
+    #' In plain terms: `get_corporate_actions()` (the announcements feed) is the
+    #' *Trading API*'s recent-events view — what Alpaca has recently announced or
+    #' is about to apply; this method is the *Market Data API*'s archive going back
+    #' to 2016. Technically the two hit different hosts and return different shapes.
+    #' The announcements feed (`/v2/corporate_actions/announcements`, trading host)
+    #' returns a flat array of announcement records; it is marked DEPRECATED by
+    #' Alpaca. This method (`/v1/corporate-actions`, data host) returns the records
+    #' grouped by action type and is the current, non-deprecated source. Both are
+    #' kept: use the announcements feed for the near-term event calendar, this one
+    #' for the historical archive.
+    #'
+    #' ### API Endpoint
+    #' `GET https://data.alpaca.markets/v1/corporate-actions`
+    #'
+    #' ### Official Documentation
+    #' [Corporate Actions (Market Data)](https://docs.alpaca.markets/reference/corporateactions-1)
+    #' Verified: 2026-07-14
+    #'
+    #' ### curl
+    #' ```
+    #' curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \
+    #'   'https://data.alpaca.markets/v1/corporate-actions?symbols=AAPL,TSLA&types=forward_split,cash_dividend&start=2020-08-01&end=2020-09-15&sort=asc'
+    #' ```
+    #'
+    #' ### JSON Response
+    #' ```json
+    #' {
+    #'   "corporate_actions": {
+    #'     "cash_dividends": [
+    #'       {
+    #'         "symbol": "AAPL", "cusip": "037833100", "rate": 0.82,
+    #'         "special": false, "foreign": false, "ex_date": "2020-08-07",
+    #'         "record_date": "2020-08-10", "payable_date": "2020-08-13",
+    #'         "process_date": "2020-08-13", "id": "d09386ae-..."
+    #'       }
+    #'     ],
+    #'     "forward_splits": [
+    #'       {
+    #'         "symbol": "AAPL", "cusip": "037833100", "new_rate": 4, "old_rate": 1,
+    #'         "ex_date": "2020-08-31", "record_date": "2020-08-24",
+    #'         "payable_date": "2020-08-28", "process_date": "2020-08-31",
+    #'         "due_bill_redemption_date": "2020-09-01", "id": "d209b6c2-..."
+    #'       }
+    #'     ]
+    #'   },
+    #'   "next_page_token": null
+    #' }
+    #' ```
+    #'
+    #' @param types (character | NULL) corporate-action types to return (each
+    #'   sent to the venue's `types` query param). Valid values: `"forward_split"`,
+    #'   `"reverse_split"`, `"unit_split"`, `"stock_dividend"`, `"cash_dividend"`,
+    #'   `"spin_off"`, `"cash_merger"`, `"stock_merger"`,
+    #'   `"stock_and_cash_merger"`, `"redemption"`, `"name_change"`,
+    #'   `"worthless_removal"`, `"rights_distribution"`, `"contract_adjustment"`,
+    #'   `"partial_call"`, `"reorganization"`. `NULL` (default) returns every type.
+    #'   Invalid values abort before the request.
+    #' @param symbols (character | NULL) filter by ticker symbol(s). `NULL`
+    #'   (default) returns all symbols.
+    #' @param start (scalar<character> | NULL) start date (`"YYYY-MM-DD"`). The
+    #'   archive begins in 2016. `NULL` uses the venue default.
+    #' @param end (scalar<character> | NULL) end date (`"YYYY-MM-DD"`). `NULL` uses
+    #'   the venue default.
+    #' @param limit (scalar<count in [1, 1001[> | NULL) max results **per page**
+    #'   (1-1000, default 1000). The method auto-paginates via `next_page_token`,
+    #'   so the full range is returned regardless of `limit`.
+    #' @param sort (scalar<character> | NULL) `"asc"` (default server-side) or
+    #'   `"desc"`.
+    #' @param page_token (scalar<character> | NULL) starting cursor. Normally left
+    #'   `NULL` — auto-pagination begins at `start` and follows the cursor itself.
+    #' @param max_pages (scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+    #'   (runaway guard). Default 1000; pass `Inf` for unbounded. If hit while more
+    #'   data remains, the partial result is returned with a `warning()`.
+    #' @param sleep (scalar<numeric in [0, Inf[>) seconds to pause between page
+    #'   requests (rate-limit throttle; sync only). Default 0.3.
+    #' @return (data.table | promise<data.table>) one row per corporate action,
+    #'   the heterogeneous action types stacked with a `type` discriminator and
+    #'   NA-filled to a single schema (a column absent for an action type is `NA`
+    #'   on that type's rows; empty when the range carries no actions):
+    #'   - id (character) unique corporate-action id (the venue's dedup key).
+    #'   - type (character) action-type discriminator — the venue's group key
+    #'     (e.g. `"cash_dividends"`, `"forward_splits"`, `"stock_mergers"`).
+    #'   - symbol (character | NA) affected ticker (splits, dividends, redemptions).
+    #'   - cusip (character | NA) affected CUSIP.
+    #'   - new_symbol (character | NA) post-action ticker (splits, spin-offs, name changes).
+    #'   - new_cusip (character | NA) post-action CUSIP.
+    #'   - old_symbol (character | NA) pre-action ticker (unit splits, name changes).
+    #'   - old_cusip (character | NA) pre-action CUSIP.
+    #'   - alternate_symbol (character | NA) alternate ticker (unit splits).
+    #'   - alternate_cusip (character | NA) alternate CUSIP (unit splits).
+    #'   - acquiree_symbol (character | NA) acquired-company ticker (mergers).
+    #'   - acquiree_cusip (character | NA) acquired-company CUSIP (mergers).
+    #'   - acquirer_symbol (character | NA) acquiring-company ticker (mergers).
+    #'   - acquirer_cusip (character | NA) acquiring-company CUSIP (mergers).
+    #'   - source_symbol (character | NA) source ticker (spin-offs, rights distributions).
+    #'   - source_cusip (character | NA) source CUSIP (spin-offs, rights distributions).
+    #'   - rate (numeric | NA) cash/stock rate (dividends, mergers, redemptions).
+    #'   - old_rate (numeric | NA) pre-action share rate (splits).
+    #'   - new_rate (numeric | NA) post-action share rate (splits, spin-offs).
+    #'   - alternate_rate (numeric | NA) alternate share rate (unit splits).
+    #'   - acquiree_rate (numeric | NA) acquiree share rate (stock/stock-and-cash mergers).
+    #'   - acquirer_rate (numeric | NA) acquirer share rate (stock/stock-and-cash mergers).
+    #'   - cash_rate (numeric | NA) cash component (stock-and-cash mergers).
+    #'   - source_rate (numeric | NA) source share rate (spin-offs).
+    #'   - ex_date (Date | NA) ex-date.
+    #'   - record_date (Date | NA) record date.
+    #'   - payable_date (Date | NA) payable date.
+    #'   - process_date (Date | NA) Alpaca processing date.
+    #'   - effective_date (Date | NA) effective date (mergers, unit splits).
+    #'   - expiration_date (Date | NA) expiration date (rights distributions).
+    #'   - due_bill_off_date (Date | NA) due-bill off date (cash dividends).
+    #'   - due_bill_on_date (Date | NA) due-bill on date (cash dividends).
+    #'   - due_bill_redemption_date (Date | NA) due-bill redemption date (splits, spin-offs).
+    #'   - foreign (logical | NA) whether the dividend is foreign (cash dividends).
+    #'   - special (logical | NA) whether the dividend is special (cash dividends).
+    #'
+    #' @examples
+    #' \dontrun{
+    #' market <- AlpacaMarketData$new()
+    #'
+    #' # Every AAPL/TSLA split and dividend since 2016
+    #' actions <- market$get_corporate_actions_history(
+    #'   types = c("forward_split", "reverse_split", "cash_dividend"),
+    #'   symbols = c("AAPL", "TSLA"),
+    #'   start = "2016-01-01"
+    #' )
+    #' print(actions[type == "forward_splits", .(symbol, ex_date, old_rate, new_rate)])
+    #' }
+    # nolint end
+    get_corporate_actions_history = function(
+      types = NULL,
+      symbols = NULL,
+      start = NULL,
+      end = NULL,
+      limit = 1000L,
+      sort = NULL,
+      page_token = NULL,
+      max_pages = 1000L,
+      sleep = 0.3
+    ) {
+      assert_args_AlpacaMarketData__get_corporate_actions_history(
+        types,
+        symbols,
+        start,
+        end,
+        limit,
+        sort,
+        page_token,
+        max_pages,
+        sleep
+      )
+      valid_types <- c(
+        "forward_split",
+        "reverse_split",
+        "unit_split",
+        "stock_dividend",
+        "cash_dividend",
+        "spin_off",
+        "cash_merger",
+        "stock_merger",
+        "stock_and_cash_merger",
+        "redemption",
+        "name_change",
+        "worthless_removal",
+        "rights_distribution",
+        "contract_adjustment",
+        "partial_call",
+        "reorganization"
+      )
+      if (!is.null(types)) {
+        bad <- setdiff(types, valid_types)
+        if (length(bad) > 0L) {
+          abort_alpaca_validation_error(sprintf(
+            "Invalid corporate-action type(s): %s. Valid types: %s.",
+            paste(bad, collapse = ", "),
+            paste(valid_types, collapse = ", ")
+          ))
+        }
+      }
+      result <- alpaca_paginate(
+        base_url = private$.data_base_url,
+        endpoint = "/v1/corporate-actions",
+        query = list(
+          types = if (is.null(types)) NULL else paste(types, collapse = ","),
+          symbols = if (is.null(symbols)) NULL else paste(symbols, collapse = ","),
+          start = start,
+          end = end,
+          limit = limit,
+          sort = sort,
+          page_token = page_token
+        ),
+        keys = private$.keys,
+        .perform = private$.perform,
+        is_async = private$.is_async,
+        items_field = "corporate_actions",
+        .parser = parse_corporate_actions_items,
+        max_pages = max_pages,
+        sleep = sleep,
+        timeout = 30,
+        max_tries = private$.max_tries
+      )
+      return(connectcore::then_or_now(
+        result,
+        assert_return_AlpacaMarketData__get_corporate_actions_history,
+        is_async = private$.is_async
+      ))
+    },
 
     # ---- News ----
 

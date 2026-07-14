@@ -20,6 +20,7 @@ empty_constructors <- list(
   empty_dt_assets = empty_dt_assets,
   empty_dt_calendar = empty_dt_calendar,
   empty_dt_corporate_actions = empty_dt_corporate_actions,
+  empty_dt_corporate_actions_history = empty_dt_corporate_actions_history,
   empty_dt_news = empty_dt_news,
   empty_dt_most_actives = empty_dt_most_actives,
   empty_dt_movers = empty_dt_movers,

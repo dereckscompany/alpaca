@@ -72,6 +72,9 @@ box::use(
   # News
   list(pattern = "v1beta1/news", fixture = .fixtures$news),
 
+  # Corporate actions (market-data archive; data host)
+  list(pattern = "v1/corporate-actions", fixture = .fixtures$corporate_actions_history),
+
   # Options data (v1beta1 -- before stock patterns)
   list(pattern = "v1beta1/options/bars", fixture = .fixtures$multi_bars),
   list(pattern = "v1beta1/options/trades/latest", fixture = .fixtures$option_latest_trades),

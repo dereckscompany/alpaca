@@ -333,6 +333,113 @@ parse_multi_bars_items <- function(items) {
   return(assert_return_parse_multi_bars_items(data.table::rbindlist(dts, fill = TRUE)[]))
 }
 
+#' Parse Accumulated Corporate-Action Items (Across Pages)
+#'
+#' The market-data corporate-actions endpoint returns
+#' `{"corporate_actions": {"cash_dividends": [...], "forward_splits": [...],
+#' ...}, "next_page_token": ...}` — a *map keyed by action type* whose values
+#' are arrays of per-type records. [alpaca_paginate()] accumulates the
+#' `corporate_actions` field of each page via `c()`, so the accumulator is a
+#' named list of per-type record arrays in which the **same type may appear more
+#' than once** (once per page it spanned). This parser flattens every record to a
+#' single [data.table::data.table], stacking the heterogeneous types with a
+#' `type` discriminator column (the house rule for heterogeneous rows) and
+#' reindexing to the full column schema so every contracted column is present
+#' regardless of which types the caller requested.
+#'
+#' Each action type carries a different subset of the shared field vocabulary, so
+#' a column absent for a given type is `NA` on that type's rows. Columns are
+#' coerced by that vocabulary: `*_date` -> `Date`, the rate/cash fields ->
+#' `numeric`, the symbol/CUSIP fields -> `character`, and the `foreign`/`special`
+#' flags -> `logical`.
+#'
+#' @param items (list | NULL) accumulated per-type corporate-action arrays.
+#' @return (class<data.table>) one row per corporate action, with a `type`
+#'   discriminator and the full corporate-action column schema.
+#'
+#' @keywords internal
+#' @noRd
+parse_corporate_actions_items <- function(items) {
+  assert_args_parse_corporate_actions_items(items)
+  if (is.null(items) || length(items) == 0) {
+    return(assert_return_parse_corporate_actions_items(empty_dt_corporate_actions_history()))
+  }
+  type_names <- names(items)
+  records <- list()
+  for (i in seq_along(items)) {
+    for (rec in items[[i]]) {
+      rec$type <- type_names[[i]]
+      records[[length(records) + 1L]] <- rec
+    }
+  }
+  if (length(records) == 0L) {
+    return(assert_return_parse_corporate_actions_items(empty_dt_corporate_actions_history()))
+  }
+  dt <- data.table::rbindlist(lapply(records, as_dt_row), fill = TRUE)
+
+  # Coerce by the venue's own field-name vocabulary (uniform across action
+  # types); `coerce_cols()` / `parse_date_cols()` skip any name absent from `dt`,
+  # matching the announcements parser's explicit-column style.
+  parse_date_cols(
+    dt,
+    c(
+      "ex_date",
+      "record_date",
+      "payable_date",
+      "process_date",
+      "effective_date",
+      "expiration_date",
+      "due_bill_off_date",
+      "due_bill_on_date",
+      "due_bill_redemption_date"
+    )
+  )
+  coerce_cols(
+    dt,
+    c(
+      "rate",
+      "old_rate",
+      "new_rate",
+      "alternate_rate",
+      "acquiree_rate",
+      "acquirer_rate",
+      "cash_rate",
+      "source_rate"
+    ),
+    as.numeric
+  )
+  coerce_cols(
+    dt,
+    c(
+      "symbol",
+      "new_symbol",
+      "old_symbol",
+      "alternate_symbol",
+      "acquiree_symbol",
+      "acquirer_symbol",
+      "source_symbol",
+      "cusip",
+      "new_cusip",
+      "old_cusip",
+      "alternate_cusip",
+      "acquiree_cusip",
+      "acquirer_cusip",
+      "source_cusip"
+    ),
+    as.character
+  )
+  coerce_cols(dt, c("foreign", "special"), as.logical)
+
+  # Reindex to the canonical schema so every contracted column is present even
+  # when a narrow `types` query returns only the columns those types carry.
+  schema <- empty_dt_corporate_actions_history()
+  for (col in setdiff(names(schema), names(dt))) {
+    dt[, (col) := rep(schema[[col]][NA_integer_], .N)]
+  }
+  data.table::setcolorder(dt, c(names(schema), setdiff(names(dt), names(schema))))
+  return(assert_return_parse_corporate_actions_items(dt[]))
+}
+
 #' Parse Alpaca Trade Data to data.table (One Row Per Trade)
 #'
 #' Converts a list of trade objects (with short field names) into a tidy
@@ -1291,6 +1398,49 @@ empty_dt_corporate_actions <- function() {
     cash = character(0),
     old_rate = character(0),
     new_rate = character(0)
+  ))
+}
+
+#' @keywords internal
+#' @noRd
+#' @noassert
+empty_dt_corporate_actions_history <- function() {
+  return(data.table::data.table(
+    id = character(0),
+    type = character(0),
+    symbol = character(0),
+    cusip = character(0),
+    new_symbol = character(0),
+    new_cusip = character(0),
+    old_symbol = character(0),
+    old_cusip = character(0),
+    alternate_symbol = character(0),
+    alternate_cusip = character(0),
+    acquiree_symbol = character(0),
+    acquiree_cusip = character(0),
+    acquirer_symbol = character(0),
+    acquirer_cusip = character(0),
+    source_symbol = character(0),
+    source_cusip = character(0),
+    rate = numeric(0),
+    old_rate = numeric(0),
+    new_rate = numeric(0),
+    alternate_rate = numeric(0),
+    acquiree_rate = numeric(0),
+    acquirer_rate = numeric(0),
+    cash_rate = numeric(0),
+    source_rate = numeric(0),
+    ex_date = lubridate::as_date(character(0)),
+    record_date = lubridate::as_date(character(0)),
+    payable_date = lubridate::as_date(character(0)),
+    process_date = lubridate::as_date(character(0)),
+    effective_date = lubridate::as_date(character(0)),
+    expiration_date = lubridate::as_date(character(0)),
+    due_bill_off_date = lubridate::as_date(character(0)),
+    due_bill_on_date = lubridate::as_date(character(0)),
+    due_bill_redemption_date = lubridate::as_date(character(0)),
+    foreign = logical(0),
+    special = logical(0)
   ))
 }
 
