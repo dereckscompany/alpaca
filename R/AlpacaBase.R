@@ -28,6 +28,17 @@
 #' No HMAC signing is required — credentials are sent directly in headers, which
 #' is exactly what the `.sign()` override does.
 #'
+#' ### Retries
+#' `max_tries > 1` opts every GET this client makes — single requests and
+#' auto-paginated reads (e.g. historical bars) alike — into automatic retry on a
+#' transient failure (HTTP 408/429/5xx or a dropped connection) with jittered
+#' backoff, delegated to [connectcore::build_request()]. Retry is a hard
+#' **GET-only** carve-out: a non-idempotent verb (an order `POST`, a cancel
+#' `DELETE`) is never auto-retried, so a resend can never double-submit an order.
+#' Leave it at the default `1` for live trading — there the trader layer is the
+#' single retry authority (it routes by typed error class and manages cooldowns);
+#' raise it only for research and backfill reads.
+#'
 #' ### Design
 #' This class is not meant to be instantiated directly. Subclasses (e.g.,
 #' [AlpacaMarketData], [AlpacaTrading]) inherit from it and define their
@@ -56,13 +67,18 @@ AlpacaBase <- R6::R6Class(
     #'   `get_base_url()`.
     #' @param async (scalar<logical>) if `TRUE`, methods return promises. Default
     #'   `FALSE`.
+    #' @param max_tries (scalar<integer in [1, 10]>) for idempotent GET requests
+    #'   only, retry up to this many times on a transient failure. Default `1`
+    #'   (no retry). See the class **Retries** section for the write-safety
+    #'   carve-out and why live trading should leave this at `1`.
     #' @return (class<AlpacaBase>) invisibly, self.
     initialize = function(
       keys = get_api_keys(),
       base_url = get_base_url(),
-      async = FALSE
+      async = FALSE,
+      max_tries = 1L
     ) {
-      assert_args_AlpacaBase__initialize(keys, base_url, async)
+      assert_args_AlpacaBase__initialize(keys, base_url, async, max_tries)
       if (isTRUE(async) && !requireNamespace("promises", quietly = TRUE)) {
         abort_alpaca_validation_error(
           "Package 'promises' is required for async mode. Install with: install.packages('promises')"
@@ -72,7 +88,8 @@ AlpacaBase <- R6::R6Class(
         keys = keys,
         base_url = base_url,
         async = async,
-        body_format = "json"
+        body_format = "json",
+        max_tries = max_tries
       )
       return(invisible(assert_return_AlpacaBase__initialize(self)))
     }
