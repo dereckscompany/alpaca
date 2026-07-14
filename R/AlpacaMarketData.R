@@ -1628,6 +1628,10 @@ AlpacaMarketData <- R6::R6Class(
               "payable_date"
             )
           )
+          # `target_symbol` is Alpaca-optional (only a merger/spin-off carries a
+          # distinct target); an absent field arrives as a logical NA, so coerce
+          # to `character` for the `character | NA` contract to see a typed `NA`.
+          coerce_cols(dt, "target_symbol", as.character)
           return(dt)
         }
       )

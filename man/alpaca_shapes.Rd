@@ -26,7 +26,10 @@ double) for true floating-point prices; \code{POSIXct} for parsed timestamps and
 legitimately be missing on a present row. Alpaca encodes a whole-number price
 without a decimal point, so the raw JSON parser realises such a bar/trade/
 quote price as \code{integer}; the parsers coerce every price/vwap column to a
-clean \code{numeric} double with \code{as.numeric()}, so the contracts can stay strict.
+clean \code{numeric} double with \code{as.numeric()}, so each such column is a stable
+\code{numeric} type (nullability is set separately, per the API's optional-field
+contract: measurement / venue-optional columns are \verb{| NA}, structural columns
+stay strict, following dereckscompany/.github discussion #2).
 
 \verb{@genassert} is omitted: no generated \verb{assert_type_<Shape>()} is called
 internally, and as a leaf connector nothing downstream consumes them, so the

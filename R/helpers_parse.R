@@ -388,6 +388,10 @@ parse_trades <- function(trades) {
   # jsonlite already realises such a value as a double, so coerce to a clean
   # `numeric` to keep the column type stable and never overflow `integer`.
   coerce_cols(dt, "id", as.numeric)
+  # `exchange`/`tape` are Alpaca-optional (absent on a crypto/aggregated print).
+  # An absent field arrives as an all-NA logical column; coerce to `character`
+  # so the `character | NA` contract sees a typed `NA`, not a logical one.
+  coerce_cols(dt, c("exchange", "tape"), as.character)
   return(assert_return_parse_trades(dt[]))
 }
 
@@ -444,6 +448,10 @@ parse_quotes <- function(quotes) {
   # Coerce the bid/ask prices to clean `numeric` doubles (a whole-number price
   # Alpaca sends without a decimal would otherwise realise as `integer`).
   coerce_cols(dt, c("ask_price", "bid_price"), as.numeric)
+  # `ask_exchange`/`bid_exchange`/`tape` are Alpaca-optional. An absent field
+  # arrives as an all-NA logical column; coerce to `character` so the
+  # `character | NA` contract sees a typed `NA`, not a logical one.
+  coerce_cols(dt, c("ask_exchange", "bid_exchange", "tape"), as.character)
   return(assert_return_parse_quotes(dt[]))
 }
 
@@ -790,7 +798,11 @@ parse_asset <- function(x) {
     return(assert_return_parse_asset(data.table::data.table()[]))
   }
   x <- collapse_string_array_fields(x, "attributes")
-  return(assert_return_parse_asset(as_dt_row(x)))
+  dt <- as_dt_row(x)
+  # `name` is Alpaca-optional; an absent field arrives as a logical NA, so coerce
+  # to `character` for the `character | NA` contract to see a typed `NA`.
+  coerce_cols(dt, "name", as.character)
+  return(assert_return_parse_asset(dt))
 }
 
 #' Parse an Alpaca Asset List to a data.table
@@ -929,6 +941,7 @@ parse_order <- function(x) {
 
   if (is.null(legs) || !is.list(legs) || length(legs) == 0L) {
     parse_timestamp_cols(parent_dt, ORDER_TIMESTAMP_COLS)
+    coerce_cols(parent_dt, ORDER_NULLABLE_STRING_COLS, as.character)
     return(assert_return_parse_order(parent_dt[]))
   }
 
@@ -945,6 +958,7 @@ parse_order <- function(x) {
   }
   out <- data.table::rbindlist(list(parent_dt, legs_dt), fill = TRUE)
   parse_timestamp_cols(out, ORDER_TIMESTAMP_COLS)
+  coerce_cols(out, ORDER_NULLABLE_STRING_COLS, as.character)
   return(assert_return_parse_order(out[]))
 }
 
@@ -962,6 +976,13 @@ ORDER_TIMESTAMP_COLS <- c(
   "replaced_at"
 )
 
+# Order string columns Alpaca documents optional: `symbol`/`side`/`type` are null
+# on the parent row of a multi-leg (`mleg`) order, and `qty` is null on a notional
+# order (it carries `notional` instead). An absent field arrives as a logical NA,
+# so coerce these to `character` for the `character | NA` contract to see a typed
+# `NA`, not a logical one.
+ORDER_NULLABLE_STRING_COLS <- c("symbol", "side", "type", "qty")
+
 #' Parse a List of Order Responses to data.table
 #'
 #' Applies `parse_order()` to each item and row-binds.
@@ -978,6 +999,105 @@ parse_orders <- function(items) {
   }
   dt <- data.table::rbindlist(lapply(items, parse_order), fill = TRUE)
   return(assert_return_parse_orders(dt[]))
+}
+
+# Account balance/margin columns Alpaca documents optional (null when position
+# marking is unavailable). An absent/null field arrives as a logical NA, so coerce
+# to `character` for the `character | NA` contracts to see a typed `NA`.
+ACCOUNT_NULLABLE_MEASUREMENT_COLS <- c(
+  "cash",
+  "portfolio_value",
+  "equity",
+  "last_equity",
+  "buying_power",
+  "initial_margin",
+  "maintenance_margin",
+  "long_market_value",
+  "short_market_value",
+  "daytrading_buying_power",
+  "regt_buying_power",
+  "sma"
+)
+
+# Position mark-derived measurement columns Alpaca documents optional (null when
+# the asset's market data is unavailable, e.g. a halted or newly-listed symbol).
+POSITION_NULLABLE_MEASUREMENT_COLS <- c(
+  "market_value",
+  "unrealized_pl",
+  "unrealized_plpc",
+  "current_price",
+  "lastday_price",
+  "change_today"
+)
+
+#' Parse the Alpaca Account Response to a Single-Row data.table
+#'
+#' Flattens the nested `admin_configurations` / `user_configurations` objects
+#' into wide prefixed columns, coerces `created_at` to POSIXct, and coerces the
+#' Alpaca-optional balance/margin measurement columns to `character` so their
+#' `character | NA` contracts see a typed `NA` when the venue returns null.
+#'
+#' @param data (list | NULL) the account object from the Alpaca API.
+#' @return (class<data.table>) a single-row account table.
+#'
+#' @keywords internal
+#' @noRd
+parse_account <- function(data) {
+  assert_args_parse_account(data)
+  if (is.null(data) || length(data) == 0L) {
+    return(assert_return_parse_account(data.table::data.table()[]))
+  }
+  for (cfg_field in c("admin_configurations", "user_configurations")) {
+    cfg <- data[[cfg_field]]
+    if (!is.null(cfg) && is.list(cfg) && length(cfg) > 0L) {
+      for (nm in names(cfg)) {
+        data[[paste0(cfg_field, "_", nm)]] <- cfg[[nm]]
+      }
+    }
+    data[[cfg_field]] <- NULL
+  }
+  dt <- as_dt_row(data)
+  parse_timestamp_cols(dt, "created_at")
+  coerce_cols(dt, ACCOUNT_NULLABLE_MEASUREMENT_COLS, as.character)
+  return(assert_return_parse_account(dt))
+}
+
+#' Parse an Alpaca Positions List to a data.table
+#'
+#' Row-binds the position records and coerces the Alpaca-optional mark-derived
+#' measurement columns to `character` so their `character | NA` contracts see a
+#' typed `NA` when the venue returns null.
+#'
+#' @param items (list | NULL) position records from the Alpaca API.
+#' @return (class<data.table>) a table with one row per position.
+#'
+#' @keywords internal
+#' @noRd
+parse_positions <- function(items) {
+  assert_args_parse_positions(items)
+  if (is.null(items) || length(items) == 0L) {
+    return(assert_return_parse_positions(empty_dt_positions()))
+  }
+  dt <- as_dt_list(items)
+  coerce_cols(dt, POSITION_NULLABLE_MEASUREMENT_COLS, as.character)
+  return(assert_return_parse_positions(dt))
+}
+
+#' Parse a Single Alpaca Position Record to a Single-Row data.table
+#'
+#' @param x (list | NULL) a named list representing a single position.
+#' @return (class<data.table>) a single-row position table.
+#'
+#' @keywords internal
+#' @noRd
+parse_position <- function(x) {
+  assert_args_parse_position(x)
+  if (is.null(x) || length(x) == 0L) {
+    return(assert_return_parse_position(data.table::data.table()[]))
+  }
+  dt <- as_dt_row(x)
+  coerce_cols(dt, POSITION_NULLABLE_MEASUREMENT_COLS, as.character)
+  return(assert_return_parse_position(dt))
 }
 
 # ---- Typed empty constructors ----
