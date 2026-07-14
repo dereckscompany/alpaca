@@ -1,5 +1,41 @@
 # Changelog
 
+## alpaca 0.10.0
+
+### Market-data corporate-actions archive: `AlpacaMarketData$get_corporate_actions_history()`
+
+New method wrapping `GET /v1/corporate-actions` on the Market Data host
+(`data.alpaca.markets`) — Alpaca’s historical corporate-actions dataset
+(splits, dividends, mergers, spin-offs, name changes, redemptions, and
+more) reaching back to 2016, the source an equities backtest needs to
+reconstruct split/dividend adjustments. This is distinct from the
+pre-existing `get_corporate_actions()`, which wraps the Trading API’s
+`/v2/corporate_actions/announcements` recent-events feed (marked
+DEPRECATED by Alpaca); both are kept, and the difference is documented
+in each method. The tradebot-data-scraper alpaca-rest collector
+previously had to call this endpoint through its own thin client because
+the wrapper did not expose it.
+
+The endpoint returns records grouped by action type, each type carrying
+a different field subset. Following the house rule for heterogeneous
+rows, the method stacks them into one `data.table` with a `type`
+discriminator (the venue’s plural group key, e.g. `"cash_dividends"`,
+`"forward_splits"`) and reindexes to a single canonical schema, so a
+narrow `types` query still returns the full, stably-typed column set.
+Types follow the NA-audit conventions: `id` and `type` are strict
+`character`; the symbol/CUSIP fields (`symbol`, `acquirer_symbol`,
+`new_cusip`, …) are `character | NA`; the rate/cash fields (`rate`,
+`old_rate`, `new_rate`, `cash_rate`, …) are `numeric | NA`; every date
+field (`ex_date`, `payable_date`, `effective_date`, …) is `Date | NA`
+(venue-optional per action type, matching the earlier corporate-actions
+NA audit); and the `foreign`/`special` flags are `logical | NA`.
+Auto-paginates via `next_page_token` (mirroring `get_bars_multi()`), and
+works in both synchronous and asynchronous (promise) modes. Grounded
+live against the endpoint on 2026-07-14 (AAPL 4:1 and TSLA 5:1 2020
+splits, and the full 16-type enum). An empty range returns the typed
+zero-row table via a new `empty_dt_corporate_actions_history()`
+constructor.
+
 ## alpaca 0.9.0
 
 ### Opt-in request retry at construction (`max_tries`), a hard GET-only carve-out (closes [\#19](https://github.com/dereckscompany/alpaca/issues/19))

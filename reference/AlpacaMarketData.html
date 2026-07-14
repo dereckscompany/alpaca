@@ -9,7 +9,7 @@ AlpacaMarketData: Market Data, Assets, Calendar, and Clock"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@ AlpacaMarketData: Market Data, Assets, Calendar, and Clock"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>AlpacaMarketData: Market Data, Assets, Calendar, and Clock</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.9.0/R/AlpacaMarketData.R" class="external-link"><code>R/AlpacaMarketData.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/R/AlpacaMarketData.R" class="external-link"><code>R/AlpacaMarketData.R</code></a></small>
       <div class="d-none name"><code>AlpacaMarketData.Rd</code></div>
     </div>
 
@@ -86,7 +86,7 @@ base URL. Both are configurable via constructor parameters.</p>
 
 <div class="section">
 <h3 id="endpoints-covered">Endpoints Covered<a class="anchor" aria-label="anchor" href="#endpoints-covered"></a></h3>
-<table class="table table"><tr><td>Method</td><td>Endpoint</td><td>Base</td></tr><tr><td>get_bars</td><td><code>GET /v2/stocks/\{symbol\}/bars</code></td><td>data</td></tr><tr><td>get_bars_multi</td><td><code>GET /v2/stocks/bars</code></td><td>data</td></tr><tr><td>get_latest_bar</td><td><code>GET /v2/stocks/\{symbol\}/bars/latest</code></td><td>data</td></tr><tr><td>get_latest_trade</td><td><code>GET /v2/stocks/\{symbol\}/trades/latest</code></td><td>data</td></tr><tr><td>get_latest_quote</td><td><code>GET /v2/stocks/\{symbol\}/quotes/latest</code></td><td>data</td></tr><tr><td>get_snapshot</td><td><code>GET /v2/stocks/\{symbol\}/snapshot</code></td><td>data</td></tr><tr><td>get_trades</td><td><code>GET /v2/stocks/\{symbol\}/trades</code></td><td>data</td></tr><tr><td>get_quotes</td><td><code>GET /v2/stocks/\{symbol\}/quotes</code></td><td>data</td></tr><tr><td>get_assets</td><td><code>GET /v2/assets</code></td><td>trading</td></tr><tr><td>get_asset</td><td><code>GET /v2/assets/\{symbol\}</code></td><td>trading</td></tr><tr><td>get_calendar</td><td><code>GET /v2/calendar</code></td><td>trading</td></tr><tr><td>get_clock</td><td><code>GET /v2/clock</code></td><td>trading</td></tr><tr><td>get_corporate_actions</td><td><code>GET /v2/corporate_actions/announcements</code></td><td>trading</td></tr><tr><td>get_news</td><td><code>GET /v1beta1/news</code></td><td>data</td></tr><tr><td>get_latest_bars_multi</td><td><code>GET /v2/stocks/bars/latest</code></td><td>data</td></tr><tr><td>get_latest_trades_multi</td><td><code>GET /v2/stocks/trades/latest</code></td><td>data</td></tr><tr><td>get_latest_quotes_multi</td><td><code>GET /v2/stocks/quotes/latest</code></td><td>data</td></tr><tr><td>get_snapshots_multi</td><td><code>GET /v2/stocks/snapshots</code></td><td>data</td></tr><tr><td>get_most_actives</td><td><code>GET /v1beta1/screener/stocks/most-actives</code></td><td>data</td></tr><tr><td>get_movers</td><td><code>GET /v1beta1/screener/\{market_type\}/movers</code></td><td>data</td></tr></table></div>
+<table class="table table"><tr><td>Method</td><td>Endpoint</td><td>Base</td></tr><tr><td>get_bars</td><td><code>GET /v2/stocks/\{symbol\}/bars</code></td><td>data</td></tr><tr><td>get_bars_multi</td><td><code>GET /v2/stocks/bars</code></td><td>data</td></tr><tr><td>get_latest_bar</td><td><code>GET /v2/stocks/\{symbol\}/bars/latest</code></td><td>data</td></tr><tr><td>get_latest_trade</td><td><code>GET /v2/stocks/\{symbol\}/trades/latest</code></td><td>data</td></tr><tr><td>get_latest_quote</td><td><code>GET /v2/stocks/\{symbol\}/quotes/latest</code></td><td>data</td></tr><tr><td>get_snapshot</td><td><code>GET /v2/stocks/\{symbol\}/snapshot</code></td><td>data</td></tr><tr><td>get_trades</td><td><code>GET /v2/stocks/\{symbol\}/trades</code></td><td>data</td></tr><tr><td>get_quotes</td><td><code>GET /v2/stocks/\{symbol\}/quotes</code></td><td>data</td></tr><tr><td>get_assets</td><td><code>GET /v2/assets</code></td><td>trading</td></tr><tr><td>get_asset</td><td><code>GET /v2/assets/\{symbol\}</code></td><td>trading</td></tr><tr><td>get_calendar</td><td><code>GET /v2/calendar</code></td><td>trading</td></tr><tr><td>get_clock</td><td><code>GET /v2/clock</code></td><td>trading</td></tr><tr><td>get_corporate_actions</td><td><code>GET /v2/corporate_actions/announcements</code></td><td>trading</td></tr><tr><td>get_corporate_actions_history</td><td><code>GET /v1/corporate-actions</code></td><td>data</td></tr><tr><td>get_news</td><td><code>GET /v1beta1/news</code></td><td>data</td></tr><tr><td>get_latest_bars_multi</td><td><code>GET /v2/stocks/bars/latest</code></td><td>data</td></tr><tr><td>get_latest_trades_multi</td><td><code>GET /v2/stocks/trades/latest</code></td><td>data</td></tr><tr><td>get_latest_quotes_multi</td><td><code>GET /v2/stocks/quotes/latest</code></td><td>data</td></tr><tr><td>get_snapshots_multi</td><td><code>GET /v2/stocks/snapshots</code></td><td>data</td></tr><tr><td>get_most_actives</td><td><code>GET /v1beta1/screener/stocks/most-actives</code></td><td>data</td></tr><tr><td>get_movers</td><td><code>GET /v1beta1/screener/\{market_type\}/movers</code></td><td>data</td></tr></table></div>
 
 <div class="section">
 <h3 id="timezones">Timezones<a class="anchor" aria-label="anchor" href="#timezones"></a></h3>
@@ -142,6 +142,7 @@ single hard-coded tz. The constant lives in <code>R/helpers_parse.R</code>
 <li><p><a href="#method-AlpacaMarketData-get_calendar"><code>AlpacaMarketData$get_calendar()</code></a></p></li>
 <li><p><a href="#method-AlpacaMarketData-get_clock"><code>AlpacaMarketData$get_clock()</code></a></p></li>
 <li><p><a href="#method-AlpacaMarketData-get_corporate_actions"><code>AlpacaMarketData$get_corporate_actions()</code></a></p></li>
+<li><p><a href="#method-AlpacaMarketData-get_corporate_actions_history"><code>AlpacaMarketData$get_corporate_actions_history()</code></a></p></li>
 <li><p><a href="#method-AlpacaMarketData-get_news"><code>AlpacaMarketData$get_news()</code></a></p></li>
 <li><p><a href="#method-AlpacaMarketData-get_crypto_orderbook"><code>AlpacaMarketData$get_crypto_orderbook()</code></a></p></li>
 <li><p><a href="#method-AlpacaMarketData-get_most_actives"><code>AlpacaMarketData$get_most_actives()</code></a></p></li>
@@ -1701,10 +1702,12 @@ need to handle position adjustments.</p><div class="section">
 <p><a href="https://docs.alpaca.markets/us/reference/get-v2-corporate_actions-announcements-1" class="external-link">Corporate Actions</a>
 Verified: 2026-05-21</p>
 <p>Note: as of 2026-05, the <code>/v2/corporate_actions/announcements</code> endpoint is
-marked DEPRECATED by Alpaca. It still works and the wrapper still calls
-it, but Alpaca recommends migrating to the newer corporate-actions
-market-data endpoint (<code>/v1beta1/corporate-actions</code>). Migration is tracked
-as a follow-up.</p>
+marked DEPRECATED by Alpaca. It still works and the wrapper still calls it,
+but Alpaca recommends migrating to the market-data corporate-actions
+endpoint, now exposed as <code>get_corporate_actions_history()</code>
+(<code>GET /v1/corporate-actions</code>, data host). This announcements feed is the
+Trading API's recent-events view; that method is the historical archive back
+to 2016.</p>
 </div>
 
 <div class="section">
@@ -1811,23 +1814,41 @@ splits &lt;- market$get_corporate_actions(
 </div>
 
 
-</div><p></p><hr><a id="method-AlpacaMarketData-get_news"></a><div class="section">
-<h3 id="method-get-news-">Method <code>get_news()</code><a class="anchor" aria-label="anchor" href="#method-get-news-"></a></h3>
-<p>Get Market News</p>
-<p>Retrieves news articles from multiple sources filtered by symbols,
-date range, or content. Useful for event-driven trading strategies.</p><div class="section">
+</div><p></p><hr><a id="method-AlpacaMarketData-get_corporate_actions_history"></a><div class="section">
+<h3 id="method-get-corporate-actions-history-">Method <code>get_corporate_actions_history()</code><a class="anchor" aria-label="anchor" href="#method-get-corporate-actions-history-"></a></h3>
+<p>Get Corporate Actions (Market-Data Archive)</p>
+<p>Retrieves the historical corporate-actions dataset — splits, dividends,
+mergers, spin-offs, name changes, and more — from Alpaca's Market Data API,
+reaching back to 2016. This is the endpoint an equities backtest needs to
+reconstruct split/dividend adjustments correctly.</p><div class="section">
+<h4 id="two-corporate-actions-endpoints-which-to-use">Two corporate-actions endpoints — which to use<a class="anchor" aria-label="anchor" href="#two-corporate-actions-endpoints-which-to-use"></a></h4>
+
+
+<p>In plain terms: <code>get_corporate_actions()</code> (the announcements feed) is the
+<em>Trading API</em>'s recent-events view — what Alpaca has recently announced or
+is about to apply; this method is the <em>Market Data API</em>'s archive going back
+to 2016. Technically the two hit different hosts and return different shapes.
+The announcements feed (<code>/v2/corporate_actions/announcements</code>, trading host)
+returns a flat array of announcement records; it is marked DEPRECATED by
+Alpaca. This method (<code>/v1/corporate-actions</code>, data host) returns the records
+grouped by action type and is the current, non-deprecated source. Both are
+kept: use the announcements feed for the near-term event calendar, this one
+for the historical archive.</p>
+</div>
+
+<div class="section">
 <h4 id="api-endpoint-18">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-18"></a></h4>
 
 
-<p><code>GET https://data.alpaca.markets/v1beta1/news</code></p>
+<p><code>GET https://data.alpaca.markets/v1/corporate-actions</code></p>
 </div>
 
 <div class="section">
 <h4 id="official-documentation-19">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-19"></a></h4>
 
 
-<p><a href="https://docs.alpaca.markets/us/reference/news-3" class="external-link">News</a>
-Verified: 2026-05-22</p>
+<p><a href="https://docs.alpaca.markets/reference/corporateactions-1" class="external-link">Corporate Actions (Market Data)</a>
+Verified: 2026-07-14</p>
 </div>
 
 <div class="section">
@@ -1835,11 +1856,195 @@ Verified: 2026-05-22</p>
 
 
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>curl <span class="sc">-</span>H <span class="st">"APCA-API-KEY-ID: $KEY"</span> <span class="sc">-</span>H <span class="st">"APCA-API-SECRET-KEY: $SECRET"</span> \</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="st">'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&amp;limit=10'</span></span></code></pre><p></p></div>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="st">'https://data.alpaca.markets/v1/corporate-actions?symbols=AAPL,TSLA&amp;types=forward_split,cash_dividend&amp;start=2020-08-01&amp;end=2020-09-15&amp;sort=asc'</span></span></code></pre><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="json-response-18">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-18"></a></h4>
+
+
+<p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="dt">"corporate_actions"</span><span class="fu">:</span> <span class="fu">{</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="dt">"cash_dividends"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>        <span class="dt">"symbol"</span><span class="fu">:</span> <span class="st">"AAPL"</span><span class="fu">,</span> <span class="dt">"cusip"</span><span class="fu">:</span> <span class="st">"037833100"</span><span class="fu">,</span> <span class="dt">"rate"</span><span class="fu">:</span> <span class="fl">0.82</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>        <span class="dt">"special"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">"foreign"</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span> <span class="dt">"ex_date"</span><span class="fu">:</span> <span class="st">"2020-08-07"</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>        <span class="dt">"record_date"</span><span class="fu">:</span> <span class="st">"2020-08-10"</span><span class="fu">,</span> <span class="dt">"payable_date"</span><span class="fu">:</span> <span class="st">"2020-08-13"</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>        <span class="dt">"process_date"</span><span class="fu">:</span> <span class="st">"2020-08-13"</span><span class="fu">,</span> <span class="dt">"id"</span><span class="fu">:</span> <span class="st">"d09386ae-..."</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>    <span class="dt">"forward_splits"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>      <span class="fu">{</span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>        <span class="dt">"symbol"</span><span class="fu">:</span> <span class="st">"AAPL"</span><span class="fu">,</span> <span class="dt">"cusip"</span><span class="fu">:</span> <span class="st">"037833100"</span><span class="fu">,</span> <span class="dt">"new_rate"</span><span class="fu">:</span> <span class="dv">4</span><span class="fu">,</span> <span class="dt">"old_rate"</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>        <span class="dt">"ex_date"</span><span class="fu">:</span> <span class="st">"2020-08-31"</span><span class="fu">,</span> <span class="dt">"record_date"</span><span class="fu">:</span> <span class="st">"2020-08-24"</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>        <span class="dt">"payable_date"</span><span class="fu">:</span> <span class="st">"2020-08-28"</span><span class="fu">,</span> <span class="dt">"process_date"</span><span class="fu">:</span> <span class="st">"2020-08-31"</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>        <span class="dt">"due_bill_redemption_date"</span><span class="fu">:</span> <span class="st">"2020-09-01"</span><span class="fu">,</span> <span class="dt">"id"</span><span class="fu">:</span> <span class="st">"d209b6c2-..."</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>      <span class="fu">}</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    <span class="ot">]</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>  <span class="fu">},</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  <span class="dt">"next_page_token"</span><span class="fu">:</span> <span class="kw">null</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
+</div>
+<div class="section">
+<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">get_corporate_actions_history</span><span class="op">(</span></span>
+<span>  types <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  symbols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  start <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  end <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  limit <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  sort <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  page_token <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_pages <span class="op">=</span> <span class="fl">1000L</span>,</span>
+<span>  sleep <span class="op">=</span> <span class="fl">0.3</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>types</code></dt>
+<dd><p>(character | NULL) corporate-action types to return (each
+sent to the venue's <code>types</code> query param). Valid values: <code>"forward_split"</code>,
+<code>"reverse_split"</code>, <code>"unit_split"</code>, <code>"stock_dividend"</code>, <code>"cash_dividend"</code>,
+<code>"spin_off"</code>, <code>"cash_merger"</code>, <code>"stock_merger"</code>,
+<code>"stock_and_cash_merger"</code>, <code>"redemption"</code>, <code>"name_change"</code>,
+<code>"worthless_removal"</code>, <code>"rights_distribution"</code>, <code>"contract_adjustment"</code>,
+<code>"partial_call"</code>, <code>"reorganization"</code>. <code>NULL</code> (default) returns every type.
+Invalid values abort before the request.</p></dd>
+
+
+<dt><code>symbols</code></dt>
+<dd><p>(character | NULL) filter by ticker symbol(s). <code>NULL</code>
+(default) returns all symbols.</p></dd>
+
+
+<dt><code>start</code></dt>
+<dd><p>(scalar&lt;character&gt; | NULL) start date (<code>"YYYY-MM-DD"</code>). The
+archive begins in 2016. <code>NULL</code> uses the venue default.</p></dd>
+
+
+<dt><code>end</code></dt>
+<dd><p>(scalar&lt;character&gt; | NULL) end date (<code>"YYYY-MM-DD"</code>). <code>NULL</code> uses
+the venue default.</p></dd>
+
+
+<dt><code>limit</code></dt>
+<dd><p>(scalar&lt;count in [1, 1001[&gt; | NULL) max results <strong>per page</strong>
+(1-1000, default 1000). The method auto-paginates via <code>next_page_token</code>,
+so the full range is returned regardless of <code>limit</code>.</p></dd>
+
+
+<dt><code>sort</code></dt>
+<dd><p>(scalar&lt;character&gt; | NULL) <code>"asc"</code> (default server-side) or
+<code>"desc"</code>.</p></dd>
+
+
+<dt><code>page_token</code></dt>
+<dd><p>(scalar&lt;character&gt; | NULL) starting cursor. Normally left
+<code>NULL</code> — auto-pagination begins at <code>start</code> and follows the cursor itself.</p></dd>
+
+
+<dt><code>max_pages</code></dt>
+<dd><p>(scalar&lt;numeric in [1, Inf]&gt; | scalar&lt;integer in [1, Inf[&gt;) cap on pages fetched
+(runaway guard). Default 1000; pass <code>Inf</code> for unbounded. If hit while more
+data remains, the partial result is returned with a <code><a href="https://rdrr.io/r/base/warning.html" class="external-link">warning()</a></code>.</p></dd>
+
+
+<dt><code>sleep</code></dt>
+<dd><p>(scalar&lt;numeric in [0, Inf[&gt;) seconds to pause between page
+requests (rate-limit throttle; sync only). Default 0.3.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
+<p>(data.table | promise&lt;data.table&gt;) one row per corporate action,
+the heterogeneous action types stacked with a <code>type</code> discriminator and
+NA-filled to a single schema (a column absent for an action type is <code>NA</code>
+on that type's rows; empty when the range carries no actions):</p><ul><li><p>id (character) unique corporate-action id (the venue's dedup key).</p></li>
+<li><p>type (character) action-type discriminator — the venue's group key
+(e.g. <code>"cash_dividends"</code>, <code>"forward_splits"</code>, <code>"stock_mergers"</code>).</p></li>
+<li><p>symbol (character | NA) affected ticker (splits, dividends, redemptions).</p></li>
+<li><p>cusip (character | NA) affected CUSIP.</p></li>
+<li><p>new_symbol (character | NA) post-action ticker (splits, spin-offs, name changes).</p></li>
+<li><p>new_cusip (character | NA) post-action CUSIP.</p></li>
+<li><p>old_symbol (character | NA) pre-action ticker (unit splits, name changes).</p></li>
+<li><p>old_cusip (character | NA) pre-action CUSIP.</p></li>
+<li><p>alternate_symbol (character | NA) alternate ticker (unit splits).</p></li>
+<li><p>alternate_cusip (character | NA) alternate CUSIP (unit splits).</p></li>
+<li><p>acquiree_symbol (character | NA) acquired-company ticker (mergers).</p></li>
+<li><p>acquiree_cusip (character | NA) acquired-company CUSIP (mergers).</p></li>
+<li><p>acquirer_symbol (character | NA) acquiring-company ticker (mergers).</p></li>
+<li><p>acquirer_cusip (character | NA) acquiring-company CUSIP (mergers).</p></li>
+<li><p>source_symbol (character | NA) source ticker (spin-offs, rights distributions).</p></li>
+<li><p>source_cusip (character | NA) source CUSIP (spin-offs, rights distributions).</p></li>
+<li><p>rate (numeric | NA) cash/stock rate (dividends, mergers, redemptions).</p></li>
+<li><p>old_rate (numeric | NA) pre-action share rate (splits).</p></li>
+<li><p>new_rate (numeric | NA) post-action share rate (splits, spin-offs).</p></li>
+<li><p>alternate_rate (numeric | NA) alternate share rate (unit splits).</p></li>
+<li><p>acquiree_rate (numeric | NA) acquiree share rate (stock/stock-and-cash mergers).</p></li>
+<li><p>acquirer_rate (numeric | NA) acquirer share rate (stock/stock-and-cash mergers).</p></li>
+<li><p>cash_rate (numeric | NA) cash component (stock-and-cash mergers).</p></li>
+<li><p>source_rate (numeric | NA) source share rate (spin-offs).</p></li>
+<li><p>ex_date (Date | NA) ex-date.</p></li>
+<li><p>record_date (Date | NA) record date.</p></li>
+<li><p>payable_date (Date | NA) payable date.</p></li>
+<li><p>process_date (Date | NA) Alpaca processing date.</p></li>
+<li><p>effective_date (Date | NA) effective date (mergers, unit splits).</p></li>
+<li><p>expiration_date (Date | NA) expiration date (rights distributions).</p></li>
+<li><p>due_bill_off_date (Date | NA) due-bill off date (cash dividends).</p></li>
+<li><p>due_bill_on_date (Date | NA) due-bill on date (cash dividends).</p></li>
+<li><p>due_bill_redemption_date (Date | NA) due-bill redemption date (splits, spin-offs).</p></li>
+<li><p>foreign (logical | NA) whether the dividend is foreign (cash dividends).</p></li>
+<li><p>special (logical | NA) whether the dividend is special (cash dividends).</p></li>
+</ul></div>
+<div class="section">
+<h4 id="examples-13">Examples<a class="anchor" aria-label="anchor" href="#examples-13"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
+market &lt;- AlpacaMarketData$new()
+
+# Every AAPL/TSLA split and dividend since 2016
+actions &lt;- market$get_corporate_actions_history(
+  types = c("forward_split", "reverse_split", "cash_dividend"),
+  symbols = c("AAPL", "TSLA"),
+  start = "2016-01-01"
+)
+print(actions[type == "forward_splits", .(symbol, ex_date, old_rate, new_rate)])
+}
+</code></pre></div><p></p></div>
+</div>
+
+
+</div><p></p><hr><a id="method-AlpacaMarketData-get_news"></a><div class="section">
+<h3 id="method-get-news-">Method <code>get_news()</code><a class="anchor" aria-label="anchor" href="#method-get-news-"></a></h3>
+<p>Get Market News</p>
+<p>Retrieves news articles from multiple sources filtered by symbols,
+date range, or content. Useful for event-driven trading strategies.</p><div class="section">
+<h4 id="api-endpoint-19">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-19"></a></h4>
+
+
+<p><code>GET https://data.alpaca.markets/v1beta1/news</code></p>
+</div>
+
+<div class="section">
+<h4 id="official-documentation-20">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-20"></a></h4>
+
+
+<p><a href="https://docs.alpaca.markets/us/reference/news-3" class="external-link">News</a>
+Verified: 2026-05-22</p>
+</div>
+
+<div class="section">
+<h4 id="curl-19">curl<a class="anchor" aria-label="anchor" href="#curl-19"></a></h4>
+
+
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>curl <span class="sc">-</span>H <span class="st">"APCA-API-KEY-ID: $KEY"</span> <span class="sc">-</span>H <span class="st">"APCA-API-SECRET-KEY: $SECRET"</span> \</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="st">'https://data.alpaca.markets/v1beta1/news?symbols=AAPL&amp;limit=10'</span></span></code></pre><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="json-response-19">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-19"></a></h4>
 
 
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1861,7 +2066,7 @@ Verified: 2026-05-22</p>
 <span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
 </div>
 <div class="section">
-<h4 id="usage-18">Usage<a class="anchor" aria-label="anchor" href="#usage-18"></a></h4>
+<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">get_news</span><span class="op">(</span></span>
 <span>  symbols <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  start <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1875,7 +2080,7 @@ Verified: 2026-05-22</p>
 </div>
 
 <div class="section">
-<h4 id="arguments-17">Arguments<a class="anchor" aria-label="anchor" href="#arguments-17"></a></h4>
+<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>symbols</code></dt>
 <dd><p>(character | NULL) comma-separated symbols to filter
 (e.g., <code>"AAPL,MSFT"</code>), or a character vector of symbols.</p></dd>
@@ -1916,7 +2121,7 @@ articles without content.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-18">Returns<a class="anchor" aria-label="anchor" href="#returns-18"></a></h4>
+<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
 <p>(News | promise&lt;News&gt;) <strong>one row per article</strong>.
 Columns: <code>id</code> (integer); <code>headline</code>, <code>author</code>, <code>source</code>, <code>summary</code>,
 <code>url</code> (character); <code>created_at</code>, <code>updated_at</code> (POSIXct, UTC); <code>symbols</code>
@@ -1931,7 +2136,7 @@ after splitting recovers the original). Filter symbols with
 <code>vapply(strsplit(dt$image_urls[1], ";", fixed = TRUE)[[1]], URLdecode, character(1))</code>.</p>
 </div>
 <div class="section">
-<h4 id="examples-13">Examples<a class="anchor" aria-label="anchor" href="#examples-13"></a></h4>
+<h4 id="examples-14">Examples<a class="anchor" aria-label="anchor" href="#examples-14"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
 market &lt;- AlpacaMarketData$new()
 
@@ -1950,14 +2155,14 @@ news &lt;- market$get_news(symbols = "TSLA", include_content = TRUE)
 <h3 id="method-get-crypto-orderbook-">Method <code>get_crypto_orderbook()</code><a class="anchor" aria-label="anchor" href="#method-get-crypto-orderbook-"></a></h3>
 <p>Get Latest Crypto Orderbook</p>
 <p>Retrieves the latest orderbook (top of book) for a crypto symbol.</p><div class="section">
-<h4 id="api-endpoint-19">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-19"></a></h4>
+<h4 id="api-endpoint-20">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-20"></a></h4>
 
 
 <p><code>GET https://data.alpaca.markets/v1beta3/crypto/{loc}/latest/orderbooks</code></p>
 </div>
 
 <div class="section">
-<h4 id="official-documentation-20">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-20"></a></h4>
+<h4 id="official-documentation-21">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-21"></a></h4>
 
 
 <p><a href="https://docs.alpaca.markets/us/reference/cryptolatestorderbooks-1" class="external-link">Latest Crypto Orderbooks</a>
@@ -1965,7 +2170,7 @@ Verified: 2026-05-22</p>
 </div>
 
 <div class="section">
-<h4 id="curl-19">curl<a class="anchor" aria-label="anchor" href="#curl-19"></a></h4>
+<h4 id="curl-20">curl<a class="anchor" aria-label="anchor" href="#curl-20"></a></h4>
 
 
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>curl <span class="sc">-</span>H <span class="st">"APCA-API-KEY-ID: $KEY"</span> <span class="sc">-</span>H <span class="st">"APCA-API-SECRET-KEY: $SECRET"</span> \</span>
@@ -1973,7 +2178,7 @@ Verified: 2026-05-22</p>
 </div>
 
 <div class="section">
-<h4 id="json-response-19">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-19"></a></h4>
+<h4 id="json-response-20">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-20"></a></h4>
 
 
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1993,12 +2198,12 @@ Verified: 2026-05-22</p>
 <span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
 </div>
 <div class="section">
-<h4 id="usage-19">Usage<a class="anchor" aria-label="anchor" href="#usage-19"></a></h4>
+<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">get_crypto_orderbook</span><span class="op">(</span><span class="va">symbols</span>, loc <span class="op">=</span> <span class="st">"us"</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-18">Arguments<a class="anchor" aria-label="anchor" href="#arguments-18"></a></h4>
+<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>symbols</code></dt>
 <dd><p>(character) crypto symbols (e.g. <code>"BTC/USD"</code>).</p></dd>
 
@@ -2010,7 +2215,7 @@ Verified: 2026-05-22</p>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-19">Returns<a class="anchor" aria-label="anchor" href="#returns-19"></a></h4>
+<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
 <p>(CryptoOrderbook | promise&lt;CryptoOrderbook&gt;) one row per
 <code>(symbol, side, level)</code>. Columns: <code>symbol</code>, <code>side</code> (<code>"bid"</code> or <code>"ask"</code>)
 (character); <code>level</code> (integer, 1-based depth within the side — <code>level = 1</code>
@@ -2018,7 +2223,7 @@ is top of book, ordering preserved from the Alpaca response); <code>price</code>
 <code>size</code> (numeric); and <code>timestamp</code> (POSIXct).</p>
 </div>
 <div class="section">
-<h4 id="examples-14">Examples<a class="anchor" aria-label="anchor" href="#examples-14"></a></h4>
+<h4 id="examples-15">Examples<a class="anchor" aria-label="anchor" href="#examples-15"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
 market &lt;- AlpacaMarketData$new()
 ob &lt;- market$get_crypto_orderbook("BTC/USD")
@@ -2032,14 +2237,14 @@ print(ob)
 <h3 id="method-get-most-actives-">Method <code>get_most_actives()</code><a class="anchor" aria-label="anchor" href="#method-get-most-actives-"></a></h3>
 <p>Get Most Active Stocks</p>
 <p>Retrieves the most active stocks by volume or trade count.</p><div class="section">
-<h4 id="api-endpoint-20">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-20"></a></h4>
+<h4 id="api-endpoint-21">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-21"></a></h4>
 
 
 <p><code>GET https://data.alpaca.markets/v1beta1/screener/stocks/most-actives</code></p>
 </div>
 
 <div class="section">
-<h4 id="official-documentation-21">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-21"></a></h4>
+<h4 id="official-documentation-22">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-22"></a></h4>
 
 
 <p><a href="https://docs.alpaca.markets/us/reference/mostactives-1" class="external-link">Most Active Stocks</a>
@@ -2047,7 +2252,7 @@ Verified: 2026-05-21</p>
 </div>
 
 <div class="section">
-<h4 id="curl-20">curl<a class="anchor" aria-label="anchor" href="#curl-20"></a></h4>
+<h4 id="curl-21">curl<a class="anchor" aria-label="anchor" href="#curl-21"></a></h4>
 
 
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>curl <span class="sc">-</span>H <span class="st">"APCA-API-KEY-ID: $KEY"</span> <span class="sc">-</span>H <span class="st">"APCA-API-SECRET-KEY: $SECRET"</span> \</span>
@@ -2055,7 +2260,7 @@ Verified: 2026-05-21</p>
 </div>
 
 <div class="section">
-<h4 id="json-response-20">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-20"></a></h4>
+<h4 id="json-response-21">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-21"></a></h4>
 
 
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
@@ -2070,12 +2275,12 @@ Verified: 2026-05-21</p>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
 </div>
 <div class="section">
-<h4 id="usage-20">Usage<a class="anchor" aria-label="anchor" href="#usage-20"></a></h4>
+<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">get_most_actives</span><span class="op">(</span>by <span class="op">=</span> <span class="cn">NULL</span>, top <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-19">Arguments<a class="anchor" aria-label="anchor" href="#arguments-19"></a></h4>
+<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>by</code></dt>
 <dd><p>(scalar&lt;character&gt; | NULL) ranking metric: <code>"volume"</code> (default)
 or <code>"trades"</code>.</p></dd>
@@ -2089,14 +2294,14 @@ or <code>"trades"</code>.</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-20">Returns<a class="anchor" aria-label="anchor" href="#returns-20"></a></h4>
+<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
 <p>(MostActives | promise&lt;MostActives&gt;) the most active stocks.
 Columns: <code>symbol</code> (character); <code>volume</code>, <code>trade_count</code> (count — the
 parser coerces both whole-number counters to a <code>numeric</code> double so a
 large volume cannot overflow <code>integer</code>).</p>
 </div>
 <div class="section">
-<h4 id="examples-15">Examples<a class="anchor" aria-label="anchor" href="#examples-15"></a></h4>
+<h4 id="examples-16">Examples<a class="anchor" aria-label="anchor" href="#examples-16"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
 market &lt;- AlpacaMarketData$new()
 actives &lt;- market$get_most_actives(by = "volume", top = 20)
@@ -2110,14 +2315,14 @@ print(actives)
 <h3 id="method-get-movers-">Method <code>get_movers()</code><a class="anchor" aria-label="anchor" href="#method-get-movers-"></a></h3>
 <p>Get Top Market Movers</p>
 <p>Retrieves the top market movers (gainers and losers) by percentage change.</p><div class="section">
-<h4 id="api-endpoint-21">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-21"></a></h4>
+<h4 id="api-endpoint-22">API Endpoint<a class="anchor" aria-label="anchor" href="#api-endpoint-22"></a></h4>
 
 
 <p><code>GET https://data.alpaca.markets/v1beta1/screener/{market_type}/movers</code></p>
 </div>
 
 <div class="section">
-<h4 id="official-documentation-22">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-22"></a></h4>
+<h4 id="official-documentation-23">Official Documentation<a class="anchor" aria-label="anchor" href="#official-documentation-23"></a></h4>
 
 
 <p><a href="https://docs.alpaca.markets/us/reference/movers-1" class="external-link">Top Market Movers</a>
@@ -2125,7 +2330,7 @@ Verified: 2026-05-21</p>
 </div>
 
 <div class="section">
-<h4 id="curl-21">curl<a class="anchor" aria-label="anchor" href="#curl-21"></a></h4>
+<h4 id="curl-22">curl<a class="anchor" aria-label="anchor" href="#curl-22"></a></h4>
 
 
 <p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>curl <span class="sc">-</span>H <span class="st">"APCA-API-KEY-ID: $KEY"</span> <span class="sc">-</span>H <span class="st">"APCA-API-SECRET-KEY: $SECRET"</span> \</span>
@@ -2133,7 +2338,7 @@ Verified: 2026-05-21</p>
 </div>
 
 <div class="section">
-<h4 id="json-response-21">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-21"></a></h4>
+<h4 id="json-response-22">JSON Response<a class="anchor" aria-label="anchor" href="#json-response-22"></a></h4>
 
 
 <p></p><div class="sourceCode json"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">{</span></span>
@@ -2152,12 +2357,12 @@ Verified: 2026-05-21</p>
 <span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="fu">}</span></span></code></pre><p></p></div>
 </div>
 <div class="section">
-<h4 id="usage-21">Usage<a class="anchor" aria-label="anchor" href="#usage-21"></a></h4>
+<h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">get_movers</span><span class="op">(</span>market_type <span class="op">=</span> <span class="st">"stocks"</span>, top <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-20">Arguments<a class="anchor" aria-label="anchor" href="#arguments-20"></a></h4>
+<h4 id="arguments-21">Arguments<a class="anchor" aria-label="anchor" href="#arguments-21"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>market_type</code></dt>
 <dd><p>(scalar&lt;character&gt;) <code>"stocks"</code> (default) or <code>"crypto"</code>.</p></dd>
 
@@ -2170,13 +2375,13 @@ direction (default 10).</p></dd>
 </dl><p></p></div>
 </div>
 <div class="section">
-<h4 id="returns-21">Returns<a class="anchor" aria-label="anchor" href="#returns-21"></a></h4>
+<h4 id="returns-22">Returns<a class="anchor" aria-label="anchor" href="#returns-22"></a></h4>
 <p>(Movers | promise&lt;Movers&gt;) the movers. Columns: <code>symbol</code>
 (character); <code>percent_change</code>, <code>change</code>, <code>price</code> (numeric); plus a
 <code>direction</code> column (<code>"gainer"</code> / <code>"loser"</code>).</p>
 </div>
 <div class="section">
-<h4 id="examples-16">Examples<a class="anchor" aria-label="anchor" href="#examples-16"></a></h4>
+<h4 id="examples-17">Examples<a class="anchor" aria-label="anchor" href="#examples-17"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code>\dontrun{
 market &lt;- AlpacaMarketData$new()
 movers &lt;- market$get_movers(top = 5)
@@ -2189,12 +2394,12 @@ print(movers)
 </div><p></p><hr><a id="method-AlpacaMarketData-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-22">Usage<a class="anchor" aria-label="anchor" href="#usage-22"></a></h4>
+<h4 id="usage-23">Usage<a class="anchor" aria-label="anchor" href="#usage-23"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-21">Arguments<a class="anchor" aria-label="anchor" href="#arguments-21"></a></h4>
+<h4 id="arguments-22">Arguments<a class="anchor" aria-label="anchor" href="#arguments-22"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -2363,6 +2568,22 @@ print(movers)
 <span class="r-in"><span><span class="va">splits</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_corporate_actions</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  ca_types <span class="op">=</span> <span class="st">"split"</span>, since <span class="op">=</span> <span class="st">"2024-01-01"</span>, until <span class="op">=</span> <span class="st">"2024-12-31"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `AlpacaMarketData$get_corporate_actions_history`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">market</span> <span class="op">&lt;-</span> <span class="va">AlpacaMarketData</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Every AAPL/TSLA split and dividend since 2016</span></span></span>
+<span class="r-in"><span><span class="va">actions</span> <span class="op">&lt;-</span> <span class="va">market</span><span class="op">$</span><span class="fu">get_corporate_actions_history</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"forward_split"</span>, <span class="st">"reverse_split"</span>, <span class="st">"cash_dividend"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  symbols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AAPL"</span>, <span class="st">"TSLA"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="st">"2016-01-01"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">actions</span><span class="op">[</span><span class="va">type</span> <span class="op">==</span> <span class="st">"forward_splits"</span>, <span class="fu">.</span><span class="op">(</span><span class="va">symbol</span>, <span class="va">ex_date</span>, <span class="va">old_rate</span>, <span class="va">new_rate</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>

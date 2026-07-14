@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,9 +35,18 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.9.0/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="alpaca-0100">alpaca 0.10.0<a class="anchor" aria-label="anchor" href="#alpaca-0100"></a></h2>
+<div class="section level3">
+<h3 id="market-data-corporate-actions-archive-alpacamarketdataget_corporate_actions_history-0-10-0">Market-data corporate-actions archive: <code>AlpacaMarketData$get_corporate_actions_history()</code>
+<a class="anchor" aria-label="anchor" href="#market-data-corporate-actions-archive-alpacamarketdataget_corporate_actions_history-0-10-0"></a></h3>
+<p>New method wrapping <code>GET /v1/corporate-actions</code> on the Market Data host (<code>data.alpaca.markets</code>) — Alpaca’s historical corporate-actions dataset (splits, dividends, mergers, spin-offs, name changes, redemptions, and more) reaching back to 2016, the source an equities backtest needs to reconstruct split/dividend adjustments. This is distinct from the pre-existing <code>get_corporate_actions()</code>, which wraps the Trading API’s <code>/v2/corporate_actions/announcements</code> recent-events feed (marked DEPRECATED by Alpaca); both are kept, and the difference is documented in each method. The tradebot-data-scraper alpaca-rest collector previously had to call this endpoint through its own thin client because the wrapper did not expose it.</p>
+<p>The endpoint returns records grouped by action type, each type carrying a different field subset. Following the house rule for heterogeneous rows, the method stacks them into one <code>data.table</code> with a <code>type</code> discriminator (the venue’s plural group key, e.g. <code>"cash_dividends"</code>, <code>"forward_splits"</code>) and reindexes to a single canonical schema, so a narrow <code>types</code> query still returns the full, stably-typed column set. Types follow the NA-audit conventions: <code>id</code> and <code>type</code> are strict <code>character</code>; the symbol/CUSIP fields (<code>symbol</code>, <code>acquirer_symbol</code>, <code>new_cusip</code>, …) are <code>character | NA</code>; the rate/cash fields (<code>rate</code>, <code>old_rate</code>, <code>new_rate</code>, <code>cash_rate</code>, …) are <code>numeric | NA</code>; every date field (<code>ex_date</code>, <code>payable_date</code>, <code>effective_date</code>, …) is <code>Date | NA</code> (venue-optional per action type, matching the earlier corporate-actions NA audit); and the <code>foreign</code>/<code>special</code> flags are <code>logical | NA</code>. Auto-paginates via <code>next_page_token</code> (mirroring <code>get_bars_multi()</code>), and works in both synchronous and asynchronous (promise) modes. Grounded live against the endpoint on 2026-07-14 (AAPL 4:1 and TSLA 5:1 2020 splits, and the full 16-type enum). An empty range returns the typed zero-row table via a new <code>empty_dt_corporate_actions_history()</code> constructor.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="alpaca-090">alpaca 0.9.0<a class="anchor" aria-label="anchor" href="#alpaca-090"></a></h2>
 <div class="section level3">
