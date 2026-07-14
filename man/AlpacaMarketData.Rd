@@ -59,6 +59,7 @@ base URL. Both are configurable via constructor parameters.
    get_calendar \tab \code{GET /v2/calendar} \tab trading \cr
    get_clock \tab \code{GET /v2/clock} \tab trading \cr
    get_corporate_actions \tab \code{GET /v2/corporate_actions/announcements} \tab trading \cr
+   get_corporate_actions_history \tab \code{GET /v1/corporate-actions} \tab data \cr
    get_news \tab \code{GET /v1beta1/news} \tab data \cr
    get_latest_bars_multi \tab \code{GET /v2/stocks/bars/latest} \tab data \cr
    get_latest_trades_multi \tab \code{GET /v2/stocks/trades/latest} \tab data \cr
@@ -256,6 +257,22 @@ splits <- market$get_corporate_actions(
 }
 
 ## ------------------------------------------------
+## Method `AlpacaMarketData$get_corporate_actions_history`
+## ------------------------------------------------
+
+\dontrun{
+market <- AlpacaMarketData$new()
+
+# Every AAPL/TSLA split and dividend since 2016
+actions <- market$get_corporate_actions_history(
+  types = c("forward_split", "reverse_split", "cash_dividend"),
+  symbols = c("AAPL", "TSLA"),
+  start = "2016-01-01"
+)
+print(actions[type == "forward_splits", .(symbol, ex_date, old_rate, new_rate)])
+}
+
+## ------------------------------------------------
 ## Method `AlpacaMarketData$get_news`
 ## ------------------------------------------------
 
@@ -324,6 +341,7 @@ print(movers)
 \item \href{#method-AlpacaMarketData-get_calendar}{\code{AlpacaMarketData$get_calendar()}}
 \item \href{#method-AlpacaMarketData-get_clock}{\code{AlpacaMarketData$get_clock()}}
 \item \href{#method-AlpacaMarketData-get_corporate_actions}{\code{AlpacaMarketData$get_corporate_actions()}}
+\item \href{#method-AlpacaMarketData-get_corporate_actions_history}{\code{AlpacaMarketData$get_corporate_actions_history()}}
 \item \href{#method-AlpacaMarketData-get_news}{\code{AlpacaMarketData$get_news()}}
 \item \href{#method-AlpacaMarketData-get_crypto_orderbook}{\code{AlpacaMarketData$get_crypto_orderbook()}}
 \item \href{#method-AlpacaMarketData-get_most_actives}{\code{AlpacaMarketData$get_most_actives()}}
@@ -1704,10 +1722,12 @@ need to handle position adjustments.
 Verified: 2026-05-21
 
 Note: as of 2026-05, the \verb{/v2/corporate_actions/announcements} endpoint is
-marked DEPRECATED by Alpaca. It still works and the wrapper still calls
-it, but Alpaca recommends migrating to the newer corporate-actions
-market-data endpoint (\verb{/v1beta1/corporate-actions}). Migration is tracked
-as a follow-up.
+marked DEPRECATED by Alpaca. It still works and the wrapper still calls it,
+but Alpaca recommends migrating to the market-data corporate-actions
+endpoint, now exposed as \code{\link[=AlpacaMarketData]{get_corporate_actions_history()}}
+(\code{GET /v1/corporate-actions}, data host). This announcements feed is the
+Trading API's recent-events view; that method is the historical archive back
+to 2016.
 }
 
 \subsection{curl}{
@@ -1794,6 +1814,190 @@ print(divs)
 splits <- market$get_corporate_actions(
   ca_types = "split", since = "2024-01-01", until = "2024-12-31"
 )
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-AlpacaMarketData-get_corporate_actions_history"></a>}}
+\if{latex}{\out{\hypertarget{method-AlpacaMarketData-get_corporate_actions_history}{}}}
+\subsection{Method \code{get_corporate_actions_history()}}{
+Get Corporate Actions (Market-Data Archive)
+
+Retrieves the historical corporate-actions dataset — splits, dividends,
+mergers, spin-offs, name changes, and more — from Alpaca's Market Data API,
+reaching back to 2016. This is the endpoint an equities backtest needs to
+reconstruct split/dividend adjustments correctly.
+\subsection{Two corporate-actions endpoints — which to use}{
+
+In plain terms: \code{get_corporate_actions()} (the announcements feed) is the
+\emph{Trading API}'s recent-events view — what Alpaca has recently announced or
+is about to apply; this method is the \emph{Market Data API}'s archive going back
+to 2016. Technically the two hit different hosts and return different shapes.
+The announcements feed (\verb{/v2/corporate_actions/announcements}, trading host)
+returns a flat array of announcement records; it is marked DEPRECATED by
+Alpaca. This method (\verb{/v1/corporate-actions}, data host) returns the records
+grouped by action type and is the current, non-deprecated source. Both are
+kept: use the announcements feed for the near-term event calendar, this one
+for the historical archive.
+}
+
+\subsection{API Endpoint}{
+
+\verb{GET https://data.alpaca.markets/v1/corporate-actions}
+}
+
+\subsection{Official Documentation}{
+
+\href{https://docs.alpaca.markets/reference/corporateactions-1}{Corporate Actions (Market Data)}
+Verified: 2026-07-14
+}
+
+\subsection{curl}{
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{curl -H "APCA-API-KEY-ID: $KEY" -H "APCA-API-SECRET-KEY: $SECRET" \\
+  'https://data.alpaca.markets/v1/corporate-actions?symbols=AAPL,TSLA&types=forward_split,cash_dividend&start=2020-08-01&end=2020-09-15&sort=asc'
+}\if{html}{\out{</div>}}
+}
+
+\subsection{JSON Response}{
+
+\if{html}{\out{<div class="sourceCode json">}}\preformatted{\{
+  "corporate_actions": \{
+    "cash_dividends": [
+      \{
+        "symbol": "AAPL", "cusip": "037833100", "rate": 0.82,
+        "special": false, "foreign": false, "ex_date": "2020-08-07",
+        "record_date": "2020-08-10", "payable_date": "2020-08-13",
+        "process_date": "2020-08-13", "id": "d09386ae-..."
+      \}
+    ],
+    "forward_splits": [
+      \{
+        "symbol": "AAPL", "cusip": "037833100", "new_rate": 4, "old_rate": 1,
+        "ex_date": "2020-08-31", "record_date": "2020-08-24",
+        "payable_date": "2020-08-28", "process_date": "2020-08-31",
+        "due_bill_redemption_date": "2020-09-01", "id": "d209b6c2-..."
+      \}
+    ]
+  \},
+  "next_page_token": null
+\}
+}\if{html}{\out{</div>}}
+}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{AlpacaMarketData$get_corporate_actions_history(
+  types = NULL,
+  symbols = NULL,
+  start = NULL,
+  end = NULL,
+  limit = 1000L,
+  sort = NULL,
+  page_token = NULL,
+  max_pages = 1000L,
+  sleep = 0.3
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{types}}{(character | NULL) corporate-action types to return (each
+sent to the venue's \code{types} query param). Valid values: \code{"forward_split"},
+\code{"reverse_split"}, \code{"unit_split"}, \code{"stock_dividend"}, \code{"cash_dividend"},
+\code{"spin_off"}, \code{"cash_merger"}, \code{"stock_merger"},
+\code{"stock_and_cash_merger"}, \code{"redemption"}, \code{"name_change"},
+\code{"worthless_removal"}, \code{"rights_distribution"}, \code{"contract_adjustment"},
+\code{"partial_call"}, \code{"reorganization"}. \code{NULL} (default) returns every type.
+Invalid values abort before the request.}
+
+\item{\code{symbols}}{(character | NULL) filter by ticker symbol(s). \code{NULL}
+(default) returns all symbols.}
+
+\item{\code{start}}{(scalar<character> | NULL) start date (\code{"YYYY-MM-DD"}). The
+archive begins in 2016. \code{NULL} uses the venue default.}
+
+\item{\code{end}}{(scalar<character> | NULL) end date (\code{"YYYY-MM-DD"}). \code{NULL} uses
+the venue default.}
+
+\item{\code{limit}}{(scalar<count in [1, 1001[> | NULL) max results \strong{per page}
+(1-1000, default 1000). The method auto-paginates via \code{next_page_token},
+so the full range is returned regardless of \code{limit}.}
+
+\item{\code{sort}}{(scalar<character> | NULL) \code{"asc"} (default server-side) or
+\code{"desc"}.}
+
+\item{\code{page_token}}{(scalar<character> | NULL) starting cursor. Normally left
+\code{NULL} — auto-pagination begins at \code{start} and follows the cursor itself.}
+
+\item{\code{max_pages}}{(scalar<numeric in [1, Inf]> | scalar<integer in [1, Inf[>) cap on pages fetched
+(runaway guard). Default 1000; pass \code{Inf} for unbounded. If hit while more
+data remains, the partial result is returned with a \code{warning()}.}
+
+\item{\code{sleep}}{(scalar<numeric in [0, Inf[>) seconds to pause between page
+requests (rate-limit throttle; sync only). Default 0.3.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+(data.table | promise<data.table>) one row per corporate action,
+the heterogeneous action types stacked with a \code{type} discriminator and
+NA-filled to a single schema (a column absent for an action type is \code{NA}
+on that type's rows; empty when the range carries no actions):
+\itemize{
+\item id (character) unique corporate-action id (the venue's dedup key).
+\item type (character) action-type discriminator — the venue's group key
+(e.g. \code{"cash_dividends"}, \code{"forward_splits"}, \code{"stock_mergers"}).
+\item symbol (character | NA) affected ticker (splits, dividends, redemptions).
+\item cusip (character | NA) affected CUSIP.
+\item new_symbol (character | NA) post-action ticker (splits, spin-offs, name changes).
+\item new_cusip (character | NA) post-action CUSIP.
+\item old_symbol (character | NA) pre-action ticker (unit splits, name changes).
+\item old_cusip (character | NA) pre-action CUSIP.
+\item alternate_symbol (character | NA) alternate ticker (unit splits).
+\item alternate_cusip (character | NA) alternate CUSIP (unit splits).
+\item acquiree_symbol (character | NA) acquired-company ticker (mergers).
+\item acquiree_cusip (character | NA) acquired-company CUSIP (mergers).
+\item acquirer_symbol (character | NA) acquiring-company ticker (mergers).
+\item acquirer_cusip (character | NA) acquiring-company CUSIP (mergers).
+\item source_symbol (character | NA) source ticker (spin-offs, rights distributions).
+\item source_cusip (character | NA) source CUSIP (spin-offs, rights distributions).
+\item rate (numeric | NA) cash/stock rate (dividends, mergers, redemptions).
+\item old_rate (numeric | NA) pre-action share rate (splits).
+\item new_rate (numeric | NA) post-action share rate (splits, spin-offs).
+\item alternate_rate (numeric | NA) alternate share rate (unit splits).
+\item acquiree_rate (numeric | NA) acquiree share rate (stock/stock-and-cash mergers).
+\item acquirer_rate (numeric | NA) acquirer share rate (stock/stock-and-cash mergers).
+\item cash_rate (numeric | NA) cash component (stock-and-cash mergers).
+\item source_rate (numeric | NA) source share rate (spin-offs).
+\item ex_date (Date | NA) ex-date.
+\item record_date (Date | NA) record date.
+\item payable_date (Date | NA) payable date.
+\item process_date (Date | NA) Alpaca processing date.
+\item effective_date (Date | NA) effective date (mergers, unit splits).
+\item expiration_date (Date | NA) expiration date (rights distributions).
+\item due_bill_off_date (Date | NA) due-bill off date (cash dividends).
+\item due_bill_on_date (Date | NA) due-bill on date (cash dividends).
+\item due_bill_redemption_date (Date | NA) due-bill redemption date (splits, spin-offs).
+\item foreign (logical | NA) whether the dividend is foreign (cash dividends).
+\item special (logical | NA) whether the dividend is special (cash dividends).
+}
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{\dontrun{
+market <- AlpacaMarketData$new()
+
+# Every AAPL/TSLA split and dividend since 2016
+actions <- market$get_corporate_actions_history(
+  types = c("forward_split", "reverse_split", "cash_dividend"),
+  symbols = c("AAPL", "TSLA"),
+  start = "2016-01-01"
+)
+print(actions[type == "forward_splits", .(symbol, ex_date, old_rate, new_rate)])
 }
 }
 \if{html}{\out{</div>}}

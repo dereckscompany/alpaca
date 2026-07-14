@@ -1155,6 +1155,90 @@ assert_return_AlpacaMarketData__get_corporate_actions <- function(value) {
   return(value)
 }
 
+assert_args_AlpacaMarketData__get_corporate_actions_history <- function(types, symbols, start, end, limit, sort, page_token, max_pages, sleep) {
+  if (!is.null(types)) {
+    assert_character(types)
+    assert_no_missing_values(types)
+  }
+  if (!is.null(symbols)) {
+    assert_character(symbols)
+    assert_no_missing_values(symbols)
+  }
+  if (!is.null(start)) {
+    assert_scalar_character(start)
+  }
+  if (!is.null(end)) {
+    assert_scalar_character(end)
+  }
+  if (!is.null(limit)) {
+    assert_scalar_count(limit)
+    assert_between(limit, lower = 1, upper = 1001, upper_inclusive = FALSE)
+  }
+  if (!is.null(sort)) {
+    assert_scalar_character(sort)
+  }
+  if (!is.null(page_token)) {
+    assert_scalar_character(page_token)
+  }
+  assert_any_of(
+    max_pages,
+    function(.x) {
+      assert_scalar_double(.x)
+      assert_between(.x, lower = 1)
+    },
+    function(.x) {
+      assert_scalar_integer(.x)
+      assert_between(.x, lower = 1)
+    }
+  )
+  assert_scalar_double(sleep)
+  assert_between(sleep, lower = 0, upper = Inf, upper_inclusive = FALSE)
+  return(invisible(NULL))
+}
+
+assert_return_AlpacaMarketData__get_corporate_actions_history <- function(value) {
+  assert_data_table(value)
+  assert_has_columns(value, c("id", "type", "symbol", "cusip", "new_symbol", "new_cusip", "old_symbol", "old_cusip", "alternate_symbol", "alternate_cusip", "acquiree_symbol", "acquiree_cusip", "acquirer_symbol", "acquirer_cusip", "source_symbol", "source_cusip", "rate", "old_rate", "new_rate", "alternate_rate", "acquiree_rate", "acquirer_rate", "cash_rate", "source_rate", "ex_date", "record_date", "payable_date", "process_date", "effective_date", "expiration_date", "due_bill_off_date", "due_bill_on_date", "due_bill_redemption_date", "foreign", "special"))
+  assert_character(value[["id"]])
+  assert_no_missing_values(value[["id"]])
+  assert_character(value[["type"]])
+  assert_no_missing_values(value[["type"]])
+  assert_character(value[["symbol"]])
+  assert_character(value[["cusip"]])
+  assert_character(value[["new_symbol"]])
+  assert_character(value[["new_cusip"]])
+  assert_character(value[["old_symbol"]])
+  assert_character(value[["old_cusip"]])
+  assert_character(value[["alternate_symbol"]])
+  assert_character(value[["alternate_cusip"]])
+  assert_character(value[["acquiree_symbol"]])
+  assert_character(value[["acquiree_cusip"]])
+  assert_character(value[["acquirer_symbol"]])
+  assert_character(value[["acquirer_cusip"]])
+  assert_character(value[["source_symbol"]])
+  assert_character(value[["source_cusip"]])
+  assert_double(value[["rate"]])
+  assert_double(value[["old_rate"]])
+  assert_double(value[["new_rate"]])
+  assert_double(value[["alternate_rate"]])
+  assert_double(value[["acquiree_rate"]])
+  assert_double(value[["acquirer_rate"]])
+  assert_double(value[["cash_rate"]])
+  assert_double(value[["source_rate"]])
+  assert_date(value[["ex_date"]])
+  assert_date(value[["record_date"]])
+  assert_date(value[["payable_date"]])
+  assert_date(value[["process_date"]])
+  assert_date(value[["effective_date"]])
+  assert_date(value[["expiration_date"]])
+  assert_date(value[["due_bill_off_date"]])
+  assert_date(value[["due_bill_on_date"]])
+  assert_date(value[["due_bill_redemption_date"]])
+  assert_logical(value[["foreign"]])
+  assert_logical(value[["special"]])
+  return(value)
+}
+
 assert_args_AlpacaMarketData__get_news <- function(symbols, start, end, limit, sort, include_content, exclude_contentless, page_token) {
   if (!is.null(symbols)) {
     assert_character(symbols)
@@ -2017,6 +2101,18 @@ assert_args_parse_multi_bars_items <- function(items) {
 }
 
 assert_return_parse_multi_bars_items <- function(value) {
+  assert_class(value, "data.table")
+  return(value)
+}
+
+assert_args_parse_corporate_actions_items <- function(items) {
+  if (!is.null(items)) {
+    assert_list(items)
+  }
+  return(invisible(NULL))
+}
+
+assert_return_parse_corporate_actions_items <- function(value) {
   assert_class(value, "data.table")
   return(value)
 }

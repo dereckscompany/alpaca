@@ -1,0 +1,47 @@
+{
+  "corporate_actions": {
+    "cash_dividends": [
+      {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "symbol": "AAPL",
+        "cusip": "037833100",
+        "rate": 0.25,
+        "special": false,
+        "foreign": false,
+        "ex_date": "2024-02-09",
+        "record_date": "2024-02-12",
+        "payable_date": "2024-02-15",
+        "process_date": "2024-02-15"
+      }
+    ],
+    "forward_splits": [
+      {
+        "id": "00000000-0000-0000-0000-000000000002",
+        "symbol": "TSLA",
+        "cusip": "88160R101",
+        "new_rate": 3,
+        "old_rate": 1,
+        "ex_date": "2022-08-25",
+        "record_date": "2022-08-17",
+        "payable_date": "2022-08-24",
+        "process_date": "2022-08-25",
+        "due_bill_redemption_date": "2022-08-26"
+      }
+    ],
+    "stock_mergers": [
+      {
+        "id": "00000000-0000-0000-0000-000000000003",
+        "acquirer_symbol": "ACQR",
+        "acquirer_cusip": "111111111",
+        "acquirer_rate": 0.5,
+        "acquiree_symbol": "TGT2",
+        "acquiree_cusip": "222222222",
+        "acquiree_rate": 1,
+        "effective_date": "2023-06-01",
+        "payable_date": "2023-06-02",
+        "process_date": "2023-06-02"
+      }
+    ]
+  },
+  "next_page_token": null
+}
