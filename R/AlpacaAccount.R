@@ -135,21 +135,7 @@ AlpacaAccount <- R6::R6Class(
     get_account = function() {
       result <- private$.request(
         endpoint = "/v2/account",
-        .parser = function(data) {
-          # Flatten nested configuration objects into wide prefixed columns
-          for (cfg_field in c("admin_configurations", "user_configurations")) {
-            cfg <- data[[cfg_field]]
-            if (!is.null(cfg) && is.list(cfg) && length(cfg) > 0) {
-              for (nm in names(cfg)) {
-                data[[paste0(cfg_field, "_", nm)]] <- cfg[[nm]]
-              }
-            }
-            data[[cfg_field]] <- NULL
-          }
-          dt <- as_dt_row(data)
-          parse_timestamp_cols(dt, "created_at")
-          return(dt)
-        }
+        .parser = parse_account
       )
       return(connectcore::then_or_now(
         result,
@@ -385,12 +371,7 @@ AlpacaAccount <- R6::R6Class(
     get_positions = function() {
       result <- private$.request(
         endpoint = "/v2/positions",
-        .parser = function(items) {
-          if (is.null(items) || length(items) == 0) {
-            return(empty_dt_positions())
-          }
-          return(as_dt_list(items))
-        }
+        .parser = parse_positions
       )
       return(connectcore::then_or_now(
         result,
@@ -454,7 +435,7 @@ AlpacaAccount <- R6::R6Class(
       endpoint <- paste0("/v2/positions/", symbol_or_id)
       result <- private$.request(
         endpoint = endpoint,
-        .parser = as_dt_row
+        .parser = parse_position
       )
       return(connectcore::then_or_now(
         result,

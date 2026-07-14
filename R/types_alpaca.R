@@ -25,7 +25,10 @@
 #' legitimately be missing on a present row. Alpaca encodes a whole-number price
 #' without a decimal point, so the raw JSON parser realises such a bar/trade/
 #' quote price as `integer`; the parsers coerce every price/vwap column to a
-#' clean `numeric` double with `as.numeric()`, so the contracts can stay strict.
+#' clean `numeric` double with `as.numeric()`, so each such column is a stable
+#' `numeric` type (nullability is set separately, per the API's optional-field
+#' contract: measurement / venue-optional columns are `| NA`, structural columns
+#' stay strict, following dereckscompany/.github discussion #2).
 #'
 #' `@genassert` is omitted: no generated `assert_type_<Shape>()` is called
 #' internally, and as a leaf connector nothing downstream consumes them, so the
@@ -43,9 +46,13 @@
 #' - volume (numeric) traded volume. A whole-number counter that can exceed the
 #'   32-bit `integer` ceiling on a liquid name, so the parser coerces it to a
 #'   `numeric` double (jsonlite already realises a value `>= 2^31` as a double).
-#' - trade_count (numeric) number of trades in the bar, coerced to `numeric` for
-#'   the same overflow reason as `volume`.
-#' - vwap (numeric) volume-weighted average price.
+#' - trade_count (numeric | NA) number of trades in the bar, coerced to `numeric`
+#'   for the same overflow reason as `volume`. Alpaca documents it optional (a bar
+#'   feed can omit `n`), which the parser realises as `NA`, so the column is
+#'   nullable.
+#' - vwap (numeric | NA) volume-weighted average price. Alpaca documents it
+#'   optional (a bar feed can omit `vw`), which the parser realises as `NA`, so
+#'   the column is nullable.
 #'
 #' @type BarsMulti (extends Bars) one row per (symbol, bar), with the symbol key:
 #' - symbol (character) the ticker (or OCC option) symbol.
@@ -56,8 +63,12 @@
 #' - price (numeric) trade price (the parser coerces it to a double, so a
 #'   whole-number price Alpaca sends without a decimal lands as `numeric`).
 #' - size (integer) trade size in shares.
-#' - exchange (character) reporting exchange code.
-#' - tape (character) the consolidated tape (e.g. `"C"`).
+#' - exchange (character | NA) reporting exchange code. Alpaca documents it
+#'   optional (absent on a crypto trade / an aggregated print), which the parser
+#'   coerces to `NA`, so the column is nullable.
+#' - tape (character | NA) the consolidated tape (e.g. `"C"`). Alpaca documents it
+#'   optional (absent outside the consolidated equity feed), which the parser
+#'   coerces to `NA`, so the column is nullable.
 #' - id (numeric) exchange-assigned trade id. Can exceed the 32-bit `integer`
 #'   ceiling, so the parser coerces it to a `numeric` double (jsonlite already
 #'   realises a value `>= 2^31` as a double).
@@ -75,17 +86,23 @@
 #' @type Quote (data.table) one row per equity NBBO quote (`parse_quotes()` maps
 #'   `t`/`ax`/`ap`/`as`/`bx`/`bp`/`bs`/`z`/`c`):
 #' - timestamp (POSIXct) quote time (UTC).
-#' - ask_exchange (character) the exchange posting the best ask.
+#' - ask_exchange (character | NA) the exchange posting the best ask. Alpaca
+#'   documents it optional (absent when the ask side has no venue / on a crypto
+#'   quote), which the parser coerces to `NA`, so the column is nullable.
 #' - ask_price (numeric | NA) best ask price (the parser coerces it to a
 #'   double). On an illiquid, one-sided book the ask side may be absent, which
 #'   the parser coerces to `NA`, so the column is nullable.
 #' - ask_size (integer) ask size.
-#' - bid_exchange (character) the exchange posting the best bid.
+#' - bid_exchange (character | NA) the exchange posting the best bid. Alpaca
+#'   documents it optional (absent when the bid side has no venue / on a crypto
+#'   quote), which the parser coerces to `NA`, so the column is nullable.
 #' - bid_price (numeric | NA) best bid price (the parser coerces it to a
 #'   double). On an illiquid, one-sided book the bid side may be absent, which
 #'   the parser coerces to `NA`, so the column is nullable.
 #' - bid_size (integer) bid size.
-#' - tape (character) the consolidated tape (e.g. `"C"`).
+#' - tape (character | NA) the consolidated tape (e.g. `"C"`). Alpaca documents it
+#'   optional (absent outside the consolidated equity feed), which the parser
+#'   coerces to `NA`, so the column is nullable.
 #' - conditions (character | NA) `;`-collapsed quote condition codes, or `NA`.
 #'
 #' @type QuotesMulti (extends Quote) one row per (symbol, quote), with the key:
@@ -108,7 +125,9 @@
 #' - latest_trade_size (integer | NA) latest trade size; `NA` when an illiquid
 #'   contract has had no last trade.
 #' - latest_trade_conditions (character | NA) `;`-collapsed trade conditions, or `NA`.
-#' - latest_quote_timestamp (POSIXct) latest quote time (UTC).
+#' - latest_quote_timestamp (POSIXct | NA) latest quote time (UTC); `NA` when an
+#'   illiquid contract has had no last quote (mirrors `latest_trade_timestamp`;
+#'   Alpaca marks the whole `latestQuote` section optional).
 #' - latest_quote_ask_price (numeric | NA) latest ask price (coerced to a
 #'   double); `NA` when an illiquid, one-sided book omits the ask.
 #' - latest_quote_bid_price (numeric | NA) latest bid price (coerced to a
@@ -125,7 +144,8 @@
 #' - class (character) asset class (e.g. `"us_equity"`).
 #' - exchange (character) listing exchange.
 #' - symbol (character) ticker symbol.
-#' - name (character) human-readable name.
+#' - name (character | NA) human-readable name. Alpaca documents it optional
+#'   (absent on some assets), which the parser coerces to `NA`, so it is nullable.
 #' - status (character) `"active"` / `"inactive"`.
 #' - tradable (logical) whether the asset is tradable.
 #' - marginable (logical) whether the asset is marginable.
@@ -161,11 +181,19 @@
 #' - ca_type (character) action type (`"dividend"`, `"split"`, ...).
 #' - ca_sub_type (character) action sub-type.
 #' - initiating_symbol (character) the initiating ticker.
-#' - target_symbol (character) the target ticker.
-#' - declaration_date (Date) declaration date.
-#' - ex_date (Date) ex-date.
-#' - record_date (Date) record date.
-#' - payable_date (Date) payable date.
+#' - target_symbol (character | NA) the target ticker. Alpaca documents it
+#'   optional (only a merger/spin-off/symbol-change carries a distinct target;
+#'   absent otherwise), coerced to `NA`, so the column is nullable.
+#' - declaration_date (Date | NA) declaration date. Alpaca documents all four
+#'   announcement dates optional (an action carries only the dates relevant to
+#'   its type), which `parse_date_cols()` realises as `NA`, so the column is
+#'   nullable.
+#' - ex_date (Date | NA) ex-date, optional per the same rule as
+#'   `declaration_date`.
+#' - record_date (Date | NA) record date, optional per the same rule as
+#'   `declaration_date`.
+#' - payable_date (Date | NA) payable date, optional per the same rule as
+#'   `declaration_date`.
 #' - cash (character | NA) cash amount, or `NA` (e.g. for a split).
 #' - old_rate (character | NA) pre-action rate, or `NA` (e.g. for a dividend).
 #' - new_rate (character | NA) post-action rate, or `NA`.
@@ -227,24 +255,37 @@
 #' - account_number (character) the account number.
 #' - status (character) account status.
 #' - currency (character) account currency.
-#' - cash (character) cash balance (string).
-#' - portfolio_value (character) total portfolio value (string).
-#' - equity (character) account equity (string).
-#' - last_equity (character) previous-close equity (string).
-#' - buying_power (character) buying power (string).
-#' - initial_margin (character) initial margin (string).
-#' - maintenance_margin (character) maintenance margin (string).
-#' - long_market_value (character) long market value (string).
-#' - short_market_value (character) short market value (string).
+#' - cash (character | NA) cash balance (string). Alpaca documents the balance and
+#'   margin measurements optional (they can be absent/null when position marking
+#'   is unavailable), which the parser coerces to `NA`, so the column is nullable.
+#' - portfolio_value (character | NA) total portfolio value (string); optional per
+#'   the same rule as `cash`.
+#' - equity (character | NA) account equity (string); optional per the same rule
+#'   as `cash`.
+#' - last_equity (character | NA) previous-close equity (string); optional per the
+#'   same rule as `cash`.
+#' - buying_power (character | NA) buying power (string); optional per the same
+#'   rule as `cash`.
+#' - initial_margin (character | NA) initial margin (string); optional per the
+#'   same rule as `cash`.
+#' - maintenance_margin (character | NA) maintenance margin (string); optional per
+#'   the same rule as `cash`.
+#' - long_market_value (character | NA) long market value (string); optional per
+#'   the same rule as `cash`.
+#' - short_market_value (character | NA) short market value (string); optional per
+#'   the same rule as `cash`.
 #' - pattern_day_trader (logical) PDT flag.
 #' - trading_blocked (logical) whether trading is blocked.
 #' - transfers_blocked (logical) whether transfers are blocked.
 #' - account_blocked (logical) whether the account is blocked.
 #' - daytrade_count (integer) rolling day-trade count.
-#' - daytrading_buying_power (character) day-trading buying power (string).
-#' - regt_buying_power (character) Reg-T buying power (string).
+#' - daytrading_buying_power (character | NA) day-trading buying power (string);
+#'   optional per the same rule as `cash`.
+#' - regt_buying_power (character | NA) Reg-T buying power (string); optional per
+#'   the same rule as `cash`.
 #' - multiplier (character) margin multiplier (string).
-#' - sma (character) special memorandum account value (string).
+#' - sma (character | NA) special memorandum account value (string); optional per
+#'   the same rule as `cash`.
 #' - created_at (POSIXct) account creation time (UTC).
 #'
 #' @type AccountConfig (data.table) one row, the account configuration:
@@ -265,13 +306,21 @@
 #' - avg_entry_price (character) average entry price (string).
 #' - qty (character) position quantity (string).
 #' - side (character) `"long"` or `"short"`.
-#' - market_value (character) current market value (string).
+#' - market_value (character | NA) current market value (string). Alpaca documents
+#'   the mark-derived measurements optional (null when the asset's market data is
+#'   unavailable, e.g. a halted or newly-listed symbol), which the parser coerces
+#'   to `NA`, so the column is nullable.
 #' - cost_basis (character) cost basis (string).
-#' - unrealized_pl (character) unrealized P/L (string).
-#' - unrealized_plpc (character) unrealized P/L percent (string).
-#' - current_price (character) current price (string).
-#' - lastday_price (character) previous-day close price (string).
-#' - change_today (character) intraday change fraction (string).
+#' - unrealized_pl (character | NA) unrealized P/L (string); optional per the same
+#'   rule as `market_value`.
+#' - unrealized_plpc (character | NA) unrealized P/L percent (string); optional per
+#'   the same rule as `market_value`.
+#' - current_price (character | NA) current price (string); optional per the same
+#'   rule as `market_value`.
+#' - lastday_price (character | NA) previous-day close price (string); optional per
+#'   the same rule as `market_value`.
+#' - change_today (character | NA) intraday change fraction (string); optional per
+#'   the same rule as `market_value`.
 #'
 #' @type Activity (data.table) one row per account activity. Only `id` and
 #'   `activity_type` are guaranteed across every activity type; the trade-shaped
@@ -319,11 +368,16 @@
 #'   (`client_order_id`, `time_in_force`, `limit_price`, ...) ride along as
 #'   un-asserted extras where the venue returns them:
 #' - id (character) the exchange order id.
-#' - symbol (character) the ticker.
-#' - side (character) order side.
-#' - type (character) order type.
+#' - symbol (character | NA) the ticker. Alpaca documents it optional: the parent
+#'   row of a multi-leg (`mleg`) options order carries no single symbol (the legs
+#'   do), so the parser realises it as `NA`, and the column is nullable.
+#' - side (character | NA) order side; `NA` on a multi-leg parent row per the same
+#'   rule as `symbol`.
+#' - type (character | NA) order type; Alpaca documents it optional, so `NA` where
+#'   the venue omits it.
 #' - status (character) order status.
-#' - qty (character) requested quantity (string).
+#' - qty (character | NA) requested quantity (string); `NA` on a notional order
+#'   (it carries `notional` instead of `qty`).
 #' - filled_qty (character) filled quantity (string).
 #' - created_at (POSIXct) creation time (UTC).
 #'

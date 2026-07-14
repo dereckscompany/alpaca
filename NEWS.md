@@ -1,3 +1,9 @@
+# alpaca 0.8.0
+
+## Column-type NA audit (org discussion #2): measurement columns tolerate legitimately-missing venue values
+
+The per-connector type-fidelity audit reaches alpaca. Thirty-five columns across nine return shapes move from strict to `| NA`, each grounded in the alpaca-py SDK's own Optional markings — the venue's authoritative statement of which fields can be absent on a normal response. The headline fixes are the ones that would have crashed a live loop: Position rows during volatile markets (market_value, unrealized_pl and friends go null when Alpaca cannot price a symbol), multi-leg parent Orders (symbol/side/type null on the parent row), notional orders (qty null), and CorporateAction date fields that are absent per action type. Structural identity columns stay strict. Every loosened string column gains a parser coercion so a venue null arrives as a typed NA rather than a bare logical (the known assert-crash trap), via new parse_account/parse_positions/parse_position helpers matching the sibling parse_* pattern. Adds test-na-audit.R (+96 assertions).
+
 # alpaca 0.7.0
 
 ## Typed input-validation conditions (the non-transport half of the taxonomy)
