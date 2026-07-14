@@ -55,7 +55,7 @@ Contract metadata endpoints use the trading base URL.
 
 ## Super classes
 
-[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+[`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
 -\>
 [`alpaca::AlpacaBase`](https://dereckscompany.github.io/alpaca/reference/AlpacaBase.md)
 -\> `AlpacaOptions`

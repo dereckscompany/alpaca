@@ -1,5 +1,33 @@
 # Changelog
 
+## alpaca 0.9.0
+
+### Opt-in request retry at construction (`max_tries`), a hard GET-only carve-out (closes [\#19](https://github.com/dereckscompany/alpaca/issues/19))
+
+Every client class constructor (via `AlpacaBase`) gains a `max_tries`
+argument (`scalar<integer in [1, 10]>`, default `1` = no retry) threaded
+to `connectcore`’s retry machinery. Setting it above `1` opts every GET
+the client makes — single requests and auto-paginated reads
+(e.g. historical bars) alike — into automatic retry on a transient
+failure (HTTP 408/429/5xx or a dropped connection) with jittered
+backoff. Retry is a hard **GET-only** carve-out: a non-idempotent verb
+(an order `POST`, a cancel `DELETE`) is never auto-retried, so a resend
+can never double-submit an order. The default `1` leaves live-trading
+behaviour unchanged — the trader layer stays the single retry authority
+there; raise `max_tries` only for research and backfill reads. This
+resolves the resilience question raised in
+[\#19](https://github.com/dereckscompany/alpaca/issues/19): resilience
+is exposed once at construction and reaches every request through the
+single
+[`alpaca_build_request()`](https://dereckscompany.github.io/alpaca/reference/alpaca_build_request.md)
+funnel
+([`alpaca_paginate()`](https://dereckscompany.github.io/alpaca/reference/alpaca_paginate.md)
+and
+[`alpaca_build_request()`](https://dereckscompany.github.io/alpaca/reference/alpaca_build_request.md)
+gain a `max_tries` argument so paginated bar backfills honour it).
+Requires `connectcore (>= 0.5.0)`, where the GET-only guard is enforced
+in the one shared request funnel.
+
 ## alpaca 0.8.0
 
 ### Column-type NA audit (org discussion [\#2](https://github.com/dereckscompany/alpaca/issues/2)): measurement columns tolerate legitimately-missing venue values
@@ -162,11 +190,11 @@ sibling parse\_\* pattern. Adds test-na-audit.R (+96 assertions).
   harness.** The bespoke mock router and its inline R-list fixtures are
   replaced by JSON fixtures under `tests/testthat/fixtures/` — the
   single source of truth — loaded via
-  [`connectcore::load_fixtures()`](https://rdrr.io/pkg/connectcore/man/load_fixtures.html)
+  [`connectcore::load_fixtures()`](https://dereckscompany.github.io/connectcore/reference/load_fixtures.html)
   and dispatched through
-  [`connectcore::mock_router()`](https://rdrr.io/pkg/connectcore/man/mock_router.html);
+  [`connectcore::mock_router()`](https://dereckscompany.github.io/connectcore/reference/mock_router.html);
   the README and vignettes install the mock with
-  [`connectcore::local_mock_api()`](https://rdrr.io/pkg/connectcore/man/local_mock_api.html).
+  [`connectcore::local_mock_api()`](https://dereckscompany.github.io/connectcore/reference/local_mock_api.html).
   The fixtures are now derived from real read-only Alpaca API captures
   with every account id, balance, and order id scrubbed to synthetic
   placeholders, so they mirror the real response shapes faithfully.
@@ -272,7 +300,7 @@ sibling parse\_\* pattern. Adds test-na-audit.R (+96 assertions).
   `NAMESPACE`. The change adds validation only: no public signature or
   behaviour changes for any valid input. For the sync-or-async methods
   the return validator is applied to the resolved value through
-  [`connectcore::then_or_now()`](https://rdrr.io/pkg/connectcore/man/then_or_now.html),
+  [`connectcore::then_or_now()`](https://dereckscompany.github.io/connectcore/reference/then_or_now.html),
   so it runs in both modes (per roxyassert’s promise model). `assert` is
   now an `Imports` dependency; `roxyassert` is used at `document()` time
   only.
@@ -320,7 +348,7 @@ sibling parse\_\* pattern. Adds test-na-audit.R (+96 assertions).
   [connectcore](https://github.com/dereckscompany/connectcore).** The
   Alpaca clients now build on connectcore’s shared transport base
   instead of a private copy. `AlpacaBase` inherits
-  [`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+  [`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
   and customises only the two venue-specific seams: `.sign()` adds
   Alpaca’s `APCA-API-KEY-ID` / `APCA-API-SECRET-KEY` headers (Alpaca
   authenticates with plain API-key headers — no request signing), and
@@ -331,9 +359,9 @@ sibling parse\_\* pattern. Adds test-na-audit.R (+96 assertions).
 - **Duplicated transport and generic helpers deleted.** The package’s
   own `then_or_now()` and the request-funnel internals are gone,
   replaced by
-  [`connectcore::build_request()`](https://rdrr.io/pkg/connectcore/man/build_request.html)
+  [`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)
   /
-  [`connectcore::then_or_now()`](https://rdrr.io/pkg/connectcore/man/then_or_now.html).
+  [`connectcore::then_or_now()`](https://dereckscompany.github.io/connectcore/reference/then_or_now.html).
   The generic JSON-\>data.table helpers (`to_snake_case()`,
   `as_dt_row()`, `as_dt_list()`, `collapse_string_array_fields()`) are
   now imported from connectcore; the Alpaca-specific parsers and time

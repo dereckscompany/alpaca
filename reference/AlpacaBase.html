@@ -9,7 +9,7 @@ AlpacaBase: Abstract Base Class for Alpaca API Clients"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@ AlpacaBase: Abstract Base Class for Alpaca API Clients"></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>AlpacaBase: Abstract Base Class for Alpaca API Clients</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.8.0/R/AlpacaBase.R" class="external-link"><code>R/AlpacaBase.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/R/AlpacaBase.R" class="external-link"><code>R/AlpacaBase.R</code></a></small>
       <div class="d-none name"><code>AlpacaBase.Rd</code></div>
     </div>
 
@@ -52,7 +52,7 @@ AlpacaBase: Abstract Base Class for Alpaca API Clients"></head><body>
     <p>Provides shared infrastructure for all Alpaca R6 classes, including API
 credential management, sync/async execution mode, and a standardised
 request funnel.</p>
-<p>Inherits the transport from <a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a> and customises the two
+<p>Inherits the transport from <a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a> and customises the two
 venue-specific seams: <code>.sign()</code> adds Alpaca's API-key headers, and
 <code>.parse_envelope()</code> reads Alpaca's error shape. Every endpoint method on a
 subclass delegates to the inherited <code>private$.request()</code>.</p><div class="section">
@@ -76,6 +76,21 @@ is exactly what the <code>.sign()</code> override does.</p>
 </div>
 
 <div class="section">
+<h3 id="retries">Retries<a class="anchor" aria-label="anchor" href="#retries"></a></h3>
+
+
+<p><code>max_tries &gt; 1</code> opts every GET this client makes — single requests and
+auto-paginated reads (e.g. historical bars) alike — into automatic retry on a
+transient failure (HTTP 408/429/5xx or a dropped connection) with jittered
+backoff, delegated to <code><a href="https://dereckscompany.github.io/connectcore/reference/build_request.html" class="external-link">connectcore::build_request()</a></code>. Retry is a hard
+<strong>GET-only</strong> carve-out: a non-idempotent verb (an order <code>POST</code>, a cancel
+<code>DELETE</code>) is never auto-retried, so a resend can never double-submit an order.
+Leave it at the default <code>1</code> for live trading — there the trader layer is the
+single retry authority (it routes by typed error class and manages cooldowns);
+raise it only for research and backfill reads.</p>
+</div>
+
+<div class="section">
 <h3 id="design">Design<a class="anchor" aria-label="anchor" href="#design"></a></h3>
 
 
@@ -87,7 +102,7 @@ own public methods that delegate to <code>private$.request()</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="super-class">Super class<a class="anchor" aria-label="anchor" href="#super-class"></a></h2>
-    <p><code><a href="https://rdrr.io/pkg/connectcore/man/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code>AlpacaBase</code></p>
+    <p><code><a href="https://dereckscompany.github.io/connectcore/reference/RestClient.html" class="external-link">connectcore::RestClient</a></code> -&gt; <code>AlpacaBase</code></p>
     </div>
     <div class="section level2">
     <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a></h2>
@@ -101,7 +116,12 @@ own public methods that delegate to <code>private$.request()</code>.</p>
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
 <p>Initialise an AlpacaBase Object</p><div class="section">
 <h4 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AlpacaBase.html">AlpacaBase</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>keys <span class="op">=</span> <span class="fu"><a href="../reference/get_api_keys.html">get_api_keys</a></span><span class="op">(</span><span class="op">)</span>, base_url <span class="op">=</span> <span class="fu"><a href="../reference/get_base_url.html">get_base_url</a></span><span class="op">(</span><span class="op">)</span>, async <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va"><a href="../reference/AlpacaBase.html">AlpacaBase</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  keys <span class="op">=</span> <span class="fu"><a href="../reference/get_api_keys.html">get_api_keys</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  base_url <span class="op">=</span> <span class="fu"><a href="../reference/get_base_url.html">get_base_url</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  async <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  max_tries <span class="op">=</span> <span class="fl">1L</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
@@ -119,6 +139,13 @@ Defaults to <code><a href="get_api_keys.html">get_api_keys()</a></code>.</p></dd
 <dt><code>async</code></dt>
 <dd><p>(scalar&lt;logical&gt;) if <code>TRUE</code>, methods return promises. Default
 <code>FALSE</code>.</p></dd>
+
+
+<dt><code>max_tries</code></dt>
+<dd><p>(scalar&lt;integer in [1, 10]&gt;) for idempotent GET requests
+only, retry up to this many times on a transient failure. Default <code>1</code>
+(no retry). See the class <strong>Retries</strong> section for the write-safety
+carve-out and why live trading should leave this at <code>1</code>.</p></dd>
 
 
 </dl><p></p></div>

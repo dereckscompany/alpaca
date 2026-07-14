@@ -6,7 +6,7 @@ authentication headers, performs it via the supplied `.perform`
 function, and parses the JSON response. This is the single point through
 which the bulk-bar and market-data paths flow; it delegates the
 transport to
-[`connectcore::build_request()`](https://rdrr.io/pkg/connectcore/man/build_request.html)
+[`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)
 and supplies the Alpaca header signer and error-envelope parser.
 
 ## Usage
@@ -23,7 +23,8 @@ alpaca_build_request(
   .parser = identity,
   is_async = FALSE,
   timeout = 10,
-  simplifyVector = FALSE
+  simplifyVector = FALSE,
+  max_tries = 1L
 )
 ```
 
@@ -81,6 +82,15 @@ alpaca_build_request(
   [httr2::resp_body_json](https://httr2.r-lib.org/reference/resp_body_raw.html).
   Default `FALSE`. Set to `TRUE` for endpoints returning parallel arrays
   so JSON nulls become NA in atomic vectors.
+
+- max_tries:
+
+  (scalar\<integer in \[1, 10\]\>) for an idempotent GET only, retry up
+  to this many times on a transient failure (408/429/5xx or a connection
+  failure). A non-GET verb is never auto-retried (the GET-only carve-out
+  lives in
+  [`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)).
+  Default `1` (no retry).
 
 ## Value
 

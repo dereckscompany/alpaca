@@ -11,7 +11,7 @@ credential management, sync/async execution mode, and a standardised
 request funnel.
 
 Inherits the transport from
-[connectcore::RestClient](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+[connectcore::RestClient](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
 and customises the two venue-specific seams: `.sign()` adds Alpaca's
 API-key headers, and `.parse_envelope()` reads Alpaca's error shape.
 Every endpoint method on a subclass delegates to the inherited
@@ -46,6 +46,20 @@ Alpaca uses header-based authentication with two headers:
 No HMAC signing is required — credentials are sent directly in headers,
 which is exactly what the `.sign()` override does.
 
+### Retries
+
+`max_tries > 1` opts every GET this client makes — single requests and
+auto-paginated reads (e.g. historical bars) alike — into automatic retry
+on a transient failure (HTTP 408/429/5xx or a dropped connection) with
+jittered backoff, delegated to
+[`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html).
+Retry is a hard **GET-only** carve-out: a non-idempotent verb (an order
+`POST`, a cancel `DELETE`) is never auto-retried, so a resend can never
+double-submit an order. Leave it at the default `1` for live trading —
+there the trader layer is the single retry authority (it routes by typed
+error class and manages cooldowns); raise it only for research and
+backfill reads.
+
 ### Design
 
 This class is not meant to be instantiated directly. Subclasses (e.g.,
@@ -56,7 +70,7 @@ inherit from it and define their own public methods that delegate to
 
 ## Super class
 
-[`connectcore::RestClient`](https://rdrr.io/pkg/connectcore/man/RestClient.html)
+[`connectcore::RestClient`](https://dereckscompany.github.io/connectcore/reference/RestClient.html)
 -\> `AlpacaBase`
 
 ## Methods
@@ -75,7 +89,12 @@ Initialise an AlpacaBase Object
 
 #### Usage
 
-    AlpacaBase$new(keys = get_api_keys(), base_url = get_base_url(), async = FALSE)
+    AlpacaBase$new(
+      keys = get_api_keys(),
+      base_url = get_base_url(),
+      async = FALSE,
+      max_tries = 1L
+    )
 
 #### Arguments
 
@@ -95,6 +114,13 @@ Initialise an AlpacaBase Object
 
   (scalar\<logical\>) if `TRUE`, methods return promises. Default
   `FALSE`.
+
+- `max_tries`:
+
+  (scalar\<integer in \[1, 10\]\>) for idempotent GET requests only,
+  retry up to this many times on a transient failure. Default `1` (no
+  retry). See the class **Retries** section for the write-safety
+  carve-out and why live trading should leave this at `1`.
 
 #### Returns
 

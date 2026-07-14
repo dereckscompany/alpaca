@@ -15,7 +15,7 @@ Alpaca header signer and error-envelope parser."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">alpaca</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@ Alpaca header signer and error-envelope parser."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Build and Execute an Alpaca API Request</h1>
-      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/v0.8.0/R/helpers_request.R" class="external-link"><code>R/helpers_request.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/dereckscompany/alpaca/blob/master/R/helpers_request.R" class="external-link"><code>R/helpers_request.R</code></a></small>
       <div class="d-none name"><code>alpaca_build_request.Rd</code></div>
     </div>
 
@@ -51,7 +51,7 @@ Alpaca header signer and error-envelope parser."></head><body>
     <p>Constructs an <a href="https://httr2.r-lib.org/reference/request.html" class="external-link">httr2::request</a>, adds authentication headers, performs it via
 the supplied <code>.perform</code> function, and parses the JSON response. This is the
 single point through which the bulk-bar and market-data paths flow; it
-delegates the transport to <code><a href="https://rdrr.io/pkg/connectcore/man/build_request.html" class="external-link">connectcore::build_request()</a></code> and supplies the
+delegates the transport to <code><a href="https://dereckscompany.github.io/connectcore/reference/build_request.html" class="external-link">connectcore::build_request()</a></code> and supplies the
 Alpaca header signer and error-envelope parser.</p>
     </div>
 
@@ -68,7 +68,8 @@ Alpaca header signer and error-envelope parser.</p>
 <span>  .parser <span class="op">=</span> <span class="va">identity</span>,</span>
 <span>  is_async <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  timeout <span class="op">=</span> <span class="fl">10</span>,</span>
-<span>  simplifyVector <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  simplifyVector <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  max_tries <span class="op">=</span> <span class="fl">1L</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -125,6 +126,13 @@ Default <code>10</code>.</p></dd>
 <dd><p>(scalar&lt;logical&gt;) passed to <a href="https://httr2.r-lib.org/reference/resp_body_raw.html" class="external-link">httr2::resp_body_json</a>.
 Default <code>FALSE</code>. Set to <code>TRUE</code> for endpoints returning parallel arrays so
 JSON nulls become NA in atomic vectors.</p></dd>
+
+
+<dt id="arg-max-tries">max_tries<a class="anchor" aria-label="anchor" href="#arg-max-tries"></a></dt>
+<dd><p>(scalar&lt;integer in [1, 10]&gt;) for an idempotent GET only,
+retry up to this many times on a transient failure (408/429/5xx or a
+connection failure). A non-GET verb is never auto-retried (the GET-only
+carve-out lives in <code><a href="https://dereckscompany.github.io/connectcore/reference/build_request.html" class="external-link">connectcore::build_request()</a></code>). Default <code>1</code> (no retry).</p></dd>
 
 </dl></div>
     <div class="section level2">

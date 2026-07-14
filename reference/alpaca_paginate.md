@@ -20,7 +20,8 @@ alpaca_paginate(
   items_field = NULL,
   max_pages = Inf,
   sleep = 0,
-  timeout = 10
+  timeout = 10,
+  max_tries = 1L
 )
 ```
 
@@ -82,6 +83,13 @@ alpaca_paginate(
 
   (scalar\<numeric in \]0, Inf\[\>) request timeout in seconds. Default
   `10`.
+
+- max_tries:
+
+  (scalar\<integer in \[1, 10\]\>) retry each page request up to this
+  many times on a transient failure. Paginated endpoints are GETs, so
+  [`connectcore::build_request()`](https://dereckscompany.github.io/connectcore/reference/build_request.html)
+  applies the retry to every page. Default `1` (no retry).
 
 ## Value
 
