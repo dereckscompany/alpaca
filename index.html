@@ -59,7 +59,12 @@
 </h1></div>
 <!-- badges: start -->
 
+<p><strong>In plain terms:</strong> Alpaca is an online broker that lets you trade US stocks and options and pull market data through a web interface instead of a point-and-click app. This package is the R doorway to that service: it lets you download price history and live quotes, place and manage buy and sell orders, and check on your account balance and open positions – all from R scripts. Every request can run the ordinary way, where your code waits for the answer, or in the background so your program can carry on and collect the result later. Answers come back as tidy tables with clean, readable column names and proper timestamps, ready to feed straight into analysis. Because it can place real orders against a real account, it is built to be driven carefully, and Alpaca’s paper-trading accounts let you test everything safely first.</p>
+<div class="section level2">
+<h2 id="technical-overview">Technical overview<a class="anchor" aria-label="anchor" href="#technical-overview"></a>
+</h2>
 <p>An R API wrapper for the <a href="https://alpaca.markets/" class="external-link">Alpaca</a> trading platform. Provides <code>R6</code> classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise based) operation via <code>httr2</code>.</p>
+</div>
 <div class="section level2">
 <h2 id="disclaimer">Disclaimer<a class="anchor" aria-label="anchor" href="#disclaimer"></a>
 </h2>
@@ -561,57 +566,11 @@
 <span><span class="kw">while</span> <span class="op">(</span><span class="op">!</span><span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/loop_empty.html" class="external-link">loop_empty</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">later</span><span class="fu">::</span><span class="fu"><a href="https://later.r-lib.org/reference/run_now.html" class="external-link">run_now</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<div class="sourceCode" id="cb45"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open            datetime   volume</span></span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;num&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;num&gt;</span></span>
-<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="co">#&gt;  1: 185.64 188.4400 183.8850     1009074 187.150 2024-01-02 05:00:00 82496943</span></span>
-<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="co">#&gt;  2: 184.25 185.8800 183.4300      656956 184.220 2024-01-03 05:00:00 58418916</span></span>
-<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="co">#&gt;  3: 181.91 183.0872 180.8800      712850 182.150 2024-01-04 05:00:00 71992243</span></span>
-<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a><span class="co">#&gt;  4: 181.18 182.7600 180.1700      682335 181.990 2024-01-05 05:00:00 62379661</span></span>
-<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a><span class="co">#&gt;  5: 185.56 185.6000 181.5000      669304 182.085 2024-01-08 05:00:00 59151720</span></span>
-<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a><span class="co">#&gt;  6: 185.14 185.1500 182.7300      538297 183.920 2024-01-09 05:00:00 42848219</span></span>
-<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a><span class="co">#&gt;  7: 186.19 186.4000 183.9200      554884 184.350 2024-01-10 05:00:00 46797681</span></span>
-<span id="cb45-10"><a href="#cb45-10" tabindex="-1"></a><span class="co">#&gt;  8: 185.59 187.0500 183.6200      584114 186.540 2024-01-11 05:00:00 49133996</span></span>
-<span id="cb45-11"><a href="#cb45-11" tabindex="-1"></a><span class="co">#&gt;  9: 185.92 186.7400 185.1900      477050 186.060 2024-01-12 05:00:00 40477782</span></span>
-<span id="cb45-12"><a href="#cb45-12" tabindex="-1"></a><span class="co">#&gt; 10: 183.63 184.2600 180.9340      767431 182.160 2024-01-16 05:00:00 65612289</span></span>
-<span id="cb45-13"><a href="#cb45-13" tabindex="-1"></a><span class="co">#&gt; 11: 182.68 182.9300 180.3000      594725 181.270 2024-01-17 05:00:00 47321545</span></span>
-<span id="cb45-14"><a href="#cb45-14" tabindex="-1"></a><span class="co">#&gt; 12: 188.63 189.1400 185.8300      787472 186.090 2024-01-18 05:00:00 78031784</span></span>
-<span id="cb45-15"><a href="#cb45-15" tabindex="-1"></a><span class="co">#&gt; 13: 191.56 191.9500 188.8200      682664 189.330 2024-01-19 05:00:00 68902985</span></span>
-<span id="cb45-16"><a href="#cb45-16" tabindex="-1"></a><span class="co">#&gt; 14: 193.89 195.3300 192.2600      718256 192.300 2024-01-22 05:00:00 60139948</span></span>
-<span id="cb45-17"><a href="#cb45-17" tabindex="-1"></a><span class="co">#&gt; 15: 195.18 195.7500 193.8299      533198 195.020 2024-01-23 05:00:00 42360151</span></span>
-<span id="cb45-18"><a href="#cb45-18" tabindex="-1"></a><span class="co">#&gt; 16: 194.50 196.3800 194.3400      594907 195.420 2024-01-24 05:00:00 53636461</span></span>
-<span id="cb45-19"><a href="#cb45-19" tabindex="-1"></a><span class="co">#&gt; 17: 194.17 196.2675 193.1125      644776 195.220 2024-01-25 05:00:00 54834147</span></span>
-<span id="cb45-20"><a href="#cb45-20" tabindex="-1"></a><span class="co">#&gt; 18: 192.42 194.7600 191.9400      534166 194.270 2024-01-26 05:00:00 44594011</span></span>
-<span id="cb45-21"><a href="#cb45-21" tabindex="-1"></a><span class="co">#&gt; 19: 191.73 192.2000 189.5800      599512 192.010 2024-01-29 05:00:00 47145521</span></span>
-<span id="cb45-22"><a href="#cb45-22" tabindex="-1"></a><span class="co">#&gt; 20: 188.04 191.8000 187.4700      690706 190.940 2024-01-30 05:00:00 55854611</span></span>
-<span id="cb45-23"><a href="#cb45-23" tabindex="-1"></a><span class="co">#&gt; 21: 184.40 187.0950 184.3500      679844 187.040 2024-01-31 05:00:00 55467803</span></span>
-<span id="cb45-24"><a href="#cb45-24" tabindex="-1"></a><span class="co">#&gt;      close     high      low trade_count    open            datetime   volume</span></span>
-<span id="cb45-25"><a href="#cb45-25" tabindex="-1"></a><span class="co">#&gt;      &lt;num&gt;    &lt;num&gt;    &lt;num&gt;       &lt;num&gt;   &lt;num&gt;              &lt;POSc&gt;    &lt;num&gt;</span></span>
-<span id="cb45-26"><a href="#cb45-26" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
-<span id="cb45-27"><a href="#cb45-27" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
-<span id="cb45-28"><a href="#cb45-28" tabindex="-1"></a><span class="co">#&gt;  1: 185.8462</span></span>
-<span id="cb45-29"><a href="#cb45-29" tabindex="-1"></a><span class="co">#&gt;  2: 184.3197</span></span>
-<span id="cb45-30"><a href="#cb45-30" tabindex="-1"></a><span class="co">#&gt;  3: 182.0131</span></span>
-<span id="cb45-31"><a href="#cb45-31" tabindex="-1"></a><span class="co">#&gt;  4: 181.4839</span></span>
-<span id="cb45-32"><a href="#cb45-32" tabindex="-1"></a><span class="co">#&gt;  5: 184.4009</span></span>
-<span id="cb45-33"><a href="#cb45-33" tabindex="-1"></a><span class="co">#&gt;  6: 184.3641</span></span>
-<span id="cb45-34"><a href="#cb45-34" tabindex="-1"></a><span class="co">#&gt;  7: 185.2238</span></span>
-<span id="cb45-35"><a href="#cb45-35" tabindex="-1"></a><span class="co">#&gt;  8: 185.0222</span></span>
-<span id="cb45-36"><a href="#cb45-36" tabindex="-1"></a><span class="co">#&gt;  9: 185.8182</span></span>
-<span id="cb45-37"><a href="#cb45-37" tabindex="-1"></a><span class="co">#&gt; 10: 182.8303</span></span>
-<span id="cb45-38"><a href="#cb45-38" tabindex="-1"></a><span class="co">#&gt; 11: 181.8952</span></span>
-<span id="cb45-39"><a href="#cb45-39" tabindex="-1"></a><span class="co">#&gt; 12: 187.9687</span></span>
-<span id="cb45-40"><a href="#cb45-40" tabindex="-1"></a><span class="co">#&gt; 13: 190.6088</span></span>
-<span id="cb45-41"><a href="#cb45-41" tabindex="-1"></a><span class="co">#&gt; 14: 194.0135</span></span>
-<span id="cb45-42"><a href="#cb45-42" tabindex="-1"></a><span class="co">#&gt; 15: 194.8158</span></span>
-<span id="cb45-43"><a href="#cb45-43" tabindex="-1"></a><span class="co">#&gt; 16: 195.2364</span></span>
-<span id="cb45-44"><a href="#cb45-44" tabindex="-1"></a><span class="co">#&gt; 17: 194.7833</span></span>
-<span id="cb45-45"><a href="#cb45-45" tabindex="-1"></a><span class="co">#&gt; 18: 193.1369</span></span>
-<span id="cb45-46"><a href="#cb45-46" tabindex="-1"></a><span class="co">#&gt; 19: 191.2808</span></span>
-<span id="cb45-47"><a href="#cb45-47" tabindex="-1"></a><span class="co">#&gt; 20: 188.8236</span></span>
-<span id="cb45-48"><a href="#cb45-48" tabindex="-1"></a><span class="co">#&gt; 21: 185.3675</span></span>
-<span id="cb45-49"><a href="#cb45-49" tabindex="-1"></a><span class="co">#&gt;         vwap</span></span>
-<span id="cb45-50"><a href="#cb45-50" tabindex="-1"></a><span class="co">#&gt;        &lt;num&gt;</span></span>
-<span id="cb45-51"><a href="#cb45-51" tabindex="-1"></a><span class="co">#&gt; Market open: FALSE</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="co">#&gt;               datetime  open  high   low close  volume trade_count  vwap</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="co">#&gt;                 &lt;POSc&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt; &lt;num&gt;   &lt;num&gt;       &lt;num&gt; &lt;num&gt;</span></span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a><span class="co">#&gt; 1: 2024-01-02 05:00:00   100   110    95   105 1000000       10000 102.5</span></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="co">#&gt; 2: 2024-01-03 05:00:00   105   115   100   112 1100000       11000 108.0</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="co">#&gt; Market open: TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="available-classes">Available Classes<a class="anchor" aria-label="anchor" href="#available-classes"></a>
