@@ -21,6 +21,10 @@ knitr::opts_chunk$set(
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
+**In plain terms:** Alpaca is an online broker that lets you trade US stocks and options and pull market data through a web interface instead of a point-and-click app. This package is the R doorway to that service: it lets you download price history and live quotes, place and manage buy and sell orders, and check on your account balance and open positions -- all from R scripts. Every request can run the ordinary way, where your code waits for the answer, or in the background so your program can carry on and collect the result later. Answers come back as tidy tables with clean, readable column names and proper timestamps, ready to feed straight into analysis. Because it can place real orders against a real account, it is built to be driven carefully, and Alpaca's paper-trading accounts let you test everything safely first.
+
+## Technical overview
+
 An R API wrapper for the [Alpaca](https://alpaca.markets/) trading platform. Provides `R6` classes for market data, stock trading, options, account management, and positions. Supports both synchronous and asynchronous (promise based) operation via `httr2`.
 
 ## Disclaimer
