@@ -15,10 +15,11 @@
 #
 # The fixtures are SYNTHETIC: deterministic, PII-free bodies hand-built to
 # exercise every parser branch -- empty-vs-populated arrays, multi-condition
-# collapse, option deliverables/greeks, partially-missing image sizes. They were
-# validated against the live Alpaca paper API (the captured READ responses match
-# these shapes), but the synthetic bodies are kept because the live test account
-# is empty/degenerate (no positions, no watchlist assets, no dividends) and would
+# collapse, option deliverables/greeks, partially-missing image sizes. They are
+# authored, never captured -- hand-built to be shape-faithful to Alpaca's own
+# documented response schemas. Hand-built bodies are kept (rather than any
+# response from a live account) because the live Alpaca paper test account is
+# empty/degenerate (no positions, no watchlist assets, no dividends) and would
 # not exercise the populated-column contracts the tests assert.
 #
 # httr2 exposes a native global mock hook: connectcore::with_mock_api(.mock_routes,

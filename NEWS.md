@@ -1,3 +1,13 @@
+# alpaca 0.10.1
+
+## Corrected fixture-provenance claim in the mock-router header
+
+`tests/testthat/mock_router.R`'s header comment claimed the synthetic mock fixtures had been "validated against the live Alpaca paper API (the captured READ responses match these shapes)" — implying a live capture existed to compare against, which it never did. In plain English: every fixture body in this package is hand-authored, not pulled from a real account. The header now says so plainly.
+
+* Reworded the header comment to state the fixtures are authored, never captured, and hand-built to be shape-faithful to Alpaca's own documented response schemas; the word "captured" no longer appears in the file.
+* Kept the existing rationale for why hand-built bodies are used instead of any live-account response: the live Alpaca paper test account is empty/degenerate (no positions, no watchlist assets, no dividends) and would not exercise the populated-column contracts the tests assert.
+* No code change; `tests/testthat/mock_router.R` comment only.
+
 # alpaca 0.10.0
 
 ## Market-data corporate-actions archive: `AlpacaMarketData$get_corporate_actions_history()`
