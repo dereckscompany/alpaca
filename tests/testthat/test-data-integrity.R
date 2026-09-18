@@ -20,7 +20,7 @@ test_that("as_dt_list with heterogeneous records produces NA columns", {
   dt <- as_dt_list(items)
 
   # fill = TRUE means the equity row gets NA for greeks columns
-  # This test documents the current (dangerous) behavior
+  # This test documents the current (dangerous) behaviour
   expect_equal(nrow(dt), 2L)
   expect_true("greeks_delta" %in% names(dt))
   expect_true(is.na(dt$greeks_delta[1])) # equity row has NA greeks

@@ -1660,7 +1660,7 @@ AlpacaMarketData <- R6::R6Class(
     #' reconstruct split/dividend adjustments correctly.
     #'
     #' ### Two corporate-actions endpoints — which to use
-    #' In plain terms: `get_corporate_actions()` (the announcements feed) is the
+    #' `get_corporate_actions()` (the announcements feed) is the
     #' *Trading API*'s recent-events view — what Alpaca has recently announced or
     #' is about to apply; this method is the *Market Data API*'s archive going back
     #' to 2016. Technically the two hit different hosts and return different shapes.
