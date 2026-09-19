@@ -8,9 +8,11 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-Alpaca is an online broker that lets you trade US stocks and options and
-pull market data through a web interface instead of a point-and-click
-app. This package is the R doorway to that service: it lets you download
+**Alpaca is an online broker that lets you trade US stocks and options
+and pull market data through a web interface instead of a
+point-and-click app.**
+
+This package is the R doorway to that service: it lets you download
 price history and live quotes, place and manage buy and sell orders, and
 check on your account balance and open positions – all from R scripts.
 Every request can run the ordinary way, where your code waits for the
@@ -28,22 +30,7 @@ platform. Provides `R6` classes for market data, stock trading, options,
 account management, and positions. Supports both synchronous and
 asynchronous (promise based) operation via `httr2`.
 
-## Disclaimer
-
-This software is provided “as is”, without warranty of any kind. **This
-package interacts with live brokerage accounts and can execute real
-trades involving real money.** By using this package you accept full
-responsibility for any financial losses, erroneous transactions, or
-other damages that may result. Always test with paper trading first, use
-API key permissions to restrict access to only what you need, and never
-share your API credentials. The author(s) and contributor(s) are not
-liable for any financial loss or damage arising from the use of this
-software.
-
-We invite you to read the source code and make contributions if you find
-a bug or wish to make an improvement.
-
-## Design Philosophy
+## Design philosophy
 
 All API responses are returned as `data.table` objects with three
 transformations applied:
@@ -85,7 +72,7 @@ response surfaces as a column on the resulting `data.table` – collapsed,
 exploded, or wide-prefixed per the shape policy. If you don’t need a
 column, drop it yourself.
 
-## Data-shape conventions
+### Data-shape conventions
 
 Alpaca’s JSON responses sometimes contain nested arrays and objects. To
 keep returns intuitive (and consistent across the `alpaca` / `binance` /
@@ -99,7 +86,7 @@ for the endpoint, and return one row per entity**. The four cases:
 | Fixed-schema nested object (snapshot bars, account configurations) | Flattened to wide `parent_child` columns. | `get_account()` -\> `admin_configurations_max_options_trading_level`. |
 | Empty / null array | `NA_character_` (no list cells). Empty responses -\> empty `data.table` (not stub rows). | An asset with no attributes -\> `attributes = NA`. |
 
-### Recovering the original values
+#### Recovering the original values
 
 Filter with `grepl`:
 
@@ -135,7 +122,7 @@ omits a per-image field the missing value becomes an **empty token**
 (e.g. `"large;"`), never the literal string `"NA"` — so a real `"NA"`
 value remains unambiguous from a missing one.
 
-### Multi-leg orders (`bracket` / `oco` / `oto`)
+#### Multi-leg orders (`bracket` / `oco` / `oto`)
 
 Multi-leg orders return a flat `data.table` with one row per “order”
 (parent and legs treated equally). Two helper columns disambiguate:
@@ -156,11 +143,14 @@ dt[parent_order_id == "<parent-uuid>"]
 ## Installation
 
 ``` r
+renv::install("dereckscompany/alpaca")
+
+# or, if you use remotes instead of renv:
 # install.packages("remotes")
-remotes::install_github("dereckscompany/alpaca")
+# remotes::install_github("dereckscompany/alpaca")
 ```
 
-## Setup
+## Quick start
 
 ``` r
 # special mock for local build
@@ -210,7 +200,22 @@ ALPACA_API_ENDPOINT = https://paper-api.alpaca.markets
 If you don’t have a key, visit the [Alpaca
 dashboard](https://app.alpaca.markets/).
 
-## Quick Start – Market Data
+## Disclaimer
+
+This software is provided “as is”, without warranty of any kind. **This
+package interacts with live brokerage accounts and can execute real
+trades involving real money.** By using this package you accept full
+responsibility for any financial losses, erroneous transactions, or
+other damages that may result. Always test with paper trading first, use
+API key permissions to restrict access to only what you need, and never
+share your API credentials. The author(s) and contributor(s) are not
+liable for any financial loss or damage arising from the use of this
+software.
+
+We invite you to read the source code and make contributions if you find
+a bug or wish to make an improvement.
+
+## Market Data
 
 All endpoints require authentication (even market data).
 
@@ -566,7 +571,19 @@ head(alpaca_aapl_1day_bars)
     #> 5: 2024-01-08 05:00:00 192.39 192.39 190.41 191.64 106732757     1218918 191.42
     #> 6: 2024-01-09 05:00:00 190.84 192.20 190.19 191.43  98753716     1029576 191.44
 
-## Async Usage
+## Available Classes
+
+| Class | Purpose |
+|----|----|
+| `AlpacaMarketData` | Historical bars, latest trades/quotes, snapshots, assets, calendar, clock, news, screener, corporate actions |
+| `AlpacaTrading` | Place, modify, cancel, and query orders |
+| `AlpacaAccount` | Account info, positions, portfolio history, activities, watchlists |
+| `AlpacaOptions` | Options contracts, bars, trades, quotes, snapshots, chain |
+
+Standalone function: `alpaca_backfill_bars()` – bulk historical bar
+download with CSV resume.
+
+## Asynchronous usage
 
 All classes accept `async = TRUE`, causing methods to return promises.
 Use `coro::async()` to write sequential-looking async code:
@@ -599,28 +616,39 @@ while (!later::loop_empty()) {
     #> 2: 2024-01-03 05:00:00   105   115   100   112 1100000       11000 108.0
     #> Market open: TRUE
 
-## Available Classes
+## Documentation
 
-| Class | Purpose |
-|----|----|
-| `AlpacaMarketData` | Historical bars, latest trades/quotes, snapshots, assets, calendar, clock, news, screener, corporate actions |
-| `AlpacaTrading` | Place, modify, cancel, and query orders |
-| `AlpacaAccount` | Account info, positions, portfolio history, activities, watchlists |
-| `AlpacaOptions` | Options contracts, bars, trades, quotes, snapshots, chain |
+The rendered reference site is at
+[dereckscompany.github.io/alpaca](https://dereckscompany.github.io/alpaca/).
 
-Standalone function: `alpaca_backfill_bars()` – bulk historical bar
-download with CSV resume.
+The vignette ladder, in reading order:
+
+1.  `vignette("getting-started", package = "alpaca")` – constructing
+    each client against the mock router and making a first synchronous
+    call for market data, trading, account and options.
+2.  `vignette("data-shapes", package = "alpaca")` – a one-stop tour
+    cataloguing every public method by topic and documenting the
+    data-shape policy in detail.
+3.  `vignette("async-usage", package = "alpaca")` – consuming
+    `async = TRUE` promises with `coro::async()` / `await()` and driving
+    the event loop with `later`.
+4.  `vignette("margin-short-selling", package = "alpaca")` – margin
+    trading, short selling and options position management through the
+    standard trading API.
+
+The full release history is in [`NEWS.md`](NEWS.md).
 
 ## Citation
+
+Cite as: Mezquita, D. (2026). alpaca: API Wrapper to Alpaca Trading
+Platform. R package version 0.10.4.
+<https://github.com/dereckscompany/alpaca>
 
 If you use this package in your work, please cite it:
 
 ``` r
 citation("alpaca")
 ```
-
-> Mezquita, D. (2026). alpaca: R API Wrapper to Alpaca Trading Platform.
-> R package version 0.1.0.
 
 ## Licence
 
