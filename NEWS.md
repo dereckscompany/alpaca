@@ -1,3 +1,14 @@
+# alpaca 0.10.3
+
+## Prose sweep: dropped leading "in plain terms" labels, switched one comment to British spelling
+
+**This is a wording-only pass: three leftover "in plain terms" / "in plain English" scaffolding labels are dropped and one comment now spells "behaviour" the British way; nothing about how the package behaves, its arguments, or its returned columns changes.** The plain-English sentences those labels used to introduce are kept exactly as written, just without the label sitting in front of them, and the sentence that now opens fresh where a label was removed mid-paragraph has been re-capitalised so it still reads as a proper sentence.
+
+* Labels removed (3): `README.Rmd` (the `**In plain terms:**` lead before the top-of-file summary paragraph, regenerating `README.md`); `R/AlpacaMarketData.R`'s `get_corporate_actions_history()` doc comment (the `In plain terms:` lead before the two-endpoints explanation, regenerating `man/AlpacaMarketData.Rd`); and this file's own 0.10.1 entry (`In plain English:` sitting mid-paragraph).
+* Spellings changed (1): `tests/testthat/test-data-integrity.R` comment, `behavior` -> `behaviour`.
+* Files touched (4): `README.Rmd`, `R/AlpacaMarketData.R`, `NEWS.md`, `tests/testthat/test-data-integrity.R` (plus the regenerated `README.md` and `man/AlpacaMarketData.Rd`).
+* Deliberately left alone, none of it prose in need of a fix: quoted vendor values (the `"canceled"` order-status literal, the `Authorization` header name) and R6 method/identifier names (`initialize`) that happen to contain a target spelling; `tests/testthat/test-AlpacaBase.R`'s two `test_that("AlpacaBase initializes in ... mode", ...)` descriptions, where `initializes` is a conjugated English verb, not the `initialize` identifier, even though it is spelled the same; `.github/workflows/test-coverage.yaml`'s `# Determine badge color` comment, which names the local `color` variable and the shields.io `color` JSON key it builds, so the American spelling matches on purpose; and `R/types_alpaca.R`'s "unrealized P/L" / "unrealized P/L percent" glosses sitting beside the `unrealized_pl` / `unrealized_plpc` vendor field names, spelled to match those fields.
+
 # alpaca 0.10.2
 
 **An account without the three day-trading fields no longer breaks every caller, and the equity paper container no longer freezes its venue on start.**
@@ -13,7 +24,7 @@ On 2026-09-18 the first live start of the FINRA equity sleeve froze its Alpaca v
 
 ## Corrected fixture-provenance claim in the mock-router header
 
-`tests/testthat/mock_router.R`'s header comment claimed the synthetic mock fixtures had been "validated against the live Alpaca paper API (the captured READ responses match these shapes)" — implying a live capture existed to compare against, which it never did. In plain English: every fixture body in this package is hand-authored, not pulled from a real account. The header now says so plainly.
+`tests/testthat/mock_router.R`'s header comment claimed the synthetic mock fixtures had been "validated against the live Alpaca paper API (the captured READ responses match these shapes)" — implying a live capture existed to compare against, which it never did. Every fixture body in this package is hand-authored, not pulled from a real account. The header now says so plainly.
 
 * Reworded the header comment to state the fixtures are authored, never captured, and hand-built to be shape-faithful to Alpaca's own documented response schemas; the word "captured" no longer appears in the file.
 * Kept the existing rationale for why hand-built bodies are used instead of any live-account response: the live Alpaca paper test account is empty/degenerate (no positions, no watchlist assets, no dividends) and would not exercise the populated-column contracts the tests assert.

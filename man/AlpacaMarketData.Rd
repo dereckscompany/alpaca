@@ -1833,10 +1833,10 @@ reaching back to 2016. This is the endpoint an equities backtest needs to
 reconstruct split/dividend adjustments correctly.
 \subsection{Two corporate-actions endpoints — which to use}{
 
-In plain terms: \code{get_corporate_actions()} (the announcements feed) is the
-\emph{Trading API}'s recent-events view — what Alpaca has recently announced or
-is about to apply; this method is the \emph{Market Data API}'s archive going back
-to 2016. Technically the two hit different hosts and return different shapes.
+\code{get_corporate_actions()} (the announcements feed) is the \emph{Trading API}'s
+recent-events view — what Alpaca has recently announced or is about to apply;
+this method is the \emph{Market Data API}'s archive going back to 2016.
+Technically the two hit different hosts and return different shapes.
 The announcements feed (\verb{/v2/corporate_actions/announcements}, trading host)
 returns a flat array of announcement records; it is marked DEPRECATED by
 Alpaca. This method (\verb{/v1/corporate-actions}, data host) returns the records
