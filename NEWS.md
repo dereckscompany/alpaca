@@ -1,3 +1,14 @@
+# alpaca 0.10.2
+
+**An account without the three day-trading fields no longer breaks every caller, and the equity paper container no longer freezes its venue on start.**
+
+On 2026-09-18 the first live start of the FINRA equity sleeve froze its Alpaca venue after two failed balance refreshes with "`value` must contain the columns: pattern_day_trader, daytrade_count, daytrading_buying_power". Measured from inside the container, that paper account's `GET /v2/account` carries none of those three fields at all (it does carry cash, equity, buying power, multiplier, shorting_enabled and the rest), and the account parser only coerced columns that existed, so the row lacked three columns the Account contract names and the generated return assertion aborted. The three fields are now optional in the contract and are filled with a typed `NA` of each column's own type when the venue omits them, which is the fleet's rule for measurements a venue can legitimately leave out; nothing changes for an account that sends them.
+
+- `parse_account()` (`R/helpers_parse.R`): a new `ACCOUNT_OPTIONAL_FIELD_DEFAULTS` table (`pattern_day_trader = NA`, `daytrade_count = NA_integer_`, `daytrading_buying_power = NA_character_`) is applied before the row is built, default-then-update, so an absent field becomes a typed `NA` rather than a missing column.
+- `Account` type (`R/types_alpaca.R`): `pattern_day_trader` is now `logical | NA` and `daytrade_count` `integer | NA`; `daytrading_buying_power` was already `character | NA`. `AlpacaAccount$get_account()`'s `@return` text says so.
+- Two tests in `tests/testthat/test-AlpacaAccount.R`: an account object without the three fields parses to the full shape with typed `NA`s, and one with them parses unchanged.
+- Regenerated contracts and `man/` (roxygen2 7.3.3).
+
 # alpaca 0.10.1
 
 ## Corrected fixture-provenance claim in the mock-router header

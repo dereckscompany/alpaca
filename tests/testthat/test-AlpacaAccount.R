@@ -343,3 +343,72 @@ test_that("exercise_option sends POST to correct endpoint", {
   expect_equal(dt$symbol, "AAPL240621C00200000")
   expect_equal(dt$status, "exercised")
 })
+
+test_that("parse_account fills the day-trading fields Alpaca omits with typed NAs", {
+  # A paper account measured on 2026-09-18 answered /v2/account with no
+  # pattern_day_trader, daytrade_count or daytrading_buying_power field at all;
+  # the row must still carry the Account shape, with a typed NA per column.
+  data <- list(
+    id = "00000000-0000-4000-8000-000000000001",
+    account_number = "000000001",
+    status = "ACTIVE",
+    currency = "USD",
+    cash = "100000",
+    portfolio_value = "100000",
+    equity = "100000",
+    last_equity = "100000",
+    buying_power = "400000",
+    initial_margin = "0",
+    maintenance_margin = "0",
+    long_market_value = "0",
+    short_market_value = "0",
+    trading_blocked = FALSE,
+    transfers_blocked = FALSE,
+    account_blocked = FALSE,
+    regt_buying_power = "200000",
+    multiplier = "4",
+    sma = "0",
+    created_at = "2026-01-05T09:30:00Z"
+  )
+  dt <- alpaca:::parse_account(data)
+  expect_equal(nrow(dt), 1L)
+  expect_true(all(c("pattern_day_trader", "daytrade_count", "daytrading_buying_power") %in% names(dt)))
+  expect_type(dt$pattern_day_trader, "logical")
+  expect_true(is.na(dt$pattern_day_trader))
+  expect_type(dt$daytrade_count, "integer")
+  expect_true(is.na(dt$daytrade_count))
+  expect_type(dt$daytrading_buying_power, "character")
+  expect_true(is.na(dt$daytrading_buying_power))
+})
+
+test_that("parse_account keeps the day-trading fields when Alpaca sends them", {
+  data <- list(
+    id = "00000000-0000-4000-8000-000000000001",
+    account_number = "000000001",
+    status = "ACTIVE",
+    currency = "USD",
+    cash = "100000",
+    portfolio_value = "100000",
+    equity = "100000",
+    last_equity = "100000",
+    buying_power = "400000",
+    initial_margin = "0",
+    maintenance_margin = "0",
+    long_market_value = "0",
+    short_market_value = "0",
+    pattern_day_trader = FALSE,
+    trading_blocked = FALSE,
+    transfers_blocked = FALSE,
+    account_blocked = FALSE,
+    daytrade_count = 2L,
+    daytrading_buying_power = "400000",
+    regt_buying_power = "200000",
+    multiplier = "4",
+    sma = "0",
+    created_at = "2026-01-05T09:30:00Z"
+  )
+  dt <- alpaca:::parse_account(data)
+  expect_false(dt$pattern_day_trader)
+  expect_equal(dt$daytrade_count, 2L)
+  expect_equal(dt$daytrading_buying_power, "400000")
+})
