@@ -1,4 +1,4 @@
-# alpaca 0.10.2
+# alpaca 0.10.3
 
 ## Prose sweep: dropped leading "in plain terms" labels, switched one comment to British spelling
 
@@ -7,7 +7,18 @@
 * Labels removed (3): `README.Rmd` (the `**In plain terms:**` lead before the top-of-file summary paragraph, regenerating `README.md`); `R/AlpacaMarketData.R`'s `get_corporate_actions_history()` doc comment (the `In plain terms:` lead before the two-endpoints explanation, regenerating `man/AlpacaMarketData.Rd`); and this file's own 0.10.1 entry (`In plain English:` sitting mid-paragraph).
 * Spellings changed (1): `tests/testthat/test-data-integrity.R` comment, `behavior` -> `behaviour`.
 * Files touched (4): `README.Rmd`, `R/AlpacaMarketData.R`, `NEWS.md`, `tests/testthat/test-data-integrity.R` (plus the regenerated `README.md` and `man/AlpacaMarketData.Rd`).
-* Deliberately left alone: quoted vendor values (the `"canceled"` order-status literal, the `Authorization` header name) and R6 method/identifier names (`initialize`) that happen to contain a target spelling — none of these are prose.
+* Deliberately left alone, none of it prose in need of a fix: quoted vendor values (the `"canceled"` order-status literal, the `Authorization` header name) and R6 method/identifier names (`initialize`) that happen to contain a target spelling; `tests/testthat/test-AlpacaBase.R`'s two `test_that("AlpacaBase initializes in ... mode", ...)` descriptions, where `initializes` is a conjugated English verb, not the `initialize` identifier, even though it is spelled the same; `.github/workflows/test-coverage.yaml`'s `# Determine badge color` comment, which names the local `color` variable and the shields.io `color` JSON key it builds, so the American spelling matches on purpose; and `R/types_alpaca.R`'s "unrealized P/L" / "unrealized P/L percent" glosses sitting beside the `unrealized_pl` / `unrealized_plpc` vendor field names, spelled to match those fields.
+
+# alpaca 0.10.2
+
+**An account without the three day-trading fields no longer breaks every caller, and the equity paper container no longer freezes its venue on start.**
+
+On 2026-09-18 the first live start of the FINRA equity sleeve froze its Alpaca venue after two failed balance refreshes with "`value` must contain the columns: pattern_day_trader, daytrade_count, daytrading_buying_power". Measured from inside the container, that paper account's `GET /v2/account` carries none of those three fields at all (it does carry cash, equity, buying power, multiplier, shorting_enabled and the rest), and the account parser only coerced columns that existed, so the row lacked three columns the Account contract names and the generated return assertion aborted. The three fields are now optional in the contract and are filled with a typed `NA` of each column's own type when the venue omits them, which is the fleet's rule for measurements a venue can legitimately leave out; nothing changes for an account that sends them.
+
+- `parse_account()` (`R/helpers_parse.R`): a new `ACCOUNT_OPTIONAL_FIELD_DEFAULTS` table (`pattern_day_trader = NA`, `daytrade_count = NA_integer_`, `daytrading_buying_power = NA_character_`) is applied before the row is built, default-then-update, so an absent field becomes a typed `NA` rather than a missing column.
+- `Account` type (`R/types_alpaca.R`): `pattern_day_trader` is now `logical | NA` and `daytrade_count` `integer | NA`; `daytrading_buying_power` was already `character | NA`. `AlpacaAccount$get_account()`'s `@return` text says so.
+- Two tests in `tests/testthat/test-AlpacaAccount.R`: an account object without the three fields parses to the full shape with typed `NA`s, and one with them parses unchanged.
+- Regenerated contracts and `man/` (roxygen2 7.3.3).
 
 # alpaca 0.10.1
 

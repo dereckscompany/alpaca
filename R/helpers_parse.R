@@ -1126,6 +1126,18 @@ ACCOUNT_NULLABLE_MEASUREMENT_COLS <- c(
   "sma"
 )
 
+# Account fields Alpaca omits outright on some accounts: a paper account measured
+# on 2026-09-18 answered `GET /v2/account` with no `pattern_day_trader`,
+# `daytrade_count` or `daytrading_buying_power` field at all, and the row then
+# lacked the columns the Account contract names, so every caller aborted and
+# the trader froze the venue. An absent field parses to a typed `NA` of the
+# column's own type, never to a missing column.
+ACCOUNT_OPTIONAL_FIELD_DEFAULTS <- list(
+  pattern_day_trader = NA,
+  daytrade_count = NA_integer_,
+  daytrading_buying_power = NA_character_
+)
+
 # Position mark-derived measurement columns Alpaca documents optional (null when
 # the asset's market data is unavailable, e.g. a halted or newly-listed symbol).
 POSITION_NULLABLE_MEASUREMENT_COLS <- c(
@@ -1143,6 +1155,9 @@ POSITION_NULLABLE_MEASUREMENT_COLS <- c(
 #' into wide prefixed columns, coerces `created_at` to POSIXct, and coerces the
 #' Alpaca-optional balance/margin measurement columns to `character` so their
 #' `character | NA` contracts see a typed `NA` when the venue returns null.
+#' The day-trading fields Alpaca omits on some accounts (`pattern_day_trader`,
+#' `daytrade_count`, `daytrading_buying_power`) are filled with a typed `NA`
+#' when absent, so the row always carries the Account shape.
 #'
 #' @param data (list | NULL) the account object from the Alpaca API.
 #' @return (class<data.table>) a single-row account table.
@@ -1162,6 +1177,11 @@ parse_account <- function(data) {
       }
     }
     data[[cfg_field]] <- NULL
+  }
+  for (optional_field in names(ACCOUNT_OPTIONAL_FIELD_DEFAULTS)) {
+    if (is.null(data[[optional_field]])) {
+      data[[optional_field]] <- ACCOUNT_OPTIONAL_FIELD_DEFAULTS[[optional_field]]
+    }
   }
   dt <- as_dt_row(data)
   parse_timestamp_cols(dt, "created_at")

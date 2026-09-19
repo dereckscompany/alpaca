@@ -274,11 +274,13 @@
 #'   the same rule as `cash`.
 #' - short_market_value (character | NA) short market value (string); optional per
 #'   the same rule as `cash`.
-#' - pattern_day_trader (logical) PDT flag.
+#' - pattern_day_trader (logical | NA) PDT flag; absent on some accounts (a paper
+#'   account measured 2026-09-18 carried no such field), parsed to `NA`.
 #' - trading_blocked (logical) whether trading is blocked.
 #' - transfers_blocked (logical) whether transfers are blocked.
 #' - account_blocked (logical) whether the account is blocked.
-#' - daytrade_count (integer) rolling day-trade count.
+#' - daytrade_count (integer | NA) rolling day-trade count; absent on some
+#'   accounts, parsed to `NA`.
 #' - daytrading_buying_power (character | NA) day-trading buying power (string);
 #'   optional per the same rule as `cash`.
 #' - regt_buying_power (character | NA) Reg-T buying power (string); optional per

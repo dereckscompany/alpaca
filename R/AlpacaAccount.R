@@ -123,7 +123,9 @@ AlpacaAccount <- R6::R6Class(
     #'   `maintenance_margin`, `long_market_value`, `short_market_value`,
     #'   `daytrading_buying_power` (all character); `pattern_day_trader` and
     #'   `trading_blocked` (logical); `daytrade_count` (integer); and
-    #'   `created_at` (POSIXct, UTC).
+    #'   `created_at` (POSIXct, UTC). `pattern_day_trader`, `daytrade_count` and
+    #'   `daytrading_buying_power` are absent on some accounts and then arrive as
+    #'   typed `NA`s rather than as missing columns.
     #'
     #' @examples
     #' \dontrun{
