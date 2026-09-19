@@ -644,6 +644,12 @@ Cite as: Mezquita, D. (2026). alpaca: API Wrapper to Alpaca Trading
 Platform. R package version 0.10.4.
 <https://github.com/dereckscompany/alpaca>
 
+If you use this package in your work, please cite it:
+
+``` r
+citation("alpaca")
+```
+
 ## Licence
 
 MIT © [Dereck Mezquita](https://github.com/dereckmezquita)

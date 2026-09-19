@@ -408,6 +408,12 @@ The full release history is in [`NEWS.md`](NEWS.md).
 
 Cite as: Mezquita, D. (2026). alpaca: API Wrapper to Alpaca Trading Platform. R package version 0.10.4. https://github.com/dereckscompany/alpaca
 
+If you use this package in your work, please cite it:
+
+```r
+citation("alpaca")
+```
+
 ## Licence
 
 MIT &copy; [Dereck Mezquita](https://github.com/dereckmezquita) [![ORCID](https://img.shields.io/badge/ORCID-0000--0002--9307--6762-green)](https://orcid.org/0000-0002-9307-6762). See [LICENSE.md](LICENSE.md) for the full text, including the citation clause.
