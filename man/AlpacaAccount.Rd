@@ -394,7 +394,9 @@ include \code{id}, \code{account_number}, \code{status}, \code{currency}, \code{
 \code{maintenance_margin}, \code{long_market_value}, \code{short_market_value},
 \code{daytrading_buying_power} (all character); \code{pattern_day_trader} and
 \code{trading_blocked} (logical); \code{daytrade_count} (integer); and
-\code{created_at} (POSIXct, UTC).
+\code{created_at} (POSIXct, UTC). \code{pattern_day_trader}, \code{daytrade_count} and
+\code{daytrading_buying_power} are absent on some accounts and then arrive as
+typed \code{NA}s rather than as missing columns.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
