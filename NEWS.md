@@ -1,3 +1,16 @@
+# alpaca 0.10.4
+
+**The README is reshaped into the fleet's one canonical order, and every existing sentence and code chunk survives the move.** Nothing about how the package behaves changes; this is a structural pass over documentation only, moving and renaming headings so alpaca reads the same way every other package in the fleet does, and adding two sections it was missing (Documentation, and a corrected Citation).
+
+* Sections renamed to their fixed fleet names: `## Design Philosophy` -> `## Design philosophy`, `## Setup` -> `## Quick start`, `## Async Usage` -> `## Asynchronous usage`.
+* `## Data-shape conventions` (with its `Recovering the original values` and `Multi-leg orders` children) is merged into `## Design philosophy` as a nested `### Data-shape conventions` subsection, since the shape only has one slot for that content.
+* `## Quick Start -- Market Data` is renamed to `## Market Data` to stop colliding with the new fixed `## Quick start` section, and moves down among the other per-surface sections (`Account`, `Trading`, `Options`, `Short Selling`, `Bulk Historical Data`, `Sample Data`, `Available Classes`).
+* `## Disclaimer` and `## Available Classes` move down to sit alongside the other per-surface sections, after `Quick start`.
+* `## Installation` is now renv-first, with the `remotes::install_github()` form kept as a commented fallback in the same code chunk.
+* Two new sections: `## Documentation` (the pkgdown site, the four vignettes in their pkgdown reading order, and `NEWS.md`) and a corrected `## Citation` (the old line cited version `0.1.0`, five versions stale; it is now built from `DESCRIPTION`'s own `Authors@R`, `Title` and `Version`, plus the repository URL).
+* No `## Error handling` section: today's README has no error-handling prose to relocate, so none is added.
+* `README.md` regenerated from `README.Rmd`; no `R/` code touched.
+
 # alpaca 0.10.3
 
 ## Prose sweep: dropped leading "in plain terms" labels, switched one comment to British spelling
