@@ -7,7 +7,7 @@
 * `## Quick Start -- Market Data` is renamed to `## Market Data` to stop colliding with the new fixed `## Quick start` section, and moves down among the other per-surface sections (`Account`, `Trading`, `Options`, `Short Selling`, `Bulk Historical Data`, `Sample Data`, `Available Classes`).
 * `## Disclaimer` and `## Available Classes` move down to sit alongside the other per-surface sections, after `Quick start`.
 * `## Installation` is now renv-first, with the `remotes::install_github()` form kept as a commented fallback in the same code chunk.
-* Two new sections: `## Documentation` (the pkgdown site, the four vignettes in their pkgdown reading order, and `NEWS.md`) and a corrected `## Citation` (the old line cited version `0.1.0`, five versions stale; it is now built from `DESCRIPTION`'s own `Authors@R`, `Title` and `Version`, plus the repository URL).
+* Two new sections: `## Documentation` (the pkgdown site, the four vignettes in their pkgdown reading order, and `NEWS.md`) and a corrected `## Citation` (the old line cited version `0.1.0`, seventeen releases stale; it is now built from `DESCRIPTION`'s own `Authors@R`, `Title` and `Version`, plus the repository URL).
 * No `## Error handling` section: today's README has no error-handling prose to relocate, so none is added.
 * `README.md` regenerated from `README.Rmd`; no `R/` code touched.
 
