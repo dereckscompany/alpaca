@@ -252,7 +252,9 @@ test_that("get_corporate_actions_history resolves the same table in async mode",
   market <- new_market(async = TRUE)
   # Async mode performs via a promise-returning performer (real code uses
   # httr2::req_perform_promise); the mock resolves the synthetic response.
-  market$.__enclos_env__$private$.perform <- function(req) {
+  # connectcore 0.6.0 always calls a custom async .perform as
+  # .perform(req, pool = pool), so the stub must accept a pool argument.
+  market$.__enclos_env__$private$.perform <- function(req, pool = NULL) {
     return(promises::promise_resolve(mock_alpaca_response(mock_corporate_actions_history_response())))
   }
 

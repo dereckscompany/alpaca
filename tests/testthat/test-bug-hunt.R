@@ -27,7 +27,7 @@ test_that("alpaca_fetch_bars works correctly in async mode", {
   resp <- mock_alpaca_response(mock_bars)
 
   # Use a custom .perform that returns a promise (async mode)
-  async_perform <- function(req) {
+  async_perform <- function(req, pool = NULL) {
     return(promises::promise(function(resolve, reject) {
       return(resolve(resp))
     }))
