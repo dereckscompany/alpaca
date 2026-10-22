@@ -1,3 +1,12 @@
+# alpaca 0.10.6
+
+**Two stale or duplicated documents are deleted and the README's "Cite as" line names the current version; nothing the package does has changed.** `ROADMAP.md` was frozen at an early release and is contradicted by this changelog and by the code, and `CONTRIBUTING.md` was a boilerplate copy that only alpaca, binance and kucoin carried (the other eight connector packages have none); `NEWS.md` is the one record of what was released and why.
+
+- `ROADMAP.md` removed (fleet clean-up plan D.1-39). Evidence: it describes an early release and is contradicted by this file and the code; its only unique content, the method-name verb convention (`get_*` query, `add_*` create, `cancel_*` cancel, `modify_*` amend, `set_*` configure; snake_case; no API version numbers in method names), is unchanged and visible in every class's method list. The file stays recoverable from git history.
+- `CONTRIBUTING.md` removed (plan G.2-18). Evidence: byte-identical across alpaca, binance and kucoin once the package name is substituted, absent from the other eight connector packages, and its advice to prefer base R over added dependencies conflicts with the fleet's lubridate and data.table conventions; the pull-request template in `.github/` is untouched.
+- `README.Rmd` / `README.md`: citation 0.10.4 -> 0.10.6 (fleet clean-up plan G.2-14); `README.md` re-rendered.
+- `DESCRIPTION`: version bumped 0.10.5 -> 0.10.6.
+
 # alpaca 0.10.5
 
 **alpaca now depends on connectcore 0.6.0, which closes a bug where one stuck asynchronous request could freeze every other asynchronous call sharing its connection pool; alpaca's own code does not change behaviour.** A resident container once asked Alpaca for positions and orders and got no answer for ten minutes, because a units bug in httr2's async pool poller meant a single stalled asynchronous request never timed out and blocked every later asynchronous request queued behind it on the same curl pool. connectcore 0.6.0 fixes this at the shared transport layer every connector extends: each asynchronous request now gets its own `curl::new_pool()` and races it against a timer set to the request's timeout plus a five-second margin; if the timer wins, the stalled request's handles are torn down and it fails with a new, credential-free condition instead of hanging forever. This is a re-lock only — no alpaca source file changes behaviour, and the two test edits below exist purely to keep hand-written test stubs honest about connectcore's updated calling contract.
